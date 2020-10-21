@@ -1,11 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition="'$(ReleaseNotes)' == ''">
+    <RNotes>General utilities####see git checkin comments for release notes</RNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ReleaseNotes)' != ''">
+    <RNotes>$(ReleaseNotes)</RNotes>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <Version>$(BUILD_BUILDNUMBER)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Version)' == ''">
+    <Version>1.0.0-alpha</Version>
+  </PropertyGroup>
+
+
+
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>1.0.0.0</PackageVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageReleaseNotes>$(RNotes.Replace("####","%0D%0D"))</PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Linux ZFS classes to interact with ZFS pools/datasets</Description>
+    <PackageId>ROOT.Zfs.Core</PackageId>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <RepositoryUrl>http://build.root.dom/ROOT/common/_git/ROOT.Zfs.Api</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ROOT.Shared.Utils" Version="1.0.24" />
+    <PackageReference Include="ROOT.Shared.Utils" Version="1.0.25" />
   </ItemGroup>
 
 </Project>
