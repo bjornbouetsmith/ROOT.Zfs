@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Tests
 {
@@ -33,6 +35,130 @@ namespace ROOT.Zfs.Tests
                 Console.WriteLine(snap.Name);
                 Console.WriteLine(snap.Size.AsString());
             }
+        }
+
+        [TestMethod]
+        public void RemoteSnapshotTest()
+        {
+            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+
+            var remote = pc | Snapshots.ProcessCalls.ListSnapshots("tank/myds");
+
+            var response = remote.LoadResponse();
+            if (response.Success)
+            {
+                Console.WriteLine($"Command: {remote.FullCommandLine} success");
+                var snapshots = SnapshotParser.Parse(response.StdOut);
+                foreach (var snap in snapshots)
+                {
+                    Console.WriteLine(snap.CreationDate.AsString());
+                    Console.WriteLine(snap.Name);
+                    Console.WriteLine(snap.Size.AsString());
+                }
+            }
+            else
+            {
+                var ex = response.ToException();
+                Console.WriteLine(ex);
+            }
+
+        }
+
+        [TestMethod]
+        public void RemoteCreateSnapshot()
+        {
+            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+            var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
+            var remote = pc | Snapshots.ProcessCalls.CreateSnapshot("tank/myds", snapName);
+
+            var response = remote.LoadResponse();
+            if (response.Success)
+            {
+                Console.WriteLine($"Command: {remote.FullCommandLine} success");
+
+                Console.WriteLine(response.StdOut);
+            }
+            else
+            {
+                var ex = response.ToException();
+                Console.WriteLine(ex);
+            }
+        }
+
+
+        [TestMethod]
+        public void RemoteDestroySnapshot()
+        {
+            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+            var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
+            var remote = pc | Snapshots.ProcessCalls.CreateSnapshot("tank/myds", snapName);
+
+            var response = remote.LoadResponse();
+            if (response.Success)
+            {
+                Console.WriteLine($"Command: {remote.FullCommandLine} success");
+                var remoteDestroy = pc | Snapshots.ProcessCalls.DestroySnapshot("tank/myds", snapName);
+                response = remoteDestroy.LoadResponse();
+                if (response.Success)
+                {
+                    Console.WriteLine($"Command: {remoteDestroy.FullCommandLine} success");
+                }
+                else
+                {
+                    var ex = response.ToException();
+                    Console.WriteLine(ex);
+                }
+            }
+            else
+            {
+                var ex = response.ToException();
+                Console.WriteLine(ex);
+            }
+        }
+
+        [TestMethod]
+        public void SetDataSetProperty() 
+        {
+            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+
+            var remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", DataSetProperties.Lookup("atime"), "off");
+            var response = remote.LoadResponse();
+            Assert.IsTrue(response.Success);
+
+        }
+
+        [TestMethod]
+        public void GetDataSetProperty()
+        {
+            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+
+            var property = DataSetProperties.Lookup("atime");
+            var remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", property, "off");
+            var response = remote.LoadResponse();
+            Assert.IsTrue(response.Success);
+
+            remote = pc | Properties.ProcessCalls.GetProperty("tank/myds", property);
+            response = remote.LoadResponse();
+            Assert.IsTrue(response.Success);
+
+            remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", property, "on");
+            response = remote.LoadResponse();
+            Assert.IsTrue(response.Success);
+
+            remote = pc | Properties.ProcessCalls.GetProperty("tank/myds", property);
+            response = remote.LoadResponse();
+            Assert.IsTrue(response.Success);
+
+            var props = DataSetProperties.FromStdOutput(response.StdOut);
+            var std = props.Dump(new JsonFormatter());
+            var prop = props.FirstOrDefault(p => p.Property == property);
+            
+            Console.WriteLine(std);
+            std= prop.Dump(new JsonFormatter());
+            Console.WriteLine(std);
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("on", prop.Value);
+
         }
     }
 }

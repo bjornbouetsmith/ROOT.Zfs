@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Core.Commands
     {
         public static IEnumerable<Snapshot> Parse(string snapshotResponse)
         {
-            foreach(var line in snapshotResponse.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in snapshotResponse.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return Snapshot.FromString(line);
             }
@@ -20,9 +20,42 @@ namespace ROOT.Zfs.Core.Commands
 
     public class Snapshots
     {
+        public static class ProcessCalls
+        {
+            public static ProcessCall ListSnapshots(string dataset)
+            {
+                return new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
+            }
+
+            public static ProcessCall DestroySnapshot(string dataset, string snapName)
+            {
+                if (NameAllow.Matches(snapName).Count != snapName.Length)
+                {
+                    throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
+                }
+
+                return new ProcessCall("/sbin/zfs", $"destroy {dataset}@{snapName}");
+            }
+
+            public static ProcessCall CreateSnapshot(string dataset, string snapName)
+            {
+                if (NameAllow.Matches(snapName).Count != snapName.Length)
+                {
+                    throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
+                }
+
+                return new ProcessCall("/sbin/zfs", $"snap {dataset}@{snapName}");
+            }
+
+            public static ProcessCall CreateSnapshot(string dataset)
+            {
+                return CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
+            }
+        }
+
         public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
-            ProcessCall pc = new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
+            ProcessCall pc = ProcessCalls.ListSnapshots(dataset);
             var response = pc.LoadResponse();
             if (response.Success)
             {
@@ -32,6 +65,12 @@ namespace ROOT.Zfs.Core.Commands
 
             throw response.ToException();
         }
+
+        public ProcessCall LoadSnapshotsProcessCall(string dataset)
+        {
+            return new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
+        }
+
 
         private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-");
 

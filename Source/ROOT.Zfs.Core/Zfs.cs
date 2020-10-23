@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Info;
@@ -8,6 +9,14 @@ namespace ROOT.Zfs.Core
 {
     public class Zfs
     {
+        public static class ProcessCalls
+        {
+            public static ProcessCall GetVersion()
+            {
+                return new ProcessCall("/sbin/zfs", "--version");
+            }
+        }
+
         public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
             ProcessCall pc = new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
