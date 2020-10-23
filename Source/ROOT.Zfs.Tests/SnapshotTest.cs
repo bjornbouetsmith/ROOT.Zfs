@@ -48,6 +48,7 @@ namespace ROOT.Zfs.Tests
             if (response.Success)
             {
                 Console.WriteLine($"Command: {remote.FullCommandLine} success");
+                Console.WriteLine(response.StdOut);
                 var snapshots = SnapshotParser.Parse(response.StdOut);
                 foreach (var snap in snapshots)
                 {

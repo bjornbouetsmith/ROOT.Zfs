@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Core.Commands
     {
         public static IEnumerable<Snapshot> Parse(string snapshotResponse)
         {
-            foreach (var line in snapshotResponse.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in snapshotResponse.Split(new[]{'\r','\n'}, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return Snapshot.FromString(line);
             }

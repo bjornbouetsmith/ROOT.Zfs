@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Core
             if (response.Success)
             {
                 Console.WriteLine($"Command: {pc.FullCommandLine} success");
-                foreach (var line in response.StdOut.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     yield return Snapshot.FromString(line);
                 }

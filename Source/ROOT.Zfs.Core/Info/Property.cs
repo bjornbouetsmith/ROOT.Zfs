@@ -104,7 +104,7 @@ namespace ROOT.Zfs.Core.Info
 
         public static IEnumerable<PropertyValue> FromStdOutput(string stdOutput) 
         {
-            foreach (var line in stdOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).Skip(1))
+            foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
             {
                 yield return PropertyValue.FromString(line);
             }
