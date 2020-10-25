@@ -38,7 +38,54 @@ namespace ROOT.Zfs.Core
                 if (response.Success)
                 {
                     return DataSetProperties.FromStdOutput(response.StdOut);
-                    
+
+                }
+
+                throw response.ToException();
+            }
+
+            public static PropertyValue GetProperty(string dataset, string property, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+                var prop = DataSetProperties.Lookup(property);
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.Properties.ProcessCalls.GetProperty(dataset, prop);
+                }
+                else
+                {
+                    pc = Commands.Properties.ProcessCalls.GetProperty(dataset, prop);
+                }
+
+
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+                    return PropertyValue.FromString(response.StdOut);
+
+                }
+
+                throw response.ToException();
+            }
+            public static PropertyValue SetProperty(string dataset, string property, string value, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+                var prop = DataSetProperties.Lookup(property);
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.Properties.ProcessCalls.SetProperty(dataset, prop, value);
+                }
+                else
+                {
+                    pc = Commands.Properties.ProcessCalls.SetProperty(dataset, prop, value);
+                }
+
+
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+                    return GetProperty(dataset, property, previousCall);
+
                 }
 
                 throw response.ToException();
@@ -57,11 +104,11 @@ namespace ROOT.Zfs.Core
             {
                 pc = DataSets.ProcessCalls.GetDataSets();
             }
-          
+
             var response = pc.LoadResponse();
             if (response.Success)
             {
-          
+
                 foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
                 {
                     yield return DataSet.FromString(line);

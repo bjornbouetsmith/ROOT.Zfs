@@ -28,48 +28,26 @@ namespace ROOT.Zfs.Tests
         [TestMethod]
         public void SetDataSetProperty()
         {
-            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+            
+            var newVal = Core.Zfs.Properties.SetProperty("tank/myds", "atime", "off", pc);
 
-            var remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", DataSetProperties.Lookup("atime"), "off");
-            var response = remote.LoadResponse();
-            Assert.IsTrue(response.Success);
-
+            Assert.AreEqual("off", newVal.Value);
+            Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
 
         [TestMethod]
         public void GetDataSetProperty()
         {
-            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+            
+            var newVal = Core.Zfs.Properties.SetProperty("tank/myds", "atime", "off", pc);
 
-            var property = DataSetProperties.Lookup("atime");
-            var remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", property, "off");
-            Console.WriteLine(remote.FullCommandLine);
+            Assert.AreEqual("off", newVal.Value);
 
-            var response = remote.LoadResponse();
-            Assert.IsTrue(response.Success);
 
-            remote = pc | Properties.ProcessCalls.GetProperty("tank/myds", property);
-            response = remote.LoadResponse();
-            Assert.IsTrue(response.Success);
+            newVal = Core.Zfs.Properties.SetProperty("tank/myds", "atime", "on", pc);
+            Assert.AreEqual("on", newVal.Value);
 
-            remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", property, "on");
-            response = remote.LoadResponse();
-            Assert.IsTrue(response.Success);
-
-            remote = pc | Properties.ProcessCalls.GetProperty("tank/myds", property);
-            response = remote.LoadResponse();
-            Assert.IsTrue(response.Success);
-
-            var props = DataSetProperties.FromStdOutput(response.StdOut);
-            var std = props.Dump(new JsonFormatter());
-            var prop = props.FirstOrDefault(p => p.Property == property);
-
-            Console.WriteLine(std);
-            std = prop.Dump(new JsonFormatter());
-            Console.WriteLine(std);
-            Assert.IsNotNull(prop);
-            Assert.AreEqual("on", prop.Value);
-
+            Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
     }
 }
