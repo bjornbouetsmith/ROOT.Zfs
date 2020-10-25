@@ -37,16 +37,11 @@ namespace ROOT.Zfs.Core
                 var response = pc.LoadResponse();
                 if (response.Success)
                 {
+                    return DataSetProperties.FromStdOutput(response.StdOut);
+                    
+                }
 
-                    foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
-                    {
-                        yield return PropertyValue.FromString(line);
-                    }
-                }
-                else
-                {
-                    throw response.ToException();
-                }
+                throw response.ToException();
             }
         }
 
