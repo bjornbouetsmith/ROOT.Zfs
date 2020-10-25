@@ -9,7 +9,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             public static ProcessCall ListProperties(string dataset)
             {
-                return new ProcessCall("/sbin/zfs", $"get all {dataset}");
+                return new ProcessCall("/sbin/zfs", $"get all {dataset} -H");
             }
 
             public static ProcessCall GetSettableProperties()
@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core.Commands
 
             public static ProcessCall GetProperty(string dataset, Property property)
             {
-                return new ProcessCall("/sbin/zfs", $"get {property.Name} {dataset}");
+                return new ProcessCall("/sbin/zfs", $"get {property.Name} {dataset} -H");
             }
         }
     }

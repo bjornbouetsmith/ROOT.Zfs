@@ -18,6 +18,38 @@ namespace ROOT.Zfs.Core
             }
         }
 
+        public static class Properties
+        {
+            public static IEnumerable<PropertyValue> GetProperties(string dataset, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.Properties.ProcessCalls.ListProperties(dataset);
+                }
+                else
+                {
+                    pc = Commands.Properties.ProcessCalls.ListProperties(dataset);
+                }
+
+
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+
+                    foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+                    {
+                        yield return PropertyValue.FromString(line);
+                    }
+                }
+                else
+                {
+                    throw response.ToException();
+                }
+            }
+        }
+
         public static IEnumerable<DataSet> GetDataSets(ProcessCall previousCall = null)
         {
             ProcessCall pc;
@@ -30,11 +62,11 @@ namespace ROOT.Zfs.Core
             {
                 pc = DataSets.ProcessCalls.GetDataSets();
             }
-            Console.WriteLine(pc.FullCommandLine);
+          
             var response = pc.LoadResponse();
             if (response.Success)
             {
-                Console.WriteLine($"Command: {pc.FullCommandLine} success");
+          
                 foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
                 {
                     yield return DataSet.FromString(line);

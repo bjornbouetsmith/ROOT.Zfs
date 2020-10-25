@@ -6,14 +6,16 @@ namespace ROOT.Zfs.Core.Info
 {
     public class Property
     {
-        public Property(string name, params string[] validValues)
+        public Property(string name, bool settable = true, params string[] validValues)
         {
             Name = name;
+            Settable = settable;
             ValidValues = validValues;
         }
 
         public string Name { get; set; }
         public string[] ValidValues { get; }
+        public bool Settable { get; set; }
     }
 
     public static class DataSetProperties
@@ -75,19 +77,21 @@ namespace ROOT.Zfs.Core.Info
          */
         private static readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>()
         {
-            {"aclinherit", new Property("aclinherit", "discard", "noallow", "restricted", "passthrough", "passthrough-x")},
-            {"acltype", new Property("noacl", "posixacl")},
-            {"atime", new Property("atime", "on","off")},
-            {"canmount", new Property("canmount", "on","off","noauto")},
-            {"checksum", new Property("checksum", "on","off","fletcher2","fletcher4","sha256","sha512","skein","edonr")},
-            {"compression", new Property("compression", "on","off","lzjb","gzip","gzip-[1-9]","zle","lz4")},
-            {"recordsize", new Property("recordsize", "512","1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M")},
-            {"sync", new Property("sync", "standard","always","disabled")},
-            {"readonly", new Property("readonly", "on","off")},
-            {"quota", new Property("qouta", "none","0")},
-            {"mountpoint", new Property("mountpoint", "")},
-            {"dedup", new Property("dedup", "on","off","verify")},
-            {"exec", new Property("exec", "on","off","inherit")},
+            {"aclinherit", new Property("aclinherit",true, "discard", "noallow", "restricted", "passthrough", "passthrough-x")},
+            {"acltype", new Property("noacl", true,"posixacl")},
+            {"atime", new Property("atime", true,"on","off")},
+            {"canmount", new Property("canmount",true, "on","off","noauto")},
+            {"checksum", new Property("checksum",true, "on","off","fletcher2","fletcher4","sha256","sha512","skein","edonr")},
+            {"compression", new Property("compression", true,"on","off","lzjb","gzip","gzip-[1-9]","zle","lz4")},
+            {"recordsize", new Property("recordsize",true, "512","1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M")},
+            {"sync", new Property("sync",true, "standard","always","disabled")},
+            {"readonly", new Property("readonly", true,"on","off")},
+            {"quota", new Property("qouta", true,"none","0")},
+            {"mountpoint", new Property("mountpoint", true,"")},
+            {"creation", new Property("creation", false,"")},
+            {"used", new Property("used", false,"0")},
+            {"dedup", new Property("dedup",true, "on","off","verify")},
+            {"exec", new Property("exec", true,"on","off","inherit")},
 
         };
 
@@ -95,14 +99,14 @@ namespace ROOT.Zfs.Core.Info
         {
             if (!_properties.TryGetValue(name, out var property))
             {
-                property = new Property(name, "Unkown property values");
+                property = new Property(name, false, "Unkown property values");
                 _properties[name] = property;
             }
 
             return property;
         }
 
-        public static IEnumerable<PropertyValue> FromStdOutput(string stdOutput) 
+        public static IEnumerable<PropertyValue> FromStdOutput(string stdOutput)
         {
             foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
             {
@@ -126,10 +130,10 @@ namespace ROOT.Zfs.Core.Info
 
         public static PropertyValue FromString(string line)
         {
-            var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = line.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 4)
             {
-                throw new ArgumentException($"{line} could not be parsed, expected 4 parts, got: {parts.Length} - requires an output of NAME,PROPERTY,VALUE,SOURCE to be used for property list", nameof(line));
+                throw new ArgumentException($"{line} could not be parsed, expected 4 parts, got: {parts.Length} - requires an output of NAME\\tPROPERTY\\tVALUE\\tSOURCE to be used for property list i.e. zfs get all -H", nameof(line));
             }
 
             var property = DataSetProperties.Lookup(parts[1]);
@@ -182,5 +186,5 @@ namespace ROOT.Zfs.Core.Info
         }
     }
 
-   
+
 }
