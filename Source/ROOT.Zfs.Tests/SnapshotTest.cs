@@ -135,6 +135,8 @@ namespace ROOT.Zfs.Tests
 
             var property = DataSetProperties.Lookup("atime");
             var remote = pc | Properties.ProcessCalls.SetProperty("tank/myds", property, "off");
+            Console.WriteLine(remote.FullCommandLine);
+            
             var response = remote.LoadResponse();
             Assert.IsTrue(response.Success);
 

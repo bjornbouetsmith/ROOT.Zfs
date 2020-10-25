@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
+using System.Linq;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Core
@@ -14,6 +15,34 @@ namespace ROOT.Zfs.Core
             public static ProcessCall GetVersion()
             {
                 return new ProcessCall("/sbin/zfs", "--version");
+            }
+        }
+
+        public static IEnumerable<DataSet> GetDataSets(ProcessCall previousCall = null)
+        {
+            ProcessCall pc;
+
+            if (previousCall != null)
+            {
+                pc = previousCall | DataSets.ProcessCalls.GetDataSets();
+            }
+            else
+            {
+                pc = DataSets.ProcessCalls.GetDataSets();
+            }
+            Console.WriteLine(pc.FullCommandLine);
+            var response = pc.LoadResponse();
+            if (response.Success)
+            {
+                Console.WriteLine($"Command: {pc.FullCommandLine} success");
+                foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+                {
+                    yield return DataSet.FromString(line);
+                }
+            }
+            else
+            {
+                throw response.ToException();
             }
         }
 
