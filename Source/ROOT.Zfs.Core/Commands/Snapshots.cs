@@ -24,11 +24,13 @@ namespace ROOT.Zfs.Core.Commands
         {
             public static ProcessCall ListSnapshots(string dataset)
             {
+                dataset = DataSetHelper.Decode(dataset);
                 return new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
             }
 
             public static ProcessCall DestroySnapshot(string dataset, string snapName)
             {
+                dataset = DataSetHelper.Decode(dataset);
                 if (NameAllow.Matches(snapName).Count != snapName.Length)
                 {
                     throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
@@ -39,6 +41,7 @@ namespace ROOT.Zfs.Core.Commands
 
             public static ProcessCall CreateSnapshot(string dataset, string snapName)
             {
+                dataset = DataSetHelper.Decode(dataset);
                 if (NameAllow.Matches(snapName).Count != snapName.Length)
                 {
                     throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
@@ -49,6 +52,7 @@ namespace ROOT.Zfs.Core.Commands
 
             public static ProcessCall CreateSnapshot(string dataset)
             {
+                dataset = DataSetHelper.Decode(dataset);
                 return CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
             }
         }
@@ -65,12 +69,7 @@ namespace ROOT.Zfs.Core.Commands
 
             throw response.ToException();
         }
-
-        public ProcessCall LoadSnapshotsProcessCall(string dataset)
-        {
-            return new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
-        }
-
+        
 
         private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-");
 
@@ -81,7 +80,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
             }
 
-            ProcessCall pc = new ProcessCall("/sbin/zfs", $"destroy {dataset}@{snapName}");
+            ProcessCall pc = ProcessCalls.DestroySnapshot(dataset,snapName);
             var response = pc.LoadResponse();
             if (response.Success)
             {
@@ -105,7 +104,7 @@ namespace ROOT.Zfs.Core.Commands
             {
                 throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
             }
-
+            dataset = DataSetHelper.Decode(dataset);
             ProcessCall pc = new ProcessCall("/sbin/zfs", $"snap {dataset}@{snapName}");
             var response = pc.LoadResponse();
             if (response.Success)

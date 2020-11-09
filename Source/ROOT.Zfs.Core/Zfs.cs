@@ -122,7 +122,8 @@ namespace ROOT.Zfs.Core
 
         public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
-            ProcessCall pc = new ProcessCall("/sbin/zfs", $"list -H -t snapshot -p -o creation,name,used -d 1 -r {dataset}");
+
+            ProcessCall pc = Snapshots.ProcessCalls.ListSnapshots(dataset);
             var response = pc.LoadResponse();
             if (response.Success)
             {
@@ -137,17 +138,10 @@ namespace ROOT.Zfs.Core
                 throw response.ToException();
             }
         }
-
-        private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-");
-
+        
         public void DestroySnapshot(string dataset, string snapName)
         {
-            if (NameAllow.Matches(snapName).Count != snapName.Length)
-            {
-                throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
-            }
-
-            ProcessCall pc = new ProcessCall("/sbin/zfs", $"destroy {dataset}@{snapName}");
+            ProcessCall pc = Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);
             var response = pc.LoadResponse();
             if (response.Success)
             {
@@ -167,12 +161,7 @@ namespace ROOT.Zfs.Core
 
         public void CreateSnapshot(string dataset, string snapName)
         {
-            if (NameAllow.Matches(snapName).Count != snapName.Length)
-            {
-                throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
-            }
-
-            ProcessCall pc = new ProcessCall("/sbin/zfs", $"snap {dataset}@{snapName}");
+            ProcessCall pc = Snapshots.ProcessCalls.CreateSnapshot(dataset, snapName);
             var response = pc.LoadResponse();
             if (response.Success)
             {
