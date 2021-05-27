@@ -5,9 +5,9 @@ namespace ROOT.Zfs.Core.Info
 {
     public class Snapshot
     {
-        public string Name;
-        public DateTime CreationDate;
-        public long Size;
+        public string Name { get; set; }
+        public DateTime CreationDate { get; set; }
+        public long Size { get; set; }
 
         public Snapshot()
         {
@@ -41,7 +41,11 @@ namespace ROOT.Zfs.Core.Info
                 snapshot.CreationDate = DateUtils.ToDateTime(secs);
             }
 
-            long.TryParse(parts[2], out snapshot.Size);
+            long size;
+            if (long.TryParse(parts[2], out size))
+            {
+                snapshot.Size = size;
+            }
 
             return snapshot;
         }
