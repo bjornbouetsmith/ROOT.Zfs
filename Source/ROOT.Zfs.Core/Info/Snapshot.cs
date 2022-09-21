@@ -41,8 +41,7 @@ namespace ROOT.Zfs.Core.Info
                 snapshot.CreationDate = DateUtils.ToDateTime(secs);
             }
 
-            long size;
-            if (long.TryParse(parts[2], out size))
+            if (long.TryParse(parts[2], out var size))
             {
                 snapshot.Size = size;
             }

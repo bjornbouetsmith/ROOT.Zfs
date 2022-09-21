@@ -18,6 +18,107 @@ namespace ROOT.Zfs.Core
             }
         }
 
+        public static class DataSets
+        {
+
+            public static IEnumerable<DataSet> GetDataSets(ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.DataSets.ProcessCalls.GetDataSets();
+                }
+                else
+                {
+                    pc = Commands.DataSets.ProcessCalls.GetDataSets();
+                }
+
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+
+                    foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+                    {
+                        yield return DataSet.FromString(line);
+                    }
+                }
+                else
+                {
+                    throw response.ToException();
+                }
+            }
+
+            public static DataSet CreateDataSet(DataSet parent, string dataSetName, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.DataSets.ProcessCalls.CreateDataSet(parent.Name, dataSetName);
+                }
+                else
+                {
+                    pc = Commands.DataSets.ProcessCalls.GetDataSets();
+                }
+
+                var response = pc.LoadResponse();
+
+                if (!response.Success)
+                {
+                    throw response.ToException();
+                }
+
+                var fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
+
+                if (previousCall != null)
+                {
+
+                    pc = previousCall | Commands.DataSets.ProcessCalls.GetDataSet(fullName);
+                }
+                else
+                {
+                    pc = Commands.DataSets.ProcessCalls.GetDataSet(fullName);
+                }
+
+                response = pc.LoadResponse();
+
+                if (!response.Success)
+                {
+                    throw response.ToException();
+                }
+
+                var line = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).FirstOrDefault();
+                if (line == null)
+                {
+                    throw new InvalidOperationException($"Weird issue, create gave no error, but dataset '{fullName}' could not be found");
+                }
+
+                return DataSet.FromString(line);
+            }
+
+            public static void DeleteDataSet(string fullName, RemoteProcessCall previousCall)
+            {
+                ProcessCall pc;
+
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.DataSets.ProcessCalls.DestroyDataSet(fullName);
+                }
+                else
+                {
+                    pc = Commands.DataSets.ProcessCalls.DestroyDataSet(fullName);
+                }
+
+                var response = pc.LoadResponse();
+
+                if (!response.Success)
+                {
+                    throw response.ToException();
+                }
+            }
+        }
+
         public static class Properties
         {
             public static IEnumerable<PropertyValue> GetProperties(string dataset, ProcessCall previousCall = null)
@@ -92,33 +193,6 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public static IEnumerable<DataSet> GetDataSets(ProcessCall previousCall = null)
-        {
-            ProcessCall pc;
-
-            if (previousCall != null)
-            {
-                pc = previousCall | DataSets.ProcessCalls.GetDataSets();
-            }
-            else
-            {
-                pc = DataSets.ProcessCalls.GetDataSets();
-            }
-
-            var response = pc.LoadResponse();
-            if (response.Success)
-            {
-
-                foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
-                {
-                    yield return DataSet.FromString(line);
-                }
-            }
-            else
-            {
-                throw response.ToException();
-            }
-        }
 
         public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
@@ -138,7 +212,7 @@ namespace ROOT.Zfs.Core
                 throw response.ToException();
             }
         }
-        
+
         public void DestroySnapshot(string dataset, string snapName)
         {
             ProcessCall pc = Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);

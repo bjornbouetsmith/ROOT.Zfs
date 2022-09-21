@@ -47,5 +47,10 @@ namespace ROOT.Zfs.Core.Info
             }
             return dataset;
         }
+
+        public static string CreateDataSetName(string parent, string dataSet)
+        {
+            return $"{parent}/{dataSet}";
+        }
     }
 }
