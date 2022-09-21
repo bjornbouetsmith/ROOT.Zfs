@@ -34,8 +34,10 @@ namespace ROOT.Zfs.Tests
                 var dataSets = Core.Zfs.DataSets.GetDataSets(pc);
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
                 Assert.IsNotNull(parent);
+                Console.WriteLine(parent.Dump(new JsonFormatter()));
                 var dataSet = Core.Zfs.DataSets.CreateDataSet(parent, dataSetName, pc);
                 Assert.IsNotNull(dataSet);
+                Console.WriteLine(dataSet.Dump(new JsonFormatter()));
                 fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
 
             }
