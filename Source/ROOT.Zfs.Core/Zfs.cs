@@ -20,6 +20,29 @@ namespace ROOT.Zfs.Core
 
         public static class DataSets
         {
+            public static DataSet GetDataSet(string fullName, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.DataSets.ProcessCalls.GetDataSet(fullName);
+                }
+                else
+                {
+                    pc = Commands.DataSets.ProcessCalls.GetDataSets();
+                }
+
+                var response = pc.LoadResponse();
+
+                var line = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).FirstOrDefault();
+                if (line == null)
+                {
+                    return null;
+                }
+
+                return DataSet.FromString(line);
+            }
 
             public static IEnumerable<DataSet> GetDataSets(ProcessCall previousCall = null)
             {

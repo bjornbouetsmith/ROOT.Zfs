@@ -50,5 +50,21 @@ namespace ROOT.Zfs.Tests
                 }
             }
         }
+
+        [TestMethod]
+        public void GetDataSetShouldReturnDataSet()
+        {
+            var root = Core.Zfs.DataSets.GetDataSet("tank", pc);
+
+            Assert.IsNotNull(root);
+            Console.WriteLine(root.Dump(new JsonFormatter()));
+        }
+
+        [TestMethod]
+        public void GetNonExistingDataSetShouldReturnNull()
+        {
+            var ds = Core.Zfs.DataSets.GetDataSet("ungabunga" + Guid.NewGuid(), pc);
+            Assert.IsNull(ds);
+        }
     }
 }
