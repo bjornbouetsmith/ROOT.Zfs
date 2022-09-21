@@ -24,22 +24,30 @@ namespace ROOT.Zfs.Tests
         }
 
         [TestMethod]
-        public void CreateDataSetTest()
+        [DataRow(true)]
+        [DataRow(false)]
+        public void CreateDataSetTest(bool addProperties)
         {
 
             var dataSetName = Guid.NewGuid().ToString();
             string fullName = null;
             try
             {
+                var quota = Core.Info.DataSetProperties.Lookup("quota");
+                var compression = Core.Info.DataSetProperties.Lookup("compression");
+                var props = new[]
+                    {
+                        new PropertyValue(quota, PropertySources.Local, "1G"),
+                        new PropertyValue(compression, PropertySources.Local, "gzip")
+                    };
                 var dataSets = Core.Zfs.DataSets.GetDataSets(pc);
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
-                var dataSet = Core.Zfs.DataSets.CreateDataSet(parent, dataSetName, pc);
+                fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
+                var dataSet = Core.Zfs.DataSets.CreateDataSet(fullName, addProperties ? props : null, pc);
                 Assert.IsNotNull(dataSet);
                 Console.WriteLine(dataSet.Dump(new JsonFormatter()));
-                fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
-
             }
             finally
             {

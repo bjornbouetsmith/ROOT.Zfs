@@ -72,17 +72,17 @@ namespace ROOT.Zfs.Core
                 }
             }
 
-            public static DataSet CreateDataSet(DataSet parent, string dataSetName, ProcessCall previousCall = null)
+            public static DataSet CreateDataSet(string dataSetName, PropertyValue[] properties = null, ProcessCall previousCall = null)
             {
                 ProcessCall pc;
 
                 if (previousCall != null)
                 {
-                    pc = previousCall | Commands.DataSets.ProcessCalls.CreateDataSet(parent.Name, dataSetName);
+                    pc = previousCall | Commands.DataSets.ProcessCalls.CreateDataSet(dataSetName, properties);
                 }
                 else
                 {
-                    pc = Commands.DataSets.ProcessCalls.GetDataSets();
+                    pc = Commands.DataSets.ProcessCalls.CreateDataSet(dataSetName);
                 }
 
                 var response = pc.LoadResponse();
@@ -92,16 +92,14 @@ namespace ROOT.Zfs.Core
                     throw response.ToException();
                 }
 
-                var fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
-
                 if (previousCall != null)
                 {
 
-                    pc = previousCall | Commands.DataSets.ProcessCalls.GetDataSet(fullName);
+                    pc = previousCall | Commands.DataSets.ProcessCalls.GetDataSet(dataSetName);
                 }
                 else
                 {
-                    pc = Commands.DataSets.ProcessCalls.GetDataSet(fullName);
+                    pc = Commands.DataSets.ProcessCalls.GetDataSet(dataSetName);
                 }
 
                 response = pc.LoadResponse();
@@ -114,7 +112,7 @@ namespace ROOT.Zfs.Core
                 var line = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).FirstOrDefault();
                 if (line == null)
                 {
-                    throw new InvalidOperationException($"Weird issue, create gave no error, but dataset '{fullName}' could not be found");
+                    throw new InvalidOperationException($"Weird issue, create gave no error, but dataset '{dataSetName}' could not be found");
                 }
 
                 return DataSet.FromString(line);

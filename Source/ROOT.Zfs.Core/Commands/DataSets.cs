@@ -1,4 +1,5 @@
-﻿using ROOT.Shared.Utils.OS;
+﻿using System.Linq;
+using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Core.Commands
@@ -18,13 +19,13 @@ namespace ROOT.Zfs.Core.Commands
                 return new ProcessCall("/sbin/zfs", $"list {dataset}");
             }
 
-            public static ProcessCall CreateDataSet(string parentDataSet, string dataSetName)
+            public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties = null)
             {
-                var parent = DataSetHelper.Decode(parentDataSet);
-                var dataset = DataSetHelper.Decode(dataSetName);
-                var fullName = DataSetHelper.CreateDataSetName(parent, dataset);
+                var parent = DataSetHelper.Decode(fullName);
 
-                return new ProcessCall("/sbin/zfs", $"create {fullName}");
+                var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property.Name}={p.Value}")) : string.Empty;
+
+                return new ProcessCall("/sbin/zfs", $"create {propCommand} {parent}");
             }
 
             public static ProcessCall DestroyDataSet(string dataSetName)

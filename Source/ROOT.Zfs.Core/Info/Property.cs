@@ -61,7 +61,6 @@ namespace ROOT.Zfs.Core.Info
         snapdir         YES      YES   hidden | visible
         snapshot_limit  YES       NO   <count> | none
         special_small_blocks YES      YES   zero or 512 to 1M, power of 2
-        sync            YES      YES   standard | always | disabled
         version         YES       NO   1 | 2 | 3 | 4 | 5 | current
         volmode         YES      YES   default | full | geom | dev | none
         volsize         YES       NO   <size>
@@ -86,7 +85,7 @@ namespace ROOT.Zfs.Core.Info
             {"recordsize", new Property("recordsize",true, "512","1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M")},
             {"sync", new Property("sync",true, "standard","always","disabled")},
             {"readonly", new Property("readonly", true,"on","off")},
-            {"quota", new Property("qouta", true,"none","0")},
+            {"quota", new Property("quota", true,"none","0")},
             {"mountpoint", new Property("mountpoint", true,"")},
             {"creation", new Property("creation", false,"")},
             {"used", new Property("used", false,"0")},
