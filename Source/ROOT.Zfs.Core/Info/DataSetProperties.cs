@@ -63,21 +63,21 @@ public static class DataSetProperties
          */
     private static readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>()
     {
-        {"aclinherit", new Property("aclinherit",true, "discard", "noallow", "restricted", "passthrough", "passthrough-x")},
-        {"acltype", new Property("noacl", true,"posixacl")},
-        {"atime", new Property("atime", true,"on","off")},
-        {"canmount", new Property("canmount",true, "on","off","noauto")},
-        {"checksum", new Property("checksum",true, "on","off","fletcher2","fletcher4","sha256","sha512","skein","edonr")},
-        {"compression", new Property("compression", true,"on","off","lzjb","gzip","gzip-[1-9]","zle","lz4")},
-        {"recordsize", new Property("recordsize",true, "512","1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M")},
-        {"sync", new Property("sync",true, "standard","always","disabled")},
-        {"readonly", new Property("readonly", true,"on","off")},
-        {"quota", new Property("quota", true,"none","0")},
-        {"mountpoint", new Property("mountpoint", true,"")},
-        {"creation", new Property("creation", false,"")},
-        {"used", new Property("used", false,"0")},
-        {"dedup", new Property("dedup",true, "on","off","verify")},
-        {"exec", new Property("exec", true,"on","off","inherit")},
+        //{"aclinherit", new Property("aclinherit",true, "discard", "noallow", "restricted", "passthrough", "passthrough-x")},
+        //{"acltype", new Property("noacl", true,"posixacl")},
+        //{"atime", new Property("atime", true,"on","off")},
+        //{"canmount", new Property("canmount",true, "on","off","noauto")},
+        //{"checksum", new Property("checksum",true, "on","off","fletcher2","fletcher4","sha256","sha512","skein","edonr")},
+        //{"compression", new Property("compression", true,"on","off","lzjb","gzip","gzip-[1-9]","zle","lz4")},
+        //{"recordsize", new Property("recordsize",true, "512","1K","2K","4K","8K","16K","32K","64K","128K","256K","512K","1M")},
+        //{"sync", new Property("sync",true, "standard","always","disabled")},
+        //{"readonly", new Property("readonly", true,"on","off")},
+        //{"quota", new Property("quota", true,"none","0")},
+        //{"mountpoint", new Property("mountpoint", true,"")},
+        //{"creation", new Property("creation", false,"")},
+        //{"used", new Property("used", false,"0")},
+        //{"dedup", new Property("dedup",true, "on","off","verify")},
+        //{"exec", new Property("exec", true,"on","off","inherit")},
 
     };
 
