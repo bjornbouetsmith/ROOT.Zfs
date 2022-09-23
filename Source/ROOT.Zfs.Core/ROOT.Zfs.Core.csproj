@@ -37,7 +37,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ROOT.Shared.Utils" Version="1.0.41" />
+    <PackageReference Include="ROOT.Shared.Utils" Version="1.0.45" />
   </ItemGroup>
 
 </Project>
