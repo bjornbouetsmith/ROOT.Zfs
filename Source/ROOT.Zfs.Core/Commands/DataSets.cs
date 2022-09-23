@@ -23,7 +23,7 @@ namespace ROOT.Zfs.Core.Commands
             {
                 var parent = DataSetHelper.Decode(fullName);
 
-                var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property.Name}={p.Value}")) : string.Empty;
+                var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
 
                 return new ProcessCall("/sbin/zfs", $"create {propCommand} {parent}");
             }

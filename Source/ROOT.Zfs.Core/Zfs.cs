@@ -169,6 +169,7 @@ namespace ROOT.Zfs.Core
             public static PropertyValue GetProperty(string dataset, string property, ProcessCall previousCall = null)
             {
                 ProcessCall pc;
+                EnsureAllDataSetPropertiesCache(previousCall);
                 var prop = DataSetProperties.Lookup(property);
                 if (previousCall != null)
                 {
@@ -192,6 +193,7 @@ namespace ROOT.Zfs.Core
             public static PropertyValue SetProperty(string dataset, string property, string value, ProcessCall previousCall = null)
             {
                 ProcessCall pc;
+                EnsureAllDataSetPropertiesCache(previousCall);
                 var prop = DataSetProperties.Lookup(property);
                 if (previousCall != null)
                 {
@@ -211,6 +213,45 @@ namespace ROOT.Zfs.Core
                 }
 
                 throw response.ToException();
+            }
+
+            private static void EnsureAllDataSetPropertiesCache(ProcessCall previousCall = null)
+            {
+                if (DataSetProperties.GetAvailableProperties().FirstOrDefault() == null)
+                {
+                    ProcessCall pc;
+
+                    if (previousCall != null)
+                    {
+                        pc = previousCall | Commands.Properties.ProcessCalls.GetDataSetProperties();
+                    }
+                    else
+                    {
+                        pc = Commands.Properties.ProcessCalls.GetDataSetProperties();
+                    }
+
+                    IEnumerable<Property> properties;
+                    var response = pc.LoadResponse();
+                    if (response.Success)
+                    {
+                        properties = DataSetProperties.PropertiesFromStdOutput(response.StdOut);
+                    }
+                    else
+                    {
+                        // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
+                        properties = DataSetProperties.PropertiesFromStdOutput(response.StdError);
+                    }
+
+                    DataSetProperties.SetAvailableDataSetProperties(properties);
+
+                }
+            }
+
+            public static IEnumerable<Property> GetAvailableDataSetProperties(ProcessCall previousCall = null)
+            {
+                EnsureAllDataSetPropertiesCache(previousCall);
+
+                return DataSetProperties.GetAvailableProperties();
             }
         }
 

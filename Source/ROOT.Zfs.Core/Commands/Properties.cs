@@ -13,9 +13,14 @@ namespace ROOT.Zfs.Core.Commands
                 return new ProcessCall("/sbin/zfs", $"get all {dataset} -H");
             }
 
-            public static ProcessCall GetSettableProperties()
+            public static ProcessCall GetDataSetProperties()
             {
-                return new ProcessCall("/sbin/zfs", "get");
+                return new ProcessCall("/sbin/zfs", "get -H");
+            }
+
+            public static ProcessCall GetPoolProperties()
+            {
+                return new ProcessCall("/sbin/zpool", "get  -H");
             }
 
             public static ProcessCall ResetPropertyToInherited(string dataset, Property property)
@@ -35,6 +40,8 @@ namespace ROOT.Zfs.Core.Commands
                 dataset = DataSetHelper.Decode(dataset);
                 return new ProcessCall("/sbin/zfs", $"get {property.Name} {dataset} -H");
             }
+
+            
         }
     }
 }

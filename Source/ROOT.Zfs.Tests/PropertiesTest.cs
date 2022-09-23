@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
-using ROOT.Zfs.Core.Commands;
-using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Tests
 {
@@ -48,6 +43,14 @@ namespace ROOT.Zfs.Tests
             Assert.AreEqual("on", newVal.Value);
 
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
+        }
+
+        [TestMethod]
+        public void GetAvailableDatasetProperties()
+        {
+
+            var props = Core.Zfs.Properties.GetAvailableDataSetProperties( pc);
+            Console.WriteLine(props.Dump(new JsonFormatter()));
         }
     }
 }

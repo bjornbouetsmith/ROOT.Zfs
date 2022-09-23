@@ -37,8 +37,8 @@ namespace ROOT.Zfs.Tests
                 var compression = Core.Info.DataSetProperties.Lookup("compression");
                 var props = new[]
                     {
-                        new PropertyValue(quota, PropertySources.Local, "1G"),
-                        new PropertyValue(compression, PropertySources.Local, "gzip")
+                        new PropertyValue(quota.Name, PropertySources.Local.Name, "1G"),
+                        new PropertyValue(compression.Name, PropertySources.Local.Name, "gzip")
                     };
                 var dataSets = Core.Zfs.DataSets.GetDataSets(pc);
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
