@@ -258,7 +258,7 @@ namespace ROOT.Zfs.Core
                 EnsureAllDataSetPropertiesCache(previousCall);
                 var prop = DataSetProperties.Lookup(property);
                 ProcessCall pc;
-                
+
                 if (previousCall != null)
                 {
                     pc = previousCall | Commands.Properties.ProcessCalls.ResetPropertyToInherited(dataset, prop);
@@ -276,7 +276,7 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public IEnumerable<Snapshot> LoadSnapshots(string dataset)
+        public IEnumerable<Snapshot> LoadSnapshots(string dataset, ProcessCall previousCall = null)
         {
 
             ProcessCall pc = Snapshots.ProcessCalls.ListSnapshots(dataset);
@@ -295,7 +295,7 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public void DestroySnapshot(string dataset, string snapName)
+        public void DestroySnapshot(string dataset, string snapName, ProcessCall previousCall = null)
         {
             ProcessCall pc = Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);
             var response = pc.LoadResponse();
@@ -310,12 +310,12 @@ namespace ROOT.Zfs.Core
 
         }
 
-        public void CreateSnapshot(string dataset)
+        public void CreateSnapshot(string dataset, ProcessCall previousCall = null)
         {
             CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
         }
 
-        public void CreateSnapshot(string dataset, string snapName)
+        public void CreateSnapshot(string dataset, string snapName, ProcessCall previousCall = null)
         {
             ProcessCall pc = Snapshots.ProcessCalls.CreateSnapshot(dataset, snapName);
             var response = pc.LoadResponse();
@@ -326,6 +326,31 @@ namespace ROOT.Zfs.Core
             else
             {
                 throw response.ToException();
+            }
+        }
+
+        public static class ZPool
+        {
+            public static IEnumerable<CommandHistory> GetHistory(string pool, int skipLines = 0, ProcessCall previousCall = null)
+            {
+                ProcessCall pc;
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.ZPool.GetHistory(pool);
+                }
+                else
+                {
+                    pc = Commands.ZPool.GetHistory(pool);
+                }
+
+                var response = pc.LoadResponse();
+                if (!response.Success)
+                {
+                    throw response.ToException();
+                }
+
+                return CommandHistory.FromStdOut(response.StdOut, skipLines);
+
             }
         }
     }
