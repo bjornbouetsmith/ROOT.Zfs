@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Commands;
-using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Tests
 {
     [TestClass]
     public class SnapshotTest
     {
-        private const string SnapshotList = @"1590930547      nvme/nfs@auto-20200531.1509-2w  5165371392
-1591016947      nvme/nfs@auto-20200601.1509-2w  2669617152
-1591103347      nvme/nfs@auto-20200602.1509-2w  2752487424
+        private RemoteProcessCall _pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
 
-1591189747      nvme/nfs@auto-20200603.1509-2w  2914050048
-1591276147      nvme/nfs@auto-20200604.1509-2w  3080941568
-";
+        private const string SnapshotList = @"1663944453      tank/myds@RemoteCreateSnapshot20220923144730    10
+1663944856      tank/myds@RemoteCreateSnapshot20220923145450    20
+1663945816      tank/myds@RemoteCreateSnapshot20220923101050    30
+1663947484      tank/myds@RemoteCreateSnapshot20220923153801    40
+1663947547      tank/myds@RemoteCreateSnapshot20220923153941    50";
 
 
         [TestMethod]
@@ -37,86 +35,53 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void RemoteSnapshotTest()
         {
-            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+            var sn = new Core.Snapshot(_pc);
 
-            var remote = pc | Snapshots.ProcessCalls.ListSnapshots("tank/myds");
+            var snapshots = sn.LoadSnapshots("tank/myds");
 
-            var response = remote.LoadResponse();
-            if (response.Success)
+            foreach (var snap in snapshots)
             {
-                Console.WriteLine($"Command: {remote.FullCommandLine} success");
-                Console.WriteLine(response.StdOut);
-                var snapshots = SnapshotParser.Parse(response.StdOut);
-                foreach (var snap in snapshots)
-                {
-                    Console.WriteLine(snap.CreationDate.AsString());
-                    Console.WriteLine(snap.Name);
-                    Console.WriteLine(snap.Size.AsString());
-                }
-            }
-            else
-            {
-                var ex = response.ToException();
-                Console.WriteLine(ex);
+                Console.WriteLine(snap.CreationDate.AsString());
+                Console.WriteLine(snap.Name);
+                Console.WriteLine(snap.Size.AsString());
             }
 
         }
 
-        [TestMethod]
-        public void RemoteCreateSnapshot()
+        [TestMethod, TestCategory("Integration")]
+        public void RemoteCreateAndDestroySnapshot()
         {
-            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
             var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
-            var remote = pc | Snapshots.ProcessCalls.CreateSnapshot("tank/myds", snapName);
 
-            var response = remote.LoadResponse();
-            if (response.Success)
-            {
-                Console.WriteLine($"Command: {remote.FullCommandLine} success");
+            var sn = new Core.Snapshot(_pc);
 
-                Console.WriteLine(response.StdOut);
-            }
-            else
-            {
-                var ex = response.ToException();
-                Console.WriteLine(ex);
-            }
+            sn.CreateSnapshot("tank/myds", snapName);
+
+            var snaps = sn.LoadSnapshots("tank/myds");
+
+            var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
+
+            Assert.IsNotNull(wasCreated);
+
+            sn.DestroySnapshot("tank/myds", snapName);
+
         }
 
-
-        [TestMethod]
-        public void RemoteDestroySnapshot()
+        [TestMethod, TestCategory("Integration")]
+        public void SnapshotsWithoutGivenNameShouldUseCurrentDate()
         {
-            RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
-            var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
-            var remote = pc | Snapshots.ProcessCalls.CreateSnapshot("tank/myds", snapName);
+            var time = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local);
 
-            var response = remote.LoadResponse();
-            if (response.Success)
-            {
-                Console.WriteLine($"Command: {remote.FullCommandLine} success");
-                var remoteDestroy = pc | Snapshots.ProcessCalls.DestroySnapshot("tank/myds", snapName);
-                response = remoteDestroy.LoadResponse();
-                if (response.Success)
-                {
-                    Console.WriteLine($"Command: {remoteDestroy.FullCommandLine} success");
-                }
-                else
-                {
-                    var ex = response.ToException();
-                    Console.WriteLine(ex);
-                }
-            }
-            else
-            {
-                var ex = response.ToException();
-                Console.WriteLine(ex);
-            }
+            var name = Snapshots.ProcessCalls.CreateSnapshotName(time);
+            Assert.AreEqual("20220922211347", name);
+            
+            var sn = new Core.Snapshot(_pc);
+
+            sn.CreateSnapshot("tank/myds");
+
         }
-
-       
     }
 }

@@ -9,7 +9,8 @@ namespace ROOT.Zfs.Tests
     public class PropertiesTest
     {
         RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
-        [TestMethod]
+
+        [TestMethod, TestCategory("Integration")]
         public void ListAllProperties()
         {
 
@@ -20,7 +21,7 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void SetDataSetProperty()
         {
             
@@ -30,7 +31,7 @@ namespace ROOT.Zfs.Tests
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetDataSetProperty()
         {
             
@@ -45,7 +46,7 @@ namespace ROOT.Zfs.Tests
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetAvailableDatasetProperties()
         {
 
@@ -53,7 +54,7 @@ namespace ROOT.Zfs.Tests
             Console.WriteLine(props.Dump(new JsonFormatter()));
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void ResetPropertyTest()
         {
             var dataset = $"tank/{Guid.NewGuid()}";

@@ -12,7 +12,7 @@ namespace ROOT.Zfs.Tests
     {
         RemoteProcessCall pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()
         {
             var dataSets = Core.Zfs.DataSets.GetDataSets(pc);
@@ -23,7 +23,7 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         [DataRow(true)]
         [DataRow(false)]
         public void CreateDataSetTest(bool addProperties)
@@ -59,7 +59,7 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetDataSetShouldReturnDataSet()
         {
             var root = Core.Zfs.DataSets.GetDataSet("tank", pc);
@@ -68,7 +68,7 @@ namespace ROOT.Zfs.Tests
             Console.WriteLine(root.Dump(new JsonFormatter()));
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetNonExistingDataSetShouldReturnNull()
         {
             var ds = Core.Zfs.DataSets.GetDataSet("ungabunga" + Guid.NewGuid(), pc);

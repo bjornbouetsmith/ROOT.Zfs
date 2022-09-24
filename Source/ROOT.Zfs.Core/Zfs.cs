@@ -1,20 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Info;
 
 namespace ROOT.Zfs.Core
 {
     public class Zfs
     {
-        public static class ProcessCalls
+        private readonly RemoteProcessCall _remoteConnection;
+
+        public Zfs(RemoteProcessCall remoteConnection = null)
         {
-            public static ProcessCall GetVersion()
+            _remoteConnection = remoteConnection;
+        }
+
+        private ProcessCall BuildCommand(ProcessCall current, ProcessCall previousCall = null)
+        {
+            ProcessCall command = null;
+            if (_remoteConnection != null)
             {
-                return new ProcessCall("/sbin/zfs", "--version");
+                command = _remoteConnection;
             }
+
+            if (previousCall != null)
+            {
+                command |= previousCall;
+            }
+            command |= current;
+
+            Debug.WriteLine(command.FullCommandLine);
+            return command;
         }
 
         public static class DataSets
@@ -273,86 +290,6 @@ namespace ROOT.Zfs.Core
                 {
                     throw response.ToException();
                 }
-            }
-        }
-
-        public static class Snapshots
-        {
-            public static IEnumerable<Snapshot> LoadSnapshots(string dataset, ProcessCall previousCall = null)
-            {
-                ProcessCall pc = Commands.Snapshots.ProcessCalls.ListSnapshots(dataset);
-                var response = pc.LoadResponse();
-                if (response.Success)
-                {
-                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
-                    foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        yield return Snapshot.FromString(line);
-                    }
-                }
-                else
-                {
-                    throw response.ToException();
-                }
-            }
-
-            public static void DestroySnapshot(string dataset, string snapName, ProcessCall previousCall = null)
-            {
-                ProcessCall pc = Commands.Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);
-                var response = pc.LoadResponse();
-                if (response.Success)
-                {
-                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
-                }
-                else
-                {
-                    throw response.ToException();
-                }
-
-            }
-
-            public static void CreateSnapshot(string dataset, ProcessCall previousCall = null)
-            {
-                CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
-            }
-
-            public static void CreateSnapshot(string dataset, string snapName, ProcessCall previousCall = null)
-            {
-                ProcessCall pc = Commands.Snapshots.ProcessCalls.CreateSnapshot(dataset, snapName);
-                var response = pc.LoadResponse();
-                if (response.Success)
-                {
-                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
-                }
-                else
-                {
-                    throw response.ToException();
-                }
-            }
-        }
-
-        public static class ZPool
-        {
-            public static IEnumerable<CommandHistory> GetHistory(string pool, int skipLines = 0, ProcessCall previousCall = null)
-            {
-                ProcessCall pc;
-                if (previousCall != null)
-                {
-                    pc = previousCall | Commands.ZPool.GetHistory(pool);
-                }
-                else
-                {
-                    pc = Commands.ZPool.GetHistory(pool);
-                }
-
-                var response = pc.LoadResponse();
-                if (!response.Success)
-                {
-                    throw response.ToException();
-                }
-
-                return CommandHistory.FromStdOut(response.StdOut, skipLines);
-
             }
         }
     }

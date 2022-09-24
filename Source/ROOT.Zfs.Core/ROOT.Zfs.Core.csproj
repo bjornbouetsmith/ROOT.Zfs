@@ -20,7 +20,8 @@
 
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageVersion>1.0.0.0</PackageVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -33,11 +34,20 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <RepositoryUrl>http://build.root.dom/ROOT/common/_git/ROOT.Zfs.Api</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ROOT.Shared.Utils" Version="1.0.47" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="ROOT.Zfs.Tests"/>
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>ROOT.Zfs.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>-->
 
 </Project>
