@@ -52,5 +52,26 @@ namespace ROOT.Zfs.Tests
             var props = Core.Zfs.Properties.GetAvailableDataSetProperties( pc);
             Console.WriteLine(props.Dump(new JsonFormatter()));
         }
+
+        [TestMethod]
+        public void ResetPropertyTest()
+        {
+            var dataset = $"tank/{Guid.NewGuid()}";
+            var ds = Core.Zfs.DataSets.CreateDataSet(dataset, null, pc);
+            try
+            {
+                var before = Core.Zfs.Properties.GetProperty(dataset, "atime", pc);
+                Assert.AreEqual("on", before.Value);
+
+                Core.Zfs.Properties.SetProperty(dataset, "atime", "off", pc);
+                Core.Zfs.Properties.ResetPropertyToInherited(dataset, "atime", pc);
+                var reset = Core.Zfs.Properties.GetProperty(dataset, "atime", pc);
+                Assert.AreEqual("on",reset.Value);
+            }
+            finally
+            {
+                Core.Zfs.DataSets.DeleteDataSet(dataset, pc);
+            }
+        }
     }
 }

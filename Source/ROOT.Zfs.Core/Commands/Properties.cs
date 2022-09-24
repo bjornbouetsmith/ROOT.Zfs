@@ -26,7 +26,7 @@ namespace ROOT.Zfs.Core.Commands
             public static ProcessCall ResetPropertyToInherited(string dataset, Property property)
             {
                 dataset = DataSetHelper.Decode(dataset);
-                return new ProcessCall("/sbin/zfs", $"inherit -sR {property.Name} {dataset}");
+                return new ProcessCall("/sbin/zfs", $"inherit -rS {property.Name} {dataset}");
             }
 
             public static ProcessCall SetProperty(string dataset, Property property, string value)
