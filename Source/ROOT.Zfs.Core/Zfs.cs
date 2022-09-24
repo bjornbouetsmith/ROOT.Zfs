@@ -252,8 +252,29 @@ namespace ROOT.Zfs.Core
 
                 return DataSetProperties.GetAvailableProperties();
             }
-        }
 
+            public static void ResetPropertyToInherited(string dataset, string property, ProcessCall previousCall = null)
+            {
+                EnsureAllDataSetPropertiesCache(previousCall);
+                var prop = DataSetProperties.Lookup(property);
+                ProcessCall pc;
+                
+                if (previousCall != null)
+                {
+                    pc = previousCall | Commands.Properties.ProcessCalls.ResetPropertyToInherited(dataset, prop);
+                }
+                else
+                {
+                    pc = Commands.Properties.ProcessCalls.ResetPropertyToInherited(dataset, prop);
+                }
+
+                var response = pc.LoadResponse();
+                if (!response.Success)
+                {
+                    throw response.ToException();
+                }
+            }
+        }
 
         public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
