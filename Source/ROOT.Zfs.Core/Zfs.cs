@@ -276,56 +276,58 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public IEnumerable<Snapshot> LoadSnapshots(string dataset, ProcessCall previousCall = null)
+        public static class Snapshots
         {
-
-            ProcessCall pc = Snapshots.ProcessCalls.ListSnapshots(dataset);
-            var response = pc.LoadResponse();
-            if (response.Success)
+            public static IEnumerable<Snapshot> LoadSnapshots(string dataset, ProcessCall previousCall = null)
             {
-                Console.WriteLine($"Command: {pc.FullCommandLine} success");
-                foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                ProcessCall pc = Commands.Snapshots.ProcessCalls.ListSnapshots(dataset);
+                var response = pc.LoadResponse();
+                if (response.Success)
                 {
-                    yield return Snapshot.FromString(line);
+                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
+                    foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        yield return Snapshot.FromString(line);
+                    }
+                }
+                else
+                {
+                    throw response.ToException();
                 }
             }
-            else
-            {
-                throw response.ToException();
-            }
-        }
 
-        public void DestroySnapshot(string dataset, string snapName, ProcessCall previousCall = null)
-        {
-            ProcessCall pc = Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);
-            var response = pc.LoadResponse();
-            if (response.Success)
+            public static void DestroySnapshot(string dataset, string snapName, ProcessCall previousCall = null)
             {
-                Console.WriteLine($"Command: {pc.FullCommandLine} success");
-            }
-            else
-            {
-                throw response.ToException();
+                ProcessCall pc = Commands.Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName);
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
+                }
+                else
+                {
+                    throw response.ToException();
+                }
+
             }
 
-        }
-
-        public void CreateSnapshot(string dataset, ProcessCall previousCall = null)
-        {
-            CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
-        }
-
-        public void CreateSnapshot(string dataset, string snapName, ProcessCall previousCall = null)
-        {
-            ProcessCall pc = Snapshots.ProcessCalls.CreateSnapshot(dataset, snapName);
-            var response = pc.LoadResponse();
-            if (response.Success)
+            public static void CreateSnapshot(string dataset, ProcessCall previousCall = null)
             {
-                Console.WriteLine($"Command: {pc.FullCommandLine} success");
+                CreateSnapshot(dataset, DateTime.UtcNow.ToString("yyyyMMddhhmmss"));
             }
-            else
+
+            public static void CreateSnapshot(string dataset, string snapName, ProcessCall previousCall = null)
             {
-                throw response.ToException();
+                ProcessCall pc = Commands.Snapshots.ProcessCalls.CreateSnapshot(dataset, snapName);
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+                    Console.WriteLine($"Command: {pc.FullCommandLine} success");
+                }
+                else
+                {
+                    throw response.ToException();
+                }
             }
         }
 
