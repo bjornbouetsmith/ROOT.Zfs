@@ -1,4 +1,5 @@
 ﻿using System;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public
 {
@@ -16,5 +17,7 @@ namespace ROOT.Zfs.Public
         /// There are no guarantees that the command will be aborted - it is aborted on best effort.
         /// </summary>
         TimeSpan CommandTimeout { get; set; }
+
+        VersionInfo GetVersionInfo();
     }
 }
