@@ -2,7 +2,7 @@
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class ZPool
+    public static class ZpoolCommands
     {
         public static ProcessCall GetHistory(string pool)
         {

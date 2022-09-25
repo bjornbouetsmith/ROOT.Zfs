@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Info;
+using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class DataSets
+    public static class DataSetCommands
     {
         public static class ProcessCalls
         {
@@ -19,7 +20,7 @@ namespace ROOT.Zfs.Core.Commands
                 return new ProcessCall("/sbin/zfs", $"list {dataset}");
             }
 
-            public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties = null)
+            public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
             {
                 var parent = DataSetHelper.Decode(fullName);
 

@@ -1,4 +1,4 @@
-﻿namespace ROOT.Zfs.Core.Info;
+﻿namespace ROOT.Zfs.Public.Data;
 
 public class PropertySource
 {

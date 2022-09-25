@@ -2,7 +2,7 @@
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class Zfs
+    public static class ZfsCommands
     {
         public static class ProcessCalls
         {

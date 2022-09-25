@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Core.Info
+namespace ROOT.Zfs.Core.Helpers
 {
-    public class CommandHistory
+    internal static class CommandHistoryHelper
     {
-        public DateTime Time { get; set; }
-        public string Command { get; set; }
-        public string Caller { get; set; }
-
         internal static IEnumerable<CommandHistory> FromStdOut(string stdOut, int skipLines = 0, DateTime afterDate = default)
         {
             foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1 + skipLines))
@@ -37,7 +34,7 @@ namespace ROOT.Zfs.Core.Info
                         var callerStart = indexOfBracket + 1;
                         caller = line[callerStart..indexOfEndBracket];
                     }
-                    
+
                     yield return new CommandHistory { Time = date, Command = command, Caller = caller };
                 }
 

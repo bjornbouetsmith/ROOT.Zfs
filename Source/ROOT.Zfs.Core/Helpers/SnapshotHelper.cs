@@ -1,31 +1,17 @@
 ﻿using System;
 using ROOT.Shared.Utils.Date;
+using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Core.Info
+namespace ROOT.Zfs.Core.Helpers
 {
-    public class Snapshot
+    internal static class SnapshotHelper
     {
-        public string Name { get; set; }
-        public DateTime CreationDate { get; set; }
-        public long Size { get; set; }
-
-        public Snapshot()
-        {
-        }
-
-        public Snapshot(string name, long size, DateTime creationDate)
-        {
-            Name = name;
-            Size = size;
-            CreationDate = creationDate;
-        }
-
         /// <summary>
         /// Expects one line of output from the zfs list -t snapshot command with output of only creation,name,used
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        public static Snapshot FromString(string line)
+        internal static Snapshot FromString(string line)
         {
             var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 3)
@@ -48,6 +34,5 @@ namespace ROOT.Zfs.Core.Info
 
             return snapshot;
         }
-
     }
 }

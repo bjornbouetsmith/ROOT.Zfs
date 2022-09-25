@@ -3,8 +3,8 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
-using ROOT.Zfs.Core.Info;
-using ZPool = ROOT.Zfs.Core.ZPool;
+using ROOT.Zfs.Core;
+using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests
 {
@@ -18,12 +18,12 @@ namespace ROOT.Zfs.Tests
 2022-09-21.17:25:16 zfs create tank/c0818844-0f03-4fd9-b2ea-b24926ef7191 [user 0 (root) on zfsdev.root.dom:linux]
 2022-09-21.17:37:03 zfs destroy tank/c0818844-0f03-4fd9-b2ea-b24926ef7191 [user 0 (root) on zfsdev.root.dom:linux]";
 
-        RemoteProcessCall _pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+        readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryTestWithSkip()
         {
-            var zp = new ZPool(_pc);
+            var zp = new ZPool(_remoteProcessCall);
             var lines = zp.GetHistory("tank").ToList().Count;
 
             var history = zp.GetHistory("tank", lines - 2).ToList();
@@ -35,7 +35,7 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetHistory()
         {
-            var zp = new ZPool(_pc);
+            var zp = new ZPool(_remoteProcessCall);
             var history = zp.GetHistory("tank");
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryAfterDate()
         {
-            var zp = new ZPool(_pc);
+            var zp = new ZPool(_remoteProcessCall);
             var last10AtMost = zp.GetHistory("tank").TakeLast(10).ToList();
 
             // This is safe, since zfs always have at last pool creation as a history event
@@ -62,7 +62,7 @@ namespace ROOT.Zfs.Tests
         [TestMethod]
         public void ParsingTest()
         {
-            var history = CommandHistory.FromStdOut(ZPoolHistory).ToList();
+            var history = CommandHistoryHelper.FromStdOut(ZPoolHistory).ToList();
             Assert.AreEqual(5, history.Count);
             var expectedDate = new DateTime(2022, 09, 20, 21, 30, 14, DateTimeKind.Local);
             Assert.AreEqual("zpool create tank mirror /dev/disk/by-id/ata-QEMU_HARDDISK_QM00015 /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017", history[0].Command);
@@ -84,7 +84,7 @@ namespace ROOT.Zfs.Tests
         [DataRow(5)]
         public void SkipCountTest(int skip)
         {
-            var history = CommandHistory.FromStdOut(ZPoolHistory, skip).ToList();
+            var history = CommandHistoryHelper.FromStdOut(ZPoolHistory, skip).ToList();
             Assert.AreEqual(5 - skip, history.Count);
             if (skip < 5)
             {
@@ -104,7 +104,7 @@ namespace ROOT.Zfs.Tests
         public void GreaterThanTest()
         {
             var cutOff = new DateTime(2022, 09, 21, 17, 25, 16);
-            var history = CommandHistory.FromStdOut(ZPoolHistory, 0, cutOff).ToList();
+            var history = CommandHistoryHelper.FromStdOut(ZPoolHistory, 0, cutOff).ToList();
             Assert.AreEqual(1, history.Count);
             var lastEntry = history[^1];
             var lastDate = new DateTime(2022, 09, 21, 17, 37, 3, DateTimeKind.Local);

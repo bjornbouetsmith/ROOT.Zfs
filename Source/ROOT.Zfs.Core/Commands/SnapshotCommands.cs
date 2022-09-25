@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Info;
+using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class SnapshotParser
-    {
-        public static IEnumerable<Info.Snapshot> Parse(string snapshotResponse)
-        {
-            foreach (var line in snapshotResponse.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                yield return Info.Snapshot.FromString(line);
-            }
-        }
-    }
-
-    public class Snapshots
+    public class SnapshotCommands
     {
         public static class ProcessCalls
         {
@@ -66,7 +56,7 @@ namespace ROOT.Zfs.Core.Commands
             }
         }
 
-        public IEnumerable<Info.Snapshot> LoadSnapshots(string dataset)
+        public IEnumerable<Snapshot> LoadSnapshots(string dataset)
         {
             ProcessCall pc = ProcessCalls.ListSnapshots(dataset);
             var response = pc.LoadResponse();

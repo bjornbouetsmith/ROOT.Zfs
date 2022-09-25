@@ -1,13 +1,14 @@
 ﻿using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Info;
+using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public class Properties
+    public class PropertyCommands
     {
         public static class ProcessCalls
         {
-            public static ProcessCall ListProperties(string dataset)
+            public static ProcessCall GetProperties(string dataset)
             {
                 dataset = DataSetHelper.Decode(dataset);
                 return new ProcessCall("/sbin/zfs", $"get all {dataset} -H");

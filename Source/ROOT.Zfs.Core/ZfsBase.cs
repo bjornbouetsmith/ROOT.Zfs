@@ -1,37 +1,42 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using ROOT.Shared.Utils.OS;
 
-namespace ROOT.Zfs.Core;
-
-public class ZfsBase
+namespace ROOT.Zfs.Core
 {
-    private readonly RemoteProcessCall _remoteConnection;
-
-    public ZfsBase(RemoteProcessCall remoteConnection)
+    public abstract class ZfsBase
     {
-        _remoteConnection = remoteConnection;
-    }
+        private readonly RemoteProcessCall _remoteConnection;
 
-    protected ProcessCall BuildCommand(ProcessCall current, ProcessCall previousCall = null)
-    {
-        ProcessCall command = null;
-        
-        // First use any remote connection
-        if (_remoteConnection != null)
+        public ZfsBase(RemoteProcessCall remoteConnection)
         {
-            command = _remoteConnection;
+            _remoteConnection = remoteConnection;
         }
 
-        // pipe into previous call if any
-        if (previousCall != null)
-        {
-            command |= previousCall;
-        }
-        
-        // finally make the command complete, by piping into the current command
-        command |= current;
+        public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-        Debug.WriteLine(command.FullCommandLine);
-        return command;
+        protected ProcessCall BuildCommand(ProcessCall current, ProcessCall previousCall = null)
+        {
+            ProcessCall command = null;
+
+            // First use any remote connection
+            if (_remoteConnection != null)
+            {
+                command = _remoteConnection;
+            }
+
+            // pipe into previous call if any
+            if (previousCall != null)
+            {
+                command |= previousCall;
+            }
+
+            // finally make the command complete, by piping into the current command
+            command |= current;
+
+            Trace.WriteLine($"Built command:{command.FullCommandLine}");
+            command.Timeout = CommandTimeout;
+            return command;
+        }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace ROOT.Zfs.Core.Info
+﻿namespace ROOT.Zfs.Public.Data
 {
     public class Property
     {

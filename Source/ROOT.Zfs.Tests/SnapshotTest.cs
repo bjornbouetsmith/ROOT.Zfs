@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests
 {
     [TestClass]
     public class SnapshotTest
     {
-        private RemoteProcessCall _pc = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+        private readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         private const string SnapshotList = @"1663944453      tank/myds@RemoteCreateSnapshot20220923144730    10
 1663944856      tank/myds@RemoteCreateSnapshot20220923145450    20
@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void RemoteSnapshotTest()
         {
-            var sn = new Core.Snapshot(_pc);
+            var sn = new Snapshots(_remoteProcessCall);
 
             var snapshots = sn.GetSnapshots("tank/myds");
 
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests
         {
             var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
 
-            var sn = new Core.Snapshot(_pc);
+            var sn = new Snapshots(_remoteProcessCall);
 
             sn.CreateSnapshot("tank/myds", snapName);
 
@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Tests
 
             Assert.IsNotNull(wasCreated);
 
-            sn.DestroySnapshot("tank/myds", snapName);
+            sn.DestroySnapshot("tank/myds", snapName, true);
 
         }
 
@@ -75,10 +75,10 @@ namespace ROOT.Zfs.Tests
         {
             var time = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local);
 
-            var name = Snapshots.ProcessCalls.CreateSnapshotName(time);
+            var name = SnapshotCommands.ProcessCalls.CreateSnapshotName(time);
             Assert.AreEqual("20220922211347", name);
 
-            var sn = new Core.Snapshot(_pc);
+            var sn = new Snapshots(_remoteProcessCall);
 
             sn.CreateSnapshot("tank/myds");
 
@@ -94,7 +94,7 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void CreateAndDeleteByPatternTest()
         {
-            var sn = new Core.Snapshot(_pc);
+            var sn = new Snapshots(_remoteProcessCall);
             var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
             sn.CreateSnapshot("tank/myds", $"{prefix}-1");
             sn.CreateSnapshot("tank/myds", $"{prefix}-2");
@@ -121,7 +121,7 @@ namespace ROOT.Zfs.Tests
         [DataRow("tank2/myds", "tank/myds@testing123", "testing123", false)] //wrong dataset
         public void SnapshotMatchingTest(string dataset, string snapshotName, string pattern, bool expectMatch)
         {
-            var isMatch = Snapshot.SnapshotMatches(dataset, snapshotName, pattern);
+            var isMatch = Snapshots.SnapshotMatches(dataset, snapshotName, pattern);
             Assert.AreEqual(expectMatch, isMatch);
         }
     }
