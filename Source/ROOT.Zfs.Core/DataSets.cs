@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.DataSets;
 
 namespace ROOT.Zfs.Core
 {
@@ -59,9 +60,9 @@ namespace ROOT.Zfs.Core
             return GetDataSet(dataSetName);
         }
 
-        public void DestroyDataSet(string fullName)
+        public DataSetDestroyResponse DestroyDataSet(string fullName, DataSetDestroyFlags destroyFlags)
         {
-            var pc = BuildCommand(DataSetCommands.ProcessCalls.DestroyDataSet(fullName));
+            var pc = BuildCommand(DataSetCommands.ProcessCalls.DestroyDataSet(fullName, destroyFlags));
 
             var response = pc.LoadResponse();
 
@@ -69,6 +70,13 @@ namespace ROOT.Zfs.Core
             {
                 throw response.ToException();
             }
+
+            if (!destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
+            {
+                return new DataSetDestroyResponse { Flags = destroyFlags };
+            }
+
+            return new DataSetDestroyResponse { Flags = destroyFlags, DryRun = response.StdOut };
         }
     }
 }

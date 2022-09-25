@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ROOT.Zfs.Public.Data
+namespace ROOT.Zfs.Public.Data.DataSets
 {
     public class DataSet
     {

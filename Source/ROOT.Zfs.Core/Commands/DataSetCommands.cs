@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
@@ -29,11 +30,32 @@ namespace ROOT.Zfs.Core.Commands
                 return new ProcessCall("/sbin/zfs", $"create {propCommand} {parent}");
             }
 
-            public static ProcessCall DestroyDataSet(string dataSetName)
+            public static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
             {
                 var dataset = DataSetHelper.Decode(dataSetName);
 
-                return new ProcessCall("/sbin/zfs", $"destroy {dataset}");
+                var args = string.Empty;
+                if (destroyFlags.HasFlag(DataSetDestroyFlags.Recursive))
+                {
+                    args += " -r";
+                }
+
+                if (destroyFlags.HasFlag(DataSetDestroyFlags.RecursiveClones))
+                {
+                    args += " -R";
+                }
+
+                if (destroyFlags.HasFlag(DataSetDestroyFlags.ForceUmount))
+                {
+                    args += " -f";
+                }
+
+                if (destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
+                {
+                    args += " -nvp";
+                }
+
+                return new ProcessCall("/sbin/zfs", $"destroy{args} {dataset}");
             }
         }
     }

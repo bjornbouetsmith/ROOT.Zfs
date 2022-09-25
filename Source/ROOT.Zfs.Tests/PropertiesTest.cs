@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Tests
             }
             finally
             {
-                dsHelper.DestroyDataSet(dataset);
+                dsHelper.DestroyDataSet(dataset, default);
             }
         }
     }
