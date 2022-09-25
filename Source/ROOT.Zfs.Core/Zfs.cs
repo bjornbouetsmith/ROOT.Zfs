@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core
             {
                 throw response.ToException();
             }
-            return new VersionInfo { Lines = response.StdOut.Split('\r', '\n') };
+            return new VersionInfo { Lines = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) };
         }
     }
 }
