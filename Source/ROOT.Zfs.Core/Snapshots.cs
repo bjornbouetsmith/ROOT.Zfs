@@ -58,6 +58,7 @@ namespace ROOT.Zfs.Core
         /// </summary>
         internal static bool SnapshotMatches(string dataset, string snapshotName, string pattern)
         {
+            dataset = DataSetHelper.Decode(dataset);
             var skipLen = dataset.Length + 1;
             var trimmedName = pattern;
             if (pattern.Contains('@'))

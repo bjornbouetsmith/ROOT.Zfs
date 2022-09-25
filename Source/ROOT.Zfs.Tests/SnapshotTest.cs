@@ -111,6 +111,13 @@ namespace ROOT.Zfs.Tests
 
         }
 
+        //[TestMethod, TestCategory("Integration")]
+        //public void CreateAndDeleteByPatternTest2()
+        //{
+        //    var sn = new Snapshots(_remoteProcessCall);
+        //    sn.DestroySnapshot("tank%2Fmyds", "20220924", false);
+        //}
+
 
         [TestMethod]
         [DataRow("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
@@ -119,6 +126,7 @@ namespace ROOT.Zfs.Tests
         [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@tes", true)] // partial match
         [DataRow("tank/myds", "tank/myds@testing123", "esting123", false)] // we only match on beginning
         [DataRow("tank2/myds", "tank/myds@testing123", "testing123", false)] //wrong dataset
+        [DataRow("tank%2Fmyds", "tank/myds@testing123", "testing123", true)] //right dataset, url encoded
         public void SnapshotMatchingTest(string dataset, string snapshotName, string pattern, bool expectMatch)
         {
             var isMatch = Snapshots.SnapshotMatches(dataset, snapshotName, pattern);
