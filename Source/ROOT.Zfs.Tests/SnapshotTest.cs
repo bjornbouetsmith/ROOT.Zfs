@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
+using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
 
 namespace ROOT.Zfs.Tests
@@ -40,7 +41,7 @@ namespace ROOT.Zfs.Tests
         {
             var sn = new Core.Snapshot(_pc);
 
-            var snapshots = sn.LoadSnapshots("tank/myds");
+            var snapshots = sn.GetSnapshots("tank/myds");
 
             foreach (var snap in snapshots)
             {
@@ -48,7 +49,6 @@ namespace ROOT.Zfs.Tests
                 Console.WriteLine(snap.Name);
                 Console.WriteLine(snap.Size.AsString());
             }
-
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -60,7 +60,7 @@ namespace ROOT.Zfs.Tests
 
             sn.CreateSnapshot("tank/myds", snapName);
 
-            var snaps = sn.LoadSnapshots("tank/myds");
+            var snaps = sn.GetSnapshots("tank/myds");
 
             var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
 
@@ -77,11 +77,52 @@ namespace ROOT.Zfs.Tests
 
             var name = Snapshots.ProcessCalls.CreateSnapshotName(time);
             Assert.AreEqual("20220922211347", name);
-            
+
             var sn = new Core.Snapshot(_pc);
 
             sn.CreateSnapshot("tank/myds");
 
+        }
+
+        //[TestMethod]
+        //public void MyTestMethod()
+        //{
+        //    var sn = new Core.Snapshot(_pc);
+        //    sn.DestroySnapshot("tank/myds", "RemoteCreateSnapshot", false);
+        //}
+
+        [TestMethod, TestCategory("Integration")]
+        public void CreateAndDeleteByPatternTest()
+        {
+            var sn = new Core.Snapshot(_pc);
+            var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+            sn.CreateSnapshot("tank/myds", $"{prefix}-1");
+            sn.CreateSnapshot("tank/myds", $"{prefix}-2");
+            sn.CreateSnapshot("tank/myds", $"{prefix}-3");
+
+            var snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+
+            Assert.AreEqual(3, snaps.Count);
+
+            sn.DestroySnapshot("tank/myds", prefix, false);
+
+            snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            Assert.AreEqual(0, snaps.Count);
+
+        }
+
+
+        [TestMethod]
+        [DataRow("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
+        [DataRow("tank/myds", "tank/myds@testing123", "testing", true)] // partial match
+        [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@testing123", true)] // ExactMatch
+        [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@tes", true)] // partial match
+        [DataRow("tank/myds", "tank/myds@testing123", "esting123", false)] // we only match on beginning
+        [DataRow("tank2/myds", "tank/myds@testing123", "testing123", false)] //wrong dataset
+        public void SnapshotMatchingTest(string dataset, string snapshotName, string pattern, bool expectMatch)
+        {
+            var isMatch = Snapshot.SnapshotMatches(dataset, snapshotName, pattern);
+            Assert.AreEqual(expectMatch, isMatch);
         }
     }
 }

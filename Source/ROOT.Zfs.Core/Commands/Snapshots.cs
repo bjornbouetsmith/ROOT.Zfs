@@ -32,12 +32,13 @@ namespace ROOT.Zfs.Core.Commands
             public static ProcessCall DestroySnapshot(string dataset, string snapName)
             {
                 dataset = DataSetHelper.Decode(dataset);
-                if (NameAllow.Matches(snapName).Count != snapName.Length)
+                var rawSnapName = snapName;
+                if (snapName.StartsWith(dataset, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
+                    rawSnapName = snapName[(dataset.Length + 1)..];
                 }
 
-                return new ProcessCall("/sbin/zfs", $"destroy {dataset}@{snapName}");
+                return new ProcessCall("/sbin/zfs", $"destroy {dataset}@{rawSnapName}");
             }
 
             public static ProcessCall CreateSnapshot(string dataset, string snapName)

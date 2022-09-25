@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 
 namespace ROOT.Zfs.Core
@@ -11,7 +12,7 @@ namespace ROOT.Zfs.Core
         {
         }
 
-        public IEnumerable<Info.Snapshot> LoadSnapshots(string dataset, ProcessCall previousCall = null)
+        public IEnumerable<Info.Snapshot> GetSnapshots(string dataset, ProcessCall previousCall = null)
         {
             var pc = BuildCommand(Commands.Snapshots.ProcessCalls.ListSnapshots(dataset), previousCall);
 
@@ -33,19 +34,59 @@ namespace ROOT.Zfs.Core
 
         public void DestroySnapshot(string dataset, string snapName, ProcessCall previousCall = null)
         {
-            var pc = BuildCommand(Commands.Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName), previousCall);
+            DestroySnapshot(dataset, snapName, true, previousCall);
 
-            var response = pc.LoadResponse();
-            if (response.Success)
+        }
+
+        public void DestroySnapshot(string dataset, string snapName, bool isExactName, ProcessCall previousCall = null)
+        {
+            if (isExactName)
             {
-                Debug.WriteLine($"Command: {pc.FullCommandLine} success");
+                var pc = BuildCommand(Commands.Snapshots.ProcessCalls.DestroySnapshot(dataset, snapName), previousCall);
+
+                var response = pc.LoadResponse();
+                if (response.Success)
+                {
+                    Debug.WriteLine($"Command: {pc.FullCommandLine} success");
+                }
+                else
+                {
+                    throw response.ToException();
+                }
             }
             else
             {
-                throw response.ToException();
+                // Find all snapshots that begins with snapName and delete them one by one
+                foreach (var snapshot in GetSnapshots(dataset, previousCall).Where(sn => SnapshotMatches(dataset, sn.Name, snapName)))
+                {
+                    DestroySnapshot(dataset, snapshot.Name, true, previousCall);
+                }
             }
 
         }
+
+        /// <summary>
+        /// Snapshot name matching - will only match the pattern with a starts with, i.e. the raw snapshot name needs to begin with the raw pattern
+        /// </summary>
+        internal static bool SnapshotMatches(string dataset, string snapshotName, string pattern)
+        {
+            var skipLen = dataset.Length + 1;
+            var trimmedName = pattern;
+            if (pattern.Contains('@'))
+            {
+                var skipPatternLen = pattern.IndexOf('@') + 1;
+                trimmedName = pattern[skipPatternLen..];
+            }
+
+            string realName = snapshotName;
+            if (snapshotName.Contains('@'))
+            {
+                realName = snapshotName[skipLen..];
+            }
+
+            return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
+        }
+
 
         public void CreateSnapshot(string dataset, ProcessCall previousCall = null)
         {
