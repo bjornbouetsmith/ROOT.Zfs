@@ -7,7 +7,7 @@ namespace ROOT.Zfs.Core
 {
     public class Zfs : ZfsBase, IZfs
     {
-        public Zfs(RemoteProcessCall remoteConnection)
+        public Zfs(SSHProcessCall remoteConnection)
             : base(remoteConnection)
         {
             Snapshots = new Snapshots(remoteConnection);

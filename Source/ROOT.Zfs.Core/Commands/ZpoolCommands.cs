@@ -8,5 +8,20 @@ namespace ROOT.Zfs.Core.Commands
         {
             return new ProcessCall("/sbin/zpool", $"history -l {pool}");
         }
+
+        public static ProcessCall GetStatus(string pool)
+        {
+            return new ProcessCall("/sbin/zpool", $"status -vP {pool}");
+        }
+
+        public static ProcessCall GetPools()
+        {
+            return new ProcessCall("/sbin/zpool", "list -vP");
+        }
+
+        public static ProcessCall GetPoolInfo(string pool)
+        {
+            return new ProcessCall("/sbin/zpool", $"list -vP {pool}");
+        }
     }
 }

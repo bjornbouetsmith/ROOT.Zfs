@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Tests
     [TestClass]
     public class DataSetTest
     {
-        readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()

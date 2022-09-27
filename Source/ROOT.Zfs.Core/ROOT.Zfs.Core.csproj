@@ -35,13 +35,14 @@
     <RepositoryUrl>http://build.root.dom/ROOT/common/_git/ROOT.Zfs.Api</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ROOT.Shared.Utils" Version="1.0.59" />
-  </ItemGroup>
   
   <ItemGroup>
     <InternalsVisibleTo Include="ROOT.Zfs.Tests" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ROOT.Shared.Utils.OS" Version="1.0.61" />
+    <PackageReference Include="ROOT.Shared.Utils.Serialization" Version="1.0.61" />
   </ItemGroup>
   
   <ItemGroup>

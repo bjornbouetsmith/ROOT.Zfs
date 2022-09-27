@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Core
 {
     internal class DataSets : ZfsBase, IDataSets
     {
-        public DataSets(RemoteProcessCall remoteConnection) : base(remoteConnection)
+        public DataSets(SSHProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 

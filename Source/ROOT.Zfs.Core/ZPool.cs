@@ -5,12 +5,13 @@ using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core
 {
     internal class ZPool : ZfsBase, IZPool
     {
-        public ZPool(RemoteProcessCall remoteConnection) : base(remoteConnection)
+        public ZPool(SSHProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 
@@ -25,6 +26,41 @@ namespace ROOT.Zfs.Core
             }
 
             return CommandHistoryHelper.FromStdOut(response.StdOut, skipLines, afterDate);
+        }
+
+        public PoolStatus GetStatus(string pool)
+        {
+            var pc = BuildCommand(ZpoolCommands.GetStatus(pool));
+            var response = pc.LoadResponse();
+            if (!response.Success)
+            {
+                throw response.ToException();
+            }
+
+            return ZPoolStatusParser.Parse(response.StdOut);
+        }
+
+        public IEnumerable<PoolInfo> GetAllPoolInfos()
+        {
+            var pc = BuildCommand(ZpoolCommands.GetPools());
+            var response = pc.LoadResponse();
+            if (!response.Success)
+            {
+                throw response.ToException();
+            }
+            return null;
+        }
+
+        public PoolInfo GetPoolInfo(string pool)
+        {
+            var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
+            var response = pc.LoadResponse();
+            if (!response.Success)
+            {
+                throw response.ToException();
+            }
+
+            return null;
         }
     }
 }

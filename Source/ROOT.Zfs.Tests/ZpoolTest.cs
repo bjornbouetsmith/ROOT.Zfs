@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Tests
 2022-09-21.17:25:16 zfs create tank/c0818844-0f03-4fd9-b2ea-b24926ef7191 [user 0 (root) on zfsdev.root.dom:linux]
 2022-09-21.17:37:03 zfs destroy tank/c0818844-0f03-4fd9-b2ea-b24926ef7191 [user 0 (root) on zfsdev.root.dom:linux]";
 
-        readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryTestWithSkip()
@@ -57,6 +57,15 @@ namespace ROOT.Zfs.Tests
                 Assert.IsTrue(afterDate.Count < last10AtMost.Count);
             }
 
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void GetStatusTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            var status = zp.GetStatus("tank");
+            Assert.IsNotNull(status);
+            Assert.AreEqual("tank", status.Pool.Name);
         }
 
         [TestMethod]

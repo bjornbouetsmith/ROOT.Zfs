@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Tests
     [TestClass]
     public class ZfsTest
     {
-        readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         [TestMethod,TestCategory("Integration")]
         public void GetVersionInfo()

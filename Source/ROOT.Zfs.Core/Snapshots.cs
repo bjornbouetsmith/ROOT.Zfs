@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Core
 {
     internal class Snapshots : ZfsBase, ISnapshots
     {
-        public Snapshots(RemoteProcessCall remoteConnection) : base(remoteConnection)
+        public Snapshots(SSHProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 

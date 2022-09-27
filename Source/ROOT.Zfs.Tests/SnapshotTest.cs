@@ -12,7 +12,7 @@ namespace ROOT.Zfs.Tests
     [TestClass]
     public class SnapshotTest
     {
-        private readonly RemoteProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        private readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
         private const string SnapshotList = @"1663944453      tank/myds@RemoteCreateSnapshot20220923144730    10
 1663944856      tank/myds@RemoteCreateSnapshot20220923145450    20

@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Tests
     [TestClass]
     public class PropertiesTest
     {
-        readonly RemoteProcessCall _remoteProcessCall = new RemoteProcessCall("bbs", "zfsdev.root.dom", true);
+        private readonly SSHProcessCall _remoteProcessCall = new ("bbs", "zfsdev.root.dom", true);
 
         [TestMethod, TestCategory("Integration")]
         public void ListAllProperties()
