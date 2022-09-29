@@ -7,7 +7,7 @@
     <RNotes>$(ReleaseNotes)</RNotes>
   </PropertyGroup>
   <PropertyGroup>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
