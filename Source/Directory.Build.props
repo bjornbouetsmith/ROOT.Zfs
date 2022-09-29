@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <!--<Version>1.1.4</Version>-->
+    <PackageVersion>$(Version)</PackageVersion>
+    <AssemblyVersion>$(Version)</AssemblyVersion>
+    <FileVersion>$(Version)</FileVersion>
+    <PackageReleaseNotes>$(RNotes.Replace("####","%0D%0D"))</PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/bjornbouetsmith/ROOT.Zfs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb;.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+</Project>

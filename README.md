@@ -1,6 +1,8 @@
 # Introduction 
 ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system
 
+[![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
+
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 1.	Installation process

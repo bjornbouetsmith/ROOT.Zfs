@@ -1,0 +1,35 @@
+name: .NET CI Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: |
+        dotnet nuget add source --username ${{ github.triggering_actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
+        dotnet restore Source/ROOT.Zfs.sln
+    - name: Build
+      run: dotnet build Source/ROOT.Zfs.sln --no-restore
+    - name: Test
+      run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration"
+    - name: Set status
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The build succeeded!","context":"continuous-integration/github"}'

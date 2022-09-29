@@ -1,0 +1,75 @@
+# Create release workflow.
+# gets sources
+# Bump build version
+# builds, tests and publish nuget package to artifacts
+# commmit updated version to the repository
+
+name: Create Release
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      publish_nuget:
+        type: boolean  
+        description: 'Publish nuget package'
+        default: true
+        required: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.BUILD_SVC_PAT }}
+    - name: Validate user
+      if: ${{ github.triggering_actor != 'bjornbouetsmith' }}
+      run: exit 1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: |
+        dotnet nuget add source --username ${{ github.triggering_actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
+        dotnet restore Source/ROOT.Zfs.sln
+    - name: Update version
+      id: update_version
+      uses: vers-one/dotnet-project-version-updater@v1.0
+      with:
+        file: Source/ROOT.Zfs.Core/ROOT.Zfs.Core.csproj
+        version: bump-build
+    - name: Update version
+      id: update_version2
+      uses: vers-one/dotnet-project-version-updater@v1.0
+      with:
+        file: Source/ROOT.Zfs.Public/ROOT.Zfs.Public.csproj
+        version: bump-build
+    - name: Build
+      run: dotnet build Source/ROOT.Zfs.sln --no-restore --configuration Release
+    - name: Test
+      run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --configuration Release
+    - name: Upload nuget package
+      if: ${{ inputs.publish_nuget }}
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: nuget
+        path: Source/**/*.nupkg
+        if-no-files-found: error
+#    - name: publish nuget to github repository
+#      if: ${{ inputs.publish_nuget }}  
+#      run: dotnet nuget push Source/**/*.nupkg  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+    - name: check in version update
+      id: run_git_commit
+      run: |
+        git config user.name "${{ github.triggering_actor }}"
+        git add .
+        git commit -m "Update version to ${{ steps.update_version.outputs.newVersion }}"
+        git push -f
+        git tag "v${{ steps.update_version.outputs.newVersion }}"
+        git push --tags -f
