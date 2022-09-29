@@ -3,15 +3,10 @@ ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the 
 
 [![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+## NOTE
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+Nuget packages found here on github is to be considered development versions and is only meant to enable ci/cd within the ROOT projects.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+Packages not found on nuget.org should not be used in production code unless you are ready to change stuff if interfaces or something changes.
+
+Its fine to take packages from here to test out patches etc, but do not expect stable interfaces on new features until its released on nuget.org.
