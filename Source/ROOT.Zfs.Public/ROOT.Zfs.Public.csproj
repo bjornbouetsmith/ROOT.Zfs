@@ -6,7 +6,9 @@
   <PropertyGroup Condition="'$(ReleaseNotes)' != ''">
     <RNotes>$(ReleaseNotes)</RNotes>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>ROOT.Zfs public interface</Description>

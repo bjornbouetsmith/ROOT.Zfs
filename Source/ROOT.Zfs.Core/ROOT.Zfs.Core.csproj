@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Linux ZFS classes to interact with ZFS pools/datasets</Description>
     <PackageId>ROOT.Zfs.Core</PackageId>
