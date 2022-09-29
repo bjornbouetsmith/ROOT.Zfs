@@ -54,16 +54,16 @@ jobs:
       run: dotnet build Source/ROOT.Zfs.sln --no-restore --configuration Release
     - name: Test
       run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --configuration Release --filter "TestCategory!=Integration"
-    - name: Upload nuget package
-      if: ${{ inputs.publish_nuget }}
-      uses: actions/upload-artifact@v3.1.0
-      with:
-        name: nuget
-        path: Source/**/*.nupkg
-        if-no-files-found: error
-#    - name: publish nuget to github repository
-#      if: ${{ inputs.publish_nuget }}  
-#      run: dotnet nuget push Source/**/*.nupkg  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+#    - name: Upload nuget package
+#      if: ${{ inputs.publish_nuget }}
+#      uses: actions/upload-artifact@v3.1.0
+#      with:
+#        name: nuget
+#        path: Source/**/*.nupkg
+#        if-no-files-found: error
+    - name: publish nuget to github repository
+      if: ${{ inputs.publish_nuget }}  
+      run: dotnet nuget push Source/**/*.nupkg  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
     - name: check in version update
       id: run_git_commit
       run: |
