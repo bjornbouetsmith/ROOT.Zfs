@@ -49,7 +49,6 @@ If you want to help make this library greater either by
 * Contributing code 
 * Writing examples
 * Better documentation
-* Packages for linux installations or any other OS
 
 or in any other way, feel free to contact [@bjornbouetsmith](https://github.com/bjornbouetsmith).
 
