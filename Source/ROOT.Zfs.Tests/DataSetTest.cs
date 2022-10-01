@@ -27,7 +27,7 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Integration")]
         public void GetDataSetTest()
         {
             var ds = new DataSets(_remoteProcessCall);
