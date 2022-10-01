@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public
@@ -19,5 +20,10 @@ namespace ROOT.Zfs.Public
         TimeSpan CommandTimeout { get; set; }
 
         VersionInfo GetVersionInfo();
+
+        /// <summary>
+        /// Lists the disks in the system
+        /// </summary>
+        IEnumerable<DiskInfo> ListDisks();
     }
 }

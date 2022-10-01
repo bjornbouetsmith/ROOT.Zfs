@@ -62,5 +62,27 @@ namespace ROOT.Zfs.Core
 
             return null;
         }
+
+        public PoolStatus CreatePool(PoolCreationArgs args)
+        {
+            var pc = BuildCommand(ZpoolCommands.CreatePool(args));
+            var response = pc.LoadResponse();
+            if (!response.Success)
+            {
+                throw response.ToException();
+            }
+
+            return GetStatus(args.Name);
+        }
+
+        public void DestroyPool(string pool)
+        {
+            var pc = BuildCommand(ZpoolCommands.DestroyPool(pool));
+            var response = pc.LoadResponse();
+            if (!response.Success)
+            {
+                throw response.ToException();
+            }
+        }
     }
 }

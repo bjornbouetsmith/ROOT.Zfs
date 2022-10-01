@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
+using ROOT.Shared.Utils.Serialization;
 
 namespace ROOT.Zfs.Tests
 {
@@ -21,6 +22,14 @@ namespace ROOT.Zfs.Tests
             {
                 Console.WriteLine(line);
             }
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void ListDisksTest()
+        {
+            var zfs = new Core.Zfs(_remoteProcessCall);
+            var disks = zfs.ListDisks();
+            Console.WriteLine(disks.Dump(new JsonFormatter()));
         }
     }
 }

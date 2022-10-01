@@ -8,6 +8,7 @@ namespace ROOT.Zfs.Core.Commands
     {
         public static string WhichZfs { get; set; }="/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";
+        public static string WhichZdb { get; set; } = "/sbin/zdb";
 
         /// <summary>
         /// Lists the given types
@@ -60,6 +61,29 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             return new ProcessCall(WhichZfs, command);
+        }
+
+        /// <summary>
+        /// Returns disks and partitions from the system by id with their /dev/xx name
+        /// i.e.
+        /// ata-QEMU_HARDDISK_QM00013 ../../sdg
+        /// ata-QEMU_HARDDISK_QM00014 ../../sdg
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static ProcessCall ListDisks()
+        {
+            return new ProcessCall("/usr/bin/ls", "-l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'");
+        }
+
+        /// <summary>
+        /// Returns a list of block devices - out from command
+        /// 'lsblk --include 8 -p|grep disk'
+        /// of type "disk"
+        /// </summary>
+        public static ProcessCall ListBlockDevices()
+        {
+            return new ProcessCall("/usr/bin/lsblk", "--include 8 -p|grep disk");
         }
     }
 }

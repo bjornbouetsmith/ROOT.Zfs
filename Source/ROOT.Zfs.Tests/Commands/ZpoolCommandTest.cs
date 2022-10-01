@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Commands
 {
@@ -36,6 +38,27 @@ namespace ROOT.Zfs.Tests.Commands
             var command = ZpoolCommands.GetPoolInfo("tank");
 
             Assert.AreEqual("/sbin/zpool list -vP tank", command.FullCommandLine);
+        }
+
+        [TestMethod]
+        public void CreateMirrorPoolTest()
+        {
+            var args = new PoolCreationArgs
+            {
+                Name = "tank3",
+                VDevs = new[] 
+                    { 
+                        new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
+                        new VDevCreationArgs { Type = VDevCreationType.Cache, Devices = new[] { "/dev/sde" } },
+                        new VDevCreationArgs { Type = VDevCreationType.Log, Devices = new[] { "/dev/sdf" } },
+                    },
+                MountPoint = "/mnt/tank3",
+                PoolProperties = null,
+                FileSystemProperties = null
+            };
+            var command = ZpoolCommands.CreatePool(args);
+            Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
+            Console.WriteLine(command.FullCommandLine);
         }
     }
 }

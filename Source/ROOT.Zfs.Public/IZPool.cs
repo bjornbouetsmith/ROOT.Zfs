@@ -11,5 +11,18 @@ namespace ROOT.Zfs.Public
         PoolStatus GetStatus(string pool); //zpool status {pool}
         IEnumerable<PoolInfo> GetAllPoolInfos(); //zpool list -v -P
         PoolInfo GetPoolInfo(string pool); //zpool list -v -P {pool}
+
+        /// <summary>
+        /// Creates a new zpool using the provided args
+        ///<see cref="PoolCreationArgs"/> for details
+        /// </summary>
+        /// <returns>The pool status for the newly created pool</returns>
+        PoolStatus CreatePool(PoolCreationArgs args);
+
+        /// <summary>
+        /// Destroys the given pool
+        /// </summary>
+        /// <param name="pool">The name of the pool to destroy</param>
+        void DestroyPool(string pool);
     }
 }
