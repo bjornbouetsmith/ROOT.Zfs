@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
@@ -130,6 +131,102 @@ namespace ROOT.Zfs.Tests.Integration
             var status = pool.CreatePool(args);
             Assert.AreEqual(State.Online, status.State);
 
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        public void CreateRaidZTest(int raidz)
+        {
+            using var pool = new TestPool(_remoteProcessCall);
+
+            var raidDisks = new List<string>();
+            var disk1 = pool.AddDisk();
+            var disk2 = pool.AddDisk();
+            raidDisks.Add(disk1);
+            raidDisks.Add(disk2);
+
+            var disk3 = pool.AddDisk();
+            for (int x = 0; x < raidz; x++)
+            {
+                raidDisks.Add(pool.AddDisk());
+            }
+
+            var name = "TestP" + Guid.NewGuid();
+            VDevCreationType type = raidz == 1 ? VDevCreationType.Raidz1 : raidz == 2 ? VDevCreationType.Raidz2 : VDevCreationType.Raidz3;
+            var args = new PoolCreationArgs
+            {
+                Name = name,
+                MountPoint = "none",
+                VDevs = new VDevCreationArgs[]
+                {
+                    new()
+                    {
+                        Type = type,
+                        Devices = raidDisks
+                    },
+                    new()
+                    {
+                        Type = VDevCreationType.Spare,
+                        Devices = new[] { disk3 }
+                    }
+
+
+                }
+            };
+
+            var status = pool.CreatePool(args);
+            Assert.AreEqual(State.Online, status.State);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        public void CreateDRaidZTest(int draid)
+        {
+            using var pool = new TestPool(_remoteProcessCall);
+
+            var raidDisks = new List<string>();
+            var disk1 = pool.AddDisk();
+            var disk2 = pool.AddDisk();
+            var extra = pool.AddDisk();
+            raidDisks.Add(disk1);
+            raidDisks.Add(disk2);
+            raidDisks.Add(extra);
+
+            for (int x = 0; x < draid; x++)
+            {
+                raidDisks.Add(pool.AddDisk());
+            }
+
+            var name = "TestP" + Guid.NewGuid();
+            VDevCreationType type = draid == 1 ? VDevCreationType.DRaid1 : draid == 2 ? VDevCreationType.DRaid2 : VDevCreationType.DRaid3;
+            var args = new PoolCreationArgs
+            {
+                Name = name,
+                MountPoint = "none",
+                VDevs = new VDevCreationArgs[]
+                {
+                    new DraigVDevCreationArgs()
+                    {
+                        Type = type,
+                        Devices = raidDisks,
+                        DraidArgs = new DraidArgs
+                        {
+                            Spares=1,
+                            DataDevices=2,
+                            Children=3+draid
+                        }
+                    }
+                }
+            };
+
+            var status = pool.CreatePool(args);
+            Assert.AreEqual(State.Online, status.State);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
         }
     }
 }

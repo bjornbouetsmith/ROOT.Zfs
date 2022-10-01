@@ -12,7 +12,7 @@ namespace ROOT.Zfs.Public.Data.Pools
             return $"{Type.AsString()} {string.Join(' ', Devices)}";
         }
 
-        public bool Validate(out string errorMessage)
+        public virtual bool Validate(out string errorMessage)
         {
             //TODO: Write validation logic, i.e. mirror needs at least two devices etc.
 

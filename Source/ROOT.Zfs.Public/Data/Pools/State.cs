@@ -8,6 +8,7 @@
         Faulted = 3,
         Offline = 4,
         Removed = 5,
-        Unavailable = 6
+        Unavailable = 6,
+        Available = 7
     }
 }

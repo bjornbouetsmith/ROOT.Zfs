@@ -6,8 +6,12 @@
     public enum VDevCreationType
     {
         Mirror,
-        Raidz,
-        DRaidz,
+        Raidz1,
+        Raidz2,
+        Raidz3,
+        DRaid1,
+        DRaid2,
+        DRaid3,
         Cache,
         Log,
         Spare,

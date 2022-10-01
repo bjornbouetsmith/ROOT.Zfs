@@ -159,7 +159,7 @@ config:
                 {
                     break;
                 }
-            } while (trimmed.StartsWith("/dev/") && currentIndex <= lines.Length);
+            } while (trimmed.StartsWith("/") && currentIndex <= lines.Length);
 
             return vdev;
         }
@@ -179,24 +179,35 @@ config:
         {
             var parts = lines[currentIndex++].Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var name = parts[0].Trim();
+            if (name == "spares" && parts.Length == 1)
+            {
+                return (name, State.Available, default);
+            }
+
             var state = ParseState(parts[1]);
             var errors = ParseErrors(parts);
-            return (name, state, errors);
+            return (name, state, new Errors());
         }
 
         private static Errors ParseErrors(string[] parts)
         {
             // first two are used by name and state
             var errors = new Errors();
+            if (parts.Length == 2)
+            {
+                // spares only have two parts, name and status
+                return errors;
+            }
+
             if (long.TryParse(parts[2].Trim(), out var reads))
             {
                 errors.Read = (int)reads;
             }
-            if (long.TryParse(parts[2].Trim(), out var writes))
+            if (long.TryParse(parts[3].Trim(), out var writes))
             {
                 errors.Write = (int)writes;
             }
-            if (long.TryParse(parts[2].Trim(), out var checksums))
+            if (long.TryParse(parts[4].Trim(), out var checksums))
             {
                 errors.Checksum = (int)checksums;
             }
@@ -229,6 +240,8 @@ config:
                     return State.Removed;
                 case "UNAVAIL":
                     return State.Unavailable;
+                case "AVAIL":
+                    return State.Available;
                 default:
                     return State.Unknown;
             }

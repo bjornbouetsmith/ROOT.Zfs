@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
@@ -55,6 +56,18 @@ config:
 errors: No known data errors";
         private const string BadPool2 = @"";
 
+        private const string PoolWithSpare = @"  pool: TestP768e8f58-4091-4c3a-91c6-35c65c7336a1
+ state: ONLINE
+config:
+
+	NAME                                           STATE     READ WRITE CKSUM
+	TestP768e8f58-4091-4c3a-91c6-35c65c7336a1      ONLINE       0     0     0
+	  raidz1-0                                     ONLINE       0     0     0
+	    /tmp/f067c903-c3a8-46ee-bf6b-12d8e84ccbcf  ONLINE       0     0     0
+	    /tmp/af5e1f8a-2f5c-4e8a-a809-09ce20683e28  ONLINE       0     0     0
+	spares
+	  /tmp/7750f053-1937-4d0a-a104-29ead1847366    AVAIL";
+
         [TestMethod]
         public void ParseOKStatus()
         {
@@ -83,6 +96,18 @@ errors: No known data errors";
             Assert.AreEqual(State.Degraded, status.State);
             Console.WriteLine(status.Dump(new JsonFormatter()));
 
+        }
+
+        [TestMethod]
+        public void ParsePoolStatusWithSpares()
+        {
+            var status = ZPoolStatusParser.Parse(PoolWithSpare);
+            Assert.IsNotNull(status);
+            var spares = status.Pool.VDevs.First(d => d.Name == "spares");
+            Assert.AreEqual(State.Available, spares.State);
+            var spare = spares.Devices.First();
+            Assert.AreEqual(State.Available, spare.State);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
         }
     }
 }
