@@ -15,9 +15,9 @@ namespace ROOT.Zfs.Core
         {
         }
 
-        public IEnumerable<Snapshot> GetSnapshots(string dataset)
+        public IEnumerable<Snapshot> GetSnapshots(string datasetOrVolume)
         {
-            var pc = BuildCommand(SnapshotCommands.ProcessCalls.ListSnapshots(dataset));
+            var pc = BuildCommand(SnapshotCommands.ListSnapshots(datasetOrVolume));
 
             var response = pc.LoadResponse();
             if (!response.Success)
@@ -31,11 +31,11 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public void DestroySnapshot(string dataset, string snapName, bool isExactName)
+        public void DestroySnapshot(string datasetOrVolume, string snapName, bool isExactName)
         {
             if (isExactName)
             {
-                var pc = BuildCommand(SnapshotCommands.ProcessCalls.DestroySnapshot(dataset, snapName));
+                var pc = BuildCommand(SnapshotCommands.DestroySnapshot(datasetOrVolume, snapName));
 
                 var response = pc.LoadResponse();
                 if (!response.Success)
@@ -46,9 +46,9 @@ namespace ROOT.Zfs.Core
             else
             {
                 // Find all snapshots that begins with snapName and delete them one by one
-                foreach (var snapshot in GetSnapshots(dataset).Where(sn => SnapshotMatches(dataset, sn.Name, snapName)))
+                foreach (var snapshot in GetSnapshots(datasetOrVolume).Where(sn => SnapshotMatches(datasetOrVolume, sn.Name, snapName)))
                 {
-                    DestroySnapshot(dataset, snapshot.Name, true);
+                    DestroySnapshot(datasetOrVolume, snapshot.Name, true);
                 }
             }
         }
@@ -56,10 +56,10 @@ namespace ROOT.Zfs.Core
         /// <summary>
         /// Snapshot name matching - will only match the pattern with a starts with, i.e. the raw snapshot name needs to begin with the raw pattern
         /// </summary>
-        internal static bool SnapshotMatches(string dataset, string snapshotName, string pattern)
+        internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
         {
-            dataset = DataSetHelper.Decode(dataset);
-            var skipLen = dataset.Length + 1;
+            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            var skipLen = datasetOrVolume.Length + 1;
             var trimmedName = pattern;
             if (pattern.Contains('@'))
             {
@@ -84,7 +84,7 @@ namespace ROOT.Zfs.Core
 
         public void CreateSnapshot(string dataset, string snapName)
         {
-            var pc = BuildCommand(SnapshotCommands.ProcessCalls.CreateSnapshot(dataset, snapName));
+            var pc = BuildCommand(SnapshotCommands.CreateSnapshot(dataset, snapName));
 
             var response = pc.LoadResponse();
             if (!response.Success)

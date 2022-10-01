@@ -2,26 +2,26 @@
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class ZpoolCommands
+    public class ZpoolCommands : BaseCommands
     {
         public static ProcessCall GetHistory(string pool)
         {
-            return new ProcessCall("/sbin/zpool", $"history -l {pool}");
+            return new ProcessCall(WhichZpool, $"history -l {pool}");
         }
 
         public static ProcessCall GetStatus(string pool)
         {
-            return new ProcessCall("/sbin/zpool", $"status -vP {pool}");
+            return new ProcessCall(WhichZpool, $"status -vP {pool}");
         }
 
-        public static ProcessCall GetPools()
+        public static ProcessCall GetAllPoolInfos()
         {
-            return new ProcessCall("/sbin/zpool", "list -vP");
+            return new ProcessCall(WhichZpool, "list -vP");
         }
 
         public static ProcessCall GetPoolInfo(string pool)
         {
-            return new ProcessCall("/sbin/zpool", $"list -vP {pool}");
+            return new ProcessCall(WhichZpool, $"list -vP {pool}");
         }
     }
 }

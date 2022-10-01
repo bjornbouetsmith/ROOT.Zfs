@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests
 {
@@ -120,6 +121,39 @@ namespace ROOT.Zfs.Tests
             Assert.AreEqual("zfs destroy tank/c0818844-0f03-4fd9-b2ea-b24926ef7191", lastEntry.Command);
             Assert.AreEqual("user 0 (root) on zfsdev.root.dom:linux", lastEntry.Caller);
             Assert.AreEqual(lastDate, lastEntry.Time);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void ZpoolStatusTest()
+        {
+            var zfs = new Core.Zfs(_remoteProcessCall);
+
+            var status = zfs.Pool.GetStatus("tank");
+
+            if (status.State == State.Online)
+            {
+                return;
+            }
+
+            var pool = status.Pool;
+            foreach (var vdev in pool.VDevs)
+            {
+                if (vdev.State == State.Online)
+                {
+                    continue;
+                }
+
+                Console.WriteLine("vdev:{0}, State:{1}", vdev.Name, vdev.State);
+                foreach (var device in vdev.Devices)
+                {
+                    if (device.State == State.Online)
+                    {
+                        continue;
+                    }
+
+                    Console.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
+                }
+            }
         }
     }
 }

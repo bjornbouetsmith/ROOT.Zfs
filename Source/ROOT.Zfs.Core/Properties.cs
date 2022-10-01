@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Core
         public IEnumerable<PropertyValue> GetProperties(string dataset)
         {
 
-            var pc = BuildCommand(PropertyCommands.ProcessCalls.GetProperties(dataset));
+            var pc = BuildCommand(PropertyCommands.GetProperties(dataset));
 
             var response = pc.LoadResponse();
             if (!response.Success)
@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Core
             EnsureAllDataSetPropertiesCache();
             var prop = DataSetProperties.Lookup(property);
 
-            var pc = BuildCommand(PropertyCommands.ProcessCalls.GetProperty(dataset, prop));
+            var pc = BuildCommand(PropertyCommands.GetProperty(dataset, prop));
 
             var response = pc.LoadResponse();
             if (!response.Success)
@@ -50,7 +50,7 @@ namespace ROOT.Zfs.Core
 
             var prop = DataSetProperties.Lookup(property);
 
-            var pc = BuildCommand(PropertyCommands.ProcessCalls.SetProperty(dataset, prop, value));
+            var pc = BuildCommand(PropertyCommands.SetProperty(dataset, prop, value));
             
             var response = pc.LoadResponse();
             if (!response.Success)
@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Core
         {
             if (DataSetProperties.GetAvailableProperties().FirstOrDefault() == null)
             {
-                var pc = BuildCommand(PropertyCommands.ProcessCalls.GetDataSetProperties());
+                var pc = BuildCommand(PropertyCommands.GetDataSetProperties());
 
                 IEnumerable<Property> properties;
                 var response = pc.LoadResponse();
@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Core
             EnsureAllDataSetPropertiesCache();
             var prop = DataSetProperties.Lookup(property);
 
-            var pc = BuildCommand(PropertyCommands.ProcessCalls.ResetPropertyToInherited(dataset, prop));
+            var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, prop));
 
             var response = pc.LoadResponse();
             if (!response.Success)

@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Core
     {
         private readonly SSHProcessCall _remoteConnection;
 
-        public ZfsBase(SSHProcessCall remoteConnection)
+        protected ZfsBase(SSHProcessCall remoteConnection)
         {
             _remoteConnection = remoteConnection;
         }

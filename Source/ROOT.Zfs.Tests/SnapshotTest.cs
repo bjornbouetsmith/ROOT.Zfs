@@ -14,17 +14,17 @@ namespace ROOT.Zfs.Tests
     {
         private readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
 
-        private const string SnapshotList = @"1663944453      tank/myds@RemoteCreateSnapshot20220923144730    10
-1663944856      tank/myds@RemoteCreateSnapshot20220923145450    20
-1663945816      tank/myds@RemoteCreateSnapshot20220923101050    30
-1663947484      tank/myds@RemoteCreateSnapshot20220923153801    40
-1663947547      tank/myds@RemoteCreateSnapshot20220923153941    50";
+        private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -
+snapshot        1664116109      tank/myds@20220925162825        13312   25600   -       -
+snapshot        1664121534      tank/myds@20220925175851        13312   25600   -       -
+snapshot        1664121611      tank/myds@20220925180007        14336   25600   -       -
+snapshot        1664303433      tank/myds@20220927203033        13312   25600   -       -";
 
 
         [TestMethod]
         public void SnapshotParserTest()
         {
-            var list = SnapshotParser.Parse(SnapshotList).ToList();
+             var list = SnapshotParser.Parse(SnapshotList).ToList();
 
             Assert.AreEqual(5, list.Count);
 
@@ -75,7 +75,7 @@ namespace ROOT.Zfs.Tests
         {
             var time = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local);
 
-            var name = SnapshotCommands.ProcessCalls.CreateSnapshotName(time);
+            var name = SnapshotCommands.CreateSnapshotName(time);
             Assert.AreEqual("20220922211347", name);
 
             var sn = new Snapshots(_remoteProcessCall);

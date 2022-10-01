@@ -27,6 +27,15 @@ namespace ROOT.Zfs.Tests
             }
         }
 
+        [TestMethod]
+        public void GetDataSetTest()
+        {
+            var ds = new DataSets(_remoteProcessCall);
+            var dataset = ds.GetDataSet("tank");
+            Assert.IsNotNull(dataset);
+            Assert.AreEqual("tank",dataset.Name);
+        }
+
         [TestMethod, TestCategory("Integration")]
         [DataRow(true)]
         [DataRow(false)]
@@ -44,7 +53,7 @@ namespace ROOT.Zfs.Tests
                         new PropertyValue(quota.Name, PropertySources.Local.Name, "1G"),
                         new PropertyValue(compression.Name, PropertySources.Local.Name, "gzip")
                     };
-                var dataSets = ds.GetDataSets();
+                var dataSets = ds.GetDataSets().ToList();
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));

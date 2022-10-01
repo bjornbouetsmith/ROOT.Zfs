@@ -42,7 +42,7 @@ namespace ROOT.Zfs.Core
 
         public IEnumerable<PoolInfo> GetAllPoolInfos()
         {
-            var pc = BuildCommand(ZpoolCommands.GetPools());
+            var pc = BuildCommand(ZpoolCommands.GetAllPoolInfos());
             var response = pc.LoadResponse();
             if (!response.Success)
             {

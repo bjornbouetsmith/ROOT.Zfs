@@ -3,7 +3,7 @@
 namespace ROOT.Zfs.Public
 {
     /// <summary>
-    /// See:
+    /// See: https://openzfs.github.io/openzfs-docs/man/8/zfs-destroy.8.html
     ///  
     /// </summary>
     [Flags]

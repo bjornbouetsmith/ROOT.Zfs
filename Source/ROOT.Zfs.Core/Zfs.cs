@@ -23,7 +23,7 @@ namespace ROOT.Zfs.Core
 
         public VersionInfo GetVersionInfo()
         {
-            var pc = BuildCommand(Commands.ZfsCommands.ProcessCalls.GetVersion());
+            var pc = BuildCommand(Commands.ZfsCommands.GetVersion());
             var response = pc.LoadResponse();
             if (!response.Success)
             {

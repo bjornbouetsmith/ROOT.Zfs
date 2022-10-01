@@ -6,57 +6,49 @@ using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public static class DataSetCommands
+    public class DataSetCommands : BaseCommands
     {
-        public static class ProcessCalls
+        public static ProcessCall GetDataSet(string fullName)
         {
-            public static ProcessCall GetDataSets()
+            var dataset = DataSetHelper.Decode(fullName);
+            return ZfsList(ListTypes.FileSystem, dataset);
+        }
+
+        public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
+        {
+            var parent = DataSetHelper.Decode(fullName);
+
+            var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
+
+            return new ProcessCall(WhichZfs, $"create {propCommand} {parent}");
+        }
+
+        public static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
+        {
+            var dataset = DataSetHelper.Decode(dataSetName);
+
+            var args = string.Empty;
+            if (destroyFlags.HasFlag(DataSetDestroyFlags.Recursive))
             {
-                return new ProcessCall("/sbin/zfs", "list");
+                args += " -r";
             }
 
-            public static ProcessCall GetDataSet(string fullName)
+            if (destroyFlags.HasFlag(DataSetDestroyFlags.RecursiveClones))
             {
-                var dataset = DataSetHelper.Decode(fullName);
-                return new ProcessCall("/sbin/zfs", $"list {dataset}");
+                args += " -R";
             }
 
-            public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
+            if (destroyFlags.HasFlag(DataSetDestroyFlags.ForceUmount))
             {
-                var parent = DataSetHelper.Decode(fullName);
-
-                var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
-
-                return new ProcessCall("/sbin/zfs", $"create {propCommand} {parent}");
+                args += " -f";
             }
 
-            public static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
+            if (destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
             {
-                var dataset = DataSetHelper.Decode(dataSetName);
-
-                var args = string.Empty;
-                if (destroyFlags.HasFlag(DataSetDestroyFlags.Recursive))
-                {
-                    args += " -r";
-                }
-
-                if (destroyFlags.HasFlag(DataSetDestroyFlags.RecursiveClones))
-                {
-                    args += " -R";
-                }
-
-                if (destroyFlags.HasFlag(DataSetDestroyFlags.ForceUmount))
-                {
-                    args += " -f";
-                }
-
-                if (destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
-                {
-                    args += " -nvp";
-                }
-
-                return new ProcessCall("/sbin/zfs", $"destroy{args} {dataset}");
+                args += " -nvp";
             }
+
+            return new ProcessCall(WhichZfs, $"destroy{args} {dataset}");
         }
     }
 }
