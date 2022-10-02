@@ -24,7 +24,11 @@ jobs:
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore
     - name: Test
-      run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration"
+      run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        fail_ci_if_error: true
     - name: Set status
       run: |
         curl \
