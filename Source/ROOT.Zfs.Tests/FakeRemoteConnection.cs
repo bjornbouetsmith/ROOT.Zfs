@@ -28,22 +28,22 @@ namespace ROOT.Zfs.Tests
 
         private ProcessCallResult GetResponse()
         {
-            var response = StdOutput ?? _responses.LoadResponse(FullCommandLine);
+            var fakes = _responses.LoadResponse(FullCommandLine);
+            var stdOut = (StdOutput ?? fakes.StdOut);
+            var stdError = (StdError ?? fakes.StdError);
             return new ProcessCallResult
             {
                 CommandLine = FullCommandLine,
                 ExitCode = Success ? 0 : 1,
-                StdError = Success ? string.Empty : "Error happened",
-                StdOut = response
+                StdError = stdError,
+                StdOut = stdOut
             };
         }
 
         public IProcessCall Pipe(IProcessCall other)
         {
-            return new FakeRemoteConnection(_zfsVersion)
-            {
-                FullCommandLine = other.FullCommandLine
-            };
+            FullCommandLine = other.FullCommandLine;
+            return this;
         }
 
         public string BinPath => "FAKE";
@@ -59,5 +59,9 @@ namespace ROOT.Zfs.Tests
         /// Set this if you want to override default response from mocks
         /// </summary>
         public string StdOutput { get; set; }
+        /// <summary>
+        /// Set this if you want to override default response from mocks
+        /// </summary>
+        public string StdError { get; set; }
     }
 }

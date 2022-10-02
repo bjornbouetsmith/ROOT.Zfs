@@ -2,6 +2,6 @@
 {
     internal interface IVersionResponse
     {
-        string LoadResponse(string commandLine);
+        (string StdOut, string StdError) LoadResponse(string commandLine);
     }
 }
