@@ -51,6 +51,7 @@ If you want to help make this library greater either by
 * Contributing code 
 * Writing examples
 * Better documentation
+* Writing tests and writing expected responses for a given version of zfs - if it differs from version to version
 
 or in any other way, feel free to contact [@bjornbouetsmith](https://github.com/bjornbouetsmith).
 
