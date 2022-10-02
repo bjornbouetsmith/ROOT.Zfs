@@ -1,9 +1,11 @@
 # Introduction 
-ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system
+ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system.
 
 [![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
 
 [![codecov](https://codecov.io/github/bjornbouetsmith/ROOT.Zfs/branch/main/graph/badge.svg?token=HVSPMWW7NZ)](https://codecov.io/github/bjornbouetsmith/ROOT.Zfs) (Bad I know - but much of the code is tested via integration tests, that I cannot get to run on github yet - if ever)
+
+Tested against ZoL version 2.1.5-2 - will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different.
 
 ## Example
 
