@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore
     - name: Test
-      run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration" --collect "Code Coverage" /p:CoverletOutputFormat=opencover
+      run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration" /p:CoverletOutputFormat=opencover
     - name: Codecov
       uses: codecov/codecov-action@v3
       with:
