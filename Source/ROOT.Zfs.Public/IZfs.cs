@@ -4,11 +4,30 @@ using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public
 {
+    /// <summary>
+    /// Public interface for the ZFS library.
+    /// Exposes functionality to manipulate a zfs installation via the binaries 'zfs' and 'zpool'
+    /// </summary>
     public interface IZfs
     {
+        /// <summary>
+        /// Contains snapshot related functionality
+        /// </summary>
         ISnapshots Snapshots { get; }
+        
+        /// <summary>
+        /// Contains dataset related functionality
+        /// </summary>
         IDataSets DataSets { get; }
+        
+        /// <summary>
+        /// Contains property related functionality
+        /// </summary>
         IProperties Properties { get; }
+        
+        /// <summary>
+        /// Contains pool related functionality
+        /// </summary>
         IZPool Pool { get; }
 
         /// <summary>
@@ -19,6 +38,9 @@ namespace ROOT.Zfs.Public
         /// </summary>
         TimeSpan CommandTimeout { get; set; }
 
+        /// <summary>
+        /// Gets information about zfs version from the underlying OS.
+        /// </summary>
         VersionInfo GetVersionInfo();
 
         /// <summary>
