@@ -78,12 +78,12 @@ namespace ROOT.Zfs.Core.Commands
 
         /// <summary>
         /// Returns a list of block devices - out from command
-        /// 'lsblk --include 8 -p|grep disk'
+        /// 'lsblk --include 8 --include 259 -p|grep disk'
         /// of type "disk"
         /// </summary>
         public static ProcessCall ListBlockDevices()
         {
-            return new ProcessCall("/usr/bin/lsblk", "--include 8 -p|grep disk");
+            return new ProcessCall("/usr/bin/lsblk", "--include 8 --include 259 -p|grep disk");
         }
     }
 }
