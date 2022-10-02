@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Core
 {
     internal class ZPool : ZfsBase, IZPool
     {
-        public ZPool(SSHProcessCall remoteConnection) : base(remoteConnection)
+        public ZPool(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 

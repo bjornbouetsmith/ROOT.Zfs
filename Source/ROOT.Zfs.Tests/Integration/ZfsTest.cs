@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 
-namespace ROOT.Zfs.Tests
+namespace ROOT.Zfs.Tests.Integration
 {
     [TestClass]
     public class ZfsTest
     {
-        readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");// "bbs", "zfsdev.root.dom", true);
 
-        [TestMethod,TestCategory("Integration")]
+        [TestMethod,TestCategory("FakeIntegration")]
         public void GetVersionInfo()
         {
             var zfs = new Core.Zfs(_remoteProcessCall);
@@ -24,7 +23,7 @@ namespace ROOT.Zfs.Tests
             }
         }
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod, TestCategory("FakeIntegration")]
         public void ListDisksTest()
         {
             var zfs = new Core.Zfs(_remoteProcessCall);

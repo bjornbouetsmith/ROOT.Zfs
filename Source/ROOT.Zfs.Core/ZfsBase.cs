@@ -6,25 +6,23 @@ namespace ROOT.Zfs.Core
 {
     public abstract class ZfsBase
     {
-        private readonly SSHProcessCall _remoteConnection;
+        private readonly IProcessCall _remoteConnection;
 
-        protected ZfsBase(SSHProcessCall remoteConnection)
+        protected ZfsBase(IProcessCall remoteConnection)
         {
             _remoteConnection = remoteConnection;
         }
 
         public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-        protected ProcessCall BuildCommand(ProcessCall current, ProcessCall previousCall = null)
+        protected IProcessCall BuildCommand(IProcessCall current)
         {
             // First use any remote connection
-            ProcessCall command = _remoteConnection;
+            IProcessCall command = _remoteConnection;
             
             // pipe into previous call if any
-            command |= previousCall;
-
-            // finally make the command complete, by piping into the current command
-            command |= current;
+            command = ProcessCallExtensions.Pipe(command, current);
+           
 
             Trace.WriteLine($"Built command:{command.FullCommandLine}");
             command.Timeout = CommandTimeout;

@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Core
         /// Creates an instance of the Zfs class.
         /// </summary>
         /// <param name="remoteConnection">Any remote connection that should be used. This parameter is optional - if null is passed then the local machine will be used.</param>
-        public Zfs(SSHProcessCall remoteConnection = null)
+        public Zfs(IProcessCall remoteConnection = null)
             : base(remoteConnection)
         {
             Snapshots = new Snapshots(remoteConnection);

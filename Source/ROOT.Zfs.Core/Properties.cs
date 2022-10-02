@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Core
 {
     internal class Properties : ZfsBase, IProperties
     {
-        public Properties(SSHProcessCall remoteConnection) : base(remoteConnection)
+        public Properties(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 
