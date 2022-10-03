@@ -12,12 +12,12 @@ namespace ROOT.Zfs.Tests
     /// </summary>
     internal class TestPool : IDisposable
     {
-        private readonly SSHProcessCall _remoteProcessCall;
+        private readonly IProcessCall _remoteProcessCall;
         private PoolCreationArgs _args;
 
         public string Name => _args.Name;
         
-        public TestPool(SSHProcessCall remoteProcessCall)
+        public TestPool(IProcessCall remoteProcessCall)
         {
             _remoteProcessCall = remoteProcessCall;
         }
@@ -99,7 +99,7 @@ namespace ROOT.Zfs.Tests
         /// <summary>
         /// Creates a simple mirror pool for any testing where size/type does not really matter
         /// </summary>
-        public static TestPool CreateSimplePool(SSHProcessCall remoteProcessCall)
+        public static TestPool CreateSimplePool(IProcessCall remoteProcessCall)
         {
             var pool = new TestPool(remoteProcessCall);
             try

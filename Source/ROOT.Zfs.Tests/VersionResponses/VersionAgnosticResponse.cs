@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs inherit -rS atime tank/myds":
                     return (null, null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds":
-                    return (GetSnapshots(),null);
+                    return (GetSnapshots(), null);
                 case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
                 case "/sbin/zfs snap tank/myds@20220922211347000-1":
                 case "/sbin/zfs snap tank/myds@20220922211347000-2":
@@ -50,9 +50,61 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs destroy tank/myds@20220922211347000-2":
                 case "/sbin/zfs destroy tank/myds@20220922211347000-3":
                     return (null, null);
+                case "/sbin/zpool status -vP tank":
+                    return (GetTankPoolStatus(), null);
+                case "/sbin/zpool status -vP mytest":
+                    return (GetMyTestPoolStatus(), null);
+                case "/sbin/zpool create mytest mirror /dev/sda /dev/sdb":
+                return (null, null);
+                case "/sbin/zpool destroy -f mytest":
+                    return (null, null);
+                case "/sbin/zpool history -l tank":
+                    return (GetTankHistory(), null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private static string GetTankHistory()
+        {
+            return @"2022-09-20.21:30:14 zpool create tank mirror /dev/disk/by-id/ata-QEMU_HARDDISK_QM00015 /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017 [user 0 (root) on zfsdev.root.dom:linux]
+2022-09-20.21:30:45 zpool import -c /etc/zfs/zpool.cache -aN [user 0 (root) on zfsdev.root.dom:linux]
+2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-1 [user 0 (root) on zfsdev.root.dom:linux]
+2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-2 [user 0 (root) on zfsdev.root.dom:linux]
+2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-3 [user 0 (root) on zfsdev.root.dom:linux]
+2022-10-03.18:04:00 zfs set atime=off tank/myds [user 0 (root) on zfsdev.root.dom:linux]";
+        }
+
+        private static string GetTankPoolStatus()
+        {
+            return @"  pool: tank
+ state: ONLINE
+  scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
+config:
+
+        NAME                                                            STATE     READ WRITE CKSUM
+        tank                                                            ONLINE       0     0     0
+          mirror-0                                                      ONLINE       0     0     0
+            /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6-part1  ONLINE       0     0     0
+            /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1  ONLINE       0     0     0
+
+errors: No known data errors";
+        }
+
+        private static string GetMyTestPoolStatus()
+        {
+            return @"  pool: mytest
+ state: ONLINE
+  scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
+config:
+
+        NAME                                                            STATE     READ WRITE CKSUM
+        mytest                                                          ONLINE       0     0     0
+          mirror-0                                                      ONLINE       0     0     0
+            /dev/sda                                                    ONLINE       0     0     0
+            /dev/sdb                                                    ONLINE       0     0     0
+
+errors: No known data errors";
         }
 
         private static string GetSnapshots()
