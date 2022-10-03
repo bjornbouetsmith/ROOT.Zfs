@@ -1,9 +1,10 @@
 # Introduction 
 ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system.
 
-[![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
+[![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 
-[![codecov](https://codecov.io/github/bjornbouetsmith/ROOT.Zfs/branch/main/graph/badge.svg?token=HVSPMWW7NZ)](https://codecov.io/github/bjornbouetsmith/ROOT.Zfs) (Bad I know - but much of the code is tested via integration tests, that I cannot get to run on github yet - if ever - also not quite up to date, since codecov has been disabled because of stability issues)
+(Coverage is bad I know - but much of the code is tested via integration tests, that I cannot get to run on github yet - if ever )
 
 Tested against ZoL version 2.1.5-2 - will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different.
 
