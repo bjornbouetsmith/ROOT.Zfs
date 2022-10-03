@@ -55,7 +55,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
             }
         }
 
-        private string GetSnapshots()
+        private static string GetSnapshots()
         {
             return @"snapshot        1664097229      tank/myds@20220925111346        0       24576   -       -
 snapshot        1664115215      tank/myds@20220925161329        15360   25600   -       -
@@ -66,7 +66,7 @@ snapshot        1664718665      tank/myds@20220922211347000-2        13312   256
 snapshot        1664718665      tank/myds@20220922211347000-3        13312   25600   -       -";
         }
 
-        private string GetAllProperties()
+        private static string GetAllProperties()
         {
             return @"tank/myds	type	filesystem	-
 tank/myds	creation	Wed Sep 21 18:23 2022	-
