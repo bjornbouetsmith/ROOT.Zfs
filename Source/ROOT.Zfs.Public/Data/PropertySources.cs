@@ -1,36 +1,37 @@
 ﻿using System;
 
-namespace ROOT.Zfs.Public.Data;
-
-public class PropertySources
+namespace ROOT.Zfs.Public.Data
 {
-    public static readonly PropertySource Local = new PropertySource("local");
-    public static readonly PropertySource Inherited = new PropertySource("inherited");
-    public static readonly PropertySource Default = new PropertySource("default");
-    public static readonly PropertySource Zfs = new PropertySource("-");
-    public static readonly PropertySource Unknown = new PropertySource("Uknown");
-
-    public static string Lookup(string source)
+    public static class PropertySources
     {
-        if (source.Equals("local", StringComparison.OrdinalIgnoreCase))
-        {
-            return Local.Name;
-        }
+        public static readonly PropertySource Local = new ("local");
+        public static readonly PropertySource Inherited = new ("inherited");
+        public static readonly PropertySource Default = new ("default");
+        public static readonly PropertySource Zfs = new ("-");
+        public static readonly PropertySource Unknown = new ("Uknown");
 
-        if (source.Equals("default", StringComparison.OrdinalIgnoreCase))
+        public static string Lookup(string source)
         {
-            return Default.Name;
-        }
-        if (source.Equals("-", StringComparison.OrdinalIgnoreCase))
-        {
-            return Zfs.Name;
-        }
+            if (source.Equals("local", StringComparison.OrdinalIgnoreCase))
+            {
+                return Local.Name;
+            }
 
-        if (source.StartsWith("inherited", StringComparison.OrdinalIgnoreCase))
-        {
-            return Inherited.Name;
-        }
+            if (source.Equals("default", StringComparison.OrdinalIgnoreCase))
+            {
+                return Default.Name;
+            }
+            if (source.Equals("-", StringComparison.OrdinalIgnoreCase))
+            {
+                return Zfs.Name;
+            }
 
-        return Unknown.Name;
+            if (source.StartsWith("inherited", StringComparison.OrdinalIgnoreCase))
+            {
+                return Inherited.Name;
+            }
+
+            return Unknown.Name;
+        }
     }
 }

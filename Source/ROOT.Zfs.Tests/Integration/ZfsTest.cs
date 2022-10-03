@@ -28,6 +28,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             var zfs = new Core.Zfs(_remoteProcessCall);
             var disks = zfs.ListDisks();
+            Assert.IsNotNull(disks);
+            Assert.IsTrue(disks.Any());
             Console.WriteLine(disks.Dump(new JsonFormatter()));
         }
     }

@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
             {
                 case "/sbin/zfs --version":
                     return (GetVersion(), null);
-                case "/usr/bin/lsblk --include 8 -p|grep disk":
+                case "/usr/bin/lsblk --include 8 --include 259 -p|grep disk":
                     return (LoadBlockDevices(), null);
                 case "/usr/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
                     return (LoadDisks(), null);
@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
             }
         }
 
-        private string LoadFileSystems(string contains)
+        private static string LoadFileSystems(string contains)
         {
 
             var content = @"filesystem      1663702213      tank    1111025664      33792   15011878912     /tank
@@ -54,7 +54,7 @@ filesystem      1663781153      tank/mytestds2  24576   24576   1073717248      
 zfs-kmod-{_version}";
         }
 
-        private string LoadBlockDevices()
+        private static string LoadBlockDevices()
         {
             return @"/dev/sda      8:0    0   16G  0 disk
 /dev/sdb      8:16   0   16G  0 disk
@@ -66,7 +66,7 @@ zfs-kmod-{_version}";
 ";
         }
 
-        private string LoadDisks()
+        private static string LoadDisks()
         {
             return @"
 ata-QEMU_HARDDISK_QM00013 ../../sdg

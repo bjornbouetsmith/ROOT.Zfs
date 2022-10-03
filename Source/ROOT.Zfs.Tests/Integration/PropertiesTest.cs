@@ -18,6 +18,7 @@ namespace ROOT.Zfs.Tests
             var pr = new Properties(_remoteProcessCall);
 
             var props = pr.GetProperties("tank/myds");
+            Assert.IsNotNull(props);
             foreach (var prop in props)
             {
                 Console.WriteLine(prop.Dump(new JsonFormatter()));

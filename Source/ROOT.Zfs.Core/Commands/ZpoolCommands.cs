@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -41,19 +42,19 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            var command = $"create {args.Name}";
+            StringBuilder command = new StringBuilder($"create {args.Name}");
 
 
             if (!string.IsNullOrEmpty(args.MountPoint))
             {
-                command += $" -m {args.MountPoint}";
+                command.Append($" -m {args.MountPoint}");
             }
 
             if (args.PoolProperties != null && args.PoolProperties.Length > 0)
             {
                 foreach (var property in args.PoolProperties)
                 {
-                    command += $" -o {property.Property}={property.Value}";
+                    command.Append($" -o {property.Property}={property.Value}");
                 }
             }
 
@@ -61,7 +62,7 @@ namespace ROOT.Zfs.Core.Commands
             {
                 foreach (var property in args.FileSystemProperties)
                 {
-                    command += $" -O {property.Property}={property.Value}";
+                    command.Append($" -O {property.Property}={property.Value}");
                 }
             }
 
@@ -69,13 +70,13 @@ namespace ROOT.Zfs.Core.Commands
             {
                 if (!vdevArg.Validate(out errorMessage))
                 {
-                    throw new ArgumentException(errorMessage, nameof(args.VDevs));
+                    throw new ArgumentException(errorMessage, nameof(args));
                 }
 
-                command += " " + vdevArg;
+                command.Append(" " + vdevArg);
             }
 
-            return new ProcessCall(WhichZpool, command);
+            return new ProcessCall(WhichZpool, command.ToString());
         }
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html

@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Tests
         {
             var ds = new DataSets(_remoteProcessCall);
             var dataSets = ds.GetDataSets();
-
+            Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
                 Console.WriteLine(set.Dump(new JsonFormatter()));

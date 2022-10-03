@@ -7,7 +7,7 @@ namespace ROOT.Zfs.Core.Helpers
     /// <summary>
     /// Class with helper methods to parse information about disk and block devices
     /// </summary>
-    internal class DiskHelper
+    internal static class DiskHelper
     {
         /// <summary>
         /// Expects the output of ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'

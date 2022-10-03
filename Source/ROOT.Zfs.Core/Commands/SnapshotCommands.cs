@@ -13,10 +13,14 @@ namespace ROOT.Zfs.Core.Commands
         private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-",RegexOptions.Compiled);
 
         /// <summary>
+        /// Creates a standard snapshot name based on the time passed into the method
+        /// </summary>
+        public static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
+
+        /// <summary>
         /// Lists snapshots in the given dataset or volume
         /// </summary>
         /// <param name="datasetOrVolume"></param>
-        /// <returns></returns>
         public static ProcessCall ListSnapshots(string datasetOrVolume)
         {
             return ZfsList(ListTypes.Snapshot, datasetOrVolume);
@@ -26,40 +30,38 @@ namespace ROOT.Zfs.Core.Commands
         /// Destroys the snapshot in the given dataset
         /// Snapshot has to be a child of dataset
         /// </summary>
-        /// <param name="dataSetOrVolume">The dataset or volume where the snapshot resides in</param>
-        /// <param name="snapName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
-        /// <returns></returns>
-        public static ProcessCall DestroySnapshot(string dataSetOrVolume, string snapName)
-        {
-            dataSetOrVolume = DataSetHelper.Decode(dataSetOrVolume);
-            var rawSnapName = snapName;
-            if (snapName.StartsWith(dataSetOrVolume, StringComparison.OrdinalIgnoreCase))
-            {
-                rawSnapName = snapName[(dataSetOrVolume.Length + 1)..];
-            }
-
-            return new ProcessCall(WhichZfs, $"destroy {dataSetOrVolume}@{rawSnapName}");
-        }
-
-        public static ProcessCall CreateSnapshot(string datasetOrVolume, string snapName)
+        /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
+        /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
+        public static ProcessCall DestroySnapshot(string datasetOrVolume, string snapshotName)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
-            if (NameAllow.Matches(snapName).Count != snapName.Length)
+            var rawSnapName = snapshotName;
+            if (snapshotName.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException($"{snapName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapName));
+                rawSnapName = snapshotName[(datasetOrVolume.Length + 1)..];
             }
 
-            return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapName}");
+            return new ProcessCall(WhichZfs, $"destroy {datasetOrVolume}@{rawSnapName}");
         }
+        /// <summary>
+        /// Creates a snapshot of the dataset with the given name
+        /// </summary>
+        /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
+        /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
+        public static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
+        {
+            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            if (NameAllow.Matches(snapshotName).Count != snapshotName.Length)
+            {
+                throw new ArgumentException($"{snapshotName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapshotName));
+            }
 
-        public static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
-
+            return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapshotName}");
+        }
         
         /// <summary>
         /// Creates a snapshot of the dataset using the format: yyyyMMddHHmmss
         /// </summary>
-        /// <param name="datasetOrVolume"></param>
-        /// <returns></returns>
         public static ProcessCall CreateSnapshot(string datasetOrVolume)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);

@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Tests
             var sn = new Snapshots(_remoteProcessCall);
 
             var snapshots = sn.GetSnapshots("tank/myds");
-
+            Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
                 Console.WriteLine(snap.CreationDate.AsString());

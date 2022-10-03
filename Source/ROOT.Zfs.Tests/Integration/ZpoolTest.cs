@@ -70,6 +70,8 @@ namespace ROOT.Zfs.Tests.Integration
 
             var status = zfs.Pool.GetStatus("tank");
 
+            Assert.IsNotNull(status);
+
             if (status.State == State.Online)
             {
                 return;

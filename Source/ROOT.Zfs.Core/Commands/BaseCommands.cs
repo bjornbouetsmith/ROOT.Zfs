@@ -11,6 +11,13 @@ namespace ROOT.Zfs.Core.Commands
         public static string WhichZdb { get; set; } = "/sbin/zdb";
 
         /// <summary>
+        /// protected ctor - to force inheritance, and not usage directly
+        /// </summary>
+        protected BaseCommands()
+        {
+        }
+
+        /// <summary>
         /// Lists the given types
         /// Root only have any effect for snapshots for wildcard purposes- unless only a single record is wanted
         /// i.e.

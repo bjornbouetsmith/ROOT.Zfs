@@ -22,13 +22,12 @@ namespace ROOT.Zfs.Core
 
             var response = pc.LoadResponse();
 
-            if (!response.Success && response.StdError != null)
+            if (!response.Success 
+                && response.StdError != null 
+                && response.StdError.StartsWith("cannot open") 
+                && response.StdError.EndsWith("dataset does not exist"))
             {
-                if (response.StdError.StartsWith("cannot open")
-                    && response.StdError.EndsWith("dataset does not exist"))
-                {
-                    return null;
-                }
+                return null;
             }
 
             var line = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();

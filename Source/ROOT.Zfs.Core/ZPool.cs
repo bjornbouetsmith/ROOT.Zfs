@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -48,7 +49,8 @@ namespace ROOT.Zfs.Core
             {
                 throw response.ToException();
             }
-            return null;
+            // TODO: Implement this
+            return Enumerable.Empty<PoolInfo>();
         }
 
         public PoolInfo GetPoolInfo(string pool)

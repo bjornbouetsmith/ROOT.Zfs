@@ -32,7 +32,7 @@ config:
         ata-QEMU_HARDDISK_QM00015  ONLINE       0     0     0
         2252240780663618111        UNAVAIL      0     0     0  was /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017-part1
  */
-    internal class ZPoolStatusParser
+    internal static class ZPoolStatusParser
     {
         public static PoolStatus Parse(string input)
         {
@@ -186,7 +186,7 @@ config:
 
             var state = ParseState(parts[1]);
             var errors = ParseErrors(parts);
-            return (name, state, new Errors());
+            return (name, state, errors);
         }
 
         private static Errors ParseErrors(string[] parts)
