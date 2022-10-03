@@ -19,12 +19,8 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(SnapshotCommands.ListSnapshots(datasetOrVolume));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return SnapshotHelper.FromString(line);
@@ -36,12 +32,9 @@ namespace ROOT.Zfs.Core
             if (isExactName)
             {
                 var pc = BuildCommand(SnapshotCommands.DestroySnapshot(datasetOrVolume, snapName));
+                
+                pc.LoadResponse(true);
 
-                var response = pc.LoadResponse();
-                if (!response.Success)
-                {
-                    throw response.ToException();
-                }
             }
             else
             {
@@ -86,11 +79,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(SnapshotCommands.CreateSnapshot(dataset, snapName));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            pc.LoadResponse(true);
         }
     }
 }

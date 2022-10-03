@@ -18,12 +18,8 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(PropertyCommands.GetProperties(dataset));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             return DataSetProperties.FromStdOutput(response.StdOut);
         }
 
@@ -34,12 +30,8 @@ namespace ROOT.Zfs.Core
 
             var pc = BuildCommand(PropertyCommands.GetProperty(dataset, prop));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             return PropertyValueHelper.FromString(response.StdOut);
 
         }
@@ -52,12 +44,8 @@ namespace ROOT.Zfs.Core
 
             var pc = BuildCommand(PropertyCommands.SetProperty(dataset, prop, value));
             
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            pc.LoadResponse(true);
+            
             return GetProperty(dataset, property);
 
         }
@@ -69,7 +57,7 @@ namespace ROOT.Zfs.Core
                 var pc = BuildCommand(PropertyCommands.GetDataSetProperties());
 
                 IEnumerable<Property> properties;
-                var response = pc.LoadResponse();
+                var response = pc.LoadResponse(false);
                 if (response.Success)
                 {
                     properties = DataSetProperties.PropertiesFromStdOutput(response.StdOut);
@@ -98,11 +86,8 @@ namespace ROOT.Zfs.Core
 
             var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, prop));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            pc.LoadResponse(true);
+            
         }
     }
 }

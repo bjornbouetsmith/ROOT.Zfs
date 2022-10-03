@@ -20,35 +20,24 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.GetHistory(pool));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             return CommandHistoryHelper.FromStdOut(response.StdOut, skipLines, afterDate);
         }
 
         public PoolStatus GetStatus(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.GetStatus(pool));
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             return ZPoolStatusParser.Parse(response.StdOut);
         }
 
         public IEnumerable<PoolInfo> GetAllPoolInfos()
         {
             var pc = BuildCommand(ZpoolCommands.GetAllPoolInfos());
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            var response = pc.LoadResponse(true);
+            
             // TODO: Implement this
             return Enumerable.Empty<PoolInfo>();
         }
@@ -56,11 +45,8 @@ namespace ROOT.Zfs.Core
         public PoolInfo GetPoolInfo(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            var response = pc.LoadResponse(true);
+           
 
             return null;
         }
@@ -68,23 +54,15 @@ namespace ROOT.Zfs.Core
         public PoolStatus CreatePool(PoolCreationArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.CreatePool(args));
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            pc.LoadResponse(true);
+            
             return GetStatus(args.Name);
         }
 
         public void DestroyPool(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.DestroyPool(pool));
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            pc.LoadResponse(true);
         }
     }
 }

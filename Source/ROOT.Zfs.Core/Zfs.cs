@@ -30,32 +30,21 @@ namespace ROOT.Zfs.Core
         public VersionInfo GetVersionInfo()
         {
             var pc = BuildCommand(Commands.ZfsCommands.GetVersion());
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            var response = pc.LoadResponse(true);
+            
             return new VersionInfo { Lines = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) };
         }
 
         public IEnumerable<DiskInfo> ListDisks()
         {
             var disksCommand = BuildCommand(Commands.BaseCommands.ListBlockDevices());
-            var disksReponse = disksCommand.LoadResponse();
-            if (!disksReponse.Success)
-            {
-                throw disksReponse.ToException();
-            }
-
+            var disksReponse = disksCommand.LoadResponse(true);
+            
             var blockDevices = DiskHelper.BlockDevicesFromStdOutput(disksReponse.StdOut);
 
             var pc = BuildCommand(Commands.BaseCommands.ListDisks());
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (line.Trim().Length == 0)

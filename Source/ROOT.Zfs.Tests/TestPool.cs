@@ -42,7 +42,7 @@ namespace ROOT.Zfs.Tests
         private bool DestroyPool()
         {
             var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.Name}");
-            var response = pc.LoadResponse();
+            var response = pc.LoadResponse(false);
             if (!response.Success)
             {
                 Console.WriteLine(response.StdError);
@@ -58,19 +58,14 @@ namespace ROOT.Zfs.Tests
         {
             var command = $"if=/dev/zero of={name} bs=100MB count=1";
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/dd", command);
-            var response = pc.LoadResponse();
-
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
+            pc.LoadResponse(true);
         }
 
         private bool DeleteTestDisk(string name)
         {
             var command = $"-f {name}";
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/rm", command);
-            var response = pc.LoadResponse();
+            var response = pc.LoadResponse(false);
 
             if (!response.Success)
             {

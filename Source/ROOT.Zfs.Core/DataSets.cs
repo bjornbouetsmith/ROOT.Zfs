@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(DataSetCommands.GetDataSet(fullName));
 
-            var response = pc.LoadResponse();
+            var response = pc.LoadResponse(false);
 
             if (!response.Success 
                 && response.StdError != null 
@@ -43,12 +43,8 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(DataSetCommands.ZfsList(ListTypes.FileSystem, null));
 
-            var response = pc.LoadResponse();
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return DataSetHelper.FromString(line);
@@ -59,13 +55,8 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(DataSetCommands.CreateDataSet(dataSetName, properties));
 
-            var response = pc.LoadResponse();
-
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            pc.LoadResponse(true);
+            
             return GetDataSet(dataSetName);
         }
 
@@ -73,13 +64,8 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(DataSetCommands.DestroyDataSet(fullName, destroyFlags));
 
-            var response = pc.LoadResponse();
-
-            if (!response.Success)
-            {
-                throw response.ToException();
-            }
-
+            var response = pc.LoadResponse(true);
+            
             if (!destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
             {
                 return new DataSetDestroyResponse { Flags = destroyFlags };

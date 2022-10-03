@@ -91,7 +91,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void DestroyPoolTest()
         {
             var zp = new ZPool(_remoteProcessCall);
-            zp.CreatePool(new PoolCreationArgs
+            var pool = zp.CreatePool(new PoolCreationArgs
             {
                 Name = "mytest",
                 VDevs = new VDevCreationArgs[]
@@ -103,6 +103,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                     }
                 }
             });
+            Assert.IsNotNull(pool);
             zp.DestroyPool("mytest");
         }
     }

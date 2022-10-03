@@ -16,17 +16,17 @@ namespace ROOT.Zfs.Tests
             _responses = ZfsResponses.GetVersionResponse(zfsVersion);
         }
 
-        public ProcessCallResult LoadResponse(params string[] arguments)
+        public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
         {
-            return GetResponse();
+            return GetResponse(throwOnFailure);
         }
 
-        public ProcessCallResult LoadResponse(Stream inputStream, params string[] arguments)
+        public ProcessCallResult LoadResponse(bool throwOnFailure, Stream inputStream, params string[] arguments)
         {
-            return GetResponse();
+            return GetResponse(throwOnFailure);
         }
 
-        private ProcessCallResult GetResponse()
+        private ProcessCallResult GetResponse(bool throwOnFailure)
         {
             (string StdOut, string StdError) fakes = (null, null);
             if (StdError == null 
@@ -37,13 +37,20 @@ namespace ROOT.Zfs.Tests
 
             var stdOut = (StdOutput ?? fakes.StdOut);
             var stdError = (StdError ?? fakes.StdError);
-            return new ProcessCallResult
+            var result =  new ProcessCallResult
             {
                 CommandLine = FullCommandLine,
                 ExitCode = stdError != null ? 1 : 0,
                 StdError = stdError,
                 StdOut = stdOut
             };
+
+            if (throwOnFailure && !result.Success)
+            {
+                throw result.ToException();
+            }
+
+            return result;
         }
 
         public IProcessCall Pipe(IProcessCall other)
