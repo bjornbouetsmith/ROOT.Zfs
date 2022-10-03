@@ -41,13 +41,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=Source/ROOT.Zfs.Tests/coverage.opencover.xml
 
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore
 
     - name: Test
-      run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration"
+      run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
     - name: Analyze with sonarcloud
       env:
