@@ -49,9 +49,10 @@ jobs:
         dotnet restore Source/ROOT.Zfs.sln
     - name: Update version
       id: update_version
-      uses: vers-one/dotnet-project-version-updater@v1.1
+      uses: vers-one/dotnet-project-version-updater@v1.2
       with:
-        file: Source/**/*.csproj
+        file: Source/Directory.Build.props
+#        file: Source/**/*.csproj
         version: bump-build
 #    - name: Update version
 #      id: update_version2
