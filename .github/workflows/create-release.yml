@@ -40,16 +40,16 @@ jobs:
         dotnet restore Source/ROOT.Zfs.sln
     - name: Update version
       id: update_version
-      uses: vers-one/dotnet-project-version-updater@v1.0
+      uses: vers-one/dotnet-project-version-updater@v1.1
       with:
-        file: Source/ROOT.Zfs.Core/ROOT.Zfs.Core.csproj
+        file: Source/**/*.csproj
         version: bump-build
-    - name: Update version
-      id: update_version2
-      uses: vers-one/dotnet-project-version-updater@v1.0
-      with:
-        file: Source/ROOT.Zfs.Public/ROOT.Zfs.Public.csproj
-        version: bump-build
+#    - name: Update version
+#      id: update_version2
+#      uses: vers-one/dotnet-project-version-updater@v1.0
+#      with:
+#        file: Source/ROOT.Zfs.Public/ROOT.Zfs.Public.csproj
+#        version: bump-build
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore --configuration Release
     - name: Test
