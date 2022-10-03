@@ -4,7 +4,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 
-namespace ROOT.Zfs.Tests.Helpers
+namespace ROOT.Zfs.Tests.Integration.Fake
 {
     [TestClass]
     public class FakeDataSetTest
@@ -37,7 +37,7 @@ namespace ROOT.Zfs.Tests.Helpers
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetNonExistingDataSetShouldReturnNull()
         {
-            var ds = new DataSets(new FakeRemoteConnection("2.1.5-2") { Success = false });
+            var ds = new DataSets(new FakeRemoteConnection("2.1.5-2") );
             var dataset = ds.GetDataSet("ungabunga");
             Assert.IsNull(dataset);
         }

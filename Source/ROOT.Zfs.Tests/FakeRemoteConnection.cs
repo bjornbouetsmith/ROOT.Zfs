@@ -28,13 +28,19 @@ namespace ROOT.Zfs.Tests
 
         private ProcessCallResult GetResponse()
         {
-            var fakes = _responses.LoadResponse(FullCommandLine);
+            (string StdOut, string StdError) fakes = (null, null);
+            if (StdError == null 
+                && StdOutput == null)
+            {
+                fakes = _responses.LoadResponse(FullCommandLine);
+            }
+
             var stdOut = (StdOutput ?? fakes.StdOut);
             var stdError = (StdError ?? fakes.StdError);
             return new ProcessCallResult
             {
                 CommandLine = FullCommandLine,
-                ExitCode = Success ? 0 : 1,
+                ExitCode = stdError != null ? 1 : 0,
                 StdError = stdError,
                 StdOut = stdOut
             };
@@ -53,7 +59,6 @@ namespace ROOT.Zfs.Tests
         public bool UseShell { get; set; } = false;
         public TimeSpan Timeout { get; set; } = TimeSpan.MaxValue;
         public bool Started => false;
-        public bool Success { get; set; } = true;
 
         /// <summary>
         /// Set this if you want to override default response from mocks

@@ -16,7 +16,6 @@ namespace ROOT.Zfs.Core
 
         public IEnumerable<PropertyValue> GetProperties(string dataset)
         {
-
             var pc = BuildCommand(PropertyCommands.GetProperties(dataset));
 
             var response = pc.LoadResponse();
@@ -44,6 +43,7 @@ namespace ROOT.Zfs.Core
             return PropertyValueHelper.FromString(response.StdOut);
 
         }
+
         public PropertyValue SetProperty(string dataset, string property, string value)
         {
             EnsureAllDataSetPropertiesCache();

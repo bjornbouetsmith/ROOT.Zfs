@@ -27,9 +27,218 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (LoadFileSystems("tank"), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem ungabunga":
                     return (null, "cannot open 'ungabunga': dataset does not exist");
+                case "/sbin/zfs get -H":
+                    return (null, GetAvailableProperties());
+                case "/sbin/zfs get all tank/myds -H":
+                    return (GetAllProperties(), null);
+                case "/sbin/zfs set atime=off tank/myds":
+                case "/sbin/zfs set atime=on tank/myds":
+                    return (null, null);
+                case "/sbin/zfs get atime tank/myds -H":
+                    return ("tank/myd	satime	off	local", null);
+                case "/sbin/zfs inherit -rS atime tank/myds":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private string GetAllProperties()
+        {
+            return @"tank/myds	type	filesystem	-
+tank/myds	creation	Wed Sep 21 18:23 2022	-
+tank/myds	used	314K	-
+tank/myds	available	14.0G	-
+tank/myds	referenced	25K	-
+tank/myds	compressratio	1.01x	-
+tank/myds	mounted	yes	-
+tank/myds	quota	none	default
+tank/myds	reservation	none	default
+tank/myds	recordsize	128K	default
+tank/myds	mountpoint	/tank/myds	default
+tank/myds	sharenfs	off	default
+tank/myds	checksum	on	default
+tank/myds	compression	gzip	inherited from tank
+tank/myds	atime	off	local
+tank/myds	devices	on	default
+tank/myds	exec	on	default
+tank/myds	setuid	on	default
+tank/myds	readonly	off	default
+tank/myds	zoned	off	default
+tank/myds	snapdir	hidden	default
+tank/myds	aclmode	discard	default
+tank/myds	aclinherit	restricted	default
+tank/myds	createtxg	14698	-
+tank/myds	canmount	on	default
+tank/myds	xattr	on	default
+tank/myds	copies	1	default
+tank/myds	version	5	-
+tank/myds	utf8only	off	-
+tank/myds	normalization	none	-
+tank/myds	casesensitivity	sensitive	-
+tank/myds	vscan	off	default
+tank/myds	nbmand	off	default
+tank/myds	sharesmb	off	default
+tank/myds	refquota	none	default
+tank/myds	refreservation	none	default
+tank/myds	guid	5551566229605187679	-
+tank/myds	primarycache	all	default
+tank/myds	secondarycache	all	default
+tank/myds	usedbysnapshots	215K	-
+tank/myds	usedbydataset	25K	-
+tank/myds	usedbychildren	74K	-
+tank/myds	usedbyrefreservation	0B	-
+tank/myds	logbias	latency	default
+tank/myds	objsetid	82	-
+tank/myds	dedup	off	default
+tank/myds	mlslabel	none	default
+tank/myds	sync	standard	default
+tank/myds	dnodesize	legacy	default
+tank/myds	refcompressratio	1.04x	-
+tank/myds	written	0	-
+tank/myds	logicalused	160K	-
+tank/myds	logicalreferenced	13K	-
+tank/myds	volmode	default	default
+tank/myds	filesystem_limit	none	default
+tank/myds	snapshot_limit	none	default
+tank/myds	filesystem_count	none	default
+tank/myds	snapshot_count	none	default
+tank/myds	snapdev	hidden	default
+tank/myds	acltype	off	default
+tank/myds	context	none	default
+tank/myds	fscontext	none	default
+tank/myds	defcontext	none	default
+tank/myds	rootcontext	none	default
+tank/myds	relatime	off	default
+tank/myds	redundant_metadata	all	default
+tank/myds	overlay	on	default
+tank/myds	encryption	off	default
+tank/myds	keylocation	none	default
+tank/myds	keyformat	none	default
+tank/myds	pbkdf2iters	0	default
+tank/myds	special_small_blocks	0	default
+";
+        }
+
+        private static string GetAvailableProperties()
+        {
+            return @"missing property argument
+usage:
+        get [-rHp] [-d max] [-o ""all"" | field[,...]]
+            [-t type[,...]] [-s source[,...]]
+            <""all"" | property[,...]> [filesystem|volume|snapshot|bookmark] ...
+
+The following properties are supported:
+
+        PROPERTY       EDIT  INHERIT   VALUES
+
+        available        NO       NO   <size>
+        clones           NO       NO   <dataset>[,...]
+        compressratio    NO       NO   <1.00x or higher if compressed>
+        createtxg        NO       NO   <uint64>
+        creation         NO       NO   <date>
+        defer_destroy    NO       NO   yes | no
+        encryptionroot   NO       NO   <filesystem | volume>
+        filesystem_count  NO       NO   <count>
+        guid             NO       NO   <uint64>
+        keystatus        NO       NO   none | unavailable | available
+        logicalreferenced  NO       NO   <size>
+        logicalused      NO       NO   <size>
+        mounted          NO       NO   yes | no
+        objsetid         NO       NO   <uint64>
+        origin           NO       NO   <snapshot>
+        receive_resume_token  NO       NO   <string token>
+        redact_snaps     NO       NO   <snapshot>[,...]
+        refcompressratio  NO       NO   <1.00x or higher if compressed>
+        referenced       NO       NO   <size>
+        snapshot_count   NO       NO   <count>
+        type             NO       NO   filesystem | volume | snapshot | bookmark
+        used             NO       NO   <size>
+        usedbychildren   NO       NO   <size>
+        usedbydataset    NO       NO   <size>
+        usedbyrefreservation  NO       NO   <size>
+        usedbysnapshots  NO       NO   <size>
+        userrefs         NO       NO   <count>
+        written          NO       NO   <size>
+        aclinherit      YES      YES   discard | noallow | restricted | passthrough | passthrough-x
+        aclmode         YES      YES   discard | groupmask | passthrough | restricted
+        acltype         YES      YES   off | nfsv4 | posix
+        atime           YES      YES   on | off
+        canmount        YES       NO   on | off | noauto
+        casesensitivity  NO      YES   sensitive | insensitive | mixed
+        checksum        YES      YES   on | off | fletcher2 | fletcher4 | sha256 | sha512 | skein | edonr
+        compression     YES      YES   on | off | lzjb | gzip | gzip-[1-9] | zle | lz4 | zstd | zstd-[1-19] | zstd-fast | zstd-fast-[1-10,20,30,40,50,60,70,80,90,100,500,1000]
+        context         YES       NO   <selinux context>
+        copies          YES      YES   1 | 2 | 3
+        dedup           YES      YES   on | off | verify | sha256[,verify] | sha512[,verify] | skein[,verify] | edonr,verify
+        defcontext      YES       NO   <selinux defcontext>
+        devices         YES      YES   on | off
+        dnodesize       YES      YES   legacy | auto | 1k | 2k | 4k | 8k | 16k
+        encryption       NO      YES   on | off | aes-128-ccm | aes-192-ccm | aes-256-ccm | aes-128-gcm | aes-192-gcm | aes-256-gcm
+        exec            YES      YES   on | off
+        filesystem_limit YES       NO   <count> | none
+        fscontext       YES       NO   <selinux fscontext>
+        keyformat        NO       NO   none | raw | hex | passphrase
+        keylocation     YES       NO   prompt | <file URI> | <https URL> | <http URL>
+        logbias         YES      YES   latency | throughput
+        mlslabel        YES      YES   <sensitivity label>
+        mountpoint      YES      YES   <path> | legacy | none
+        nbmand          YES      YES   on | off
+        normalization    NO      YES   none | formC | formD | formKC | formKD
+        overlay         YES      YES   on | off
+        pbkdf2iters      NO       NO   <iters>
+        primarycache    YES      YES   all | none | metadata
+        quota           YES       NO   <size> | none
+        readonly        YES      YES   on | off
+        recordsize      YES      YES   512 to 1M, power of 2
+        redundant_metadata YES      YES   all | most
+        refquota        YES       NO   <size> | none
+        refreservation  YES       NO   <size> | none
+        relatime        YES      YES   on | off
+        reservation     YES       NO   <size> | none
+        rootcontext     YES       NO   <selinux rootcontext>
+        secondarycache  YES      YES   all | none | metadata
+        setuid          YES      YES   on | off
+        sharenfs        YES      YES   on | off | NFS share options
+        sharesmb        YES      YES   on | off | SMB share options
+        snapdev         YES      YES   hidden | visible
+        snapdir         YES      YES   hidden | visible
+        snapshot_limit  YES       NO   <count> | none
+        special_small_blocks YES      YES   zero or 512 to 1M, power of 2
+        sync            YES      YES   standard | always | disabled
+        utf8only         NO      YES   on | off
+        version         YES       NO   1 | 2 | 3 | 4 | 5 | current
+        volblocksize     NO      YES   512 to 128k, power of 2
+        volmode         YES      YES   default | full | geom | dev | none
+        volsize         YES       NO   <size>
+        vscan           YES      YES   on | off
+        xattr           YES      YES   on | off | dir | sa
+        zoned           YES      YES   on | off
+        userused@...     NO       NO   <size>
+        groupused@...    NO       NO   <size>
+        projectused@...  NO       NO   <size>
+        userobjused@...  NO       NO   <size>
+        groupobjused@...  NO       NO   <size>
+        projectobjused@...  NO       NO   <size>
+        userquota@...   YES       NO   <size> | none
+        groupquota@...  YES       NO   <size> | none
+        projectquota@... YES       NO   <size> | none
+        userobjquota@... YES       NO   <size> | none
+        groupobjquota@... YES       NO   <size> | none
+        projectobjquota@... YES       NO   <size> | none
+        written@<snap>   NO       NO   <size>
+        written#<bookmark>  NO       NO   <size>
+
+Sizes are specified in bytes with standard units such as K, M, G, etc.
+
+User-defined properties can be specified by using a name containing a colon (:).
+
+The {user|group|project}[obj]{used|quota}@ properties must be appended with
+a user|group|project specifier of one of these forms:
+    POSIX name      (eg: ""matt"")
+    POSIX id        (eg: ""126829"")
+    SMB name@domain (eg: ""matt@sun"")
+    SMB SID         (eg: ""S-1-234-567-89"")";
         }
 
         private static string LoadFileSystems(string contains)

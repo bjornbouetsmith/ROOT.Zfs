@@ -248,6 +248,7 @@ config:
         }
     }
 
+    [Serializable]
     public class ParseException : Exception
     {
         public int Index { get; }
