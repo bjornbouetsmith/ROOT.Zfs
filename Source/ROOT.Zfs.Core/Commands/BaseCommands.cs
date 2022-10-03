@@ -4,18 +4,15 @@ using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Core.Commands
 {
+    /// <summary>
+    /// This should be improved, so we can have commands defined per version if required
+    /// And a way to register commands for a given version
+    /// </summary>
     public class BaseCommands
     {
         public static string WhichZfs { get; set; }="/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";
         public static string WhichZdb { get; set; } = "/sbin/zdb";
-
-        /// <summary>
-        /// protected ctor - to force inheritance, and not usage directly
-        /// </summary>
-        protected BaseCommands()
-        {
-        }
 
         /// <summary>
         /// Lists the given types
