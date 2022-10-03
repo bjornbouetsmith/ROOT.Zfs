@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{9759C1
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\create-release.yml = ..\.github\workflows\create-release.yml
 		..\.github\workflows\dotnet-ci-build.yml = ..\.github\workflows\dotnet-ci-build.yml
+		..\.github\workflows\dotnet-ci-sonar.yml = ..\.github\workflows\dotnet-ci-sonar.yml
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
