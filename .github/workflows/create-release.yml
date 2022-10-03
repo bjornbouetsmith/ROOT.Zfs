@@ -14,10 +14,19 @@ on:
     inputs:
       publish_nuget:
         type: boolean  
-        description: 'Publish nuget package'
+        description: 'Publish nuget package to github'
         default: true
         required: true
-
+      publish_nuget_org:
+        type: boolean  
+        description: 'Publish nuget package to nuget.org'
+        default: false
+        required: true
+      checkin_version:
+        type: boolean  
+        description: 'Check in version update'
+        default: true
+        required: true
 jobs:
   build:
 
@@ -54,18 +63,16 @@ jobs:
       run: dotnet build Source/ROOT.Zfs.sln --no-restore --configuration Release
     - name: Test
       run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --configuration Release --filter "TestCategory!=Integration"
-#    - name: Upload nuget package
-#      if: ${{ inputs.publish_nuget }}
-#      uses: actions/upload-artifact@v3.1.0
-#      with:
-#        name: nuget
-#        path: Source/**/*.nupkg
-#        if-no-files-found: error
     - name: publish nuget to github repository
-      if: ${{ inputs.publish_nuget }}  
+      if: ${{ inputs.publish_nuget }}
       run: dotnet nuget push Source/**/*.nupkg  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+    - name: publish nuget to nuget.org repository
+      if: ${{ inputs.publish_nuget_org }}
+      run: dotnet nuget push Source/**/*.nupkg  --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
     - name: check in version update
       id: run_git_commit
+      if: ${{ inputs.checkin_version }}
       run: |
         git config user.name "${{ github.triggering_actor }}"
         git add .
