@@ -38,9 +38,32 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return ("tank/myd	satime	off	local", null);
                 case "/sbin/zfs inherit -rS atime tank/myds":
                     return (null, null);
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds":
+                    return (GetSnapshots(),null);
+                case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
+                case "/sbin/zfs snap tank/myds@20220922211347000-1":
+                case "/sbin/zfs snap tank/myds@20220922211347000-2":
+                case "/sbin/zfs snap tank/myds@20220922211347000-3":
+                    return (null, null);
+                case "/sbin/zfs destroy tank/myds@RemoteCreateSnapshot20220922091347":
+                case "/sbin/zfs destroy tank/myds@20220922211347000-1":
+                case "/sbin/zfs destroy tank/myds@20220922211347000-2":
+                case "/sbin/zfs destroy tank/myds@20220922211347000-3":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private string GetSnapshots()
+        {
+            return @"snapshot        1664097229      tank/myds@20220925111346        0       24576   -       -
+snapshot        1664115215      tank/myds@20220925161329        15360   25600   -       -
+snapshot        1664121611      tank/myds@20220925180007        14336   25600   -       -
+snapshot        1664718665      tank/myds@20221002155059        13312   25600   -       -
+snapshot        1664718665      tank/myds@20220922211347000-1        13312   25600   -       -
+snapshot        1664718665      tank/myds@20220922211347000-2        13312   25600   -       -
+snapshot        1664718665      tank/myds@20220922211347000-3        13312   25600   -       -";
         }
 
         private string GetAllProperties()
