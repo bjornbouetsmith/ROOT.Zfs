@@ -1,7 +1,12 @@
 # Introduction 
 ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system.
 
-[![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 
 (Coverage is bad I know - but much of the code is tested via integration tests, that I cannot get to run on github yet - if ever )
