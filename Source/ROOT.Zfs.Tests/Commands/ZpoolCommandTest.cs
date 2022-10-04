@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var command = ZpoolCommands.GetAllPoolInfos();
 
-            Assert.AreEqual("/sbin/zpool list -vP", command.FullCommandLine);
+            Assert.AreEqual("/sbin/zpool list -PH", command.FullCommandLine);
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var command = ZpoolCommands.GetPoolInfo("tank");
 
-            Assert.AreEqual("/sbin/zpool list -vP tank", command.FullCommandLine);
+            Assert.AreEqual("/sbin/zpool list -PH tank", command.FullCommandLine);
         }
 
         [TestMethod]

@@ -226,25 +226,7 @@ config:
             var poolParts = line.Split(':');
             var stateText = poolParts.Length > 1 ? poolParts[1].Trim() : poolParts[0].Trim();
 
-            switch (stateText)
-            {
-                case "ONLINE":
-                    return State.Online;
-                case "DEGRADED":
-                    return State.Degraded;
-                case "OFFLINE":
-                    return State.Offline;
-                case "FAULTED":
-                    return State.Faulted;
-                case "REMOVED":
-                    return State.Removed;
-                case "UNAVAIL":
-                    return State.Unavailable;
-                case "AVAIL":
-                    return State.Available;
-                default:
-                    return State.Unknown;
-            }
+            return StateParser.Parse(stateText);
         }
     }
 

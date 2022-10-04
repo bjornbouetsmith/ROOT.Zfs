@@ -16,15 +16,22 @@ namespace ROOT.Zfs.Core.Commands
         {
             return new ProcessCall(WhichZpool, $"status -vP {pool}");
         }
-
+        /// <summary>
+        /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
+        /// </summary>
+        /// <returns></returns>
         public static ProcessCall GetAllPoolInfos()
         {
-            return new ProcessCall(WhichZpool, "list -vP");
+            return new ProcessCall(WhichZpool, "list -PH");
         }
-
+        /// <summary>
+        /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
+        /// </summary>
+        /// <param name="pool"></param>
+        /// <returns></returns>
         public static ProcessCall GetPoolInfo(string pool)
         {
-            return new ProcessCall(WhichZpool, $"list -vP {pool}");
+            return new ProcessCall(WhichZpool, $"list -PH {pool}");
         }
 
         /// <summary>

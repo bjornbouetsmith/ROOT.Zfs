@@ -60,9 +60,28 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool history -l tank":
                     return (GetTankHistory(), null);
+                case "/sbin/zpool list -PH":
+                    return (GetAllPoolInfos(""), null);
+                case "/sbin/zpool list -PH tank2":
+                    return (GetAllPoolInfos("tank2"), null);
+
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private static string GetAllPoolInfos(string filter)
+        {
+            var lines =  @"tank    15.5G   2.66M   15.5G   -       -       1.2%      0%      1.00x   ONLINE  -
+tank2    15.5T   2.66T   15.5T   -       -       7.3%      6.5%      1.43x   ONLINE  -";
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                var filtered = lines.Split(new[]{'\r','\n'},StringSplitOptions.RemoveEmptyEntries).Where(l=>l.StartsWith(filter));
+                return string.Join("\r\n", filtered);
+            }
+
+            return lines;
         }
 
         private static string GetTankHistory()

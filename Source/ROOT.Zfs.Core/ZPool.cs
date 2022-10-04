@@ -37,18 +37,16 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.GetAllPoolInfos());
             var response = pc.LoadResponse(true);
-            
-            // TODO: Implement this
-            return Enumerable.Empty<PoolInfo>();
+
+            return ZPoolInfoParser.ParseFromStdOut(response.StdOut);
         }
 
         public PoolInfo GetPoolInfo(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
             var response = pc.LoadResponse(true);
-           
 
-            return null;
+            return ZPoolInfoParser.ParseLine(response.StdOut);
         }
 
         public PoolStatus CreatePool(PoolCreationArgs args)
