@@ -10,6 +10,8 @@
     <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/bjornbouetsmith/ROOT.Zfs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb;.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 </Project>
