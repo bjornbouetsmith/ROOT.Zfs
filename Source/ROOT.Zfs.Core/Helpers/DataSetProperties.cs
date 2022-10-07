@@ -15,7 +15,6 @@ namespace ROOT.Zfs.Core.Helpers
             {
                 // To cater for user defined properties
                 property = new Property(name, true, "Unkown property values");
-                _properties[name] = property;
             }
 
             return property;
