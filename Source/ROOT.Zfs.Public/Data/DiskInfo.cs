@@ -11,6 +11,7 @@
         public DiskType Type { get; set; }
         /// <summary>
         /// The ID of the disk/partition - prefer this to create pools with
+        /// in the format /dev/disk/by-id/XXX
         /// </summary>
         public string Id { get; set; }
         

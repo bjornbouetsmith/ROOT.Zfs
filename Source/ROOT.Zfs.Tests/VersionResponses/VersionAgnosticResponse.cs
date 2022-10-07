@@ -64,10 +64,86 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetAllPoolInfos(""), null);
                 case "/sbin/zpool list -PH tank2":
                     return (GetAllPoolInfos("tank2"), null);
+                case "/usr/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
+                    return (GetSmartInfoSCSI5(), null);
+                case "/usr/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
+                    return (GetSmartInfoSCSI6(), null);
 
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private string GetSmartInfoSCSI6()
+        {
+            return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=== START OF INFORMATION SECTION ===
+Model Family:     Toshiba HK4R Series SSD
+Device Model:     TOSHIBA THNSN8960PCSE
+Serial Number:    26MS1049TB1V
+LU WWN Device Id: 5 00080d 910596e6c
+Firmware Version: 8EET6101
+User Capacity:    960,197,124,096 bytes [960 GB]
+Sector Size:      512 bytes logical/physical
+Rotation Rate:    Solid State Device
+Form Factor:      2.5 inches
+TRIM Command:     Available, deterministic, zeroed
+Device is:        In smartctl database [for details use: -P show]
+ATA Version is:   ACS-3 (minor revision not indicated)
+SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
+Local Time is:    Fri Oct  7 16:57:57 2022 CEST
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===
+SMART overall-health self-assessment test result: PASSED
+
+General SMART Values:
+Offline data collection status:  (0x00) Offline data collection activity
+                                        was never started.
+                                        Auto Offline Data Collection: Disabled.
+Self-test execution status:      (   0) The previous self-test routine completed
+                                        without error or no self-test has ever
+                                        been run.
+";
+        }
+
+        private string GetSmartInfoSCSI5()
+        {
+            return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=== START OF INFORMATION SECTION ===
+Model Family:     Toshiba HK4R Series SSD
+Device Model:     TOSHIBA THNSN8960PCSE
+Serial Number:    26MS1049TB1V
+LU WWN Device Id: 5 00080d 910596e6c
+Firmware Version: 8EET6101
+User Capacity:    960,197,124,096 bytes [960 GB]
+Sector Size:      512 bytes logical/physical
+Rotation Rate:    Solid State Device
+Form Factor:      2.5 inches
+TRIM Command:     Available, deterministic, zeroed
+Device is:        In smartctl database [for details use: -P show]
+ATA Version is:   ACS-3 (minor revision not indicated)
+SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
+Local Time is:    Fri Oct  7 16:57:57 2022 CEST
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===
+SMART overall-health self-assessment test result: FAILED
+
+General SMART Values:
+Offline data collection status:  (0x00) Offline data collection activity
+                                        was never started.
+                                        Auto Offline Data Collection: Disabled.
+Self-test execution status:      (   0) The previous self-test routine completed
+                                        without error or no self-test has ever
+                                        been run.
+";
         }
 
         private static string GetAllPoolInfos(string filter)
@@ -361,35 +437,12 @@ zfs-kmod-{_version}";
         {
             return @"/dev/sda      8:0    0   16G  0 disk
 /dev/sdb      8:16   0   16G  0 disk
-/dev/sdc      8:32   0   16G  0 disk
-/dev/sdd      8:48   0   16G  0 disk
-/dev/sde      8:64   0   16G  0 disk
-/dev/sdf      8:80   0   16G  0 disk
-/dev/sdg      8:96   0   32G  0 disk
 ";
         }
 
         private static string LoadDisks()
         {
-            return @"
-ata-QEMU_HARDDISK_QM00013 ../../sdg
-ata-QEMU_HARDDISK_QM00013-part1 ../../sdg1
-ata-QEMU_HARDDISK_QM00013-part2 ../../sdg2
-ata-QEMU_HARDDISK_QM00013-part3 ../../sdg3
-ata-QEMU_HARDDISK_QM00013-part4 ../../sdg4
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi1 ../../sdf
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi1-part1 ../../sdf1
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi1-part9 ../../sdf9
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi2 ../../sde
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi2-part1 ../../sde1
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi2-part9 ../../sde9
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi3 ../../sdd
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi3-part1 ../../sdd1
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi3-part9 ../../sdd9
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi4 ../../sdc
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi4-part1 ../../sdc1
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi4-part9 ../../sdc9
-scsi-0QEMU_QEMU_HARDDISK_drive-scsi5 ../../sdb
+            return @"scsi-0QEMU_QEMU_HARDDISK_drive-scsi5 ../../sdb
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1 ../../sdb1
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part9 ../../sdb9
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda

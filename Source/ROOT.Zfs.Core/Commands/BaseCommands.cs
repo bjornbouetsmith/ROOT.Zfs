@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Core.Commands
     /// </summary>
     public class BaseCommands
     {
-        public static string WhichZfs { get; set; }="/sbin/zfs";
+        public static string WhichZfs { get; set; } = "/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";
         public static string WhichZdb { get; set; } = "/sbin/zdb";
 
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Core.Commands
             {
                 command += " -t " + string.Join(",", types);
             }
-            
+
             if (!string.IsNullOrEmpty(root))
             {
                 // just to be safe
@@ -88,6 +88,15 @@ namespace ROOT.Zfs.Core.Commands
         public static ProcessCall ListBlockDevices()
         {
             return new ProcessCall("/usr/bin/lsblk", "--include 8 --include 259 -p|grep disk");
+        }
+
+        /// <summary>
+        /// Returns smart info for the given device
+        /// '/usr/sbin/smartctl -a /dev/disk/by-id/xxx'
+        /// </summary>
+        public static ProcessCall GetSmartInfo(string deviceId)
+        {
+            return new ProcessCall("/usr/sbin/smartctl", $"-a {deviceId}");
         }
     }
 }

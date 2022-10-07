@@ -47,5 +47,16 @@ namespace ROOT.Zfs.Public
         /// Lists the disks in the system
         /// </summary>
         IEnumerable<DiskInfo> ListDisks();
+
+        /// <summary>
+        /// Gets smart info for all devices of type disk in the system
+        /// </summary>
+        IEnumerable<SmartInfo> GetSmartInfos();
+        
+        /// <summary>
+        /// Gets smart info for the device
+        /// </summary>
+        /// <param name="name">The full id or name of the device</param>
+        SmartInfo GetSmartInfo(string name);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
@@ -31,7 +32,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(Commands.ZfsCommands.GetVersion());
             var response = pc.LoadResponse(true);
-            
+
             return new VersionInfo { Lines = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) };
         }
 
@@ -39,12 +40,12 @@ namespace ROOT.Zfs.Core
         {
             var disksCommand = BuildCommand(Commands.BaseCommands.ListBlockDevices());
             var disksReponse = disksCommand.LoadResponse(true);
-            
+
             var blockDevices = DiskHelper.BlockDevicesFromStdOutput(disksReponse.StdOut);
 
             var pc = BuildCommand(Commands.BaseCommands.ListDisks());
             var response = pc.LoadResponse(true);
-            
+
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (line.Trim().Length == 0)
@@ -54,6 +55,27 @@ namespace ROOT.Zfs.Core
 
                 yield return DiskHelper.FromString(line, blockDevices);
             }
+        }
+
+        public IEnumerable<SmartInfo> GetSmartInfos()
+        {
+            List<SmartInfo> smartInfos = new List<SmartInfo>();
+            foreach (var disk in ListDisks().Where(d => d.Type == DiskType.Disk))
+            {
+                var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(disk.Id));
+                var response = command.LoadResponse(true);
+                var info = SmartInfoParser.ParseStdOut(disk.Id, response.StdOut);
+                smartInfos.Add(info);
+            }
+
+            return smartInfos;
+        }
+
+        public SmartInfo GetSmartInfo(string name)
+        {
+            var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(name));
+            var response = command.LoadResponse(true);
+            return SmartInfoParser.ParseStdOut(name, response.StdOut);
         }
     }
 }
