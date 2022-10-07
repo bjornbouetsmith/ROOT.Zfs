@@ -68,10 +68,56 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetSmartInfoSCSI5(), null);
                 case "/usr/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
                     return (GetSmartInfoSCSI6(), null);
+                case "/sbin/zpool get -H":
+                    return (null, GetAvailablePoolProperties());
 
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private string GetAvailablePoolProperties()
+        {
+            return @"usage:
+        get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
+
+the following properties are supported:
+
+        PROPERTY             EDIT   VALUES
+
+        allocated              NO   <size>
+        capacity               NO   <size>
+        checkpoint             NO   <size>
+        dedupratio             NO   <1.00x or higher if deduped>
+        expandsize             NO   <size>
+        fragmentation          NO   <percent>
+        free                   NO   <size>
+        freeing                NO   <size>
+        guid                   NO   <guid>
+        health                 NO   <state>
+        leaked                 NO   <size>
+        load_guid              NO   <load_guid>
+        size                   NO   <size>
+        altroot               YES   <path>
+        ashift                YES   <ashift, 9-16, or 0=default>
+        autoexpand            YES   on | off
+        autoreplace           YES   on | off
+        autotrim              YES   on | off
+        bootfs                YES   <filesystem>
+        cachefile             YES   <file> | none
+        comment               YES   <comment-string>
+        compatibility         YES   <file[,file...]> | off | legacy
+        delegation            YES   on | off
+        failmode              YES   wait | continue | panic
+        listsnapshots         YES   on | off
+        multihost             YES   on | off
+        readonly              YES   on | off
+        version               YES   <version>
+        feature@...           YES   disabled | enabled | active
+
+The feature@ properties must be appended with a feature name.
+See zpool-features(7).
+";
         }
 
         private string GetSmartInfoSCSI6()

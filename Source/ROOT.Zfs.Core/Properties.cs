@@ -49,7 +49,7 @@ namespace ROOT.Zfs.Core
             return GetProperty(dataset, property);
 
         }
-        
+
         private void EnsureAllDataSetPropertiesCache()
         {
             if (DataSetProperties.AvailableProperties.Count == 0)
@@ -60,12 +60,12 @@ namespace ROOT.Zfs.Core
                 var response = pc.LoadResponse(false);
                 if (response.Success)
                 {
-                    properties = DataSetProperties.PropertiesFromStdOutput(response.StdOut);
+                    properties = PropertiesParser.FromStdOutput(response.StdOut, 4);
                 }
                 else
                 {
                     // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
-                    properties = DataSetProperties.PropertiesFromStdOutput(response.StdError);
+                    properties = PropertiesParser.FromStdOutput(response.StdError, 4);
                 }
 
                 DataSetProperties.SetAvailableDataSetProperties(properties);
@@ -77,6 +77,23 @@ namespace ROOT.Zfs.Core
             EnsureAllDataSetPropertiesCache();
 
             return DataSetProperties.AvailableProperties;
+        }
+
+        public ICollection<Property> GetAvailablePoolProperties()
+        {
+            var cmd = BuildCommand(PropertyCommands.GetPoolProperties());
+            var response = cmd.LoadResponse(false);
+            ICollection<Property> properties;
+            if (response.Success)
+            {
+                properties = PropertiesParser.FromStdOutput(response.StdOut, 3);
+            }
+            else
+            {
+                // This is because when you call zpool get -H, you get an error, so the data gets returned in StdError
+                properties = PropertiesParser.FromStdOutput(response.StdError,3);
+            }
+            return properties;
         }
 
         public void ResetPropertyToInherited(string dataset, string property)

@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Core.Commands
 
         public static ProcessCall GetPoolProperties()
         {
-            return new ProcessCall(WhichZfs, "get  -H");
+            return new ProcessCall(WhichZpool, "get -H");
         }
 
         public static ProcessCall ResetPropertyToInherited(string dataset, Property property)

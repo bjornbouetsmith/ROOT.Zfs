@@ -9,6 +9,7 @@ namespace ROOT.Zfs.Public
         PropertyValue GetProperty(string dataset, string property);
         PropertyValue SetProperty(string dataset, string property, string value);
         ICollection<Property> GetAvailableDataSetProperties();
+        ICollection<Property> GetAvailablePoolProperties();
         void ResetPropertyToInherited(string dataset, string property);
     }
 }

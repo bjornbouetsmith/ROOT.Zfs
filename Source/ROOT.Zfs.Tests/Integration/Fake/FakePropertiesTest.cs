@@ -60,6 +60,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Console.WriteLine(props.Dump(new JsonFormatter()));
         }
 
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void GetAvailablePoolProperties()
+        {
+            var pr = new Properties(_remoteProcessCall);
+            var props = pr.GetAvailablePoolProperties().ToList();
+            Assert.IsTrue(props.Count > 0);
+            Console.WriteLine(props.Dump(new JsonFormatter()));
+        }
+
         /// <summary>
         /// We cannot test that reset works with the current fake implementation.
         /// </summary>
