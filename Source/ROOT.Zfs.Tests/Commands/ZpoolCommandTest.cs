@@ -54,8 +54,8 @@ namespace ROOT.Zfs.Tests.Commands
                         new VDevCreationArgs { Type = VDevCreationType.Log, Devices = new[] { "/dev/sdf" } },
                     },
                 MountPoint = "/mnt/tank3",
-                PoolProperties = new[] { new PropertyValue("ashift","local","12") },
-                FileSystemProperties = new[] { new PropertyValue("atime", "local", "off") }
+                PoolProperties = new[] { new PropertyValue { Property = "ashift", Value = "12" } },
+                FileSystemProperties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
             };
             var command = ZpoolCommands.CreatePool(args);
             Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);

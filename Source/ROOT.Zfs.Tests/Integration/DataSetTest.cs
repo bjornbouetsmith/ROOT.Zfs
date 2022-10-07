@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Tests
             var ds = new DataSets(_remoteProcessCall);
             var dataset = ds.GetDataSet("tank");
             Assert.IsNotNull(dataset);
-            Assert.AreEqual("tank",dataset.Name);
+            Assert.AreEqual("tank", dataset.Name);
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -50,8 +50,8 @@ namespace ROOT.Zfs.Tests
                 var compression = DataSetProperties.Lookup("compression");
                 var props = new[]
                     {
-                        new PropertyValue(quota.Name, PropertySources.Local.Name, "1G"),
-                        new PropertyValue(compression.Name, PropertySources.Local.Name, "gzip")
+                        new PropertyValue { Property = quota.Name, Value = "1G" },
+                        new PropertyValue { Property = compression.Name, Value = "gzip" }
                     };
                 var dataSets = ds.GetDataSets().ToList();
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
@@ -112,13 +112,13 @@ namespace ROOT.Zfs.Tests
                 var flags = DataSetDestroyFlags.Recursive | DataSetDestroyFlags.DryRun;
                 var response = dsHelper.DestroyDataSet(root, flags);
                 Assert.AreEqual(flags, response.Flags);
-                var lines = response.DryRun.Split(new[]{'\r','\n'}, StringSplitOptions.RemoveEmptyEntries).Select(l=>l.Replace("\t"," ")).ToList();
+                var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
                 Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child1/granchild"));
                 Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child1"));
                 Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child2"));
                 Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}"));
-                
+
                 Console.WriteLine(response.DryRun);
             }
             finally

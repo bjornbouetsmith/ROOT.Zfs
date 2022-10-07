@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Core.Helpers
             var property = DataSetProperties.Lookup(parts[1]);
             var value = parts[2];
             var source = PropertySources.Lookup(parts[3]);
-            return new PropertyValue(property.Name, source, value);
+            return new PropertyValue { Property = property.Name, Source = source, Value = value };
         }
     }
 }
