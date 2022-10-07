@@ -58,6 +58,11 @@ jobs:
     - name: Test
       run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
+    - name: Attach coverage xml
+    - uses: actions/upload-artifact@v3
+      with:
+        name: coverage.opencover.xml
+        path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml
     - name: Analyze with sonarcloud
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
