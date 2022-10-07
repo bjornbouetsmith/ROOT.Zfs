@@ -25,6 +25,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (LoadFileSystems(""), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank":
                     return (LoadFileSystems("tank"), null);
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds":
+                    return (LoadFileSystems("tank/myds"), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem ungabunga":
                     return (null, "cannot open 'ungabunga': dataset does not exist");
                 case "/sbin/zfs get -H":
@@ -49,6 +51,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs destroy tank/myds@20220922211347000-1":
                 case "/sbin/zfs destroy tank/myds@20220922211347000-2":
                 case "/sbin/zfs destroy tank/myds@20220922211347000-3":
+                case "/sbin/zfs destroy -r tank/myds":
                     return (null, null);
                 case "/sbin/zpool status -vP tank":
                     return (GetTankPoolStatus(), null);
@@ -70,6 +73,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetSmartInfoSCSI6(), null);
                 case "/sbin/zpool get -H":
                     return (null, GetAvailablePoolProperties());
+                case "/sbin/zfs create -o atime=off tank/myds":
+                    return (null, null);
 
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
