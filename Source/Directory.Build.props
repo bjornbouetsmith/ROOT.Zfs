@@ -11,7 +11,14 @@
     <RepositoryUrl>https://github.com/bjornbouetsmith/ROOT.Zfs</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb;.xml</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 </Project>
