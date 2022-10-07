@@ -29,15 +29,18 @@ namespace ROOT.Zfs.Core.Helpers
             }
         }
 
-        internal static IEnumerable<Property> GetAvailableProperties()
+        internal static ICollection<Property> AvailableProperties
         {
-            if (_properties.Count == 0)
+            get
             {
-                return Enumerable.Empty<Property>();
+                if (_properties.Count == 0)
+                {
+                    return Array.Empty<Property>();
 
+                }
+
+                return _properties.Values;
             }
-
-            return _properties.Values;
         }
 
         internal static void SetAvailableDataSetProperties(IEnumerable<Property> properties)

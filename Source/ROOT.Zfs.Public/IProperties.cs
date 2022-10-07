@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Public
         IEnumerable<PropertyValue> GetProperties(string dataset);
         PropertyValue GetProperty(string dataset, string property);
         PropertyValue SetProperty(string dataset, string property, string value);
-        IEnumerable<Property> GetAvailableDataSetProperties();
+        ICollection<Property> GetAvailableDataSetProperties();
         void ResetPropertyToInherited(string dataset, string property);
     }
 }

@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(PropertyCommands.GetProperties(dataset));
 
             var response = pc.LoadResponse(true);
-            
+
             return DataSetProperties.FromStdOutput(response.StdOut);
         }
 
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(PropertyCommands.GetProperty(dataset, prop));
 
             var response = pc.LoadResponse(true);
-            
+
             return PropertyValueHelper.FromString(response.StdOut);
 
         }
@@ -43,16 +43,16 @@ namespace ROOT.Zfs.Core
             var prop = DataSetProperties.Lookup(property);
 
             var pc = BuildCommand(PropertyCommands.SetProperty(dataset, prop, value));
-            
+
             pc.LoadResponse(true);
-            
+
             return GetProperty(dataset, property);
 
         }
-
+        
         private void EnsureAllDataSetPropertiesCache()
         {
-            if (DataSetProperties.GetAvailableProperties().FirstOrDefault() == null)
+            if (DataSetProperties.AvailableProperties.Count == 0)
             {
                 var pc = BuildCommand(PropertyCommands.GetDataSetProperties());
 
@@ -72,11 +72,11 @@ namespace ROOT.Zfs.Core
             }
         }
 
-        public IEnumerable<Property> GetAvailableDataSetProperties()
+        public ICollection<Property> GetAvailableDataSetProperties()
         {
             EnsureAllDataSetPropertiesCache();
 
-            return DataSetProperties.GetAvailableProperties();
+            return DataSetProperties.AvailableProperties;
         }
 
         public void ResetPropertyToInherited(string dataset, string property)
@@ -87,7 +87,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, prop));
 
             pc.LoadResponse(true);
-            
+
         }
     }
 }
