@@ -58,7 +58,7 @@ jobs:
 
     - name: Test
 #      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml"
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration"  /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      run: dotnet test Source/ROOT.Zfs.sln --configuration Debug --verbosity normal --filter "TestCategory!=Integration"  /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
 #    - name: Attach coverage xml
 #      uses: actions/upload-artifact@v3
