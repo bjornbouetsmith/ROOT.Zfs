@@ -54,6 +54,16 @@ foreach (var vdev in pool.VDevs)
 }
 ~~~
 
+## Dependencies
+Obviously this software requires ZFS to be installed on the target server.
+Besides ZFS - some methods also invokes the following binaries:
+
+`smartctl`, `lsblk`, `ls`
+
+`smartctl` is usually found in the package called `smartmontools` the two others should be available in the base installation of the OS.
+
+
+
 ## Help needed
 If you want to help make this library greater either by 
 * Contributing code 
