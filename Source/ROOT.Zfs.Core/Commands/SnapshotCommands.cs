@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -66,6 +68,33 @@ namespace ROOT.Zfs.Core.Commands
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
             return CreateSnapshot(datasetOrVolume, CreateSnapshotName(DateTime.UtcNow));
+        }
+
+        /// <summary>
+        /// Creates a clone of the given snapshot targeting the dataset or volume
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-clone.8.html
+        /// </summary>
+        /// <param name="datasetOrVolume">The dataset or volume where the snapshot is from</param>
+        /// <param name="snapshotName">The name of the snapshot to clone</param>
+        /// <param name="targetDatasetOrVolume">The name of the dataset or volume where to clone to</param>
+        /// <param name="properties">The properties to set on the target - if any</param>
+        public static ProcessCall Clone(string datasetOrVolume, string snapshotName, string targetDatasetOrVolume, PropertyValue[] properties)
+        {
+            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            targetDatasetOrVolume = DataSetHelper.Decode(targetDatasetOrVolume);
+            var rawSnapName = snapshotName;
+            var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
+            if (propCommand != string.Empty)
+            {
+                propCommand = " " + propCommand;
+            }
+
+            if (snapshotName.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
+            {
+                rawSnapName = snapshotName[(datasetOrVolume.Length + 1)..];
+            }
+
+            return new ProcessCall(WhichZfs, $"clone -p{propCommand} {datasetOrVolume}@{rawSnapName} {targetDatasetOrVolume}");
         }
     }
 }
