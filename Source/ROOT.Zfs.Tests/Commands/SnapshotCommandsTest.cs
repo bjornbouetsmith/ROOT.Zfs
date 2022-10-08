@@ -44,6 +44,14 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
+        public void CreateSnapshotWithInvalidNameShouldThrowArgumentException()
+        {
+            var bogusName = "2022/05/17";
+            var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.CreateSnapshot("tank/myds", bogusName));
+            Assert.IsTrue(ex.Message.StartsWith(bogusName));
+        }
+
+        [TestMethod]
         public void CloneSnapshotTestWithoutProperties()
         {
             var command = SnapshotCommands.Clone("tank/myds", "projectX", "/tank/clones/projectX", null);
