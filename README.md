@@ -52,6 +52,8 @@ foreach (var vdev in pool.VDevs)
 }
 ~~~
 
+More examples on the [wiki](https://github.com/bjornbouetsmith/ROOT.Zfs/wiki/Examples)
+
 ## Dependencies
 Obviously this software requires ZFS to be installed on the target server.
 Besides ZFS - some methods also invokes the following binaries:
