@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Tests.VersionResponses;
@@ -9,11 +10,16 @@ namespace ROOT.Zfs.Tests
     {
         private readonly string _zfsVersion;
         private readonly IVersionResponse _responses;
-
+        private readonly List<string> _commandsInvoked = new ();
         public FakeRemoteConnection(string zfsVersion)
         {
             _zfsVersion = zfsVersion;
             _responses = ZfsResponses.GetVersionResponse(zfsVersion);
+        }
+
+        public List<string> GetCommandsInvoked()
+        {
+            return _commandsInvoked;
         }
 
         public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
@@ -28,6 +34,7 @@ namespace ROOT.Zfs.Tests
 
         private ProcessCallResult GetResponse(bool throwOnFailure)
         {
+            _commandsInvoked.Add(FullCommandLine);
             (string StdOut, string StdError) fakes = (null, null);
             if (StdError == null 
                 && StdOutput == null)

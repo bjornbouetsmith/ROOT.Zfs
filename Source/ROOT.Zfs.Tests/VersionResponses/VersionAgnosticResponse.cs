@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ROOT.Zfs.Core.Commands;
 
 namespace ROOT.Zfs.Tests.VersionResponses
 {
@@ -17,9 +18,9 @@ namespace ROOT.Zfs.Tests.VersionResponses
             {
                 case "/sbin/zfs --version":
                     return (GetVersion(), null);
-                case "/usr/bin/lsblk --include 8 --include 259 -p|grep disk":
+                case "/bin/lsblk --include 8 --include 259 -p|grep disk":
                     return (LoadBlockDevices(), null);
-                case "/usr/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
+                case "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
                     return (LoadDisks(), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem":
                     return (LoadFileSystems(""), null);
@@ -67,15 +68,27 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetAllPoolInfos(""), null);
                 case "/sbin/zpool list -PH tank2":
                     return (GetAllPoolInfos("tank2"), null);
-                case "/usr/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
+                case "/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
                     return (GetSmartInfoSCSI5(), null);
-                case "/usr/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
+                case "/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
                     return (GetSmartInfoSCSI6(), null);
                 case "/sbin/zpool get -H":
                     return (null, GetAvailablePoolProperties());
                 case "/sbin/zfs create -o atime=off tank/myds":
                     return (null, null);
-
+                case "/bin/which zfs":
+                    return (BaseCommands.WhichZfs, null);
+                case "/bin/which zpool":
+                    return (BaseCommands.WhichZpool, null);
+                case "/bin/which zdb":
+                    return (BaseCommands.WhichZdb, null);
+                case "/bin/which ls":
+                    return (BaseCommands.WhichLs, null);
+                case "/bin/which lsblk":
+                    return (BaseCommands.WhichLsblk, null);
+                case "/bin/which smartctl":
+                    return (BaseCommands.WhichSmartctl, null);
+                
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
