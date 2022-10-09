@@ -176,8 +176,8 @@ a user|group|project specifier of one of these forms:
             Assert.IsNotNull(properties);
             // We only list editable, those where EDITABLE=YES
             Assert.AreEqual(53, properties.Count);
-            Assert.AreEqual(properties.First().Name, "aclinherit");
-            Assert.AreEqual(properties.Last().Name, "projectobjquota@...");
+            Assert.AreEqual("aclinherit", properties.First().Name);
+            Assert.AreEqual("projectobjquota@...", properties.Last().Name);
         }
         [TestMethod]
         public void ParseZpoolTestShouldParseWithoutErrors()
@@ -186,8 +186,8 @@ a user|group|project specifier of one of these forms:
             Assert.IsNotNull(properties);
             // We only list editable, those where EDITABLE=YES
             Assert.AreEqual(16, properties.Count);
-            Assert.AreEqual(properties.First().Name, "altroot");
-            Assert.AreEqual(properties.Last().Name, "feature@...");
+            Assert.AreEqual("altroot", properties.First().Name);
+            Assert.AreEqual("feature@...", properties.Last().Name);
         }
     }
 }

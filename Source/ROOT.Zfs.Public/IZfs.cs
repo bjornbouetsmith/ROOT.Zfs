@@ -64,5 +64,10 @@ namespace ROOT.Zfs.Public
         /// Utilizes the command `which` - if that is not installed this will fail.
         /// </summary>
         void Initialize();
+
+        /// <summary>
+        /// Gets a value indicating whether or not this instance has been initialized
+        /// </summary>
+        bool Initialized { get; }
     }
 }

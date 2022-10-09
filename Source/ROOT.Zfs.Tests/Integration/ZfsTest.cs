@@ -12,6 +12,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             var zfs = new Core.Zfs(_remoteProcessCall);
             zfs.Initialize();
+            Assert.IsTrue(zfs.Initialized);
         }
     }
 }

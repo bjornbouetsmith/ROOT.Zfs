@@ -45,7 +45,7 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow(false)]
         public void CreateDatasetWithoutProperties(bool nullProperties)
         {
-            var command = DataSetCommands.CreateDataSet("tank/myds", nullProperties ? null : new PropertyValue[] { });
+            var command = DataSetCommands.CreateDataSet("tank/myds", nullProperties ? null : Array.Empty<PropertyValue>());
             Console.WriteLine(command.FullCommandLine);
             Assert.AreEqual("/sbin/zfs create tank/myds", command.FullCommandLine);
         }

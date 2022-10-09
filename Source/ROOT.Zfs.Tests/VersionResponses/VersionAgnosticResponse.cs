@@ -94,7 +94,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
             }
         }
 
-        private string GetAvailablePoolProperties()
+        private static string GetAvailablePoolProperties()
         {
             return @"usage:
         get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
@@ -138,7 +138,7 @@ See zpool-features(7).
 ";
         }
 
-        private string GetSmartInfoSCSI6()
+        private static string GetSmartInfoSCSI6()
         {
             return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
 Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
@@ -174,7 +174,7 @@ Self-test execution status:      (   0) The previous self-test routine completed
 ";
         }
 
-        private string GetSmartInfoSCSI5()
+        private static string GetSmartInfoSCSI5()
         {
             return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
 Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org

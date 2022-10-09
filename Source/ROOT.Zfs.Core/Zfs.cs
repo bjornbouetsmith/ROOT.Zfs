@@ -61,11 +61,11 @@ namespace ROOT.Zfs.Core
         public IEnumerable<SmartInfo> GetSmartInfos()
         {
             List<SmartInfo> smartInfos = new List<SmartInfo>();
-            foreach (var disk in ListDisks().Where(d => d.Type == DiskType.Disk))
+            foreach (var id in ListDisks().Where(d => d.Type == DiskType.Disk).Select(disk => disk.Id))
             {
-                var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(disk.Id));
+                var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(id));
                 var response = command.LoadResponse(true);
-                var info = SmartInfoParser.ParseStdOut(disk.Id, response.StdOut);
+                var info = SmartInfoParser.ParseStdOut(id, response.StdOut);
                 smartInfos.Add(info);
             }
 
@@ -93,7 +93,10 @@ namespace ROOT.Zfs.Core
             Commands.BaseCommands.WhichLs = ls;
             Commands.BaseCommands.WhichLsblk = lsblk;
             Commands.BaseCommands.WhichSmartctl = smartctl;
+            Initialized = true;
         }
+
+        public bool Initialized { get; private set; }
 
         private string GetBinaryLocation(string binary)
         {
