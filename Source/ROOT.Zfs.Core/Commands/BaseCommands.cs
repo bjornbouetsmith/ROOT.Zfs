@@ -13,6 +13,10 @@ namespace ROOT.Zfs.Core.Commands
         public static string WhichZfs { get; set; } = "/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";
         public static string WhichZdb { get; set; } = "/sbin/zdb";
+        public static string WhichLs { get; set; } = "/bin/ls";
+        public static string WhichLsblk { get; set; } = "/bin/lsblk";
+        public static string WhichWhich { get; set; } = "/bin/which";
+        public static string WhichSmartctl { get; set; } = "/sbin/smartctl";
 
         /// <summary>
         /// Lists the given types
@@ -77,7 +81,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <returns></returns>
         public static ProcessCall ListDisks()
         {
-            return new ProcessCall("/usr/bin/ls", "-l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'");
+            return new ProcessCall(WhichLs, "-l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'");
         }
 
         /// <summary>
@@ -87,7 +91,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         public static ProcessCall ListBlockDevices()
         {
-            return new ProcessCall("/usr/bin/lsblk", "--include 8 --include 259 -p|grep disk");
+            return new ProcessCall(WhichLsblk, "--include 8 --include 259 -p|grep disk");
         }
 
         /// <summary>
@@ -96,7 +100,16 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         public static ProcessCall GetSmartInfo(string deviceId)
         {
-            return new ProcessCall("/usr/sbin/smartctl", $"-a {deviceId}");
+            return new ProcessCall(WhichSmartctl, $"-a {deviceId}");
+        }
+
+        /// <summary>
+        /// Calls `which` to find out full path to required binaries
+        /// </summary>
+        /// <param name="command">The command to find</param>
+        public static ProcessCall Which(string command)
+        {
+            return new ProcessCall(WhichWhich, command);
         }
     }
 }

@@ -58,5 +58,11 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="name">The full id or name of the device</param>
         SmartInfo GetSmartInfo(string name);
+
+        /// <summary>
+        /// Initializes the library to enable auto detection of where required binaries are located.
+        /// Utilizes the command `which` - if that is not installed this will fail.
+        /// </summary>
+        void Initialize();
     }
 }

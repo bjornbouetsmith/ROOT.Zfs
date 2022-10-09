@@ -40,5 +40,25 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
+        [TestMethod]
+        public void WhichCommandTest()
+        {
+            var command = BaseCommands.Which("smartctl");
+            Assert.AreEqual("/bin/which smartctl", command.FullCommandLine);
+        }
+
+        [TestMethod]
+        public void ListBlockDevicesTest()
+        {
+            var command = BaseCommands.ListBlockDevices();
+            Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p|grep disk", command.FullCommandLine);
+        }
+
+        [TestMethod]
+        public void ListDisksTest()
+        {
+            var command = BaseCommands.ListDisks();
+            Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
+        }
     }
 }

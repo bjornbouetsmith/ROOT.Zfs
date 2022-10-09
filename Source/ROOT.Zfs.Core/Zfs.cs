@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
@@ -76,6 +77,30 @@ namespace ROOT.Zfs.Core
             var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(name));
             var response = command.LoadResponse(true);
             return SmartInfoParser.ParseStdOut(name, response.StdOut);
+        }
+
+        public void Initialize()
+        {
+            var zfs = GetBinaryLocation("zfs");
+            var zpool = GetBinaryLocation("zpool");
+            var zdb = GetBinaryLocation("zdb");
+            var ls = GetBinaryLocation("ls");
+            var lsblk = GetBinaryLocation("lsblk");
+            var smartctl = GetBinaryLocation("smartctl");
+            Commands.BaseCommands.WhichZpool = zpool;
+            Commands.BaseCommands.WhichZfs = zfs;
+            Commands.BaseCommands.WhichZdb = zdb;
+            Commands.BaseCommands.WhichLs = ls;
+            Commands.BaseCommands.WhichLsblk = lsblk;
+            Commands.BaseCommands.WhichSmartctl = smartctl;
+        }
+
+        private string GetBinaryLocation(string binary)
+        {
+            var command = BuildCommand(Commands.BaseCommands.Which(binary));
+            var response = command.LoadResponse(true);
+            Trace.WriteLine($"{binary}={response.StdOut}");
+            return response.StdOut;
         }
     }
 }
