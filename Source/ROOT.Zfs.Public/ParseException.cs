@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 
 namespace ROOT.Zfs.Public
 {
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class ParseException : Exception
     {
