@@ -18,10 +18,17 @@ Content:
             Contents = contents;
         }
 
+        protected ParseException(SerializationInfo info, StreamingContext context) 
+            : base(info, context)
+        {
+            Index = info.GetInt32(nameof(Index));
+            Contents = info.GetString(nameof(Index));
+        }
+
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("index", Index);
-            info.AddValue(Contents, Contents);
+            info.AddValue(nameof(Index), Index);
+            info.AddValue(nameof(Contents), Contents);
             base.GetObjectData(info, context);
         }
     }
