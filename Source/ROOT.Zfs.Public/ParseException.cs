@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace ROOT.Zfs.Public
@@ -18,6 +19,7 @@ Content:
             Contents = contents;
         }
 
+        [ExcludeFromCodeCoverage]
         protected ParseException(SerializationInfo info, StreamingContext context) 
             : base(info, context)
         {
@@ -25,6 +27,7 @@ Content:
             Contents = info.GetString(nameof(Index));
         }
 
+        [ExcludeFromCodeCoverage]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(nameof(Index), Index);
