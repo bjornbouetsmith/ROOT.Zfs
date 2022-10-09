@@ -61,5 +61,39 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
             Console.WriteLine(command.FullCommandLine);
         }
+
+        [TestMethod]
+        [DataRow(true)]
+        [DataRow(false)]
+        public void CreateWithEmptyNameShouldThrowArgumentException(bool nameNull)
+        {
+            var args = new PoolCreationArgs
+            {
+                Name = nameNull ? null : "",
+                VDevs = new[]
+                {
+                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
+                }
+            };
+
+            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
+            Assert.AreEqual("Please provide a name for the pool (Parameter 'args')", ex.Message);
+        }
+
+        [TestMethod]
+        public void CreateMirrorNeedsAtLeastTwoDevices()
+        {
+            var args = new PoolCreationArgs
+            {
+                Name = "tank2",
+                VDevs = new[]
+                {
+                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc" } },
+                }
+            };
+
+            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
+            Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'args')", ex.Message);
+        }
     }
 }
