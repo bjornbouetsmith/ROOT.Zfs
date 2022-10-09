@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Helpers
@@ -227,22 +228,6 @@ config:
             var stateText = poolParts.Length > 1 ? poolParts[1].Trim() : poolParts[0].Trim();
 
             return StateParser.Parse(stateText);
-        }
-    }
-
-    [Serializable]
-    public class ParseException : Exception
-    {
-        public int Index { get; }
-        public string Contents { get; }
-
-        public ParseException(int index, string contents) : base($@"Failed to parse trimmed input:
-Look to index:{index} when discarding empty linies,
-Content:
-{contents}")
-        {
-            Index = index;
-            Contents = contents;
         }
     }
 }
