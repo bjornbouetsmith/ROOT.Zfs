@@ -2,7 +2,7 @@
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public class ZfsCommands : BaseCommands
+    internal class ZfsCommands : BaseCommands
     {
         public static ProcessCall GetVersion()
         {

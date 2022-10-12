@@ -5,14 +5,14 @@ using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public class ZpoolCommands : BaseCommands
+    internal class ZpoolCommands : BaseCommands
     {
-        public static ProcessCall GetHistory(string pool)
+        internal static ProcessCall GetHistory(string pool)
         {
             return new ProcessCall(WhichZpool, $"history -l {pool}");
         }
 
-        public static ProcessCall GetStatus(string pool)
+        internal static ProcessCall GetStatus(string pool)
         {
             return new ProcessCall(WhichZpool, $"status -vP {pool}");
         }
@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Core.Commands
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
         /// <returns></returns>
-        public static ProcessCall GetAllPoolInfos()
+        internal static ProcessCall GetAllPoolInfos()
         {
             return new ProcessCall(WhichZpool, "list -PH");
         }
@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="pool"></param>
         /// <returns></returns>
-        public static ProcessCall GetPoolInfo(string pool)
+        internal static ProcessCall GetPoolInfo(string pool)
         {
             return new ProcessCall(WhichZpool, $"list -PH {pool}");
         }
@@ -42,7 +42,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="args">The arguments used to create the pool <see cref="PoolCreationArgs"/></param>
         /// <returns></returns>
-        public static ProcessCall CreatePool(PoolCreationArgs args)
+        internal static ProcessCall CreatePool(PoolCreationArgs args)
         {
             if (!args.Validate(out var errorMessage))
             {
@@ -90,7 +90,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="pool"></param>
         /// <returns></returns>
-        public static ProcessCall DestroyPool(string pool)
+        internal static ProcessCall DestroyPool(string pool)
         {
             return new ProcessCall(WhichZpool, $"destroy -f {pool}");
         }

@@ -10,20 +10,20 @@ namespace ROOT.Zfs.Core.Commands
     /// <summary>
     /// Contains all snapshot related commands
     /// </summary>
-    public class SnapshotCommands : BaseCommands
+    internal class SnapshotCommands : BaseCommands
     {
         private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-",RegexOptions.Compiled);
 
         /// <summary>
         /// Creates a standard snapshot name based on the time passed into the method
         /// </summary>
-        public static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
+        internal static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
 
         /// <summary>
         /// Lists snapshots in the given dataset or volume
         /// </summary>
         /// <param name="datasetOrVolume"></param>
-        public static ProcessCall ListSnapshots(string datasetOrVolume)
+        internal static ProcessCall ListSnapshots(string datasetOrVolume)
         {
             return ZfsList(ListTypes.Snapshot, datasetOrVolume);
         }
@@ -34,7 +34,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
         /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
-        public static ProcessCall DestroySnapshot(string datasetOrVolume, string snapshotName)
+        internal static ProcessCall DestroySnapshot(string datasetOrVolume, string snapshotName)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
             var rawSnapName = snapshotName;
@@ -50,7 +50,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
         /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
-        public static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
+        internal static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
             if (NameAllow.Matches(snapshotName).Count != snapshotName.Length)
@@ -60,11 +60,11 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapshotName}");
         }
-        
+
         /// <summary>
         /// Creates a snapshot of the dataset using the format: yyyyMMddHHmmss
         /// </summary>
-        public static ProcessCall CreateSnapshot(string datasetOrVolume)
+        internal static ProcessCall CreateSnapshot(string datasetOrVolume)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
             return CreateSnapshot(datasetOrVolume, CreateSnapshotName(DateTime.UtcNow));
@@ -78,7 +78,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="snapshotName">The name of the snapshot to clone</param>
         /// <param name="targetDatasetOrVolume">The name of the dataset or volume where to clone to</param>
         /// <param name="properties">The properties to set on the target - if any</param>
-        public static ProcessCall Clone(string datasetOrVolume, string snapshotName, string targetDatasetOrVolume, PropertyValue[] properties)
+        internal static ProcessCall Clone(string datasetOrVolume, string snapshotName, string targetDatasetOrVolume, PropertyValue[] properties)
         {
             datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
             targetDatasetOrVolume = DataSetHelper.Decode(targetDatasetOrVolume);

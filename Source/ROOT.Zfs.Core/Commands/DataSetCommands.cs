@@ -6,9 +6,9 @@ using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    public class DataSetCommands : BaseCommands
+    internal class DataSetCommands : BaseCommands
     {
-        public static ProcessCall GetDataSet(string fullName)
+        internal static ProcessCall GetDataSet(string fullName)
         {
             var dataset = DataSetHelper.Decode(fullName);
             return ZfsList(ListTypes.FileSystem, dataset);
@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="fullName"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        public static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
+        internal static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
         {
             fullName = DataSetHelper.Decode(fullName);
 
@@ -38,7 +38,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="dataSetName">The name of the dataset</param>
         /// <param name="destroyFlags">The flags to control how to destroy the dataset <see cref="DataSetDestroyFlags"/></param>
-        public static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
+        internal static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
         {
             dataSetName = DataSetHelper.Decode(dataSetName);
 
@@ -65,13 +65,13 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, $"destroy{args} {dataSetName}");
         }
-        
+
         /// <summary>
         /// Promotes the dataset or volume from a clone to a real dataset or volume.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
         /// </summary>
         /// <param name="dataset"></param>
-        public static ProcessCall Promote(string dataset)
+        internal static ProcessCall Promote(string dataset)
         {
             dataset = DataSetHelper.Decode(dataset);
             return new ProcessCall(WhichZfs, $"promote {dataset}");

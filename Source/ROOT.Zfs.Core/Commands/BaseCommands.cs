@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Core.Commands
     /// This should be improved, so we can have commands defined per version if required
     /// And a way to register commands for a given version
     /// </summary>
-    public class BaseCommands
+    internal class BaseCommands
     {
         public static string WhichZfs { get; set; } = "/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";
