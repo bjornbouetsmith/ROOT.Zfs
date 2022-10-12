@@ -95,5 +95,50 @@ namespace ROOT.Zfs.Tests.Commands
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
             Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'args')", ex.Message);
         }
+
+        [TestMethod]
+        [DataRow("tank", "mirror-0", "/sbin/zpool clear tank mirror-0")]
+        [DataRow("tank", "sda", "/sbin/zpool clear tank sda")]
+        [DataRow("tank", "", "/sbin/zpool clear tank")]
+        [DataRow("tank", null, "/sbin/zpool clear tank")]
+        public void ClearPoolTest(string pool, string device, string expectedCommand)
+        {
+            var command = ZpoolCommands.Clear(pool, device);
+            Console.WriteLine(command.FullCommandLine);
+            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+        }
+
+        [TestMethod]
+        [DataRow("tank", "sda", false, "/sbin/zpool online tank sda")]
+        [DataRow("tank", "sda", true, "/sbin/zpool online tank sda -e")]
+        public void OnlinePoolDeviceTest(string pool, string device, bool expandSize, string expectedCommand)
+        {
+            var command = ZpoolCommands.Online(pool, device, expandSize);
+            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+        }
+        [TestMethod]
+        [DataRow("tank", "sda", false, false,"/sbin/zpool offline tank sda")]
+        [DataRow("tank", "sda", true, false,"/sbin/zpool offline tank sda -f")]
+        [DataRow("tank", "sda", false, true, "/sbin/zpool offline tank sda -t")]
+        [DataRow("tank", "sda", true, true, "/sbin/zpool offline tank sda -f -t")]
+        public void OfflinePoolDeviceTest(string pool, string device, bool forceFault, bool temporary, string expectedCommand)
+        {
+            var command = ZpoolCommands.Offline(pool, device, forceFault, temporary);
+            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+        }
+
+        [TestMethod]
+        [DataRow("tank",null,false,"/sbin/zpool iostat -LPv tank")] // only pool, exclude latency stats
+        [DataRow("tank", null, true, "/sbin/zpool iostat -LPvl tank")] //only pool include latency stats
+        [DataRow("tank","",true, "/sbin/zpool iostat -LPvl tank")] //only pool include latency stats
+        [DataRow("tank", "/dev/sda", false, "/sbin/zpool iostat -LPv tank /dev/sda")] //single device, exclude stats
+        [DataRow("tank", "/dev/sda,/dev/sdb", false, "/sbin/zpool iostat -LPv tank /dev/sda /dev/sdb")] //multiple devices, exclude stats
+        [DataRow("tank", "/dev/sda", true, "/sbin/zpool iostat -LPvl tank /dev/sda")] //single device, include stats
+        [DataRow("tank", "/dev/sda,/dev/sdb", true, "/sbin/zpool iostat -LPvl tank /dev/sda /dev/sdb")] //multiple devices, include stats
+        public void IoStatTest(string pool, string deviceList, bool includeAverageLatency,string expectedCommand)
+        {
+            var command = ZpoolCommands.IoStat(pool, deviceList?.Split(','), includeAverageLatency);
+            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+        }
     }
 }

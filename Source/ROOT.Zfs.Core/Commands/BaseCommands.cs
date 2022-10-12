@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Core.Commands
         /// Lists the given types
         /// Root only have any effect for snapshots for wildcard purposes- unless only a single record is wanted
         /// i.e.
-        /// ListTypes.Snapshot & root 'tank' will list snapshots in the root tank - but ListTypes.FileSystem & tank, will only return tank
+        /// ListTypes.Snapshot &amp; root 'tank' will list snapshots in the root tank - but ListTypes.FileSystem &amp; tank, will only return tank
         /// </summary>
         /// <param name="listtypes">The types to return</param>
         /// <param name="root">The root to list types for - or the single element wanted</param>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -61,6 +60,31 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.DestroyPool(pool));
             pc.LoadResponse(true);
+        }
+
+        public void Offline(string pool, string device, bool forceFault, bool temporary)
+        {
+            var pc = BuildCommand(ZpoolCommands.Offline(pool, device, forceFault, temporary));
+            pc.LoadResponse(true);
+        }
+
+        public void Online(string pool, string device, bool expandSpace)
+        {
+            var pc = BuildCommand(ZpoolCommands.Online(pool, device, expandSpace));
+            pc.LoadResponse(true);
+        }
+
+        public void Clear(string pool, string device)
+        {
+            var pc = BuildCommand(ZpoolCommands.Clear(pool, device));
+            pc.LoadResponse(true);
+        }
+
+        public IOStats GetIOStats(string pool, string[] devices, bool includeAverageLatency)
+        {
+            var pc = BuildCommand(ZpoolCommands.IoStat(pool, devices, includeAverageLatency));
+            var response = pc.LoadResponse(true);
+            return ZPoolIOStatParser.ParseStdOut(response.StdOut);
         }
     }
 }
