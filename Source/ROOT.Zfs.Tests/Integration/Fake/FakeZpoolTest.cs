@@ -113,7 +113,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var zp = new ZPool(_remoteProcessCall);
 
             var infos = zp.GetAllPoolInfos().ToList();
-            Assert.AreEqual(2,infos.Count);
+            Assert.AreEqual(2, infos.Count);
 
         }
 
@@ -125,16 +125,45 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             var info = zp.GetPoolInfo("tank2");
             Assert.IsNotNull(info);
-            Assert.AreEqual("tank2",info.Name);
+            Assert.AreEqual("tank2", info.Name);
             Assert.AreEqual("15.5T", info.Size);
             Assert.AreEqual("2.66T", info.Allocated);
             Assert.AreEqual("15.5T", info.Free);
             Assert.AreEqual("7.3%", info.Fragmentation);
             Assert.AreEqual("6.5%", info.CapacityUsed);
             Assert.AreEqual("1.43x", info.DedupRatio);
-            Assert.AreEqual(State.Online,info.State);
+            Assert.AreEqual(State.Online, info.State);
             Console.WriteLine(info.Dump(new JsonFormatter()));
 
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void OfflineTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Offline("tank", "/dev/sda", false, false);
+        }
+
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void OnlineTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Online("tank", "/dev/sda", false);
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void ClearTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Clear("tank", "/dev/sda");
+        }
+        
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void IOStatTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.GetIOStats("tank", new[] { "/dev/sda" }, true);
         }
     }
 }

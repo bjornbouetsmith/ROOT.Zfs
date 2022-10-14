@@ -88,10 +88,22 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (BaseCommands.WhichLsblk, null);
                 case "/bin/which smartctl":
                     return (BaseCommands.WhichSmartctl, null);
-                
+                case "/sbin/zpool iostat -LlPvHl tank /dev/sda":
+                    return (GetIOStats(), null);
+                case "/sbin/zpool offline tank /dev/sda":
+                    return (null, null);
+                case "/sbin/zpool online tank /dev/sda":
+                    return (null, null);
+                case "/sbin/zpool clear tank /dev/sda":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private static string GetIOStats()
+        {
+            return "/dev/sda       -       -       0       11      10.4K   161K    592us   349us   183us   166us   8us     373us   15us    160us   434us   982us";
         }
 
         private static string GetAvailablePoolProperties()
