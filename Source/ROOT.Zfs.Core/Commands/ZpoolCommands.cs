@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <returns></returns>
         internal static ProcessCall GetAllPoolInfos()
         {
-            return new ProcessCall(WhichZpool, "list -PH");
+            return new ProcessCall(WhichZpool, "list -PHp");
         }
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <returns></returns>
         internal static ProcessCall GetPoolInfo(string pool)
         {
-            return new ProcessCall(WhichZpool, $"list -PH {pool}");
+            return new ProcessCall(WhichZpool, $"list -PHp {pool}");
         }
 
         /// <summary>

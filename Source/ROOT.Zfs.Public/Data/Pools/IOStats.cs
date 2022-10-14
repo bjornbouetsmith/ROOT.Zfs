@@ -26,7 +26,9 @@ namespace ROOT.Zfs.Public.Data.Pools
         public IOLatencyStats LatencyStats { get; set; }
         public List<IOStat> ChildStats { get; set; }
     }
-
+    /// <summary>
+    /// Represents the latency stats for a single pool/vdev/device
+    /// </summary>
     public class IOLatencyStats
     {
         public Latency TotalWait { get; set; }
@@ -78,31 +80,5 @@ namespace ROOT.Zfs.Public.Data.Pools
         }
         public TimeSpan Read { get; set; }
         public TimeSpan Write { get; set; }
-    }
-
-    public class Size
-    {
-        public Size()
-        {
-        }
-
-        public Size(long bytes)
-        {
-            Bytes = bytes;
-        }
-
-        public Size(string bytes)
-        {
-            if (!long.TryParse(bytes, out var b))
-            {
-                Trace.WriteLine($"Cannnot parse {bytes} into a number");
-            }
-            Bytes = b;
-        }
-        public long Bytes { get; set; }
-        public double KB => Bytes / 1000d;
-        public double MB => KB / 1024d;
-        public double GB => MB / 1024d;
-        public double TB => GB / 1024d;
     }
 }

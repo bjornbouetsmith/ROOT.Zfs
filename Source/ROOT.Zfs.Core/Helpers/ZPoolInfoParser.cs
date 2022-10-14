@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Helpers
@@ -9,8 +10,8 @@ namespace ROOT.Zfs.Core.Helpers
         /// Parse input based off  'zpool list -PH'
         /// with content like:
         /// 
-        /// rpool    29G  2.86G  26.1G        -         -    10%     9%  1.00x    ONLINE  -
-        /// tank   3.47T   119G  3.35T        -         -     9%     3%  1.00x    ONLINE  -
+        /// rpool   31138512896     3078807552      28059705344     -       -       10      9       1.00    ONLINE  -
+        /// tank    3813930958848   128800165888    3685130792960   -       -       9       3       1.00    ONLINE  -
         /// </summary>
         public static IEnumerable<PoolInfo> ParseFromStdOut(string stdOut)
         {
@@ -38,12 +39,12 @@ namespace ROOT.Zfs.Core.Helpers
             var info = new PoolInfo
             {
                 Name= name,
-                Size= size,
-                Allocated= alloc,
-                Free= free,
-                Fragmentation= frag,
-                CapacityUsed= cap,
-                DedupRatio= dedup,
+                Size= new Size(size),
+                Allocated= new Size(alloc),
+                Free= new Size(free),
+                Fragmentation= new Part(frag),
+                CapacityUsed= new Part(cap),
+                DedupRatio= new Ratio(dedup),
                 State = StateParser.Parse(health)
             };
 

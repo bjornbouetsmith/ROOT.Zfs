@@ -27,7 +27,7 @@ snapshot        1664303433      tank/myds@20220927203033        13312   25600   
             {
                 Console.WriteLine(snap.CreationDate.AsString());
                 Console.WriteLine(snap.Name);
-                Console.WriteLine(snap.Size.AsString());
+                Console.WriteLine(snap.Size.ToString());
             }
         }
         

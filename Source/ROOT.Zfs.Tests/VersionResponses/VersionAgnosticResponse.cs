@@ -64,9 +64,9 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool history -l tank":
                     return (GetTankHistory(), null);
-                case "/sbin/zpool list -PH":
+                case "/sbin/zpool list -PHp":
                     return (GetAllPoolInfos(""), null);
-                case "/sbin/zpool list -PH tank2":
+                case "/sbin/zpool list -PHp tank2":
                     return (GetAllPoolInfos("tank2"), null);
                 case "/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
                     return (GetSmartInfoSCSI5(), null);
@@ -224,8 +224,8 @@ Self-test execution status:      (   0) The previous self-test routine completed
 
         private static string GetAllPoolInfos(string filter)
         {
-            var lines =  @"tank    15.5G   2.66M   15.5G   -       -       1.2%      0%      1.00x   ONLINE  -
-tank2    15.5T   2.66T   15.5T   -       -       7.3%      6.5%      1.43x   ONLINE  -";
+            var lines = @"tank    16642998272     3232256 16639766016     -       -       1.3       2.5       1.13    ONLINE  -
+tank2   16642998272     107520  16642890752     -       -       7.30       6.50       1.43    ONLINE  -";
 
             if (!string.IsNullOrWhiteSpace(filter))
             {

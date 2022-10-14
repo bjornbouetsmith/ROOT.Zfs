@@ -6,12 +6,12 @@ namespace ROOT.Zfs.Public.Data.Pools
     {
         
         public string Name { get; set; }
-        public string Size { get; set; }
-        public string Allocated { get; set; }
-        public string Free { get; set; }
-        public string Fragmentation { get; set; }
-        public string CapacityUsed { get; set; }
-        public string DedupRatio { get; set; }
+        public Size Size { get; set; }
+        public Size Allocated { get; set; }
+        public Size Free { get; set; }
+        public Part Fragmentation { get; set; }
+        public Part CapacityUsed { get; set; }
+        public Ratio DedupRatio { get; set; }
         public State State { get; set; }
         public string AltRoot { get; set; }
     }

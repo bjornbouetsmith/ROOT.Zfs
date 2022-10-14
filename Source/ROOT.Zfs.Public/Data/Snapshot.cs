@@ -1,4 +1,5 @@
 ﻿using System;
+using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Public.Data
 {
@@ -6,6 +7,6 @@ namespace ROOT.Zfs.Public.Data
     {
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }
-        public long Size { get; set; }
+        public Size Size { get; set; }
     }
 }

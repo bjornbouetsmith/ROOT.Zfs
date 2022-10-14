@@ -28,12 +28,8 @@ namespace ROOT.Zfs.Core.Helpers
             {
                 snapshot.CreationDate = DateUtils.ToDateTime(secs);
             }
-
-            if (long.TryParse(parts[3], out var size))
-            {
-                snapshot.Size = size;
-            }
-
+            snapshot.Size = new Size(parts[3]);
+            
             return snapshot;
         }
     }

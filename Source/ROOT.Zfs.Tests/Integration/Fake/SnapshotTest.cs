@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             {
                 Console.WriteLine(snap.CreationDate.AsString());
                 Console.WriteLine(snap.Name);
-                Console.WriteLine(snap.Size.AsString());
+                Console.WriteLine(snap.Size.ToString());
             }
         }
 
