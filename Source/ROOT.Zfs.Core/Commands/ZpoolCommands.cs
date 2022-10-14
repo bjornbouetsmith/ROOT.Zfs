@@ -110,7 +110,7 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             var includeLatency = (includeAverageLatency ? "l" : "");
-            return new ProcessCall(WhichZpool, $"iostat -LPv{includeLatency} {pool}{deviceList}");
+            return new ProcessCall(WhichZpool, $"iostat -LlPvH{includeLatency} {pool}{deviceList}");
         }
 
         /// <summary>

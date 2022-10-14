@@ -128,13 +128,13 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        [DataRow("tank",null,false,"/sbin/zpool iostat -LPv tank")] // only pool, exclude latency stats
-        [DataRow("tank", null, true, "/sbin/zpool iostat -LPvl tank")] //only pool include latency stats
-        [DataRow("tank","",true, "/sbin/zpool iostat -LPvl tank")] //only pool include latency stats
-        [DataRow("tank", "/dev/sda", false, "/sbin/zpool iostat -LPv tank /dev/sda")] //single device, exclude stats
-        [DataRow("tank", "/dev/sda,/dev/sdb", false, "/sbin/zpool iostat -LPv tank /dev/sda /dev/sdb")] //multiple devices, exclude stats
-        [DataRow("tank", "/dev/sda", true, "/sbin/zpool iostat -LPvl tank /dev/sda")] //single device, include stats
-        [DataRow("tank", "/dev/sda,/dev/sdb", true, "/sbin/zpool iostat -LPvl tank /dev/sda /dev/sdb")] //multiple devices, include stats
+        [DataRow("tank",null,false,"/sbin/zpool iostat -LlPvH tank")] // only pool, exclude latency stats
+        [DataRow("tank", null, true, "/sbin/zpool iostat -LlPvHl tank")] //only pool include latency stats
+        [DataRow("tank","",true, "/sbin/zpool iostat -LlPvHl tank")] //only pool include latency stats
+        [DataRow("tank", "/dev/sda", false, "/sbin/zpool iostat -LlPvH tank /dev/sda")] //single device, exclude stats
+        [DataRow("tank", "/dev/sda,/dev/sdb", false, "/sbin/zpool iostat -LlPvH tank /dev/sda /dev/sdb")] //multiple devices, exclude stats
+        [DataRow("tank", "/dev/sda", true, "/sbin/zpool iostat -LlPvHl tank /dev/sda")] //single device, include stats
+        [DataRow("tank", "/dev/sda,/dev/sdb", true, "/sbin/zpool iostat -LlPvHl tank /dev/sda /dev/sdb")] //multiple devices, include stats
         public void IoStatTest(string pool, string deviceList, bool includeAverageLatency,string expectedCommand)
         {
             var command = ZpoolCommands.IoStat(pool, deviceList?.Split(','), includeAverageLatency);

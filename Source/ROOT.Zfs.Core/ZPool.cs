@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.GetHistory(pool));
 
             var response = pc.LoadResponse(true);
-            
+
             return CommandHistoryHelper.FromStdOut(response.StdOut, skipLines, afterDate);
         }
 
@@ -28,7 +28,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.GetStatus(pool));
             var response = pc.LoadResponse(true);
-            
+
             return ZPoolStatusParser.Parse(response.StdOut);
         }
 
@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.CreatePool(args));
             pc.LoadResponse(true);
-            
+
             return GetStatus(args.Name);
         }
 
@@ -84,7 +84,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.IoStat(pool, devices, includeAverageLatency));
             var response = pc.LoadResponse(true);
-            return ZPoolIOStatParser.ParseStdOut(response.StdOut);
+            return ZPoolIOStatParser.ParseStdOut(pool, response.StdOut);
         }
     }
 }
