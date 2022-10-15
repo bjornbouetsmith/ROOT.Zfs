@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace ROOT.Zfs.Public.Data
@@ -7,22 +8,17 @@ namespace ROOT.Zfs.Public.Data
     /// Represents a size of something.
     /// A pool, device, disk etc.
     /// </summary>
-    public class Size
+    public struct Size
     {
         /// <summary>
-        /// Creates a size with 0 bytes
+        /// Creates a size with 0 bytes - intended for serialization purposes
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public Size()
         {
+            Bytes = 0;
         }
 
-        /// <summary>
-        /// Creates a size with the given bytes
-        /// </summary>
-        public Size(long bytes)
-        {
-            Bytes = bytes;
-        }
         /// <summary>
         /// Creates a size with the given bytes represented as a string.
         /// If the string cannot be parsed into a number, the size gets set to 0;
@@ -62,7 +58,7 @@ namespace ROOT.Zfs.Public.Data
         public double TiB => GiB / 1024d;
 
         /// <summary>
-        /// Returns a string representation that most represents what people would use
+        /// Returns a string representation that most represents what people would represent the raw number of bytes as
         /// </summary>
         public override string ToString()
         {
@@ -82,7 +78,7 @@ namespace ROOT.Zfs.Public.Data
             {
                 return KiB.ToString("##.#K", CultureInfo.InvariantCulture);
             }
-            return Bytes.ToString("##.#K", CultureInfo.InvariantCulture);
+            return Bytes.ToString("##.#", CultureInfo.InvariantCulture);
         }
     }
 }
