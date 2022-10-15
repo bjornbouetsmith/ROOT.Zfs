@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.DataSets;
 
 namespace ROOT.Zfs.Core.Helpers
@@ -17,6 +18,8 @@ namespace ROOT.Zfs.Core.Helpers
 
         public static string CreateDataSetName(string parent, string dataSet)
         {
+            parent = Decode(parent);
+            dataSet= Decode(dataSet);
             return $"{parent}/{dataSet}";
         }
 
@@ -28,7 +31,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <param name="line">The single line to parse</param>
         /// <returns>A dataset object</returns>
         /// <exception cref="ArgumentException">If the line is not in the correct format</exception>
-        public static DataSet FromString(string line)
+        public static DataSet ParseStdOut(string line)
         {
             var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -40,9 +43,9 @@ namespace ROOT.Zfs.Core.Helpers
             var dataset = new DataSet
             {
                 Name = parts[2],
-                Used = parts[3],
-                Available = parts[4],
-                Refer = parts[5],
+                Used = new Size(parts[3]),
+                Available = new Size(parts[4]),
+                Refer = new Size(parts[5]),
                 Mountpoint = parts[6]
             };
 

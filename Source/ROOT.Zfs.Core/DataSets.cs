@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Core
                 return null;
             }
 
-            return DataSetHelper.FromString(line);
+            return DataSetHelper.ParseStdOut(line);
         }
 
         public IEnumerable<DataSet> GetDataSets()
@@ -47,7 +47,7 @@ namespace ROOT.Zfs.Core
             
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                yield return DataSetHelper.FromString(line);
+                yield return DataSetHelper.ParseStdOut(line);
             }
         }
 

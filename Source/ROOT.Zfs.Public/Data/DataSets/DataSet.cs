@@ -5,9 +5,9 @@ namespace ROOT.Zfs.Public.Data.DataSets
     public class DataSet
     {
         public string Name { get; set; }
-        public string Used { get; set; }
-        public string Available { get; set; }
-        public string Refer { get; set; }
+        public Size Used { get; set; }
+        public Size Available { get; set; }
+        public Size Refer { get; set; }
         public string Mountpoint { get; set; }
     }
 }
