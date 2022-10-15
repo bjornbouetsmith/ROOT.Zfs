@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ROOT.Zfs.Core\ROOT.Zfs.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Public\" />
+  </ItemGroup>
+
 </Project>

@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Public.Data
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0:N1}%", Value);
+            return string.Format(CultureInfo.InvariantCulture, "{0:N2}%", Value);
         }
     }
 }
