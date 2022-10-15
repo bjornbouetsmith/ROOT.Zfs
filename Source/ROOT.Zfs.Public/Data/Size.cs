@@ -56,29 +56,29 @@ namespace ROOT.Zfs.Public.Data
         /// Gets the size converted to TiB
         /// </summary>
         public double TiB => GiB / 1024d;
-
+        
         /// <summary>
         /// Returns a string representation that most represents what people would represent the raw number of bytes as
         /// </summary>
         public override string ToString()
         {
-            if (TiB > 1.0d)
+            if (TiB >= 1.0d)
             {
                 return TiB.ToString("##.#T", CultureInfo.InvariantCulture);
             }
-            if (GiB > 1.0d)
+            if (GiB >= 1.0d)
             {
                 return GiB.ToString("##.#G", CultureInfo.InvariantCulture);
             }
-            if (MiB > 1.0d)
+            if (MiB >= 1.0d)
             {
                 return MiB.ToString("##.#M",CultureInfo.InvariantCulture);
             }
-            if (KiB > 1.0d)
+            if (KiB >= 1.0d)
             {
                 return KiB.ToString("##.#K", CultureInfo.InvariantCulture);
             }
-            return Bytes.ToString("##.#", CultureInfo.InvariantCulture);
+            return Bytes.ToString(CultureInfo.InvariantCulture);
         }
     }
 }
