@@ -56,17 +56,10 @@ namespace ROOT.Zfs.Core
             {
                 var pc = BuildCommand(PropertyCommands.GetDataSetProperties());
 
-                IEnumerable<Property> properties;
                 var response = pc.LoadResponse(false);
-                if (response.Success)
-                {
-                    properties = PropertiesParser.FromStdOutput(response.StdOut, 4);
-                }
-                else
-                {
-                    // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
-                    properties = PropertiesParser.FromStdOutput(response.StdError, 4);
-                }
+
+                // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
+                IEnumerable<Property> properties = PropertiesParser.FromStdOutput(response.StdError, 4);
 
                 DataSetProperties.SetAvailableDataSetProperties(properties);
             }
@@ -83,16 +76,10 @@ namespace ROOT.Zfs.Core
         {
             var cmd = BuildCommand(PropertyCommands.GetPoolProperties());
             var response = cmd.LoadResponse(false);
-            ICollection<Property> properties;
-            if (response.Success)
-            {
-                properties = PropertiesParser.FromStdOutput(response.StdOut, 3);
-            }
-            else
-            {
-                // This is because when you call zpool get -H, you get an error, so the data gets returned in StdError
-                properties = PropertiesParser.FromStdOutput(response.StdError,3);
-            }
+
+            // This is because when you call zpool get -H, you get an error, so the data gets returned in StdError
+            var properties = PropertiesParser.FromStdOutput(response.StdError, 3);
+
             return properties;
         }
 
