@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Public.Data.Pools
 {

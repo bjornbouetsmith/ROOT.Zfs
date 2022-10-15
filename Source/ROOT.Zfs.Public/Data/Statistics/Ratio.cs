@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace ROOT.Zfs.Public.Data
+namespace ROOT.Zfs.Public.Data.Statistics
 {
     /// <summary>
     /// Represents a ratio - similar to <see cref="Part"/> - but different in the sense that valid values are probably never above 10

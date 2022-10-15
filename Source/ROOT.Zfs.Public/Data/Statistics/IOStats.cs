@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace ROOT.Zfs.Public.Data.Pools
+namespace ROOT.Zfs.Public.Data.Statistics
 {
     /// <summary>
     /// Represents output from zpool iostats
@@ -55,30 +54,5 @@ namespace ROOT.Zfs.Public.Data.Pools
     {
         public string Read { get; set; }
         public string Write { get; set; }
-    }
-
-    public class Latency
-    {
-        public Latency(string read, string write)
-        {
-            if(!long.TryParse(read, out var rNanos))
-            {
-                Trace.WriteLine($"Could not parse {read} into nano seconds");
-            }
-            if (!long.TryParse(write, out var wNanos))
-            {
-                Trace.WriteLine($"Could not parse {write} into nano seconds");
-            }
-
-            Read = new TimeSpan(rNanos / 100);
-            Write = new TimeSpan(wNanos / 100);
-        }
-
-        public Latency()
-        {
-            
-        }
-        public TimeSpan Read { get; set; }
-        public TimeSpan Write { get; set; }
     }
 }

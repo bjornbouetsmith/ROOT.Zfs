@@ -5,6 +5,7 @@ using System.Linq;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
+using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Core.Helpers
 {
@@ -100,7 +101,7 @@ namespace ROOT.Zfs.Core.Helpers
         {
             // index 7 is first column
             var latency = new IOLatencyStats();
-            
+
             latency.TotalWait = new Latency(parts[7], parts[8]);
             latency.DiskWait = new Latency(parts[9], parts[10]);
             latency.SyncqWait = new Latency(parts[11], parts[12]);
@@ -113,13 +114,13 @@ namespace ROOT.Zfs.Core.Helpers
 
         private static TimeSpan ParseNanos(string nanos)
         {
-            if (long.TryParse(nanos, out var nano))
+            if (!long.TryParse(nanos, out var nano))
             {
-                return new TimeSpan(nano / 100);
+                Trace.WriteLine($"Could not parse:{nanos} into a number");
+                return TimeSpan.Zero;
             }
 
-            Trace.WriteLine($"Could not parse:{nanos} into a number");
-            return TimeSpan.Zero;
+            return new TimeSpan(nano / 100);
         }
 
         private static void ParseSimple(IOStat stat, string[] parts)
@@ -127,24 +128,19 @@ namespace ROOT.Zfs.Core.Helpers
             stat.Device = parts[0];
             stat.Capacity = new Capacity { Allocated = new Size(parts[1]), Free = new Size(parts[2]) };
             stat.Operations = new Operations();
-            if (int.TryParse(parts[3], out var reads))
-            {
-                stat.Operations.Read = reads;
-            }
-            else
+            if (!int.TryParse(parts[3], out var reads))
             {
                 Trace.WriteLine($"Could not parse:{parts[3]} into reads");
             }
 
-            if (int.TryParse(parts[4], out var writes))
-            {
-                stat.Operations.Write = writes;
-            }
-            else
+            stat.Operations.Read = reads;
+
+            if (!int.TryParse(parts[4], out var writes))
             {
                 Trace.WriteLine($"Could not parse:{parts[4]} into reads");
             }
 
+            stat.Operations.Write = writes;
             stat.Bandwidth = new Bandwidth { Read = parts[5], Write = parts[6] };
         }
     }

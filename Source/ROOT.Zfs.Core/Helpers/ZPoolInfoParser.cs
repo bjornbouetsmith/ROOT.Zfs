@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
+using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Core.Helpers
 {
