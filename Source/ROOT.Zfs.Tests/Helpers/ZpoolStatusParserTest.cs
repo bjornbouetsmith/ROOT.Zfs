@@ -84,7 +84,7 @@ config:
         [TestMethod]
         public void ParseTruncatedStatus()
         {
-            Assert.ThrowsException<ParseException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
+            Assert.ThrowsException<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
         }
 
         [TestMethod]

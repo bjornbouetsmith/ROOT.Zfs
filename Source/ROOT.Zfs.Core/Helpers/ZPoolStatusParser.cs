@@ -63,7 +63,7 @@ config:
             }
             catch
             {
-                throw new ParseException(currentIndex, input);
+                throw ExceptionHelper.FormatException(currentIndex, input);
             }
         }
 

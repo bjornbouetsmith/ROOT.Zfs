@@ -59,7 +59,7 @@ namespace ROOT.Zfs.Core.Helpers
                 }
                 else
                 {
-                    throw new ParseException(index, line);
+                    throw ExceptionHelper.FormatException(index, line);
                 }
             }
 
@@ -70,7 +70,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// </summary>
         /// <param name="line">The line to parse</param>
         /// <param name="index">The index of the line - only for error logging purposes</param>
-        /// <exception cref="ParseException"></exception>
+        /// <exception cref="FormatException"></exception>
         internal static IOStat ParseLine(string line, int index)
         {
             var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -88,7 +88,7 @@ namespace ROOT.Zfs.Core.Helpers
             }
             else
             {
-                throw new ParseException(index, line);
+                throw ExceptionHelper.FormatException(index, line);
             }
 
             return ioStat;
