@@ -6,7 +6,12 @@ namespace ROOT.Zfs.Core.Helpers
     {
         public static State Parse(string stateText)
         {
-            switch (stateText ?? "UNKNOWN")
+            if (string.IsNullOrWhiteSpace(stateText))
+            {
+                return State.Unknown;
+            }
+
+            switch (stateText)
             {
                 case "ONLINE":
                     return State.Online;

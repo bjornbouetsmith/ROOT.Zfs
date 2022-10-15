@@ -16,6 +16,8 @@ namespace ROOT.Zfs.Tests.Helpers
         [DataRow("AVAIL", State.Available)]
         [DataRow("UNAVAIL", State.Unavailable)]
         [DataRow("HOTSTUFF", State.Unknown)]
+        [DataRow(null, State.Unknown)]
+        [DataRow("", State.Unknown)]
         public void ParseStateTest(string stateText, State expected)
         {
             var state = StateParser.Parse(stateText);
