@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ROOT.Zfs.Public.Data.Pools;
+﻿using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Helpers
 {
@@ -11,7 +6,7 @@ namespace ROOT.Zfs.Core.Helpers
     {
         public static State Parse(string stateText)
         {
-            switch (stateText)
+            switch (stateText ?? "UNKNOWN")
             {
                 case "ONLINE":
                     return State.Online;
