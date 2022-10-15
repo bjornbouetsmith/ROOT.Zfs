@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Data.Pools;
@@ -11,7 +10,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     [TestClass]
     public class FakeZpoolTest
     {
-        readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
+        readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetHistoryTestWithSkip()
@@ -129,8 +128,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual("15.5G", info.Size.ToString());
             Assert.AreEqual("105K", info.Allocated.ToString());
             Assert.AreEqual("15.5G", info.Free.ToString());
-            Assert.AreEqual("7.3%", info.Fragmentation.ToString());
-            Assert.AreEqual("6.5%", info.CapacityUsed.ToString());
+            Assert.AreEqual("7.30%", info.Fragmentation.ToString());
+            Assert.AreEqual("6.50%", info.CapacityUsed.ToString());
             Assert.AreEqual("1.43x", info.DedupRatio.ToString());
             Assert.AreEqual(State.Online, info.State);
             Console.WriteLine(info.Dump(new JsonFormatter()));
@@ -142,6 +141,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.Offline("tank", "/dev/sda", false, false);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.IsTrue(commands.Contains("/sbin/zpool offline tank /dev/sda"));
         }
 
 
@@ -150,6 +152,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.Online("tank", "/dev/sda", false);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.IsTrue(commands.Contains("/sbin/zpool online tank /dev/sda"));
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -157,6 +162,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.Clear("tank", "/dev/sda");
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
         }
         
         [TestMethod, TestCategory("FakeIntegration")]
@@ -164,6 +172,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.GetIOStats("tank", new[] { "/dev/sda" }, true);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlPvHl tank /dev/sda"));
         }
     }
 }
