@@ -57,7 +57,7 @@ jobs:
       run: dotnet build Source/ROOT.Zfs.sln --no-restore  --configuration Debug
 
     - name: Test
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml"
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage
       
       #run: |
       #  dotnet publish
