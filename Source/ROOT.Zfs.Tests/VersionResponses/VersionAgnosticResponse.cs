@@ -68,9 +68,9 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetAllPoolInfos(""), null);
                 case "/sbin/zpool list -PHp tank2":
                     return (GetAllPoolInfos("tank2"), null);
-                case "/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
+                case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
                     return (GetSmartInfoSCSI5(), null);
-                case "/sbin/smartctl -a /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
+                case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
                     return (GetSmartInfoSCSI6(), null);
                 case "/sbin/zpool get -H":
                     return (null, GetAvailablePoolProperties());
