@@ -141,7 +141,7 @@ namespace ROOT.Zfs.Core.Helpers
         {
             const string reads = "Data Units Read:";
             const string writes = "Data Units Written:";
-            if (stdOut.IndexOf("NVMe Log", StringComparison.InvariantCulture) == -1)
+            if (!stdOut.Contains("NVMe Log", StringComparison.InvariantCulture))
             {
                 // Not a nvme
                 return 0;

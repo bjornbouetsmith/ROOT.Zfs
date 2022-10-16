@@ -4,7 +4,7 @@ using ROOT.Shared.Utils.OS;
 
 namespace ROOT.Zfs.Core
 {
-    public abstract class ZfsBase
+    internal abstract class ZfsBase
     {
         private readonly IProcessCall _remoteConnection;
 

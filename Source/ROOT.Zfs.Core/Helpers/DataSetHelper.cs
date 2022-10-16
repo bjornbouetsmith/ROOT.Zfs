@@ -5,7 +5,7 @@ using ROOT.Zfs.Public.Data.DataSets;
 
 namespace ROOT.Zfs.Core.Helpers
 {
-    public static class DataSetHelper
+    internal static class DataSetHelper
     {
         public static string Decode(string dataset) 
         {

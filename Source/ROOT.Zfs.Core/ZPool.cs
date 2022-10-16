@@ -10,6 +10,7 @@ using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Core
 {
+    /// <inheritdoc cref="IZPool" />
     internal class ZPool : ZfsBase, IZPool
     {
         public ZPool(IProcessCall remoteConnection) : base(remoteConnection)

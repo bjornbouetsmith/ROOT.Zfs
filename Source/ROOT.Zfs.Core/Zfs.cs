@@ -10,7 +10,8 @@ using ROOT.Zfs.Public.Data.Smart;
 
 namespace ROOT.Zfs.Core
 {
-    public class Zfs : ZfsBase, IZfs
+    /// <inheritdoc cref="IZfs" />
+    internal class Zfs : ZfsBase, IZfs
     {
         /// <summary>
         /// Creates an instance of the Zfs class.
@@ -25,11 +26,19 @@ namespace ROOT.Zfs.Core
             Pool = new ZPool(remoteConnection);
         }
 
+        /// <inheritdoc />
         public ISnapshots Snapshots { get; }
+
+        /// <inheritdoc />
         public IDataSets DataSets { get; }
+
+        /// <inheritdoc />
         public IProperties Properties { get; }
+
+        /// <inheritdoc />
         public IZPool Pool { get; }
 
+        /// <inheritdoc />
         public VersionInfo GetVersionInfo()
         {
             var pc = BuildCommand(Commands.ZfsCommands.GetVersion());
@@ -38,6 +47,7 @@ namespace ROOT.Zfs.Core
             return new VersionInfo { Lines = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) };
         }
 
+        /// <inheritdoc />
         public IEnumerable<DiskInfo> ListDisks()
         {
             var disksCommand = BuildCommand(Commands.BaseCommands.ListBlockDevices());
@@ -59,6 +69,7 @@ namespace ROOT.Zfs.Core
             }
         }
 
+        /// <inheritdoc />
         public IEnumerable<SmartInfo> GetSmartInfos()
         {
             List<SmartInfo> smartInfos = new List<SmartInfo>();
@@ -73,6 +84,7 @@ namespace ROOT.Zfs.Core
             return smartInfos;
         }
 
+        /// <inheritdoc />
         public SmartInfo GetSmartInfo(string name)
         {
             var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(name));
@@ -80,6 +92,7 @@ namespace ROOT.Zfs.Core
             return SmartInfoParser.ParseStdOut(name, response.StdOut);
         }
 
+        /// <inheritdoc />
         public void Initialize()
         {
             var zfs = GetBinaryLocation("zfs");
@@ -97,6 +110,7 @@ namespace ROOT.Zfs.Core
             Initialized = true;
         }
 
+        /// <inheritdoc />
         public bool Initialized { get; private set; }
 
         private string GetBinaryLocation(string binary)
