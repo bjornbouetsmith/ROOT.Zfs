@@ -6,6 +6,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Smart;
 
 namespace ROOT.Zfs.Core
 {

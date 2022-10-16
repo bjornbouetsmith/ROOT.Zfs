@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         public static ProcessCall GetSmartInfo(string deviceId)
         {
-            return new ProcessCall(WhichSmartctl, $"-a {deviceId}");
+            return new ProcessCall(WhichSmartctl, $"-x {deviceId}");
         }
 
         /// <summary>

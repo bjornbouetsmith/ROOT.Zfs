@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Smart;
 
 namespace ROOT.Zfs.Public
 {

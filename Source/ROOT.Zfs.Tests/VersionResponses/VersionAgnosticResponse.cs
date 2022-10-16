@@ -158,8 +158,8 @@ Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
 === START OF INFORMATION SECTION ===
 Model Family:     Toshiba HK4R Series SSD
 Device Model:     TOSHIBA THNSN8960PCSE
-Serial Number:    26MS1049TB1V
-LU WWN Device Id: 5 00080d 910596e6c
+Serial Number:    26MS109WTB1V
+LU WWN Device Id: 5 00080d 910596db9
 Firmware Version: 8EET6101
 User Capacity:    960,197,124,096 bytes [960 GB]
 Sector Size:      512 bytes logical/physical
@@ -169,7 +169,7 @@ TRIM Command:     Available, deterministic, zeroed
 Device is:        In smartctl database [for details use: -P show]
 ATA Version is:   ACS-3 (minor revision not indicated)
 SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
-Local Time is:    Fri Oct  7 16:57:57 2022 CEST
+Local Time is:    Sun Oct 16 13:11:01 2022 CEST
 SMART support is: Available - device has SMART capability.
 SMART support is: Enabled
 
@@ -183,7 +183,181 @@ Offline data collection status:  (0x00) Offline data collection activity
 Self-test execution status:      (   0) The previous self-test routine completed
                                         without error or no self-test has ever
                                         been run.
-";
+Total time to complete Offline
+data collection:                (  120) seconds.
+Offline data collection
+capabilities:                    (0x5b) SMART execute Offline immediate.
+                                        Auto Offline data collection on/off support.
+                                        Suspend Offline collection upon new
+                                        command.
+                                        Offline surface scan supported.
+                                        Self-test supported.
+                                        No Conveyance Self-test supported.
+                                        Selective Self-test supported.
+SMART capabilities:            (0x0003) Saves SMART data before entering
+                                        power-saving mode.
+                                        Supports SMART auto save timer.
+Error logging capability:        (0x01) Error logging supported.
+                                        General Purpose Logging supported.
+Short self-test routine
+recommended polling time:        (   2) minutes.
+Extended self-test routine
+recommended polling time:        (  34) minutes.
+SCT capabilities:              (0x003d) SCT Status supported.
+                                        SCT Error Recovery Control supported.
+                                        SCT Feature Control supported.
+                                        SCT Data Table supported.
+
+SMART Attributes Data Structure revision number: 16
+Vendor Specific SMART Attributes with Thresholds:
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  1 Raw_Read_Error_Rate     0x000a   100   100   000    Old_age   Always       -       0
+  2 Throughput_Performance  0x0005   100   100   050    Pre-fail  Offline      -       0
+  3 Spin_Up_Time            0x0007   100   100   050    Pre-fail  Always       -       0
+  5 Reallocated_Sector_Ct   0x0013   100   100   050    Pre-fail  Always       -       0
+  7 Unknown_SSD_Attribute   0x000b   100   100   050    Pre-fail  Always       -       0
+  8 Unknown_SSD_Attribute   0x0005   100   100   050    Pre-fail  Offline      -       0
+  9 Power_On_Hours          0x0012   100   100   000    Old_age   Always       -       50118
+ 10 Unknown_SSD_Attribute   0x0013   100   100   050    Pre-fail  Always       -       0
+ 12 Power_Cycle_Count       0x0012   100   100   000    Old_age   Always       -       58
+167 SSD_Protect_Mode        0x0022   100   100   000    Old_age   Always       -       0
+168 SATA_PHY_Error_Count    0x0012   100   100   000    Old_age   Always       -       20
+169 Bad_Block_Count         0x0013   100   100   010    Pre-fail  Always       -       100
+170 Unknown_Attribute       0x0013   100   100   010    Pre-fail  Always       -       0
+173 Erase_Count             0x0012   200   200   000    Old_age   Always       -       2019349
+174 Unknown_Attribute       0x0012   200   200   000    Old_age   Always       -       1300879
+175 Program_Fail_Count_Chip 0x0013   100   100   010    Pre-fail  Always       -       0
+187 Reported_Uncorrect      0x0032   100   100   000    Old_age   Always       -       0
+192 Power-Off_Retract_Count 0x0012   100   100   000    Old_age   Always       -       51
+194 Temperature_Celsius     0x0022   063   057   000    Old_age   Always       -       37 (Min/Max 16/43)
+197 Current_Pending_Sector  0x0012   100   100   000    Old_age   Always       -       0
+232 Available_Reservd_Space 0x0022   100   100   000    Old_age   Always       -       0
+240 Unknown_SSD_Attribute   0x0013   100   100   050    Pre-fail  Always       -       0
+241 Total_LBAs_Written      0x0012   100   100   000    Old_age   Always       -       1508762
+242 Total_LBAs_Read         0x0012   100   100   000    Old_age   Always       -       1861766
+243 Unknown_Attribute       0x0012   100   100   000    Old_age   Always       -       17
+249 Unknown_Attribute       0x0022   100   100   000    Old_age   Always       -       96871
+
+SMART Error Log Version: 1
+ATA Error Count: 19 (device log contains only the most recent five errors)
+        CR = Command Register [HEX]
+        FR = Features Register [HEX]
+        SC = Sector Count Register [HEX]
+        SN = Sector Number Register [HEX]
+        CL = Cylinder Low Register [HEX]
+        CH = Cylinder High Register [HEX]
+        DH = Device/Head Register [HEX]
+        DC = Device Command Register [HEX]
+        ER = Error register [HEX]
+        ST = Status register [HEX]
+Powered_Up_Time is measured from power on, and printed as
+DDd+hh:mm:SS.sss where DD=days, hh=hours, mm=minutes,
+SS=sec, and sss=millisec. It ""wraps"" after 49.710 days.
+
+Error 19 occurred at disk power-on lifetime: 45784 hours(1907 days + 16 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+            ER ST SC SN CL CH DH
+            --------------
+  84 51 00 00 00 00 00
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time Command/ Feature_Name
+ ----------------------------------------------------
+  ff ff ff ff ff ff ff ff      00:19:57.106[VENDOR SPECIFIC]
+  ff ff ff ff ff ff ff ff      00:19:57.106[VENDOR SPECIFIC]
+  61 90 08 f8 62 00 40 00      00:19:57.105  WRITE FPDMA QUEUED
+  61 00 00 f8 61 00 40 00      00:19:57.104  WRITE FPDMA QUEUED
+  61 08 08 f0 61 00 40 00      00:19:57.103  WRITE FPDMA QUEUED
+
+Error 18 occurred at disk power-on lifetime: 45784 hours(1907 days + 16 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+            ER ST SC SN CL CH DH
+            --------------
+  84 51 00 00 00 00 00
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time Command/ Feature_Name
+ ----------------------------------------------------
+  ff ff ff ff ff ff ff ff      00:19:20.000[VENDOR SPECIFIC]
+  ff ff ff ff ff ff ff ff      00:19:20.000[VENDOR SPECIFIC]
+  61 08 00 20 60 00 40 00      00:19:19.999  WRITE FPDMA QUEUED
+  61 08 00 38 39 00 40 00      00:19:19.999  WRITE FPDMA QUEUED
+  61 10 00 78 31 00 40 00      00:19:19.999  WRITE FPDMA QUEUED
+
+Error 17 occurred at disk power-on lifetime: 45784 hours(1907 days + 16 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+            ER ST SC SN CL CH DH
+            --------------
+  84 51 00 00 00 00 00
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time Command/ Feature_Name
+ ----------------------------------------------------
+  ff ff ff ff ff ff ff ff      00:17:52.961[VENDOR SPECIFIC]
+  ff ff ff ff ff ff ff ff      00:17:52.961[VENDOR SPECIFIC]
+  61 08 00 b0 5a 00 40 00      00:17:52.959  WRITE FPDMA QUEUED
+  61 18 00 98 5a 00 40 00      00:17:52.959  WRITE FPDMA QUEUED
+  61 08 00 90 5a 00 40 00      00:17:52.959  WRITE FPDMA QUEUED
+
+Error 16 occurred at disk power-on lifetime: 45784 hours(1907 days + 16 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+            ER ST SC SN CL CH DH
+            --------------
+  84 51 00 00 00 00 00
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time Command/ Feature_Name
+ ----------------------------------------------------
+  ff ff ff ff ff ff ff ff      00:14:48.633[VENDOR SPECIFIC]
+  ff ff ff ff ff ff ff ff      00:14:48.633[VENDOR SPECIFIC]
+  61 28 00 78 5a 00 40 00      00:14:48.632  WRITE FPDMA QUEUED
+  61 20 00 98 35 00 40 00      00:14:48.632  WRITE FPDMA QUEUED
+  61 30 00 f0 52 00 40 00      00:14:48.632  WRITE FPDMA QUEUED
+
+Error 15 occurred at disk power-on lifetime: 45784 hours(1907 days + 16 hours)
+  When the command that caused the error occurred, the device was active or idle.
+
+  After command completion occurred, registers were:
+            ER ST SC SN CL CH DH
+            --------------
+  84 51 00 00 00 00 00
+
+  Commands leading to the command that caused the error were:
+  CR FR SC SN CL CH DH DC   Powered_Up_Time Command/ Feature_Name
+ ----------------------------------------------------
+  ff ff ff ff ff ff ff ff      00:12:45.079[VENDOR SPECIFIC]
+  ff ff ff ff ff ff ff ff      00:12:45.079[VENDOR SPECIFIC]
+  61 40 00 d8 32 00 40 00      00:12:45.078  WRITE FPDMA QUEUED
+  ea 00 00 00 00 00 00 00      00:12:43.824  FLUSH CACHE EXT
+  61 40 00 d8 31 00 40 00      00:12:43.824  WRITE FPDMA QUEUED
+
+SMART Self - test log structure revision number 1
+Num Test_Description    Status Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed without error       00%     45785         -
+# 2  Short offline       Completed without error       00%     45784         -
+# 3  Short offline       Completed without error       00%        19         -
+# 4  Short offline       Aborted by host               00%        19         -
+# 5  Short offline       Completed without error       00%        14         -
+# 6  Short offline       Completed without error       00%        14         -
+
+SMART Selective self-test log data structure revision number 1
+ SPAN MIN_LBA  MAX_LBA CURRENT_TEST_STATUS
+    1        0        0  Not_testing
+    2        0        0  Not_testing
+    3        0        0  Not_testing
+    4        0        0  Not_testing
+    5        0        0  Not_testing
+Selective self - test flags(0x0):
+  After scanning selected spans, do NOT read-scan remainder of disk.
+If Selective self - test is pending on power - up, resume after 0 minute delay.";
         }
 
         private static string GetSmartInfoSCSI5()
@@ -205,12 +379,12 @@ TRIM Command:     Available, deterministic, zeroed
 Device is:        In smartctl database [for details use: -P show]
 ATA Version is:   ACS-3 (minor revision not indicated)
 SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
-Local Time is:    Fri Oct  7 16:57:57 2022 CEST
+Local Time is:    Sun Oct 16 13:10:28 2022 CEST
 SMART support is: Available - device has SMART capability.
 SMART support is: Enabled
 
 === START OF READ SMART DATA SECTION ===
-SMART overall-health self-assessment test result: FAILED
+SMART overall-health self-assessment test result: FAIL
 
 General SMART Values:
 Offline data collection status:  (0x00) Offline data collection activity
@@ -219,7 +393,83 @@ Offline data collection status:  (0x00) Offline data collection activity
 Self-test execution status:      (   0) The previous self-test routine completed
                                         without error or no self-test has ever
                                         been run.
-";
+Total time to complete Offline
+data collection:                (  120) seconds.
+Offline data collection
+capabilities:                    (0x5b) SMART execute Offline immediate.
+                                        Auto Offline data collection on/off support.
+                                        Suspend Offline collection upon new
+                                        command.
+                                        Offline surface scan supported.
+                                        Self-test supported.
+                                        No Conveyance Self-test supported.
+                                        Selective Self-test supported.
+SMART capabilities:            (0x0003) Saves SMART data before entering
+                                        power-saving mode.
+                                        Supports SMART auto save timer.
+Error logging capability:        (0x01) Error logging supported.
+                                        General Purpose Logging supported.
+Short self-test routine
+recommended polling time:        (   2) minutes.
+Extended self-test routine
+recommended polling time:        (  34) minutes.
+SCT capabilities:              (0x003d) SCT Status supported.
+                                        SCT Error Recovery Control supported.
+                                        SCT Feature Control supported.
+                                        SCT Data Table supported.
+
+SMART Attributes Data Structure revision number: 16
+Vendor Specific SMART Attributes with Thresholds:
+ID# ATTRIBUTE_NAME          FLAG     VALUE WORST THRESH TYPE      UPDATED  WHEN_FAILED RAW_VALUE
+  1 Raw_Read_Error_Rate     0x000a   100   014   000    Old_age   Always       -       0
+  2 Throughput_Performance  0x0005   100   100   050    Pre-fail  Offline      -       0
+  3 Spin_Up_Time            0x0007   100   100   050    Pre-fail  Always       -       0
+  5 Reallocated_Sector_Ct   0x0013   100   100   050    Pre-fail  Always       -       0
+  7 Unknown_SSD_Attribute   0x000b   100   100   050    Pre-fail  Always       -       0
+  8 Unknown_SSD_Attribute   0x0005   100   100   050    Pre-fail  Offline      -       0
+  9 Power_On_Hours          0x0012   100   100   000    Old_age   Always       -       50118
+ 10 Unknown_SSD_Attribute   0x0013   100   100   050    Pre-fail  Always       -       0
+ 12 Power_Cycle_Count       0x0012   100   100   000    Old_age   Always       -       50
+167 SSD_Protect_Mode        0x0022   100   100   000    Old_age   Always       -       0
+168 SATA_PHY_Error_Count    0x0012   100   100   000    Old_age   Always       -       0
+169 Bad_Block_Count         0x0013   100   100   010    Pre-fail  Always       -       100
+170 Unknown_Attribute       0x0013   100   100   010    Pre-fail  Always       -       0
+173 Erase_Count             0x0012   200   200   000    Old_age   Always       -       1622538
+174 Unknown_Attribute       0x0012   200   200   000    Old_age   Always       -       1156337
+175 Program_Fail_Count_Chip 0x0013   100   100   010    Pre-fail  Always       -       0
+187 Reported_Uncorrect      0x0032   100   100   000    Old_age   Always       -       0
+192 Power-Off_Retract_Count 0x0012   100   100   000    Old_age   Always       -       44
+194 Temperature_Celsius     0x0022   063   057   000    Old_age   Always       -       37 (Min/Max 16/43)
+197 Current_Pending_Sector  0x0012   100   100   000    Old_age   Always       -       0
+232 Available_Reservd_Space 0x0022   100   100   000    Old_age   Always       -       0
+240 Unknown_SSD_Attribute   0x0013   100   100   050    Pre-fail  Always       -       0
+241 Total_LBAs_Written      0x0012   100   100   000    Old_age   Always       -       1262090
+242 Total_LBAs_Read         0x0012   100   100   000    Old_age   Always       -       1401957
+243 Unknown_Attribute       0x0012   100   100   000    Old_age   Always       -       3379
+249 Unknown_Attribute       0x0022   100   100   000    Old_age   Always       -       76171
+
+SMART Error Log Version: 1
+No Errors Logged
+
+SMART Self-test log structure revision number 1
+Num  Test_Description    Status                  Remaining  LifeTime(hours)  LBA_of_first_error
+# 1  Extended offline    Completed without error       00%     45785         -
+# 2  Short offline       Completed without error       00%     45784         -
+# 3  Short offline       Completed without error       00%        17         -
+# 4  Short offline       Aborted by host               00%        17         -
+# 5  Short offline       Completed without error       00%        13         -
+# 6  Short offline       Completed without error       00%        13         -
+
+SMART Selective self-test log data structure revision number 1
+ SPAN  MIN_LBA  MAX_LBA  CURRENT_TEST_STATUS
+    1        0        0  Not_testing
+    2        0        0  Not_testing
+    3        0        0  Not_testing
+    4        0        0  Not_testing
+    5        0        0  Not_testing
+Selective self-test flags (0x0):
+  After scanning selected spans, do NOT read-scan remainder of disk.
+If Selective self-test is pending on power-up, resume after 0 minute delay.";
         }
 
         private static string GetAllPoolInfos(string filter)

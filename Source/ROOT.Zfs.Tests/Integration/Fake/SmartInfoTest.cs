@@ -32,11 +32,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 if (info.DeviceId.EndsWith("5"))
                 {
                     // FAKE returns failed status
-                    Assert.IsFalse(info.Status == "PASSED");
+                    Assert.IsFalse(info.DataSection.Status == "PASSED");
                 }
                 else
                 {
-                    Assert.IsTrue(info.Status == "PASSED");
+                    Assert.IsTrue(info.DataSection.Status == "PASSED");
                 }
             }
         }

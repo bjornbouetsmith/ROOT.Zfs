@@ -20,10 +20,17 @@ namespace ROOT.Zfs.Public.Data
         }
 
         /// <summary>
+        /// Creates a size with the given bytes
+        /// </summary>
+        public Size(long bytes)
+        {
+            Bytes = bytes;
+        }
+
+        /// <summary>
         /// Creates a size with the given bytes represented as a string.
         /// If the string cannot be parsed into a number, the size gets set to 0;
         /// </summary>
-        /// <param name="bytes"></param>
         public Size(string bytes)
         {
             if (!long.TryParse(bytes, out var b))
