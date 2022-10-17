@@ -7,7 +7,7 @@ namespace ROOT.Zfs.Public
     ///  
     /// </summary>
     [Flags]
-    public enum DataSetDestroyFlags
+    public enum DatasetDestroyFlags
     {
         /// <summary>
         /// No flags set

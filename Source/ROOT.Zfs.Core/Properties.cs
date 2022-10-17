@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -10,69 +9,21 @@ namespace ROOT.Zfs.Core
 {
     internal class Properties : ZfsBase, IProperties
     {
-        public Properties(IProcessCall remoteConnection) : base(remoteConnection)
+        internal Properties(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
-
-        public IEnumerable<PropertyValue> GetProperties(string dataset)
+        
+        private ICollection<Property> GetAvailableZfsProperties()
         {
-            var pc = BuildCommand(PropertyCommands.GetProperties(dataset));
+            var pc = BuildCommand(PropertyCommands.GetDatasetProperties());
 
-            var response = pc.LoadResponse(true);
+            var response = pc.LoadResponse(false);
 
-            return DataSetProperties.FromStdOutput(response.StdOut);
+            // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
+            return PropertiesParser.FromStdOutput(response.StdError, 4);
         }
 
-        public PropertyValue GetProperty(string dataset, string property)
-        {
-            EnsureAllDataSetPropertiesCache();
-            var prop = DataSetProperties.Lookup(property);
-
-            var pc = BuildCommand(PropertyCommands.GetProperty(dataset, prop));
-
-            var response = pc.LoadResponse(true);
-
-            return PropertyValueHelper.FromString(response.StdOut);
-
-        }
-
-        public PropertyValue SetProperty(string dataset, string property, string value)
-        {
-            EnsureAllDataSetPropertiesCache();
-
-            var prop = DataSetProperties.Lookup(property);
-
-            var pc = BuildCommand(PropertyCommands.SetProperty(dataset, prop, value));
-
-            pc.LoadResponse(true);
-
-            return GetProperty(dataset, property);
-
-        }
-
-        private void EnsureAllDataSetPropertiesCache()
-        {
-            if (DataSetProperties.AvailableProperties.Count == 0)
-            {
-                var pc = BuildCommand(PropertyCommands.GetDataSetProperties());
-
-                var response = pc.LoadResponse(false);
-
-                // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
-                IEnumerable<Property> properties = PropertiesParser.FromStdOutput(response.StdError, 4);
-
-                DataSetProperties.SetAvailableDataSetProperties(properties);
-            }
-        }
-
-        public ICollection<Property> GetAvailableDataSetProperties()
-        {
-            EnsureAllDataSetPropertiesCache();
-
-            return DataSetProperties.AvailableProperties;
-        }
-
-        public ICollection<Property> GetAvailablePoolProperties()
+        private ICollection<Property> GetAvailablePoolProperties()
         {
             var cmd = BuildCommand(PropertyCommands.GetPoolProperties());
             var response = cmd.LoadResponse(false);
@@ -83,12 +34,43 @@ namespace ROOT.Zfs.Core
             return properties;
         }
 
+        public ICollection<Property> GetAvailableProperties(PropertyTarget targetType)
+        {
+            return targetType == PropertyTarget.Pool
+                ? GetAvailablePoolProperties()
+                : GetAvailableZfsProperties();
+        }
+
+        public PropertyValue GetProperty(PropertyTarget targetType, string target, string property)
+        {
+            var pc = BuildCommand(PropertyCommands.GetProperty(targetType, target, property));
+
+            var response = pc.LoadResponse(true);
+
+            return PropertyValueHelper.FromString(response.StdOut);
+        }
+
+        public PropertyValue SetProperty(PropertyTarget targetType, string target, string property, string value)
+        {
+            var pc = BuildCommand(PropertyCommands.SetProperty(targetType, target, property, value));
+
+            pc.LoadResponse(true);
+
+            return GetProperty(targetType, target, property);
+        }
+
+        public IEnumerable<PropertyValue> GetProperties(PropertyTarget targetType, string target)
+        {
+            var pc = BuildCommand(PropertyCommands.GetProperties(targetType, target));
+
+            var response = pc.LoadResponse(true);
+
+            return DatasetProperties.FromStdOutput(response.StdOut);
+        }
+
         public void ResetPropertyToInherited(string dataset, string property)
         {
-            EnsureAllDataSetPropertiesCache();
-            var prop = DataSetProperties.Lookup(property);
-
-            var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, prop));
+            var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, property));
 
             pc.LoadResponse(true);
 

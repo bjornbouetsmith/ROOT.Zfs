@@ -6,19 +6,19 @@ using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.DataSets;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Core
 {
-    internal class DataSets : ZfsBase, IDataSets
+    internal class Datasets : ZfsBase, IDatasets
     {
-        public DataSets(IProcessCall remoteConnection) : base(remoteConnection)
+        public Datasets(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
 
-        public DataSet GetDataSet(string fullName)
+        public Dataset GetDataset(string fullName)
         {
-            var pc = BuildCommand(DataSetCommands.GetDataSet(fullName));
+            var pc = BuildCommand(DatasetCommands.GetDataset(fullName));
 
             var response = pc.LoadResponse(false);
 
@@ -36,42 +36,42 @@ namespace ROOT.Zfs.Core
                 return null;
             }
 
-            return DataSetHelper.ParseStdOut(line);
+            return DatasetHelper.ParseStdOut(line);
         }
 
-        public IEnumerable<DataSet> GetDataSets()
+        public IEnumerable<Dataset> GetDatasets()
         {
-            var pc = BuildCommand(DataSetCommands.ZfsList(ListTypes.FileSystem, null));
+            var pc = BuildCommand(DatasetCommands.ZfsList(ListTypes.FileSystem, null));
 
             var response = pc.LoadResponse(true);
             
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                yield return DataSetHelper.ParseStdOut(line);
+                yield return DatasetHelper.ParseStdOut(line);
             }
         }
 
-        public DataSet CreateDataSet(string dataSetName, PropertyValue[] properties)
+        public Dataset CreateDataset(string dataSetName, PropertyValue[] properties)
         {
-            var pc = BuildCommand(DataSetCommands.CreateDataSet(dataSetName, properties));
+            var pc = BuildCommand(DatasetCommands.CreateDataset(dataSetName, properties));
 
             pc.LoadResponse(true);
             
-            return GetDataSet(dataSetName);
+            return GetDataset(dataSetName);
         }
 
-        public DataSetDestroyResponse DestroyDataSet(string fullName, DataSetDestroyFlags destroyFlags)
+        public DatasetDestroyResponse DestroyDataset(string fullName, DatasetDestroyFlags destroyFlags)
         {
-            var pc = BuildCommand(DataSetCommands.DestroyDataSet(fullName, destroyFlags));
+            var pc = BuildCommand(DatasetCommands.DestroyDataset(fullName, destroyFlags));
 
             var response = pc.LoadResponse(true);
             
-            if (!destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
+            if (!destroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
             {
-                return new DataSetDestroyResponse { Flags = destroyFlags };
+                return new DatasetDestroyResponse { Flags = destroyFlags };
             }
 
-            return new DataSetDestroyResponse { Flags = destroyFlags, DryRun = response.StdOut };
+            return new DatasetDestroyResponse { Flags = destroyFlags, DryRun = response.StdOut };
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
@@ -17,7 +18,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var pr = new Properties(_remoteProcessCall);
 
-            var props = pr.GetProperties("tank/myds");
+            var props = pr.GetProperties(PropertyTarget.Dataset,"tank/myds");
             Assert.IsNotNull(props);
             foreach (var prop in props)
             {
@@ -29,7 +30,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void SetDataSetProperty()
         {
             var pr = new Properties(_remoteProcessCall);
-            var newVal = pr.SetProperty("tank/myds", "atime", "off");
+            var newVal = pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
@@ -42,11 +43,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void GetDataSetProperty()
         {
             var pr = new Properties(_remoteProcessCall);
-            var newVal = pr.SetProperty("tank/myds", "atime", "off");
+            var newVal = pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
             
-            newVal = pr.SetProperty("tank/myds", "atime", "on");
+            newVal = pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "on");
             
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
@@ -55,7 +56,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void GetAvailableDatasetProperties()
         {
             var pr = new Properties(_remoteProcessCall);
-            var props = pr.GetAvailableDataSetProperties().ToList();
+            var props = pr.GetAvailableProperties(PropertyTarget.Dataset).ToList();
             Assert.IsTrue(props.Count > 0);
             Console.WriteLine(props.Dump(new JsonFormatter()));
         }
@@ -64,7 +65,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void GetAvailablePoolProperties()
         {
             var pr = new Properties(_remoteProcessCall);
-            var props = pr.GetAvailablePoolProperties().ToList();
+            var props = pr.GetAvailableProperties(PropertyTarget.Pool).ToList();
             Assert.IsTrue(props.Count > 0);
             Console.WriteLine(props.Dump(new JsonFormatter()));
         }
@@ -77,10 +78,10 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var pr = new Properties(_remoteProcessCall);
 
-            var before = pr.GetProperty("tank/myds", "atime");
+            var before = pr.GetProperty(PropertyTarget.Dataset,"tank/myds", "atime");
             Assert.AreEqual("off", before.Value);
 
-            pr.SetProperty("tank/myds", "atime", "on");
+            pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "on");
             pr.ResetPropertyToInherited("tank/myds", "atime");
         }
     }

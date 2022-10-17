@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Web;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.DataSets;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Core.Helpers
 {
-    internal static class DataSetHelper
+    internal static class DatasetHelper
     {
         public static string Decode(string dataset) 
         {
@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Core.Helpers
             return dataset;
         }
 
-        public static string CreateDataSetName(string parent, string dataSet)
+        public static string CreateDatasetName(string parent, string dataSet)
         {
             parent = Decode(parent);
             dataSet= Decode(dataSet);
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <param name="line">The single line to parse</param>
         /// <returns>A dataset object</returns>
         /// <exception cref="ArgumentException">If the line is not in the correct format</exception>
-        public static DataSet ParseStdOut(string line)
+        public static Dataset ParseStdOut(string line)
         {
             var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -40,7 +40,7 @@ namespace ROOT.Zfs.Core.Helpers
                 throw new ArgumentException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint from command 'zfs list'", nameof(line));
             }
             
-            var dataset = new DataSet
+            var dataset = new Dataset
             {
                 Name = parts[2],
                 Used = new Size(parts[3]),

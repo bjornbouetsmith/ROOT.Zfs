@@ -18,8 +18,8 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()
         {
-            var ds = new DataSets(_remoteProcessCall);
-            var dataSets = ds.GetDataSets();
+            var ds = new Datasets(_remoteProcessCall);
+            var dataSets = ds.GetDatasets();
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -30,8 +30,8 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetTest()
         {
-            var ds = new DataSets(_remoteProcessCall);
-            var dataset = ds.GetDataSet("tank");
+            var ds = new Datasets(_remoteProcessCall);
+            var dataset = ds.GetDataset("tank");
             Assert.IsNotNull(dataset);
             Assert.AreEqual("tank", dataset.Name);
         }
@@ -41,24 +41,22 @@ namespace ROOT.Zfs.Tests
         [DataRow(false)]
         public void CreateDataSetTest(bool addProperties)
         {
-            var ds = new DataSets(_remoteProcessCall);
+            var ds = new Datasets(_remoteProcessCall);
             var dataSetName = Guid.NewGuid().ToString();
             string fullName = null;
             try
             {
-                var quota = DataSetProperties.Lookup("quota");
-                var compression = DataSetProperties.Lookup("compression");
                 var props = new[]
                     {
-                        new PropertyValue { Property = quota.Name, Value = "1G" },
-                        new PropertyValue { Property = compression.Name, Value = "gzip" }
+                        new PropertyValue { Property = "quota", Value = "1G" },
+                        new PropertyValue { Property = "compression", Value = "gzip" }
                     };
-                var dataSets = ds.GetDataSets().ToList();
+                var dataSets = ds.GetDatasets().ToList();
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
-                fullName = DataSetHelper.CreateDataSetName(parent.Name, dataSetName);
-                var dataSet = ds.CreateDataSet(fullName, addProperties ? props : null);
+                fullName = DatasetHelper.CreateDatasetName(parent.Name, dataSetName);
+                var dataSet = ds.CreateDataset(fullName, addProperties ? props : null);
                 Assert.IsNotNull(dataSet);
                 Console.WriteLine(dataSet.Dump(new JsonFormatter()));
             }
@@ -67,7 +65,7 @@ namespace ROOT.Zfs.Tests
                 // Check to prevent issues in case dataset creation failed
                 if (fullName != null)
                 {
-                    ds.DestroyDataSet(fullName, default);
+                    ds.DestroyDataset(fullName, default);
                 }
             }
         }
@@ -75,8 +73,8 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetShouldReturnDataSet()
         {
-            var ds = new DataSets(_remoteProcessCall);
-            var root = ds.GetDataSet("tank");
+            var ds = new Datasets(_remoteProcessCall);
+            var root = ds.GetDataset("tank");
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -85,15 +83,15 @@ namespace ROOT.Zfs.Tests
         [TestMethod, TestCategory("Integration")]
         public void GetNonExistingDataSetShouldReturnNull()
         {
-            var ds = new DataSets(_remoteProcessCall);
-            var dataset = ds.GetDataSet("ungabunga" + Guid.NewGuid());
+            var ds = new Datasets(_remoteProcessCall);
+            var dataset = ds.GetDataset("ungabunga" + Guid.NewGuid());
             Assert.IsNull(dataset);
         }
 
         [TestMethod, TestCategory("Integration")]
         public void DestroyRecursiveDryRunTest()
         {
-            var dsHelper = new DataSets(_remoteProcessCall);
+            var dsHelper = new Datasets(_remoteProcessCall);
             var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             var root = $"tank/myds/{rootId}";
             var child1 = $"tank/myds/{rootId}/child1";
@@ -106,11 +104,11 @@ namespace ROOT.Zfs.Tests
 
                 foreach (var ds in datasets)
                 {
-                    dsHelper.CreateDataSet(ds, null);
+                    dsHelper.CreateDataset(ds, null);
                 }
 
-                var flags = DataSetDestroyFlags.Recursive | DataSetDestroyFlags.DryRun;
-                var response = dsHelper.DestroyDataSet(root, flags);
+                var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
+                var response = dsHelper.DestroyDataset(root, flags);
                 Assert.AreEqual(flags, response.Flags);
                 var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
@@ -125,7 +123,7 @@ namespace ROOT.Zfs.Tests
             {
                 try
                 {
-                    dsHelper.DestroyDataSet(root, DataSetDestroyFlags.Recursive);
+                    dsHelper.DestroyDataset(root, DatasetDestroyFlags.Recursive);
                 }
                 catch
                 {

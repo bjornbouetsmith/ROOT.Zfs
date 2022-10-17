@@ -13,10 +13,10 @@ namespace ROOT.Zfs.Core.Helpers
                 throw new ArgumentException($"{line} could not be parsed, expected 4 parts, got: {parts.Length} - requires an output of NAME\\tPROPERTY\\tVALUE\\tSOURCE to be used for property list i.e. zfs get all -H", nameof(line));
             }
 
-            var property = DataSetProperties.Lookup(parts[1]);
+            var property = parts[1];
             var value = parts[2];
             var source = PropertySources.Lookup(parts[3]);
-            return new PropertyValue { Property = property.Name, Source = source, Value = value };
+            return new PropertyValue { Property = property, Source = source, Value = value };
         }
     }
 }

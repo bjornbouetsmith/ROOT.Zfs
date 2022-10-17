@@ -64,7 +64,7 @@ namespace ROOT.Zfs.Core.Commands
             if (!string.IsNullOrEmpty(root))
             {
                 // just to be safe
-                root = DataSetHelper.Decode(root);
+                root = DatasetHelper.Decode(root);
                 command += $" {root}";
             }
 

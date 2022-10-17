@@ -15,7 +15,7 @@ namespace ROOT.Zfs.Tests.Helpers
         [DataRow("tank%2fmyds", "myds2", "tank/myds/myds2")]
         public void CreateDataSetNameTest(string parent, string dataset, string expected)
         {
-            var name = DataSetHelper.CreateDataSetName(parent, dataset);
+            var name = DatasetHelper.CreateDatasetName(parent, dataset);
             Assert.AreEqual(expected, name);
         }
 
@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Tests.Helpers
         {
             var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
 
-            var dataset = DataSetHelper.ParseStdOut(stdOut);
+            var dataset = DatasetHelper.ParseStdOut(stdOut);
             Console.WriteLine(dataset.Dump(new JsonFormatter()));
             Assert.AreEqual("tank/kubedata", dataset.Name);
             Assert.AreEqual("675.3M", dataset.Used.ToString());

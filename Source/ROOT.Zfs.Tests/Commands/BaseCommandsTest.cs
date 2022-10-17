@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ListCommandTest(ListTypes types, string root, string expectedCommand)
         {
-            var command = DataSetCommands.ZfsList(types, root);
+            var command = DatasetCommands.ZfsList(types, root);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ListCommandCombinationsTest(ListTypes types, string root, string expectedCommand)
         {
-            var command = DataSetCommands.ZfsList(types, root);
+            var command = DatasetCommands.ZfsList(types, root);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 

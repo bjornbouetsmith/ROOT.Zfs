@@ -6,11 +6,11 @@ using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    internal class DataSetCommands : BaseCommands
+    internal class DatasetCommands : BaseCommands
     {
-        internal static ProcessCall GetDataSet(string fullName)
+        internal static ProcessCall GetDataset(string fullName)
         {
-            var dataset = DataSetHelper.Decode(fullName);
+            var dataset = DatasetHelper.Decode(fullName);
             return ZfsList(ListTypes.FileSystem, dataset);
         }
 
@@ -20,9 +20,9 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="fullName"></param>
         /// <param name="properties"></param>
         /// <returns></returns>
-        internal static ProcessCall CreateDataSet(string fullName, PropertyValue[] properties)
+        internal static ProcessCall CreateDataset(string fullName, PropertyValue[] properties)
         {
-            fullName = DataSetHelper.Decode(fullName);
+            fullName = DatasetHelper.Decode(fullName);
 
             var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
             if (propCommand != string.Empty)
@@ -36,34 +36,34 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Destroys a dataset
         /// </summary>
-        /// <param name="dataSetName">The name of the dataset</param>
-        /// <param name="destroyFlags">The flags to control how to destroy the dataset <see cref="DataSetDestroyFlags"/></param>
-        internal static ProcessCall DestroyDataSet(string dataSetName, DataSetDestroyFlags destroyFlags)
+        /// <param name="datasetName">The name of the dataset</param>
+        /// <param name="destroyFlags">The flags to control how to destroy the dataset <see cref="DatasetDestroyFlags"/></param>
+        internal static ProcessCall DestroyDataset(string datasetName, DatasetDestroyFlags destroyFlags)
         {
-            dataSetName = DataSetHelper.Decode(dataSetName);
+            datasetName = DatasetHelper.Decode(datasetName);
 
             var args = string.Empty;
-            if (destroyFlags.HasFlag(DataSetDestroyFlags.Recursive))
+            if (destroyFlags.HasFlag(DatasetDestroyFlags.Recursive))
             {
                 args += " -r";
             }
 
-            if (destroyFlags.HasFlag(DataSetDestroyFlags.RecursiveClones))
+            if (destroyFlags.HasFlag(DatasetDestroyFlags.RecursiveClones))
             {
                 args += " -R";
             }
 
-            if (destroyFlags.HasFlag(DataSetDestroyFlags.ForceUmount))
+            if (destroyFlags.HasFlag(DatasetDestroyFlags.ForceUmount))
             {
                 args += " -f";
             }
 
-            if (destroyFlags.HasFlag(DataSetDestroyFlags.DryRun))
+            if (destroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
             {
                 args += " -nvp";
             }
 
-            return new ProcessCall(WhichZfs, $"destroy{args} {dataSetName}");
+            return new ProcessCall(WhichZfs, $"destroy{args} {datasetName}");
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="dataset"></param>
         internal static ProcessCall Promote(string dataset)
         {
-            dataset = DataSetHelper.Decode(dataset);
+            dataset = DatasetHelper.Decode(dataset);
             return new ProcessCall(WhichZfs, $"promote {dataset}");
         }
     }

@@ -51,7 +51,7 @@ namespace ROOT.Zfs.Core
         /// </summary>
         internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
         {
-            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             var skipLen = datasetOrVolume.Length + 1;
             var trimmedName = pattern;
             if (pattern.Contains('@'))

@@ -19,13 +19,13 @@ namespace ROOT.Zfs.Public
         /// <summary>
         /// Contains dataset related functionality
         /// </summary>
-        IDataSets DataSets { get; }
+        IDatasets Datasets { get; }
         
         /// <summary>
         /// Contains property related functionality
         /// </summary>
         IProperties Properties { get; }
-        
+
         /// <summary>
         /// Contains pool related functionality
         /// </summary>

@@ -21,7 +21,7 @@ namespace ROOT.Zfs.Core
             : base(remoteConnection)
         {
             Snapshots = new Snapshots(remoteConnection);
-            DataSets = new DataSets(remoteConnection);
+            Datasets = new Datasets(remoteConnection);
             Properties = new Properties(remoteConnection);
             Pool = new ZPool(remoteConnection);
         }
@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Core
         public ISnapshots Snapshots { get; }
 
         /// <inheritdoc />
-        public IDataSets DataSets { get; }
+        public IDatasets Datasets { get; }
 
         /// <inheritdoc />
         public IProperties Properties { get; }

@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.DataSets;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Public
 {
-    public interface IDataSets
+    public interface IDatasets
     {
-        DataSet GetDataSet(string fullName);
-        IEnumerable<DataSet> GetDataSets();
-        DataSet CreateDataSet(string dataSetName, PropertyValue[] properties);
+        Dataset GetDataset(string fullName);
+        IEnumerable<Dataset> GetDatasets();
+        Dataset CreateDataset(string dataSetName, PropertyValue[] properties);
         /// <summary>
         /// Destroys the given dataset.
         /// </summary>
         /// <param name="fullName">Full name of the dataset</param>
-        /// <param name="destroyFlags">Controls how the dataset is destroyed <see cref="DataSetDestroyFlags"/> </param>
+        /// <param name="destroyFlags">Controls how the dataset is destroyed <see cref="DatasetDestroyFlags"/> </param>
         /// <returns>A dataset response with the flags used and potential dry run response</returns>
-        DataSetDestroyResponse DestroyDataSet(string fullName, DataSetDestroyFlags destroyFlags);
+        DatasetDestroyResponse DestroyDataset(string fullName, DatasetDestroyFlags destroyFlags);
     }
 }

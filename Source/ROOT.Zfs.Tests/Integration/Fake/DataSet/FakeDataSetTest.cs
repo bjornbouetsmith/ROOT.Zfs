@@ -13,8 +13,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetDataSetList()
         {
-            var ds = new DataSets(CreateProcessCall());
-            var dataSets = ds.GetDataSets();
+            var ds = new Datasets(CreateProcessCall());
+            var dataSets = ds.GetDatasets();
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -25,8 +25,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetDataSetShouldReturnDataSet()
         {
-            var ds = new DataSets(CreateProcessCall());
-            var root = ds.GetDataSet("tank");
+            var ds = new Datasets(CreateProcessCall());
+            var root = ds.GetDataset("tank");
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
@@ -36,25 +36,25 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetNonExistingDataSetShouldReturnNull()
         {
-            var ds = new DataSets(CreateProcessCall());
-            var dataset = ds.GetDataSet("ungabunga");
+            var ds = new Datasets(CreateProcessCall());
+            var dataset = ds.GetDataset("ungabunga");
             Assert.IsNull(dataset);
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void CreateDateSetTest()
         {
-            var ds = new DataSets(CreateProcessCall());
-            var dataset = ds.CreateDataSet("tank/myds", new[] { new PropertyValue { Property = "atime", Value = "off" } });
+            var ds = new Datasets(CreateProcessCall());
+            var dataset = ds.CreateDataset("tank/myds", new[] { new PropertyValue { Property = "atime", Value = "off" } });
             Assert.IsNotNull(dataset);
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void DestroyDataSetTest()
         {
-            var ds = new DataSets(CreateProcessCall());
-            var response = ds.DestroyDataSet("tank/myds", Public.DataSetDestroyFlags.Recursive);
-            Assert.AreEqual(Public.DataSetDestroyFlags.Recursive, response.Flags);
+            var ds = new Datasets(CreateProcessCall());
+            var response = ds.DestroyDataset("tank/myds", Public.DatasetDestroyFlags.Recursive);
+            Assert.AreEqual(Public.DatasetDestroyFlags.Recursive, response.Flags);
         }
     }
 }

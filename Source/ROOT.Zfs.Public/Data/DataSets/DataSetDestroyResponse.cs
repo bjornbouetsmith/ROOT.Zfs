@@ -1,8 +1,8 @@
-﻿namespace ROOT.Zfs.Public.Data.DataSets
+﻿namespace ROOT.Zfs.Public.Data.Datasets
 {
-    public class DataSetDestroyResponse
+    public class DatasetDestroyResponse
     {
-        public DataSetDestroyFlags Flags { get; set; }
+        public DatasetDestroyFlags Flags { get; set; }
         public string DryRun { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
         internal static ProcessCall DestroySnapshot(string datasetOrVolume, string snapshotName)
         {
-            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             var rawSnapName = snapshotName;
             if (snapshotName.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
             {
@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
         internal static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
         {
-            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             if (NameAllow.Matches(snapshotName).Count != snapshotName.Length)
             {
                 throw new ArgumentException($"{snapshotName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapshotName));
@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         internal static ProcessCall CreateSnapshot(string datasetOrVolume)
         {
-            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
+            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             return CreateSnapshot(datasetOrVolume, CreateSnapshotName(DateTime.UtcNow));
         }
 
@@ -80,8 +80,8 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="properties">The properties to set on the target - if any</param>
         internal static ProcessCall Clone(string datasetOrVolume, string snapshotName, string targetDatasetOrVolume, PropertyValue[] properties)
         {
-            datasetOrVolume = DataSetHelper.Decode(datasetOrVolume);
-            targetDatasetOrVolume = DataSetHelper.Decode(targetDatasetOrVolume);
+            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
+            targetDatasetOrVolume = DatasetHelper.Decode(targetDatasetOrVolume);
             var rawSnapName = snapshotName;
             var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
             if (propCommand != string.Empty)

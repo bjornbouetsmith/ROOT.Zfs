@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ROOT.Zfs.Public.Data.DataSets
+namespace ROOT.Zfs.Public.Data.Datasets
 {
-    public class DataSet
+    public class Dataset
     {
         public string Name { get; set; }
         public Size Used { get; set; }

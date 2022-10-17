@@ -1,6 +1,6 @@
 ﻿using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -9,13 +9,14 @@ namespace ROOT.Zfs.Core.Commands
     /// </summary>
     internal class PropertyCommands : BaseCommands
     {
-        internal static ProcessCall GetProperties(string dataset)
+        internal static ProcessCall GetProperties(PropertyTarget targetType, string target)
         {
-            dataset = DataSetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"get all {dataset} -H");
+            target = DatasetHelper.Decode(target);
+            var binary = targetType == PropertyTarget.Pool ? WhichZpool : WhichZfs;
+            return new ProcessCall(binary, $"get all {target} -H");
         }
 
-        internal static ProcessCall GetDataSetProperties()
+        internal static ProcessCall GetDatasetProperties()
         {
             return new ProcessCall(WhichZfs, "get -H");
         }
@@ -25,22 +26,24 @@ namespace ROOT.Zfs.Core.Commands
             return new ProcessCall(WhichZpool, "get -H");
         }
 
-        internal static ProcessCall ResetPropertyToInherited(string dataset, Property property)
+        internal static ProcessCall ResetPropertyToInherited(string dataset, string property)
         {
-            dataset = DataSetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"inherit -rS {property.Name} {dataset}");
+            dataset = DatasetHelper.Decode(dataset);
+            return new ProcessCall(WhichZfs, $"inherit -rS {property} {dataset}");
         }
 
-        internal static ProcessCall SetProperty(string dataset, Property property, string value)
+        internal static ProcessCall SetProperty(PropertyTarget targetType, string target, string name, string value)
         {
-            dataset = DataSetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"set {property.Name}={value} {dataset}");
+            var binary = targetType == PropertyTarget.Pool ? WhichZpool : WhichZfs;
+            target = DatasetHelper.Decode(target);
+            return new ProcessCall(binary, $"set {name}={value} {target}");
         }
 
-        internal static ProcessCall GetProperty(string dataset, Property property)
+        internal static ProcessCall GetProperty(PropertyTarget targetType, string target, string property)
         {
-            dataset = DataSetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"get {property.Name} {dataset} -H");
+            var binary = targetType == PropertyTarget.Pool ? WhichZpool : WhichZfs;
+            target = DatasetHelper.Decode(target);
+            return new ProcessCall(binary, $"get {property} {target} -H");
         }
     }
 }
