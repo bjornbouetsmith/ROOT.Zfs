@@ -8,6 +8,17 @@ namespace ROOT.Zfs.Tests.Helpers
     public class PropertiesParserTest
     {
         #region responses
+
+        private const string InvalidZPoolResponse = @"usage:
+        get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
+
+the following properties are supported:
+
+        PROPERTY             EDIT   VALUES
+
+        altroot               YES
+        ashift                YES   <ashift, 9-16, or 0=default>";
+
         private const string zpoolResponse = @"usage:
         get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
 
@@ -188,6 +199,15 @@ a user|group|project specifier of one of these forms:
             Assert.AreEqual(16, properties.Count);
             Assert.AreEqual("altroot", properties.First().Name);
             Assert.AreEqual("feature@...", properties.Last().Name);
+        }
+
+        [TestMethod]
+        public void InvalidResponseShouldBeSkipped()
+        {
+            var properties = PropertiesParser.FromStdOutput(InvalidZPoolResponse, 3);
+            Assert.IsNotNull(properties);
+            Assert.AreEqual(1, properties.Count);
+            Assert.AreEqual("ashift",properties.First().Name);
         }
     }
 }

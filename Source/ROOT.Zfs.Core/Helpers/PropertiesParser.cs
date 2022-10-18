@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using ROOT.Zfs.Public.Data;
@@ -45,7 +46,7 @@ namespace ROOT.Zfs.Core.Helpers
 
                 if (parts.Length < expectedColumns)
                 {
-                    Console.Write("Error parsing line:{0}", line);
+                    Trace.WriteLine($"Error parsing line:'{line}' - data is missing");
                     continue;
                 }
 
