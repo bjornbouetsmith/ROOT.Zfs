@@ -453,5 +453,74 @@ Offline data collection status:  (0x03) Offline data collection activity
             Console.WriteLine(info.BytesWritten);
             Assert.AreEqual(29908334L * 512, info.BytesWritten.Bytes);
         }
+
+        [TestMethod]
+        public void GarbledOrNotSupportedOutShouldNotThrowExceptios()
+        {
+            var stdOut = @"Smart data not supported";
+
+            var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
+            Assert.AreEqual(true, info.ParsingFailed);
+        }
+
+        [TestMethod]
+        public void PartialOutputShouldNotThrowExceptions()
+        {
+            const string stdOut = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=== START OF INFORMATION SECTION ===
+Model Family:     Micron 5100 Pro / 52x0 / 5300 SSDs
+Device Model:     Micron_5200_MTFDDAK960TDD
+Serial Number:    2020286AA686
+LU WWN Device Id: 5 00a075 1286aa686
+Firmware Version: D1RL004
+User Capacity:    960,197,124,096 bytes [960 GB]
+Sector Sizes:     512 bytes logical, 4096 bytes physical
+Rotation Rate:    Solid State Device
+Form Factor:      2.5 inches
+TRIM Command:     Available, deterministic, zeroed
+Device is:        In smartctl database [for details use: -P show]
+ATA Version is:   ACS-3 T13/2161-D revision 5
+SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
+Local Time is:    Sun Oct 16 11:17:07 2022 CEST
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===
+SMART Attributes Data Structure revision number: 17";
+            var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
+            Assert.AreEqual(true, info.ParsingFailed);
+        }
+
+        [TestMethod]
+        public void PartialAndGarbledOutputShouldNotThrowExceptions()
+        {
+            const string stdOut = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
+
+=== START OF INFORMATION SECTION ===
+Model Family:     Micron 5100 Pro / 52x0 / 5300 SSDs
+Device Model:     Micron_5200_MTFDDAK960TDD
+Serial Number:    2020286AA686
+LU WWN Device Id: 5 00a075 1286aa686
+Firmware Version: D1RL004
+User Capacity:    960,197,124,096 bytes [960 GB]
+Sector Sizes:     512 bytes logical, 4096 bytes physical
+Rotation Rate:    Solid State Device
+Form Factor:      2.5 inches
+TRIM Command:     Available, deterministic, zeroed
+Device is:        In smartctl database [for details use: -P show]
+ATA Version is:   ACS-3 T13/2161-D revision 5
+SATA Version is:  SATA 3.2, 6.0 Gb/s (current: 6.0 Gb/s)
+Local Time is:    Sun Oct 16 11:17:07 2022 CEST
+SMART support is: Available - device has SMART capability.
+SMART support is: Enabled
+
+=== START OF READ SMART DATA SECTION ===SMART overall-health self-assessment test result:PASSEDSMART Attributes Data Structure revision number: 17
+";
+            var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
+            Assert.AreEqual(true, info.ParsingFailed);
+        }
     }
 }

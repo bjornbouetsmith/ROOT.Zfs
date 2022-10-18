@@ -34,6 +34,7 @@ namespace ROOT.Zfs.Core.Helpers
                 }
                 info.BytesWritten = new Size(lbaSize * lbaWritten);
                 info.BytesRead = new Size(lbaSize * lbaRead);
+                info.ParsingFailed |= info.DataSection.ParsingFailed;
             }
             catch (Exception e)
             {
@@ -44,21 +45,26 @@ namespace ROOT.Zfs.Core.Helpers
         }
 
 
-        private static string ParseStatus(string stdOut)
+        private static void ParseStatus(SmartDataSection section, string stdOut)
         {
             const string pattern = "SMART overall-health self-assessment test result:";
             var index = stdOut.IndexOf(pattern, StringComparison.OrdinalIgnoreCase);
             if (index == -1)
             {
-                return "Unknown";
+                section.ParsingFailed = true;
+                section.Status = "Unknown";
+                return;
             }
             var indexOfEOL = stdOut.IndexOf('\n', index);
             if (indexOfEOL == -1)
             {
-                return "Unknown";
+                section.ParsingFailed = true;
+                section.Status = "Unknown";
+                return;
             }
             var startOfStatus = index + pattern.Length;
-            return stdOut[startOfStatus..indexOfEOL].Trim();
+
+            section.Status = stdOut[startOfStatus..indexOfEOL].Trim();
         }
 
         internal static SmartInfoSection ParseSmartInfoSection(string stdOut)
@@ -168,7 +174,7 @@ namespace ROOT.Zfs.Core.Helpers
             const string startOfAttributesHeader = "SMART Attributes Data Structure revision number";
             const string endAttributes = "SMART Error Log Version:";
             var section = new SmartDataSection();
-            
+
 
             section.Attributes = new List<SmartInfoAttribute>();
             var startIndex = stdOut.IndexOf(startHeader, StringComparison.InvariantCulture) + startHeader.Length;
@@ -181,8 +187,7 @@ namespace ROOT.Zfs.Core.Helpers
             var endIndex = stdOut.IndexOf(startOfAttributesHeader, StringComparison.InvariantCulture);
             var data = stdOut[startIndex..endIndex];
 
-            section.Status = ParseStatus(data);
-
+            ParseStatus(section, data);
 
             try
             {
