@@ -140,5 +140,13 @@ namespace ROOT.Zfs.Tests.Commands
             var command = ZpoolCommands.IoStat(pool, deviceList?.Split(','), includeAverageLatency);
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
+
+        [TestMethod]
+        public void ResilverCommandTest()
+        {
+            var command = ZpoolCommands.Resilver("tank");
+            Console.WriteLine(command.FullCommandLine);
+            Assert.AreEqual("/sbin/zpool resilver tank",command.FullCommandLine);
+        }
     }
 }

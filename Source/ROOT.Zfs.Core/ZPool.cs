@@ -88,5 +88,11 @@ namespace ROOT.Zfs.Core
             var response = pc.LoadResponse(true);
             return ZPoolIOStatParser.ParseStdOut(pool, response.StdOut);
         }
+
+        public void Resilver(string pool)
+        {
+            var pc = BuildCommand(ZpoolCommands.Resilver(pool));
+            pc.LoadResponse(true);
+        }
     }
 }

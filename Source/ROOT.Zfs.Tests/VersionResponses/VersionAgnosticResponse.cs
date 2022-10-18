@@ -96,6 +96,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool clear tank /dev/sda":
                     return (null, null);
+                case "/sbin/zpool resilver tank":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

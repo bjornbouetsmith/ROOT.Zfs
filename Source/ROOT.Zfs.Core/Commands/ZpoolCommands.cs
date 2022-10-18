@@ -173,5 +173,12 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, $"clear {pool} {device}");
         }
+        /// <summary>
+        /// Returns a resilver command for the given pool
+        /// </summary>
+        public static IProcessCall Resilver(string pool)
+        {
+            return new ProcessCall(WhichZpool, $"resilver {pool}");
+        }
     }
 }

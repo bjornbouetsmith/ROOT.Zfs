@@ -6,6 +6,10 @@ using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Public
 {
+    /// <summary>
+    /// Contains methods that corresponds to commands you can run with the zpool binary
+    /// see: https://openzfs.github.io/openzfs-docs/man/8/zpool.8.html?highlight=zpool
+    /// </summary>
     public interface IZPool
     {
         /// <summary>
@@ -99,5 +103,14 @@ namespace ROOT.Zfs.Public
         /// <param name="devices">The devices if any to show stats for</param>
         /// <param name="includeAverageLatency">Whether to include average latency stats as well (-l)</param>
         IOStats GetIOStats(string pool, string[] devices, bool includeAverageLatency);
+
+        /// <summary>
+        /// Starts a resilver of the specified pools.
+        /// If an existing resilver is already running it will be restarted from the beginning.
+        /// Any drives that were scheduled for a deferred resilver will be added to the new one.
+        /// This requires the resilver_defer pool feature.
+        /// </summary>
+        /// <param name="pool">The name of the pool to start a resilver operation on.</param>
+        void Resilver(string pool);
     }
 }

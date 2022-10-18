@@ -176,5 +176,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlPvHl tank /dev/sda"));
         }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void ResilverTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Resilver("tank");
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
+        }
     }
 }
