@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -14,7 +15,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetList()
         {
             var ds = new Datasets(CreateProcessCall());
-            var dataSets = ds.GetDatasets();
+            var dataSets = ds.GetDatasets(DatasetType.NotSet);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -26,19 +27,19 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(CreateProcessCall());
-            var root = ds.GetDataset("tank");
+            var root = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
+            Assert.AreEqual(DatasetType.Filesystem, root.Type);
             Console.WriteLine(root.Dump(new JsonFormatter()));
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
-        public void GetNonExistingDataSetShouldReturnNull()
+        public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = new Datasets(CreateProcessCall());
-            var dataset = ds.GetDataset("ungabunga");
-            Assert.IsNull(dataset);
+            Assert.ThrowsException<ProcessCallException>(()=> ds.GetDatasets("ungabunga", DatasetType.NotSet, false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]

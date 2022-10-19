@@ -16,39 +16,21 @@ namespace ROOT.Zfs.Core
         {
         }
 
-        public Dataset GetDataset(string fullName)
+        public IEnumerable<Dataset> GetDatasets(string fullName, DatasetType datasetType, bool includeChildren)
         {
-            var pc = BuildCommand(DatasetCommands.GetDataset(fullName));
-
-            var response = pc.LoadResponse(false);
-
-            if (!response.Success 
-                && response.StdError != null 
-                && response.StdError.StartsWith("cannot open") 
-                && response.StdError.EndsWith("dataset does not exist"))
-            {
-                return null;
-            }
-
-            var line = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-            if (line == null)
-            {
-                return null;
-            }
-
-            return DatasetHelper.ParseStdOut(line);
-        }
-
-        public IEnumerable<Dataset> GetDatasets()
-        {
-            var pc = BuildCommand(DatasetCommands.ZfsList(ListTypes.FileSystem, null));
+            var pc = BuildCommand(DatasetCommands.ZfsList(datasetType, fullName, false));
 
             var response = pc.LoadResponse(true);
-            
+
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return DatasetHelper.ParseStdOut(line);
             }
+        }
+
+        public IEnumerable<Dataset> GetDatasets(DatasetType datasetType)
+        {
+            return GetDatasets(null, datasetType, false);
         }
 
         public Dataset CreateDataset(string dataSetName, PropertyValue[] properties)
@@ -56,8 +38,8 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(DatasetCommands.CreateDataset(dataSetName, properties));
 
             pc.LoadResponse(true);
-            
-            return GetDataset(dataSetName);
+
+            return GetDatasets(dataSetName, DatasetType.NotSet, false).FirstOrDefault();
         }
 
         public DatasetDestroyResponse DestroyDataset(string fullName, DatasetDestroyFlags destroyFlags)
@@ -65,7 +47,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(DatasetCommands.DestroyDataset(fullName, destroyFlags));
 
             var response = pc.LoadResponse(true);
-            
+
             if (!destroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
             {
                 return new DatasetDestroyResponse { Flags = destroyFlags };

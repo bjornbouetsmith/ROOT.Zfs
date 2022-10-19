@@ -33,14 +33,6 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        public void GetDataSetCommandTest()
-        {
-            var command = DatasetCommands.GetDataset("tank/myds");
-            Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds", command.FullCommandLine);
-        }
-
-        [TestMethod]
         [DataRow(true)]
         [DataRow(false)]
         public void CreateDatasetWithoutProperties(bool nullProperties)

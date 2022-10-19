@@ -23,12 +23,21 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
                     return (LoadDisks(), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume":
                     return (LoadFileSystems(""), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem tank":
                     return (LoadFileSystems("tank"), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint tank/myds":
                     return (LoadFileSystems("tank/myds"), null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem ungabunga":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume ungabunga":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem ungabunga":
                     return (null, "cannot open 'ungabunga': dataset does not exist");
                 case "/sbin/zfs get -H":
                     return (null, GetAvailableProperties());
@@ -42,6 +51,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs inherit -rS atime tank/myds":
                     return (null, null);
                 case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t snapshot tank/myds":
                     return (GetSnapshots(), null);
                 case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
                 case "/sbin/zfs snap tank/myds@20220922211347000-1":

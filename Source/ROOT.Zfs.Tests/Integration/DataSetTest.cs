@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetList()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataSets = ds.GetDatasets();
+            var dataSets = ds.GetDatasets(DatasetType.NotSet);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetTest()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataset = ds.GetDataset("tank");
+            var dataset = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual("tank", dataset.Name);
         }
@@ -51,7 +51,7 @@ namespace ROOT.Zfs.Tests
                         new PropertyValue { Property = "quota", Value = "1G" },
                         new PropertyValue { Property = "compression", Value = "gzip" }
                     };
-                var dataSets = ds.GetDatasets().ToList();
+                var dataSets = ds.GetDatasets(DatasetType.NotSet).ToList();
                 var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
@@ -74,7 +74,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var root = ds.GetDataset("tank");
+            var root = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -84,7 +84,7 @@ namespace ROOT.Zfs.Tests
         public void GetNonExistingDataSetShouldReturnNull()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataset = ds.GetDataset("ungabunga" + Guid.NewGuid());
+            var dataset = ds.GetDatasets("ungabunga" + Guid.NewGuid(), DatasetType.NotSet, false).FirstOrDefault();
             Assert.IsNull(dataset);
         }
 

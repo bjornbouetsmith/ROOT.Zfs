@@ -1,22 +1,23 @@
 ﻿using System;
 
-namespace ROOT.Zfs.Core.Commands
+namespace ROOT.Zfs.Public.Data
 {
     /// <summary>
-    /// Types to display when invoking zfs list
+    /// Types of dataset
     /// This is a flags enum, so combinations can be used
+    /// Combinations only works when listing dataset, not when creating a dataset
     /// </summary>
     [Flags]
-    public enum ListTypes
+    public enum DatasetType
     {
         /// <summary>
-        /// Nothing - will be treated as "all", since its the default value
+        /// Not set - will be treated as "FileSystem | Volume", since its the default value
         /// </summary>
-        None = 0,
+        NotSet = 0,
         /// <summary>
         /// Filesystems - aka datasets
         /// </summary>
-        FileSystem = 1,
+        Filesystem = 1,
         /// <summary>
         /// Snapshots
         /// </summary>

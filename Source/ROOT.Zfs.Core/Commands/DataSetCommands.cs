@@ -8,12 +8,6 @@ namespace ROOT.Zfs.Core.Commands
 {
     internal class DatasetCommands : BaseCommands
     {
-        internal static ProcessCall GetDataset(string fullName)
-        {
-            var dataset = DatasetHelper.Decode(fullName);
-            return ZfsList(ListTypes.FileSystem, dataset);
-        }
-
         /// <summary>
         /// Creates a dataset with the given properties if any
         /// </summary>

@@ -12,7 +12,7 @@ namespace ROOT.Zfs.Core.Commands
     /// </summary>
     internal class SnapshotCommands : BaseCommands
     {
-        private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-",RegexOptions.Compiled);
+        private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-", RegexOptions.Compiled);
 
         /// <summary>
         /// Creates a standard snapshot name based on the time passed into the method
@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="datasetOrVolume"></param>
         internal static ProcessCall ListSnapshots(string datasetOrVolume)
         {
-            return ZfsList(ListTypes.Snapshot, datasetOrVolume);
+            return ZfsList(DatasetType.Snapshot, datasetOrVolume, true);
         }
 
         /// <summary>

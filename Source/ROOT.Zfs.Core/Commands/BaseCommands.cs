@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -26,32 +27,41 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="listtypes">The types to return</param>
         /// <param name="root">The root to list types for - or the single element wanted</param>
-        /// <returns></returns>
-        public static ProcessCall ZfsList(ListTypes listtypes, string root)
+        /// <param name="includeChildren">Whether or not to include child datasets in the return value</param>
+        public static ProcessCall ZfsList(DatasetType listtypes, string root, bool includeChildren)
         {
-            return BuildZfsListCommand(listtypes, root);
+            return BuildZfsListCommand(listtypes, root, includeChildren);
         }
 
-        private static ProcessCall BuildZfsListCommand(ListTypes listtypes, string root)
+        private static ProcessCall BuildZfsListCommand(DatasetType listtypes, string root, bool includeChildren)
         {
             string command = "list -Hpr -o type,creation,name,used,refer,avail,mountpoint";
 
-            // TODO: optimize this, so we have a cached version of ListTypes -> strings - including combinations
-            List<string> types = new();
+            if (includeChildren)
+            {
+                command += " -d 99";
+            }
 
-            if ((listtypes & ListTypes.Bookmark) != 0)
+            List<string> types = new();
+            if (listtypes == DatasetType.NotSet)
+            {
+                // This is what zfs does, if you do not specify type, you get filesystems and volumnes
+                listtypes = DatasetType.Filesystem | DatasetType.Volume;
+            }
+
+            if ((listtypes & DatasetType.Bookmark) != 0)
             {
                 types.Add("bookmark");
             }
-            if ((listtypes & ListTypes.FileSystem) != 0)
+            if ((listtypes & DatasetType.Filesystem) != 0)
             {
                 types.Add("filesystem");
             }
-            if ((listtypes & ListTypes.Snapshot) != 0)
+            if ((listtypes & DatasetType.Snapshot) != 0)
             {
                 types.Add("snapshot");
             }
-            if ((listtypes & ListTypes.Volume) != 0)
+            if ((listtypes & DatasetType.Volume) != 0)
             {
                 types.Add("volume");
             }
