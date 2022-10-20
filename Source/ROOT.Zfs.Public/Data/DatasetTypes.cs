@@ -8,12 +8,12 @@ namespace ROOT.Zfs.Public.Data
     /// Combinations only works when listing dataset, not when creating a dataset
     /// </summary>
     [Flags]
-    public enum DatasetType
+    public enum DatasetTypes
     {
         /// <summary>
-        /// Not set - will be treated as "FileSystem | Volume", since its the default value
+        /// None - will be treated as "FileSystem | Volume", since its the default value
         /// </summary>
-        NotSet = 0,
+        None = 0,
         /// <summary>
         /// Filesystems - aka datasets
         /// </summary>

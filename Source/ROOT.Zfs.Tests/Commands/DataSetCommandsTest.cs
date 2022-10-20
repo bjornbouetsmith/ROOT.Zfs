@@ -51,17 +51,17 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zfs create -o atime=off -o compression=off tank/myds", command.FullCommandLine);
         }
 
-        [DataRow(DatasetType.Filesystem, true, true, null, false, null, null, "/sbin/zfs create -p -u tank/child")]
-        [DataRow(DatasetType.Filesystem, true, false, null, false, null, null, "/sbin/zfs create -p tank/child")]
-        [DataRow(DatasetType.Filesystem, false, false, null, false, null, null, "/sbin/zfs create tank/child")]
+        [DataRow(DatasetTypes.Filesystem, true, true, null, false, null, null, "/sbin/zfs create -p -u tank/child")]
+        [DataRow(DatasetTypes.Filesystem, true, false, null, false, null, null, "/sbin/zfs create -p tank/child")]
+        [DataRow(DatasetTypes.Filesystem, false, false, null, false, null, null, "/sbin/zfs create tank/child")]
 
-        [DataRow(DatasetType.Volume, true, true, null, true, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -s -p tank/child")]
-        [DataRow(DatasetType.Volume, false, false, null, true, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -s tank/child")]
-        [DataRow(DatasetType.Volume, true, true, null, false, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -p tank/child")]
-        [DataRow(DatasetType.Volume, false, false, null, false, "8K", "18G", "/sbin/zfs create -b 8K -V 18G tank/child")]
+        [DataRow(DatasetTypes.Volume, true, true, null, true, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -s -p tank/child")]
+        [DataRow(DatasetTypes.Volume, false, false, null, true, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -s tank/child")]
+        [DataRow(DatasetTypes.Volume, true, true, null, false, "8K", "18G", "/sbin/zfs create -b 8K -V 18G -p tank/child")]
+        [DataRow(DatasetTypes.Volume, false, false, null, false, "8K", "18G", "/sbin/zfs create -b 8K -V 18G tank/child")]
 
         [TestMethod]
-        public void CreateDatasetWithArgumentsTest(DatasetType type, bool createParents, bool doNotMount, string properties, bool sparseVolume, string blockSize, string volumeSize, string expectedCommand)
+        public void CreateDatasetWithArgumentsTest(DatasetTypes type, bool createParents, bool doNotMount, string properties, bool sparseVolume, string blockSize, string volumeSize, string expectedCommand)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Source = a[1] }).ToArray();
             var args = new DatasetCreationArgs
@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Tests.Commands
                 DataSetName = "tank/child",
                 DoNotMount = doNotMount,
                 Properties = props,
-                VolumeArguments = type == DatasetType.Filesystem ? null : new VolumeCreationArgs
+                VolumeArguments = type == DatasetTypes.Filesystem ? null : new VolumeCreationArgs
                 {
                     BlockSize = blockSize,
                     VolumeSize = volumeSize,

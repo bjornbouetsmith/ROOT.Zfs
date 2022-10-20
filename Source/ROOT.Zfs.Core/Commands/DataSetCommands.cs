@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Core.Commands
             arguments.DataSetName = DatasetHelper.Decode(arguments.DataSetName);
 
             string args = string.Empty;
-            if (arguments.Type == DatasetType.Volume)
+            if (arguments.Type == DatasetTypes.Volume)
             {
                 args = $" -b {arguments.VolumeArguments.BlockSize} -V {arguments.VolumeArguments.VolumeSize}";
                 if (arguments.VolumeArguments.Sparse)
@@ -47,7 +47,7 @@ namespace ROOT.Zfs.Core.Commands
                 args += " -p";
             }
 
-            if (arguments.DoNotMount && arguments.Type == DatasetType.Filesystem)
+            if (arguments.DoNotMount && arguments.Type == DatasetTypes.Filesystem)
             {
                 args += " -u";
             }

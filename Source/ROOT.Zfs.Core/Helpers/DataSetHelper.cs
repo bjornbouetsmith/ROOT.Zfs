@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Core.Helpers
                 throw new ArgumentException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint from command 'zfs list'", nameof(line));
             }
 
-            if (!Enum.TryParse<DatasetType>(parts[0], true, out var datasetType))
+            if (!Enum.TryParse<DatasetTypes>(parts[0], true, out var datasetType))
             {
                 Trace.WriteLine($"Could not parse:'{parts[0]}' into a valid dataset type - this is probably a bug - or a new unsupported dataset type has been added");
             }

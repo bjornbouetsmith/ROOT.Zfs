@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Tests.Public
             var args = new DatasetCreationArgs
             {
                 DataSetName = "tank/myvol",
-                Type = DatasetType.Volume,
+                Type = DatasetTypes.Volume,
                 VolumeArguments = new VolumeCreationArgs
                 {
                     BlockSize = blockSize,
@@ -37,18 +37,18 @@ namespace ROOT.Zfs.Tests.Public
         }
 
         [TestMethod]
-        [DataRow(null, DatasetType.Filesystem, false)]
-        [DataRow(null, DatasetType.Volume, false)]
-        [DataRow("", DatasetType.Filesystem, false)]
-        [DataRow("", DatasetType.Volume, false)]
-        [DataRow("  ", DatasetType.Filesystem, false)]
-        [DataRow("  ", DatasetType.Volume, false)]
-        [DataRow("tank", DatasetType.Snapshot, false)]
-        [DataRow("tank", DatasetType.NotSet, false)]
-        [DataRow("tank", DatasetType.Bookmark, false)]
-        [DataRow("tank", DatasetType.Filesystem, true)]
-        [DataRow("tank", DatasetType.Volume, false)] // Volume requires VolumeCreationArgs
-        public void ValidateCommonDatasetArgsTest(string name, DatasetType type, bool expectedValid)
+        [DataRow(null, DatasetTypes.Filesystem, false)]
+        [DataRow(null, DatasetTypes.Volume, false)]
+        [DataRow("", DatasetTypes.Filesystem, false)]
+        [DataRow("", DatasetTypes.Volume, false)]
+        [DataRow("  ", DatasetTypes.Filesystem, false)]
+        [DataRow("  ", DatasetTypes.Volume, false)]
+        [DataRow("tank", DatasetTypes.Snapshot, false)]
+        [DataRow("tank", DatasetTypes.None, false)]
+        [DataRow("tank", DatasetTypes.Bookmark, false)]
+        [DataRow("tank", DatasetTypes.Filesystem, true)]
+        [DataRow("tank", DatasetTypes.Volume, false)] // Volume requires VolumeCreationArgs
+        public void ValidateCommonDatasetArgsTest(string name, DatasetTypes type, bool expectedValid)
         {
             var args = new DatasetCreationArgs
             {

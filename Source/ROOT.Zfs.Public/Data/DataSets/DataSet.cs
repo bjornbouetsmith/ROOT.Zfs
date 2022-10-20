@@ -5,7 +5,7 @@ namespace ROOT.Zfs.Public.Data.Datasets
     public class Dataset
     {
         public string Name { get; set; }
-        public DatasetType Type { get; set; }
+        public DatasetTypes Type { get; set; }
         public Size Used { get; set; }
         public Size Available { get; set; }
         public Size Refer { get; set; }

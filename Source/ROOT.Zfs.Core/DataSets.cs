@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dataset> GetDatasets(string fullName, DatasetType datasetType, bool includeChildren)
+        public IEnumerable<Dataset> GetDatasets(string fullName, DatasetTypes datasetType, bool includeChildren)
         {
             var pc = BuildCommand(DatasetCommands.ZfsList(datasetType, fullName, false));
 
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dataset> GetDatasets(DatasetType datasetType)
+        public IEnumerable<Dataset> GetDatasets(DatasetTypes datasetType)
         {
             return GetDatasets(null, datasetType, false);
         }
@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Core
         {
             if (!arguments.Validate(out var errors))
             {
-                throw new ArgumentException(nameof(arguments),string.Join(Environment.NewLine, errors));
+                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(arguments));
             }
 
             var pc = BuildCommand(DatasetCommands.CreateDataset(arguments));

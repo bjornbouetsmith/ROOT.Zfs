@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="datasetOrVolume"></param>
         internal static ProcessCall ListSnapshots(string datasetOrVolume)
         {
-            return ZfsList(DatasetType.Snapshot, datasetOrVolume, true);
+            return ZfsList(DatasetTypes.Snapshot, datasetOrVolume, true);
         }
 
         /// <summary>
