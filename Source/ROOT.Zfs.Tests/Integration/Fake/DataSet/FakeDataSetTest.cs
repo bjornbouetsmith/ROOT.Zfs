@@ -4,7 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
 {
@@ -46,7 +48,14 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void CreateDateSetTest()
         {
             var ds = new Datasets(CreateProcessCall());
-            var dataset = ds.CreateDataset("tank/myds", new[] { new PropertyValue { Property = "atime", Value = "off" } });
+            var args = new DatasetCreationArgs
+            {
+                DataSetName = "tank/myds",
+                Type = DatasetType.Filesystem,
+                Properties= new[] { new PropertyValue { Property = "atime", Value = "off" } }
+
+            };
+            var dataset = ds.CreateDataset(args);
             Assert.IsNotNull(dataset);
         }
 
@@ -54,8 +63,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void DestroyDataSetTest()
         {
             var ds = new Datasets(CreateProcessCall());
-            var response = ds.DestroyDataset("tank/myds", Public.DatasetDestroyFlags.Recursive);
-            Assert.AreEqual(Public.DatasetDestroyFlags.Recursive, response.Flags);
+            var response = ds.DestroyDataset("tank/myds", DatasetDestroyFlags.Recursive);
+            Assert.AreEqual(DatasetDestroyFlags.Recursive, response.Flags);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -22,7 +23,7 @@ namespace ROOT.Zfs.Public.Data
         /// <summary>
         /// Creates a size with the given bytes
         /// </summary>
-        public Size(long bytes)
+        public Size(ulong bytes)
         {
             Bytes = bytes;
         }
@@ -33,7 +34,7 @@ namespace ROOT.Zfs.Public.Data
         /// </summary>
         public Size(string bytes)
         {
-            if (!long.TryParse(bytes, out var b))
+            if (!ulong.TryParse(bytes, out var b))
             {
                 Trace.WriteLine($"Cannnot parse {bytes} into a number");
             }
@@ -42,7 +43,7 @@ namespace ROOT.Zfs.Public.Data
         /// <summary>
         /// Gets or sets the size in bytes
         /// </summary>
-        public long Bytes { get; set; }
+        public ulong Bytes { get; set; }
 
         /// <summary>
         /// Gets the size converted to KiB
@@ -63,7 +64,7 @@ namespace ROOT.Zfs.Public.Data
         /// Gets the size converted to TiB
         /// </summary>
         public double TiB => GiB / 1024d;
-        
+
         /// <summary>
         /// Returns a string representation that most represents what people would represent the raw number of bytes as
         /// </summary>
@@ -79,13 +80,68 @@ namespace ROOT.Zfs.Public.Data
             }
             if (MiB >= 1.0d)
             {
-                return MiB.ToString("##.#M",CultureInfo.InvariantCulture);
+                return MiB.ToString("##.#M", CultureInfo.InvariantCulture);
             }
             if (KiB >= 1.0d)
             {
                 return KiB.ToString("##.#K", CultureInfo.InvariantCulture);
             }
             return Bytes.ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Implicitly converts a string into a size if possible.
+        /// Valid formats follow zfs rules, 1K, 1G and so forth
+        /// </summary>
+        public static implicit operator Size(string sizeString)
+        {
+            return FromSizeString(sizeString);
+        }
+        /// <summary>
+        /// Implicitly converts a ulong into a size.
+        /// </summary>
+        public static implicit operator Size(ulong size)
+        {
+            return new Size(size);
+        }
+
+        /// <summary>
+        /// Creates a size from the
+        /// </summary>
+        /// <param name="sizeString"></param>
+        /// <returns></returns>
+        public static Size FromSizeString(string sizeString)
+        {
+            if (!sizeString.EndsWith("B")
+                && !sizeString.EndsWith("K")
+                && !sizeString.EndsWith("M")
+                && !sizeString.EndsWith("G")
+                && !sizeString.EndsWith("T"))
+            {
+                throw new ArgumentException("size must be a string that ends in either B, K, M, G, T");
+            }
+
+            var last = sizeString[^1];
+            var first = sizeString[..^1];
+            if (!double.TryParse(first, NumberStyles.Any, CultureInfo.InvariantCulture, out var size))
+            {
+                throw new ArgumentException("Size must start with a number, possibly floating point using a period as decimal separator");
+            }
+
+            switch (last)
+            {
+                case 'B':
+                    return new Size((ulong)size);
+                case 'K':
+                    return new Size((ulong)(size * 1024));
+                case 'M':
+                    return new Size((ulong)(size * 1024 * 1024));
+                case 'G':
+                    return new Size((ulong)(size * 1024 * 1024 * 1024));
+                // Should only be T, since validation above only allow these values to pass
+                default:
+                    return new Size((ulong)(size * 1024 * 1024 * 1024 * 1024));
+            }
         }
     }
 }

@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Core.Helpers
             return section;
         }
 
-        private static long GetLbaSize(SmartInfoSection section)
+        private static ulong GetLbaSize(SmartInfoSection section)
         {
             // Usually its either: 512 bytes logical, 4096 bytes physical
             // or 512 bytes logical/physical
@@ -113,15 +113,15 @@ namespace ROOT.Zfs.Core.Helpers
             var indexOfSpace = lbaField.Value.IndexOf(' ', StringComparison.InvariantCulture);
             if (indexOfSpace == -1)
             {
-                return long.Parse(lbaField.Value);
+                return ulong.Parse(lbaField.Value);
             }
 
             var lba = lbaField.Value[..indexOfSpace].Trim();
-            return long.Parse(lba);
+            return ulong.Parse(lba);
 
         }
 
-        private static long GetLbasWritten(IList<SmartInfoAttribute> attributes)
+        private static ulong GetLbasWritten(IList<SmartInfoAttribute> attributes)
         {
             var attribute = attributes.FirstOrDefault(a => (a.Id == 241 || a.Id == 246) && a.Name == "Total_LBAs_Written");
             if (attribute == null)
@@ -129,10 +129,10 @@ namespace ROOT.Zfs.Core.Helpers
                 return 0;
             }
 
-            return long.Parse(attribute.RawValue);
+            return ulong.Parse(attribute.RawValue);
         }
 
-        private static long GetLbasRead(IList<SmartInfoAttribute> attributes)
+        private static ulong GetLbasRead(IList<SmartInfoAttribute> attributes)
         {
             var attribute = attributes.FirstOrDefault(a => a.Id == 242 && a.Name == "Total_LBAs_Read");
             if (attribute == null)
@@ -140,10 +140,10 @@ namespace ROOT.Zfs.Core.Helpers
                 return 0;
             }
 
-            return long.Parse(attribute.RawValue);
+            return ulong.Parse(attribute.RawValue);
         }
 
-        private static long GetNvmeUnits(bool read, string stdOut)
+        private static ulong GetNvmeUnits(bool read, string stdOut)
         {
             const string reads = "Data Units Read:";
             const string writes = "Data Units Written:";
@@ -164,7 +164,7 @@ namespace ROOT.Zfs.Core.Helpers
             var value = stdOut[indexOfField..eofIndex].Trim();
             var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var units = parts[0].Replace(",", "");
-            return long.Parse(units);
+            return ulong.Parse(units);
 
         }
 

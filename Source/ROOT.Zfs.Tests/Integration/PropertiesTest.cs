@@ -5,8 +5,10 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Datasets;
 
-namespace ROOT.Zfs.Tests
+namespace ROOT.Zfs.Tests.Integration
 {
     [TestClass]
     public class PropertiesTest
@@ -66,7 +68,12 @@ namespace ROOT.Zfs.Tests
             var pr = new Properties(_remoteProcessCall);
             var dsHelper = new Datasets(_remoteProcessCall);
             var dataset = $"tank/{Guid.NewGuid()}";
-            var ds = dsHelper.CreateDataset(dataset, null);
+            var args = new DatasetCreationArgs
+            {
+                DataSetName = dataset,
+                Type = DatasetType.Filesystem
+            };
+            dsHelper.CreateDataset(args);
             try
             {
                 var before = pr.GetProperty(PropertyTarget.Dataset, dataset, "atime");

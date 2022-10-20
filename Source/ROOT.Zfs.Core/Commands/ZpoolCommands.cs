@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Core.Commands
             StringBuilder command = new StringBuilder($"create {args.Name}");
 
 
-            if (!string.IsNullOrEmpty(args.MountPoint))
+            if (!string.IsNullOrWhiteSpace(args.MountPoint))
             {
                 command.Append($" -m {args.MountPoint}");
             }
@@ -104,7 +104,7 @@ namespace ROOT.Zfs.Core.Commands
         internal static ProcessCall IoStat(string pool, string[] devices, bool includeAverageLatency)
         {
             var deviceList = devices != null && devices.Length > 0 ? string.Join(" ", devices) : string.Empty;
-            if (!string.IsNullOrEmpty(deviceList))
+            if (!string.IsNullOrWhiteSpace(deviceList))
             {
                 deviceList = " " + deviceList;
             }

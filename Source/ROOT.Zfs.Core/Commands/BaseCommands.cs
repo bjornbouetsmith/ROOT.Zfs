@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Core.Commands
                 command += " -t " + string.Join(",", types);
             }
 
-            if (!string.IsNullOrEmpty(root))
+            if (!string.IsNullOrWhiteSpace(root))
             {
                 // just to be safe
                 root = DatasetHelper.Decode(root);

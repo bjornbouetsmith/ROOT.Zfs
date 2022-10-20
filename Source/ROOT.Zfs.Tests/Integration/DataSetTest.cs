@@ -7,6 +7,7 @@ using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests
 {
@@ -51,12 +52,19 @@ namespace ROOT.Zfs.Tests
                         new PropertyValue { Property = "quota", Value = "1G" },
                         new PropertyValue { Property = "compression", Value = "gzip" }
                     };
+
                 var dataSets = ds.GetDatasets(DatasetType.NotSet).ToList();
-                var parent = dataSets.FirstOrDefault(ds => ds.Name == "tank");
+                var parent = dataSets.FirstOrDefault(d => d.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
                 fullName = DatasetHelper.CreateDatasetName(parent.Name, dataSetName);
-                var dataSet = ds.CreateDataset(fullName, addProperties ? props : null);
+                var args = new DatasetCreationArgs
+                {
+                    DataSetName = fullName,
+                    Type = DatasetType.Filesystem,
+                    Properties = addProperties ? props : null
+                };
+                var dataSet = ds.CreateDataset(args);
                 Assert.IsNotNull(dataSet);
                 Console.WriteLine(dataSet.Dump(new JsonFormatter()));
             }
@@ -102,9 +110,17 @@ namespace ROOT.Zfs.Tests
             try
             {
 
+            
+
                 foreach (var ds in datasets)
                 {
-                    dsHelper.CreateDataset(ds, null);
+                    var args = new DatasetCreationArgs
+                    {
+                        DataSetName = ds,
+                        Type = DatasetType.Filesystem,
+
+                    };
+                    dsHelper.CreateDataset(args);
                 }
 
                 var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;

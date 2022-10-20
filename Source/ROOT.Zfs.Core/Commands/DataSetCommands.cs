@@ -3,6 +3,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -25,6 +26,40 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             return new ProcessCall(WhichZfs, $"create{propCommand} {fullName}");
+        }
+
+        internal static ProcessCall CreateDataset(DatasetCreationArgs arguments)
+        {
+            arguments.DataSetName = DatasetHelper.Decode(arguments.DataSetName);
+
+            string args = string.Empty;
+            if (arguments.Type == DatasetType.Volume)
+            {
+                args = $" -b {arguments.VolumeArguments.BlockSize} -V {arguments.VolumeArguments.VolumeSize}";
+                if (arguments.VolumeArguments.Sparse)
+                {
+                    args += " -s";
+                }
+            }
+
+            if (arguments.CreateParents)
+            {
+                args += " -p";
+            }
+
+            if (arguments.DoNotMount && arguments.Type == DatasetType.Filesystem)
+            {
+                args += " -u";
+            }
+
+            var propCommand = arguments.Properties != null ? string.Join(' ', arguments.Properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
+            if (propCommand != string.Empty)
+            {
+                args += " " + propCommand;
+            }
+
+
+            return new ProcessCall(WhichZfs, $"create{args} {arguments.DataSetName}");
         }
 
         /// <summary>

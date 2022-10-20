@@ -431,9 +431,9 @@ Offline data collection status:  (0x03) Offline data collection activity
             // LBA's writtn: 1262090
             var info = SmartInfoParser.ParseStdOut("/dev/sda",SmartInfo512);
             Console.WriteLine(info.BytesWritten);
-            Assert.AreEqual(1262090 * 512, info.BytesWritten.Bytes);
+            Assert.AreEqual(1262090 * 512UL, info.BytesWritten.Bytes);
             Console.WriteLine(info.BytesRead);
-            Assert.AreEqual(1401957 * 512, info.BytesRead.Bytes);
+            Assert.AreEqual(1401957 * 512UL, info.BytesRead.Bytes);
 
         }
         [TestMethod]
@@ -442,7 +442,7 @@ Offline data collection status:  (0x03) Offline data collection activity
             // LBA's writtn: 21640090130
             var info = SmartInfoParser.ParseStdOut("/dev/sda", SmartInfo512_4096);
             Console.WriteLine(info.BytesWritten);
-            Assert.AreEqual(21640090130*512, info.BytesWritten.Bytes);
+            Assert.AreEqual(21640090130*512UL, info.BytesWritten.Bytes);
         }
 
         [TestMethod]
@@ -451,7 +451,7 @@ Offline data collection status:  (0x03) Offline data collection activity
             // LBA's writtn: 21640090130
             var info = SmartInfoParser.ParseStdOut("/dev/nvme0", SamsungNVME);
             Console.WriteLine(info.BytesWritten);
-            Assert.AreEqual(29908334L * 512, info.BytesWritten.Bytes);
+            Assert.AreEqual(29908334UL * 512, info.BytesWritten.Bytes);
         }
 
         [TestMethod]
