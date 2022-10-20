@@ -28,12 +28,12 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="listtypes">The types to return</param>
         /// <param name="root">The root to list types for - or the single element wanted</param>
         /// <param name="includeChildren">Whether or not to include child datasets in the return value</param>
-        public static ProcessCall ZfsList(DatasetType listtypes, string root, bool includeChildren)
+        public static ProcessCall ZfsList(DatasetTypes listtypes, string root, bool includeChildren)
         {
             return BuildZfsListCommand(listtypes, root, includeChildren);
         }
 
-        private static ProcessCall BuildZfsListCommand(DatasetType listtypes, string root, bool includeChildren)
+        private static ProcessCall BuildZfsListCommand(DatasetTypes listtypes, string root, bool includeChildren)
         {
             string command = "list -Hpr -o type,creation,name,used,refer,avail,mountpoint";
 
@@ -43,25 +43,25 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             List<string> types = new();
-            if (listtypes == DatasetType.NotSet)
+            if (listtypes == DatasetTypes.None)
             {
                 // This is what zfs does, if you do not specify type, you get filesystems and volumnes
-                listtypes = DatasetType.Filesystem | DatasetType.Volume;
+                listtypes = DatasetTypes.Filesystem | DatasetTypes.Volume;
             }
 
-            if ((listtypes & DatasetType.Bookmark) != 0)
+            if ((listtypes & DatasetTypes.Bookmark) != 0)
             {
                 types.Add("bookmark");
             }
-            if ((listtypes & DatasetType.Filesystem) != 0)
+            if ((listtypes & DatasetTypes.Filesystem) != 0)
             {
                 types.Add("filesystem");
             }
-            if ((listtypes & DatasetType.Snapshot) != 0)
+            if ((listtypes & DatasetTypes.Snapshot) != 0)
             {
                 types.Add("snapshot");
             }
-            if ((listtypes & DatasetType.Volume) != 0)
+            if ((listtypes & DatasetTypes.Volume) != 0)
             {
                 types.Add("volume");
             }

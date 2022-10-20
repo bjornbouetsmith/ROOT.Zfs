@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetList()
         {
             var ds = new Datasets(CreateProcessCall());
-            var dataSets = ds.GetDatasets(DatasetType.NotSet);
+            var dataSets = ds.GetDatasets(default);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -29,11 +29,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(CreateProcessCall());
-            var root = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
+            var root = ds.GetDatasets("tank", default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
-            Assert.AreEqual(DatasetType.Filesystem, root.Type);
+            Assert.AreEqual(DatasetTypes.Filesystem, root.Type);
             Console.WriteLine(root.Dump(new JsonFormatter()));
         }
 
@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = new Datasets(CreateProcessCall());
-            Assert.ThrowsException<ProcessCallException>(()=> ds.GetDatasets("ungabunga", DatasetType.NotSet, false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.GetDatasets("ungabunga", default, false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -51,8 +51,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             var args = new DatasetCreationArgs
             {
                 DataSetName = "tank/myds",
-                Type = DatasetType.Filesystem,
-                Properties= new[] { new PropertyValue { Property = "atime", Value = "off" } }
+                Type = DatasetTypes.Filesystem,
+                Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 
             };
             var dataset = ds.CreateDataset(args);

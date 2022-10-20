@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Tests.Integration
             var args = new DatasetCreationArgs
             {
                 DataSetName = dataset,
-                Type = DatasetType.Filesystem
+                Type = DatasetTypes.Filesystem
             };
             dsHelper.CreateDataset(args);
             try

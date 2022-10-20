@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Public
         /// <param name="fullName">The full name of the dataset, i.e. tank/xxx</param>
         /// <param name="datasetType">The type of dataset to retrieve, this can be a combination of dataset types, or just a single type.</param>
         /// <param name="includeChildren">Whether or not to return child datasets to the dataset requested</param>
-        IEnumerable<Dataset> GetDatasets(string fullName, DatasetType datasetType, bool includeChildren);
+        IEnumerable<Dataset> GetDatasets(string fullName, DatasetTypes datasetType, bool includeChildren);
 
         /// <summary>
         /// Creates a dataset based on the input arguments.

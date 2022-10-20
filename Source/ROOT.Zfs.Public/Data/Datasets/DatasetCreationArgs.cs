@@ -14,9 +14,9 @@ namespace ROOT.Zfs.Public.Data.Datasets
 
         /// <summary>
         /// The type of dataset to create.
-        /// Only <see cref="DatasetType.Volume"/> &amp;<see cref="DatasetType.Filesystem"/> is suported to create as filesystem
+        /// Only <see cref="DatasetTypes.Volume"/> &amp;<see cref="DatasetTypes.Filesystem"/> is suported to create as filesystem
         /// </summary>
-        public DatasetType Type { get; set; }
+        public DatasetTypes Type { get; set; }
 
         /// <summary>
         /// Any properties to apply to the dataset.
@@ -26,7 +26,7 @@ namespace ROOT.Zfs.Public.Data.Datasets
         public PropertyValue[] Properties { get; set; }
 
         /// <summary>
-        /// Any argumguments required for creating a <see cref="DatasetType.Volume"/>
+        /// Any argumguments required for creating a <see cref="DatasetTypes.Volume"/>
         /// </summary>
         public VolumeCreationArgs VolumeArguments { get; set; }
         /// <summary>
@@ -38,7 +38,7 @@ namespace ROOT.Zfs.Public.Data.Datasets
         public bool CreateParents { get; set; }
 
         /// <summary>
-        /// Whether or not to mount a newly created <see cref="DatasetType.Filesystem"/> dataset.
+        /// Whether or not to mount a newly created <see cref="DatasetTypes.Filesystem"/> dataset.
         /// </summary>
         public bool DoNotMount { get; set; }
 
@@ -55,14 +55,14 @@ namespace ROOT.Zfs.Public.Data.Datasets
                 VolumeArguments.Validate(out errors);
             }
 
-            if (Type != DatasetType.Volume
-                && Type != DatasetType.Filesystem)
+            if (Type != DatasetTypes.Volume
+                && Type != DatasetTypes.Filesystem)
             {
                 errors ??= new List<string>();
                 errors.Add("You can only create a dataset of type: Filesystem or Volume");
             }
 
-            if (Type == DatasetType.Volume && VolumeArguments == null)
+            if (Type == DatasetTypes.Volume && VolumeArguments == null)
             {
                 errors ??= new List<string>();
                 errors.Add("VolumeArguments needs to be specified for a Volume");

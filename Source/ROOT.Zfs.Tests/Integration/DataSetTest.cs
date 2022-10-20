@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetList()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataSets = ds.GetDatasets(DatasetType.NotSet);
+            var dataSets = ds.GetDatasets(default);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetTest()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataset = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
+            var dataset = ds.GetDatasets("tank", default, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual("tank", dataset.Name);
         }
@@ -53,7 +53,7 @@ namespace ROOT.Zfs.Tests
                         new PropertyValue { Property = "compression", Value = "gzip" }
                     };
 
-                var dataSets = ds.GetDatasets(DatasetType.NotSet).ToList();
+                var dataSets = ds.GetDatasets(default).ToList();
                 var parent = dataSets.FirstOrDefault(d => d.Name == "tank");
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
@@ -61,7 +61,7 @@ namespace ROOT.Zfs.Tests
                 var args = new DatasetCreationArgs
                 {
                     DataSetName = fullName,
-                    Type = DatasetType.Filesystem,
+                    Type = DatasetTypes.Filesystem,
                     Properties = addProperties ? props : null
                 };
                 var dataSet = ds.CreateDataset(args);
@@ -82,7 +82,7 @@ namespace ROOT.Zfs.Tests
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var root = ds.GetDatasets("tank", DatasetType.NotSet, false).FirstOrDefault();
+            var root = ds.GetDatasets("tank", default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -92,7 +92,7 @@ namespace ROOT.Zfs.Tests
         public void GetNonExistingDataSetShouldReturnNull()
         {
             var ds = new Datasets(_remoteProcessCall);
-            var dataset = ds.GetDatasets("ungabunga" + Guid.NewGuid(), DatasetType.NotSet, false).FirstOrDefault();
+            var dataset = ds.GetDatasets("ungabunga" + Guid.NewGuid(), default, false).FirstOrDefault();
             Assert.IsNull(dataset);
         }
 
@@ -110,14 +110,14 @@ namespace ROOT.Zfs.Tests
             try
             {
 
-            
+
 
                 foreach (var ds in datasets)
                 {
                     var args = new DatasetCreationArgs
                     {
                         DataSetName = ds,
-                        Type = DatasetType.Filesystem,
+                        Type = DatasetTypes.Filesystem,
 
                     };
                     dsHelper.CreateDataset(args);
