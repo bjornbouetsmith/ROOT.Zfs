@@ -65,5 +65,12 @@ namespace ROOT.Zfs.Core
 
             return new DatasetDestroyResponse { Flags = destroyFlags, DryRun = response.StdOut };
         }
+
+        /// <inheritdoc />
+        public void Promote(string dataset)
+        {
+            var pc = BuildCommand(DatasetCommands.Promote(dataset));
+            pc.LoadResponse(true);
+        }
     }
 }

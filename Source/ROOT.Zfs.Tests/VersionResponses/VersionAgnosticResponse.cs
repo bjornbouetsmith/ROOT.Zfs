@@ -108,6 +108,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool resilver tank":
                     return (null, null);
+                case "/sbin/zfs promote tank/myds":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

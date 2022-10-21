@@ -99,7 +99,6 @@ namespace ROOT.Zfs.Core.Commands
         /// Promotes the dataset or volume from a clone to a real dataset or volume.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
         /// </summary>
-        /// <param name="dataset"></param>
         internal static ProcessCall Promote(string dataset)
         {
             dataset = DatasetHelper.Decode(dataset);
