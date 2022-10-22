@@ -38,6 +38,7 @@ namespace ROOT.Zfs.Tests.Public.Data
         [DataRow(null, "", "")]
         [DataRow("", null, "")]
         [DataRow("", "", "")]
+        [DataRow("vscan", "off", "")]
         public void ToMountArgumentTest(string property, string value, string expectedMountArg)
         {
             var prop = new PropertyValue { Property = property, Value = value };
