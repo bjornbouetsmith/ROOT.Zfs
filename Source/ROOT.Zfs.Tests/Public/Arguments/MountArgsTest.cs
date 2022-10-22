@@ -38,6 +38,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [DataRow(true, true, true, null, false, "tank/myds", " -O -f -l tank/myds")]
         [DataRow(true, true, true, "atime=off,xattr=off", false, "tank/myds", " -O -f -l -o noatime,noxattr tank/myds")]
         [DataRow(true, true, true, "atime=off,xattr=off", true, "tank/myds", " -O -f -l -o noatime,noxattr -a")]
+        [DataRow(true, true, true, "compression=off", true, "tank/myds", " -O -f -l -a")] // Test with non supported property
         public void ToStringTest(bool overlayMount, bool force, bool loadKeys, string properties, bool all, string fileSystem, string expectedString)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
