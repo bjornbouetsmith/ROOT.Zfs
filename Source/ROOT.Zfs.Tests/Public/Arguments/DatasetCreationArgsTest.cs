@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.Datasets;
 
-namespace ROOT.Zfs.Tests.Public
+namespace ROOT.Zfs.Tests.Public.Arguments
 {
     [TestClass]
     public class DatasetCreationArgsTest

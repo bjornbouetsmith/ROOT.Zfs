@@ -1,11 +1,12 @@
-﻿namespace ROOT.Zfs.Public.Data;
-
-public class PropertySource
+﻿namespace ROOT.Zfs.Public.Data
 {
-    public string Name { get; }
-
-    public PropertySource(string name)
+    public class PropertySource
     {
-        Name = name;
+        public string Name { get; }
+
+        public PropertySource(string name)
+        {
+            Name = name;
+        }
     }
 }

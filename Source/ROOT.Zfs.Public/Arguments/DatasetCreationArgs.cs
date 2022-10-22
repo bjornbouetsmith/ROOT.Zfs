@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Data.Datasets
+namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Container for arguments needed to create a dataset
