@@ -61,6 +61,20 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
+        public void CreateDateSetInvalidTest()
+        {
+            var ds = new Datasets(CreateProcessCall());
+            var args = new DatasetCreationArgs
+            {
+                DataSetName = "tank/myds",
+                Type = DatasetTypes.Bookmark,
+                Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
+
+            };
+            Assert.ThrowsException<ArgumentException>(()=> ds.CreateDataset(args));
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
         public void DestroyDataSetTest()
         {
             var ds = new Datasets(CreateProcessCall());
@@ -75,8 +89,19 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             var ds = new Datasets(processCall);
             ds.Promote("tank/myds");
             var commands = processCall.GetCommandsInvoked();
-            Assert.AreEqual(1,commands.Count);
+            Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs promote tank/myds", commands[0]);
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void MountDatasetTest()
+        {
+            var processCall = CreateProcessCall();
+            var ds = new Datasets(processCall);
+            ds.Mount(new MountArgs { Dataset = "tank/myds" });
+            var commands = processCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zfs mount tank/myds", commands[0]);
         }
     }
 }
