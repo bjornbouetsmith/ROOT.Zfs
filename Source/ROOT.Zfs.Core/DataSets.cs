@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 
@@ -70,6 +71,13 @@ namespace ROOT.Zfs.Core
         public void Promote(string dataset)
         {
             var pc = BuildCommand(DatasetCommands.Promote(dataset));
+            pc.LoadResponse(true);
+        }
+
+        /// <inheritdoc />
+        public void Mount(MountArgs mountArgs)
+        {
+            var pc = BuildCommand(DatasetCommands.Mount(mountArgs));
             pc.LoadResponse(true);
         }
     }

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 
@@ -80,6 +81,26 @@ namespace ROOT.Zfs.Tests.Commands
             };
             var command = DatasetCommands.CreateDataset(args);
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
+        }
+
+        [TestMethod]
+        [DataRow("tank/myds", false, false, "/sbin/zfs mount tank/myds")]
+        [DataRow("tank/myds", true, true, "")]
+        [DataRow("", true, false, "/sbin/zfs mount -a")]
+        [DataRow(null, true, false, "/sbin/zfs mount -a")]
+        public void DataSetMountTest(string dataset, bool all, bool throwException, string expectedCommand)
+        {
+            var args = new MountArgs { Dataset = dataset, MountAllFileSystems = all };
+            if (throwException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Mount(args));
+            }
+            else
+            {
+                var command = DatasetCommands.Mount(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
+
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 
@@ -103,6 +105,22 @@ namespace ROOT.Zfs.Core.Commands
         {
             dataset = DatasetHelper.Decode(dataset);
             return new ProcessCall(WhichZfs, $"promote {dataset}");
+        }
+
+        /// <summary>
+        /// Returns a command to mount a dataset
+        /// </summary>
+        /// <param name="mountArgs">the arguments which contains the options for mounting</param>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
+        internal static ProcessCall Mount(MountArgs mountArgs)
+        {
+            if (!mountArgs.Validate(out var errors))
+            {
+                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(mountArgs));
+            }
+
+            return new ProcessCall(WhichZfs, $"mount{mountArgs}");
+
         }
     }
 }

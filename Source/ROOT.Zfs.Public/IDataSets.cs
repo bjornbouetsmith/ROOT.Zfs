@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 
@@ -39,5 +40,13 @@ namespace ROOT.Zfs.Public
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
         /// </summary>
         void Promote(string dataset);
+
+        /// <summary>
+        /// Mount ZFS filesystem on a path described by its mountpoint property, if the path exists and is empty.
+        /// If mountpoint is set to legacy, the filesystem should be instead mounted using mount(8).
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-mount.8.html
+        /// </summary>
+        /// <param name="mountArgs">The arguments to control what and how to mount</param>
+        void Mount(MountArgs mountArgs);
     }
 }
