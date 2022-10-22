@@ -1,4 +1,6 @@
-﻿namespace ROOT.Zfs.Public.Data
+﻿using System.Collections.Generic;
+
+namespace ROOT.Zfs.Public.Data
 {
     /// <summary>
     /// Represents a property and its value/source from either dataset or pool
@@ -35,32 +37,33 @@
 
             switch (Property.ToLowerInvariant())
             {
-                case "atime":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "noatime" : "atime";
-                case "canmount":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "noauto" : "auto";
-                case "devices":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "nodev" : "dev";
-                case "exec":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "noexec" : "exec";
-                case "readonly":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "rw" : "ro";
-                case "realatime":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "norealatime" : "realatime";
-                case "setuid":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "nosuid" : "suid";
-                case "xattr":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "noxattr" : "xattr";
-                case "nbmand":
-                    return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? "nomand" : "mand";
+                // Special cases, default is just the mapping from the dictionary
                 case "context":
                 case "fscontext":
                 case "defcontext":
                 case "rootcontext":
                     return $"{Property}={Value}";
                 default:
+                    if (_propertyToMountArgs.TryGetValue(Property.ToLowerInvariant(), out var mountArgs))
+                    {
+                        return Value.Equals("off", System.StringComparison.OrdinalIgnoreCase) ? mountArgs.Off : mountArgs.On;
+                    }
+
                     return string.Empty;
             }
         }
+
+        private static readonly Dictionary<string, (string Off, string On)> _propertyToMountArgs = new Dictionary<string, (string Off, string On)>
+            {
+            {"atime",("noatime","atime")},
+            {"canmount",("noauto","auto")},
+            {"devices",("nodev","dev")},
+            {"exec",("noexec","exec")},
+            {"readonly",("rw","ro")},
+            {"realatime",("norealatime","realatime")},
+            {"setuid",("nosuid","suid")},
+            {"xattr",("noxattr","xattr")},
+            {"nbmand",("nomand","mand")},
+            };
     }
 }

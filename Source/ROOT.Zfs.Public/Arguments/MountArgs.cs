@@ -58,7 +58,7 @@ namespace ROOT.Zfs.Public.Arguments
 
             if (string.IsNullOrWhiteSpace(Dataset) && !MountAllFileSystems)
             {
-                errors ??= new List<string>();
+                errors = new List<string>();
                 errors.Add("Dataset must be specified");
             }
 
@@ -103,7 +103,7 @@ namespace ROOT.Zfs.Public.Arguments
                                                             .Select(p => p.ToMountArgument())
                                                             .Where(s => !string.IsNullOrWhiteSpace(s)));
 
-                if (mountArgs.Length > 0)
+                if (!string.IsNullOrWhiteSpace(mountArgs))
                 {
                     args.Append(" -o ");
                     args.Append(mountArgs);
