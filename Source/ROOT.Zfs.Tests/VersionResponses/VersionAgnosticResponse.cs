@@ -70,6 +70,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetMyTestPoolStatus(), null);
                 case "/sbin/zpool create mytest mirror /dev/sda /dev/sdb":
                 return (null, null);
+                case "/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd":
+                    return (null, null);
                 case "/sbin/zpool destroy -f mytest":
                     return (null, null);
                 case "/sbin/zpool history -l tank":

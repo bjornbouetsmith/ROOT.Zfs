@@ -186,5 +186,34 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
         }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void CreateDraidTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.CreatePool(new PoolCreationArgs
+            {
+                Name = "mytest",
+                VDevs = new VDevCreationArgs[]
+                {
+                    new DraigVDevCreationArgs
+                    {
+                        Type = VDevCreationType.DRaid1,
+                        Devices = new[] { "/dev/sda", "/dev/sdb","/dev/sdc", "/dev/sdd" },
+                        DraidArgs = new DraidArgs
+                        {
+                            Spares=1,
+                            DataDevices=2,
+                            Children=4
+                        }
+                    }
+                }
+            });
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(2, commands.Count);
+            Assert.AreEqual("/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd", commands[0]);
+            Assert.AreEqual("/sbin/zpool status -vP mytest", commands[1]);
+
+        }
     }
 }
