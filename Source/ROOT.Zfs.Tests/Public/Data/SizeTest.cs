@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Public.Data
@@ -20,21 +21,36 @@ namespace ROOT.Zfs.Tests.Public.Data
         }
 
         [TestMethod]
+        [DataRow("512", 0UL, true)] //512B
+        [DataRow("ZeroB", 0UL, true)] //512B
+        [DataRow("0", 0UL, false)] //512B
+        [DataRow("512B", 512UL)] //512B
         [DataRow("1K", 1024UL)] //1K
         [DataRow("1M", 1024 * 1024UL)] //1M
         [DataRow("1G", 1024 * 1024 * 1024UL)] //1G
         [DataRow("1T", 1024 * 1024 * 1024 * 1024UL)] //1T
-        public void RoundTripTestSourceString(string sizeString, ulong expectedBytes)
+        public void RoundTripTestSourceString(string sizeString, ulong expectedBytes, bool expectException = false)
         {
-            Size size = sizeString;
-            var sizeToString = size.ToString();
-            Assert.AreEqual(sizeString, sizeToString);
-            Assert.AreEqual(expectedBytes, size.Bytes);
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() =>
+                {
+                    Size size = sizeString;
+                });
+            }
+            else
+            {
+
+                Size size = sizeString;
+                var sizeToString = size.ToString();
+                Assert.AreEqual(sizeString, sizeToString);
+                Assert.AreEqual(expectedBytes, size.Bytes);
+            }
         }
 
         [TestMethod]
         [DataRow("1.1K", 1126UL)]
-        [DataRow("1.1M", 1.1d * 1024* 1024UL)]
+        [DataRow("1.1M", 1.1d * 1024 * 1024UL)]
         [DataRow("1.1G", 1.1d * 1024 * 1024 * 1024UL)] //1G
         [DataRow("1.1T", 1.1d * 1024 * 1024 * 1024 * 1024UL)] //1T
         public void FloatingPointStrings(string sizeString, double expectedBytes)
@@ -46,7 +62,8 @@ namespace ROOT.Zfs.Tests.Public.Data
         }
 
         [TestMethod]
-        [DataRow("123", 123UL, "123")]
+        [DataRow("0", 0UL, "0")]
+        [DataRow("123", 123UL, "123B")]
         [DataRow("1024", 1024UL, "1K")]
         [DataRow("1048576", 1048576UL, "1M")]
         [DataRow("1073741824", 1073741824UL, "1G")]

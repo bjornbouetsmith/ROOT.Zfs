@@ -86,7 +86,13 @@ namespace ROOT.Zfs.Public.Data
             {
                 return KiB.ToString("##.#K", CultureInfo.InvariantCulture);
             }
-            return Bytes.ToString(CultureInfo.InvariantCulture);
+
+            if (Bytes == 0)
+            {
+                return "0";
+            }
+
+            return Bytes.ToString("###B", CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -112,6 +118,11 @@ namespace ROOT.Zfs.Public.Data
         /// <returns></returns>
         public static Size FromSizeString(string sizeString)
         {
+            if (sizeString == "0")
+            {
+                return new Size();
+            }
+
             if (!sizeString.EndsWith("B")
                 && !sizeString.EndsWith("K")
                 && !sizeString.EndsWith("M")
