@@ -10,62 +10,62 @@
         /// Not recommended, should use at least 8K according to warning message
         /// when trying to create a volume with less
         /// </summary>
-        public static readonly Size Minimum = new(512);
+        public static readonly Size Minimum = "512B";
         
         /// <summary>
         /// 1K
         /// </summary>
-        public static readonly Size K1 = new(1024);
+        public static readonly Size K1 = "1K";
         
         /// <summary>
         /// 2K
         /// </summary>
-        public static readonly Size K2 = new(1024 << 1);
+        public static readonly Size K2 = "2K";
         
         /// <summary>
         /// 4K
         /// </summary>
-        public static readonly Size K4 = new(1024 << 2);
+        public static readonly Size K4 = "4K";
         
         /// <summary>
         /// 8K
         /// </summary>
-        public static readonly Size K8 = new(1024 << 3);
+        public static readonly Size K8 ="8K";
         
         /// <summary>
         /// 16K
         /// </summary>
-        public static readonly Size K16 = new(1024 << 4);
+        public static readonly Size K16 = "16K";
         
         /// <summary>
         /// 32K
         /// </summary>
-        public static readonly Size K32 = new(1024 << 5);
+        public static readonly Size K32 = "32K";
         
         /// <summary>
         /// 64K
         /// </summary>
-        public static readonly Size K64 = new(1024 << 6);
+        public static readonly Size K64 = "64K";
         
         /// <summary>
         /// 128K
         /// </summary>
-        public static readonly Size K128 = new(1024 << 7);
+        public static readonly Size K128 = "128K";
         
         /// <summary>
         /// 256K
         /// </summary>
-        public static readonly Size K256 = new(1024 << 8);
+        public static readonly Size K256 = "256K";
         
         /// <summary>
         /// 512K
         /// </summary>
-        public static readonly Size K512 = new(1024 << 9);
+        public static readonly Size K512 = "512K";
         
         /// <summary>
         /// 1M - highest allowed blocksize
         /// </summary>
-        public static readonly Size M1 = new(1024 << 10);
+        public static readonly Size M1 = "1M";
 
         /// <summary>
         /// Validates if the block size if a valid block size and returns true/false to indicate that
