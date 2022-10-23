@@ -120,7 +120,21 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             return new ProcessCall(WhichZfs, $"mount{mountArgs}");
+        }
+        /// <summary>
+        /// Returns a command to unmount a filesystem or mount point
+        /// </summary>
+        /// <param name="unmountArgs">The arguments</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
+        internal static ProcessCall Unmount(UnmountArgs unmountArgs)
+        {
+            if (!unmountArgs.Validate(out var errors))
+            {
+                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(unmountArgs));
+            }
 
+            return new ProcessCall(WhichZfs, $"unmount{unmountArgs}");
         }
     }
 }

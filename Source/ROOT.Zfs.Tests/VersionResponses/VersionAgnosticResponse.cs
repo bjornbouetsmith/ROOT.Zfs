@@ -112,6 +112,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zfs mount tank/myds":
                     return (null, null);
+                case "/sbin/zfs unmount tank/myds":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

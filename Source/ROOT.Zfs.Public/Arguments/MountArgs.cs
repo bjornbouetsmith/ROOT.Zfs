@@ -6,17 +6,17 @@ using ROOT.Zfs.Public.Data;
 namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
-    /// Contains the required information to mount a dataset
+    /// Contains the required information to mount a filesystem
     /// </summary>
     public class MountArgs
     {
         /// <summary>
-        /// The name of the dataset to mount
+        /// The name of the filesystem to mount
         /// </summary>
-        public string Dataset { get; set; }
+        public string Filesystem { get; set; }
 
         /// <summary>
-        /// Whether or not to mount the specified filesystem in <see cref="Dataset"/> or all possible filesystems
+        /// Whether or not to mount the specified filesystem in <see cref="Filesystem"/> or all possible filesystems
         /// Corresponds to '-a' in zfs mount
         /// </summary>
         public bool MountAllFileSystems { get; set; }
@@ -56,16 +56,16 @@ namespace ROOT.Zfs.Public.Arguments
         {
             errors = null;
 
-            if (string.IsNullOrWhiteSpace(Dataset) && !MountAllFileSystems)
+            if (string.IsNullOrWhiteSpace(Filesystem) && !MountAllFileSystems)
             {
                 errors = new List<string>();
-                errors.Add("Dataset must be specified");
+                errors.Add("Filesyste must be specified");
             }
 
-            if (MountAllFileSystems && !string.IsNullOrWhiteSpace(Dataset))
+            if (MountAllFileSystems && !string.IsNullOrWhiteSpace(Filesystem))
             {
                 errors ??= new List<string>();
-                errors.Add("Specify either a dataset or MountAllFileSystems - not both");
+                errors.Add("Specify either a filesystem or MountAllFileSystems - not both");
             }
 
             return errors == null;
@@ -113,7 +113,7 @@ namespace ROOT.Zfs.Public.Arguments
 
             if (!MountAllFileSystems)
             {
-                args.Append($" {Dataset}");
+                args.Append($" {Filesystem}");
             }
             else
             {

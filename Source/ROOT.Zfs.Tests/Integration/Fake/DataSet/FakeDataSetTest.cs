@@ -98,10 +98,21 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         {
             var processCall = CreateProcessCall();
             var ds = new Datasets(processCall);
-            ds.Mount(new MountArgs { Dataset = "tank/myds" });
+            ds.Mount(new MountArgs { Filesystem = "tank/myds" });
             var commands = processCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs mount tank/myds", commands[0]);
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void UnmountDatasetTest()
+        {
+            var processCall = CreateProcessCall();
+            var ds = new Datasets(processCall);
+            ds.Unmount(new UnmountArgs { Filesystem = "tank/myds" });
+            var commands = processCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zfs unmount tank/myds", commands[0]);
         }
     }
 }

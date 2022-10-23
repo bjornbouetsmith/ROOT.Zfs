@@ -48,5 +48,12 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="mountArgs">The arguments to control what and how to mount</param>
         void Mount(MountArgs mountArgs);
+
+        /// <summary>
+        /// Unmounts currently mounted ZFS file systems.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-unmount.8.html
+        /// </summary>
+        /// <param name="unmountArgs">The arguments to control what and how to unmount</param>
+        void Unmount(UnmountArgs unmountArgs);
     }
 }

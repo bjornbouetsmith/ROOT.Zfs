@@ -90,7 +90,7 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow(null, true, false, "/sbin/zfs mount -a")]
         public void DataSetMountTest(string dataset, bool all, bool throwException, string expectedCommand)
         {
-            var args = new MountArgs { Dataset = dataset, MountAllFileSystems = all };
+            var args = new MountArgs { Filesystem = dataset, MountAllFileSystems = all };
             if (throwException)
             {
                 Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Mount(args));
@@ -100,7 +100,25 @@ namespace ROOT.Zfs.Tests.Commands
                 var command = DatasetCommands.Mount(args);
                 Assert.AreEqual(expectedCommand, command.FullCommandLine);
             }
+        }
 
+        [TestMethod]
+        [DataRow("tank/myds", false, false, "/sbin/zfs unmount tank/myds")]
+        [DataRow("tank/myds", true, true, "")]
+        [DataRow("", true, false, "/sbin/zfs unmount -a")]
+        [DataRow(null, true, false, "/sbin/zfs unmount -a")]
+        public void DataSetUnmountTest(string dataset, bool all, bool throwException, string expectedCommand)
+        {
+            var args = new UnmountArgs { Filesystem = dataset, UnmountAllFileSystems = all };
+            if (throwException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Unmount(args));
+            }
+            else
+            {
+                var command = DatasetCommands.Unmount(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
     }
 }

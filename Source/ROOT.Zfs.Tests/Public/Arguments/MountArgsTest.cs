@@ -21,7 +21,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         public void ValidateTest(string dataset, bool mountAll, bool expectedValid)
         {
 
-            var args = new MountArgs { Dataset = dataset, MountAllFileSystems = mountAll };
+            var args = new MountArgs { Filesystem = dataset, MountAllFileSystems = mountAll };
 
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
@@ -48,7 +48,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
                 Force = force,
                 LoadKeys = loadKeys,
                 MountAllFileSystems = all,
-                Dataset = fileSystem,
+                Filesystem = fileSystem,
                 Properties = props
             };
 

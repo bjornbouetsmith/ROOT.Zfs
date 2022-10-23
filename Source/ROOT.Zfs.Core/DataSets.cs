@@ -80,5 +80,12 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(DatasetCommands.Mount(mountArgs));
             pc.LoadResponse(true);
         }
+
+        /// <inheritdoc />
+        public void Unmount(UnmountArgs unmountArgs)
+        {
+            var pc = BuildCommand(DatasetCommands.Unmount(unmountArgs));
+            pc.LoadResponse(true);
+        }
     }
 }
