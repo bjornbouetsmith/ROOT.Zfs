@@ -112,7 +112,7 @@ namespace ROOT.Zfs.Public.Arguments
             errors = null;
             if (VolumeSize.Bytes == 0UL)
             {
-                errors ??= new List<string>();
+                errors = new List<string>();
                 errors.Add("Please specify a VolumeSize greater than 0");
             }
 

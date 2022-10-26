@@ -104,12 +104,12 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (string.IsNullOrWhiteSpace(snapshot))
             {
-                throw new ArgumentException(nameof(snapshot));
+                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
             }
 
             if (string.IsNullOrWhiteSpace(tag))
             {
-                throw new ArgumentException(nameof(tag));
+                throw new ArgumentException("Please provide a tag name", nameof(tag));
             }
 
             snapshot = DatasetHelper.Decode(snapshot);
@@ -123,7 +123,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (string.IsNullOrWhiteSpace(snapshot))
             {
-                throw new ArgumentException(nameof(snapshot));
+                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
             }
             snapshot = DatasetHelper.Decode(snapshot);
             return new ProcessCall(WhichZfs, $"holds{(recursive ? " -r" : "")} -H {snapshot}");
@@ -136,12 +136,12 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (string.IsNullOrWhiteSpace(snapshot))
             {
-                throw new ArgumentException(nameof(snapshot));
+                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
             }
 
             if (string.IsNullOrWhiteSpace(tag))
             {
-                throw new ArgumentException(nameof(tag));
+                throw new ArgumentException("Please provide a tag name", nameof(tag));
             }
             snapshot = DatasetHelper.Decode(snapshot);
             return new ProcessCall(WhichZfs, $"release{(recursive ? " -r" : "")} {tag} {snapshot}");
