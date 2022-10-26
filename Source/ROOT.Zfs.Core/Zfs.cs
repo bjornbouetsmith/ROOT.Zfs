@@ -116,8 +116,12 @@ namespace ROOT.Zfs.Core
         private string GetBinaryLocation(string binary)
         {
             var command = BuildCommand(Commands.BaseCommands.Which(binary));
-            var response = command.LoadResponse(true);
-            Trace.WriteLine($"{binary}={response.StdOut.Trim()}");
+            var response = command.LoadResponse(false);
+            if (response.Success)
+            {
+                Trace.WriteLine($"{binary}={response.StdOut.Trim()}");
+            }
+
             return response.StdOut.Trim();
         }
     }

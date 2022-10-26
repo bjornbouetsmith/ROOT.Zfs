@@ -29,8 +29,13 @@ jobs:
     - name: Install zfs
       run: |
         sudo apt-get update
+        sudo apt install -y smartmontools
         sudo apt install -y zfsutils-linux
         which zfs
+        which zpool
+        which smartctl
+        which ls
+        which lsblk
         sudo zpool status
     - name: Setup .NET
       uses: actions/setup-dotnet@v2

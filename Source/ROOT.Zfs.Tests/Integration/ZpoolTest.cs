@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -24,10 +25,17 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryTestWithSkip()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var lines = zp.GetHistory("tank").ToList().Count;
+            var snap = new Snapshots(_remoteProcessCall);
+            snap.RequiresSudo = TestHelpers.RequiresSudo;
+            snap.CreateSnapshot(pool.Name,"test1");
+            snap.CreateSnapshot(pool.Name, "test2");
+            snap.CreateSnapshot(pool.Name, "test3");
+            snap.CreateSnapshot(pool.Name);
+            var lines = zp.GetHistory(pool.Name).ToList().Count;
 
-            var history = zp.GetHistory("tank", lines - 2).ToList();
+            var history = zp.GetHistory(pool.Name, lines - 2).ToList();
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
             Assert.AreEqual(2, history.Count);
@@ -38,8 +46,9 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetHistory()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var history = zp.GetHistory("tank");
+            var history = zp.GetHistory(pool.Name);
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
         }
@@ -47,13 +56,20 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryAfterDate()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var last10AtMost = zp.GetHistory("tank").TakeLast(10).ToList();
+            var snap = new Snapshots(_remoteProcessCall);
+            snap.RequiresSudo = TestHelpers.RequiresSudo;
+            snap.CreateSnapshot(pool.Name, "test1");
+            snap.CreateSnapshot(pool.Name, "test2");
+            snap.CreateSnapshot(pool.Name, "test3");
+            snap.CreateSnapshot(pool.Name);
+            var last10AtMost = zp.GetHistory(pool.Name).TakeLast(10).ToList();
 
             // This is safe, since zfs always have at last pool creation as a history event
             var history = last10AtMost.First();
 
-            var afterDate = zp.GetHistory("tank", 0, history.Time).ToList();
+            var afterDate = zp.GetHistory(pool.Name, 0, history.Time).ToList();
 
             if (last10AtMost.Count > 1)
             {
@@ -76,8 +92,8 @@ namespace ROOT.Zfs.Tests.Integration
         public void ZpoolStatusTest()
         {
             var zfs = new Core.Zfs(_remoteProcessCall);
-
-            var status = zfs.Pool.GetStatus("tank");
+            using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var status = zfs.Pool.GetStatus(testPool.Name);
 
             Assert.IsNotNull(status);
 
@@ -144,7 +160,7 @@ namespace ROOT.Zfs.Tests.Integration
 
         }
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod, TestCategory("IntegrationExt")]
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]

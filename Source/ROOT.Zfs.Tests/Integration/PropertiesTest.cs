@@ -25,9 +25,10 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ListAllProperties()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
 
-            var props = pr.GetProperties(PropertyTarget.Dataset, "tank/myds");
+            var props = pr.GetProperties(PropertyTarget.Dataset, pool.Name);
             Assert.IsNotNull(props);
             foreach (var prop in props)
             {
@@ -38,8 +39,9 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void SetDataSetProperty()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-            var newVal = pr.SetProperty(PropertyTarget.Dataset, "tank/myds", "atime", "off");
+            var newVal = pr.SetProperty(PropertyTarget.Dataset, pool.Name, "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
@@ -48,13 +50,14 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetProperty()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-            var newVal = pr.SetProperty(PropertyTarget.Dataset, "tank/myds", "atime", "off");
+            var newVal = pr.SetProperty(PropertyTarget.Dataset, pool.Name, "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
 
 
-            newVal = pr.SetProperty(PropertyTarget.Dataset, "tank/myds", "atime", "on");
+            newVal = pr.SetProperty(PropertyTarget.Dataset, pool.Name, "atime", "on");
             Assert.AreEqual("on", newVal.Value);
 
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
@@ -72,11 +75,12 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ResetPropertyTest()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
             var dsHelper = new Datasets(_remoteProcessCall);
             dsHelper.RequiresSudo = pr.RequiresSudo;
 
-            var dataset = $"tank/{Guid.NewGuid()}";
+            var dataset = $"{pool.Name}/{Guid.NewGuid()}";
             var args = new DatasetCreationArgs
             {
                 DataSetName = dataset,

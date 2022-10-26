@@ -23,9 +23,10 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void RemoteSnapshotTest()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
-
-            var snapshots = sn.GetSnapshots("tank/myds");
+            sn.CreateSnapshot(pool.Name);
+            var snapshots = sn.GetSnapshots(pool.Name);
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
@@ -39,51 +40,39 @@ namespace ROOT.Zfs.Tests.Integration
         public void RemoteCreateAndDestroySnapshot()
         {
             var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
-
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
 
-            sn.CreateSnapshot("tank/myds", snapName);
+            sn.CreateSnapshot(pool.Name, snapName);
 
-            var snaps = sn.GetSnapshots("tank/myds");
+            var snaps = sn.GetSnapshots(pool.Name);
 
             var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
 
             Assert.IsNotNull(wasCreated);
 
-            sn.DestroySnapshot("tank/myds", snapName, true);
+            sn.DestroySnapshot(pool.Name, snapName, true);
 
         }
 
-        [TestMethod, TestCategory("Integration")]
-        public void SnapshotsWithoutGivenNameShouldUseCurrentDate()
-        {
-            var time = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local);
-
-            var name = SnapshotCommands.CreateSnapshotName(time);
-            Assert.AreEqual("20220922211347", name);
-
-            var sn = GetSnapshots();
-
-            sn.CreateSnapshot("tank/myds");
-
-        }
 
         [TestMethod, TestCategory("Integration")]
         public void CreateAndDeleteByPatternTest()
         {
             var sn = GetSnapshots();
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-1");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-2");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-3");
+            sn.CreateSnapshot(pool.Name, $"{prefix}-1");
+            sn.CreateSnapshot(pool.Name, $"{prefix}-2");
+            sn.CreateSnapshot(pool.Name, $"{prefix}-3");
 
-            var snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            var snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}s@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
 
-            sn.DestroySnapshot("tank/myds", prefix, false);
+            sn.DestroySnapshot(pool.Name, prefix, false);
 
-            snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
             Assert.AreEqual(0, snaps.Count);
         }
     }

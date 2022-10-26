@@ -26,6 +26,8 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+
             var ds = GetDataSets();
             var dataSets = ds.GetDatasets(default);
             Assert.IsNotNull(dataSets);
@@ -38,10 +40,11 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetTest()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var dataset = ds.GetDatasets("tank", default, false).FirstOrDefault();
+            var dataset = ds.GetDatasets(pool.Name, default, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
-            Assert.AreEqual("tank", dataset.Name);
+            Assert.AreEqual(pool.Name, dataset.Name);
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -49,6 +52,7 @@ namespace ROOT.Zfs.Tests.Integration
         [DataRow(false)]
         public void CreateDataSetTest(bool addProperties)
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
             var dataSetName = Guid.NewGuid().ToString();
             string fullName = null;
@@ -61,7 +65,7 @@ namespace ROOT.Zfs.Tests.Integration
                     };
 
                 var dataSets = ds.GetDatasets(default).ToList();
-                var parent = dataSets.FirstOrDefault(d => d.Name == "tank");
+                var parent = dataSets.FirstOrDefault(d => d.Name == pool.Name);
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
                 fullName = DatasetHelper.CreateDatasetName(parent.Name, dataSetName);
@@ -88,8 +92,9 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetShouldReturnDataSet()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var root = ds.GetDatasets("tank", default, false).FirstOrDefault();
+            var root = ds.GetDatasets(pool.Name, default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -105,18 +110,17 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void DestroyRecursiveDryRunTest()
         {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var dsHelper = GetDataSets();
             var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            var root = $"tank/myds/{rootId}";
-            var child1 = $"tank/myds/{rootId}/child1";
-            var child2 = $"tank/myds/{rootId}/child2";
-            var granchild1 = $"tank/myds/{rootId}/child1/granchild";
+            var root = $"{pool.Name}/myds/{rootId}";
+            var child1 = $"{pool.Name}/myds/{rootId}/child1";
+            var child2 = $"{pool.Name}/myds/{rootId}/child2";
+            var granchild1 = $"{pool.Name}/myds/{rootId}/child1/granchild";
             var datasets = new[] { root, child1, child2, granchild1 };
 
             try
             {
-
-
 
                 foreach (var ds in datasets)
                 {
@@ -134,10 +138,10 @@ namespace ROOT.Zfs.Tests.Integration
                 Assert.AreEqual(flags, response.Flags);
                 var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
-                Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child1/granchild"));
-                Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child1"));
-                Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}/child2"));
-                Assert.IsTrue(lines.Contains($"destroy tank/myds/{rootId}"));
+                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild"));
+                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1"));
+                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child2"));
+                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}"));
 
                 Console.WriteLine(response.DryRun);
             }
