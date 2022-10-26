@@ -9,7 +9,7 @@ ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the 
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 
-Tested against ZoL version 2.1.5-2 - will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different.
+Tested against ZoL version 2.1.5-2 on Rocky Linux & version 0.86 on Ubuntu 20.04 - will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different - or because the commands are simply not available in that version of zfs.
 
 ## Example
 
