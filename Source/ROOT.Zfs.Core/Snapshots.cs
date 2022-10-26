@@ -15,24 +15,26 @@ namespace ROOT.Zfs.Core
         {
         }
 
+        /// <inheritdoc />
         public IEnumerable<Snapshot> GetSnapshots(string datasetOrVolume)
         {
             var pc = BuildCommand(SnapshotCommands.ListSnapshots(datasetOrVolume));
 
             var response = pc.LoadResponse(true);
-            
+
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return SnapshotHelper.FromString(line);
             }
         }
 
+        /// <inheritdoc />
         public void DestroySnapshot(string datasetOrVolume, string snapName, bool isExactName)
         {
             if (isExactName)
             {
                 var pc = BuildCommand(SnapshotCommands.DestroySnapshot(datasetOrVolume, snapName));
-                
+
                 pc.LoadResponse(true);
 
             }
@@ -69,17 +71,40 @@ namespace ROOT.Zfs.Core
             return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
         }
 
-
+        /// <inheritdoc />
         public void CreateSnapshot(string dataset)
         {
             CreateSnapshot(dataset, DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHHmmss"));
         }
 
+        /// <inheritdoc />
         public void CreateSnapshot(string dataset, string snapName)
         {
             var pc = BuildCommand(SnapshotCommands.CreateSnapshot(dataset, snapName));
 
             pc.LoadResponse(true);
+        }
+
+        /// <inheritdoc />
+        public void Hold(string snapshot, string tag, bool recursive)
+        {
+            var command = BuildCommand(SnapshotCommands.Hold(snapshot, tag, recursive));
+            command.LoadResponse(true);
+        }
+
+        /// <inheritdoc />
+        public IList<SnapshotHold> Holds(string snapshot, bool recursive)
+        {
+            var command = BuildCommand(SnapshotCommands.Holds(snapshot, recursive));
+            var response = command.LoadResponse(true);
+            return SnapshotHoldParser.ParseStdOut(response.StdOut);
+        }
+
+        /// <inheritdoc />
+        public void Release(string snapshot, string tag, bool recursive)
+        {
+            var command = BuildCommand(SnapshotCommands.Release(snapshot, tag, recursive));
+            command.LoadResponse(true);
         }
     }
 }

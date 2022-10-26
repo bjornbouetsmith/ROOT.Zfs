@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
@@ -11,7 +10,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     [TestClass]
     public class FakeSnapshotTest
     {
-        private readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
+        private readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetSnapshotsTest()
@@ -67,6 +66,38 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(3, snaps.Count);
 
             sn.DestroySnapshot("tank/myds", prefix, false);
+        }
+
+        [TestMethod]
+        public void SnapshotHoldTest()
+        {
+            var sn = new Snapshots(_remoteProcessCall);
+            sn.Hold("tank/myds@12345", "mytag", false);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1,commands.Count);
+            Assert.AreEqual("/sbin/zfs hold mytag tank/myds@12345", commands[0]);
+        }
+
+        [TestMethod]
+        public void SnapshotHoldsTest()
+        {
+            var sn = new Snapshots(_remoteProcessCall);
+            var holds = sn.Holds("tank/myds@12345", false);
+            Assert.AreEqual(1,holds.Count);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zfs holds -H tank/myds@12345", commands[0]);
+        }
+
+        [TestMethod]
+        public void SnapshotReleaseTest()
+        {
+            var sn = new Snapshots(_remoteProcessCall);
+            sn.Release("tank/myds@12345","mytag", false);
+            
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zfs release mytag tank/myds@12345", commands[0]);
         }
     }
 }
