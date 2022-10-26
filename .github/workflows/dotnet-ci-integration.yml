@@ -1,16 +1,21 @@
-name: ZFS Integration tests
+name: ci-integration-test
+run-name: ZFS Integration tests
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: [".NET CI Build"]
+    workflows: ["ci-unit-test"]
     types:
       - completed
     
 jobs:
-  build:
+  build-and-test:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [20.04, 22.04]
+    runs-on: ubuntu-${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
     - name: Set status pending
