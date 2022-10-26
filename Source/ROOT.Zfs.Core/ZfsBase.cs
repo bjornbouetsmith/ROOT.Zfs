@@ -14,18 +14,20 @@ namespace ROOT.Zfs.Core
         }
 
         public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        public bool RequiresSudo { get; set; } = false;
 
         protected IProcessCall BuildCommand(IProcessCall current)
         {
             // First use any remote connection
             IProcessCall command = _remoteConnection;
-            
+
             // pipe into previous call if any
             command = ProcessCallExtensions.Pipe(command, current);
-           
+
 
             Trace.WriteLine($"Built command:{command.FullCommandLine}");
             command.Timeout = CommandTimeout;
+            command.RequiresSudo = RequiresSudo;
             return command;
         }
     }

@@ -14,12 +14,19 @@ namespace ROOT.Zfs.Tests.Integration
     [TestClass]
     public class DataSetTest
     {
-        private readonly IProcessCall _remoteProcessCall = Environment.MachineName == "BBS-DESKTOP" ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : new ProcessCall("/usr/bin/sudo");
+        private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+
+        private Datasets GetDataSets()
+        {
+            var ds = new Datasets(_remoteProcessCall);
+            ds.RequiresSudo = TestHelpers.RequiresSudo;
+            return ds;
+        }
 
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()
         {
-            var ds = new Datasets(_remoteProcessCall);
+            var ds = GetDataSets();
             var dataSets = ds.GetDatasets(default);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
@@ -31,7 +38,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetTest()
         {
-            var ds = new Datasets(_remoteProcessCall);
+            var ds = GetDataSets();
             var dataset = ds.GetDatasets("tank", default, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual("tank", dataset.Name);
@@ -42,7 +49,7 @@ namespace ROOT.Zfs.Tests.Integration
         [DataRow(false)]
         public void CreateDataSetTest(bool addProperties)
         {
-            var ds = new Datasets(_remoteProcessCall);
+            var ds = GetDataSets();
             var dataSetName = Guid.NewGuid().ToString();
             string fullName = null;
             try
@@ -81,7 +88,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetShouldReturnDataSet()
         {
-            var ds = new Datasets(_remoteProcessCall);
+            var ds = GetDataSets();
             var root = ds.GetDatasets("tank", default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
@@ -89,17 +96,16 @@ namespace ROOT.Zfs.Tests.Integration
         }
 
         [TestMethod, TestCategory("Integration")]
-        public void GetNonExistingDataSetShouldReturnNull()
+        public void GetNonExistingDataSetShouldThrowException()
         {
-            var ds = new Datasets(_remoteProcessCall);
-            var dataset = ds.GetDatasets("ungabunga" + Guid.NewGuid(), default, false).FirstOrDefault();
-            Assert.IsNull(dataset);
+            var ds = GetDataSets();
+            Assert.ThrowsException<ProcessCallException>(() => ds.GetDatasets("ungabunga", default, false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("Integration")]
         public void DestroyRecursiveDryRunTest()
         {
-            var dsHelper = new Datasets(_remoteProcessCall);
+            var dsHelper = GetDataSets();
             var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             var root = $"tank/myds/{rootId}";
             var child1 = $"tank/myds/{rootId}/child1";

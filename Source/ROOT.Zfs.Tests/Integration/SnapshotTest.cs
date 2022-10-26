@@ -11,12 +11,19 @@ namespace ROOT.Zfs.Tests.Integration
     [TestClass]
     public class SnapshotTest
     {
-        private readonly IProcessCall _remoteProcessCall = Environment.MachineName == "BBS-DESKTOP" ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : new ProcessCall("/usr/bin/sudo");
+        private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+
+        private Snapshots GetSnapshots()
+        {
+            var sn = new Snapshots(_remoteProcessCall);
+            sn.RequiresSudo = TestHelpers.RequiresSudo;
+            return sn;
+        }
 
         [TestMethod, TestCategory("Integration")]
         public void RemoteSnapshotTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
 
             var snapshots = sn.GetSnapshots("tank/myds");
             Assert.IsNotNull(snapshots);
@@ -33,7 +40,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
 
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
 
             sn.CreateSnapshot("tank/myds", snapName);
 
@@ -55,7 +62,7 @@ namespace ROOT.Zfs.Tests.Integration
             var name = SnapshotCommands.CreateSnapshotName(time);
             Assert.AreEqual("20220922211347", name);
 
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
 
             sn.CreateSnapshot("tank/myds");
 
@@ -64,7 +71,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void CreateAndDeleteByPatternTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
             var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
             sn.CreateSnapshot("tank/myds", $"{prefix}-1");
             sn.CreateSnapshot("tank/myds", $"{prefix}-2");
@@ -78,7 +85,6 @@ namespace ROOT.Zfs.Tests.Integration
 
             snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
             Assert.AreEqual(0, snaps.Count);
-
         }
     }
 }

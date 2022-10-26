@@ -73,6 +73,7 @@ namespace ROOT.Zfs.Tests
         public bool UseShell { get; set; } = false;
         public TimeSpan Timeout { get; set; } = TimeSpan.MaxValue;
         public bool Started => false;
+        public bool RequiresSudo { get; set; }
 
         /// <summary>
         /// Set this if you want to override default response from mocks

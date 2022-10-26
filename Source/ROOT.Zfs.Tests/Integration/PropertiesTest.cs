@@ -13,12 +13,19 @@ namespace ROOT.Zfs.Tests.Integration
     [TestClass]
     public class PropertiesTest
     {
-        private readonly IProcessCall _remoteProcessCall = Environment.MachineName == "BBS-DESKTOP" ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : new ProcessCall("/usr/bin/sudo");
+        private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+
+        private Properties GetProperties()
+        {
+            var props =  new Properties(_remoteProcessCall);
+            props.RequiresSudo = TestHelpers.RequiresSudo;
+            return props;
+        }
 
         [TestMethod, TestCategory("Integration")]
         public void ListAllProperties()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
 
             var props = pr.GetProperties(PropertyTarget.Dataset, "tank/myds");
             Assert.IsNotNull(props);
@@ -31,7 +38,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void SetDataSetProperty()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var newVal = pr.SetProperty(PropertyTarget.Dataset, "tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
@@ -41,7 +48,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetProperty()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var newVal = pr.SetProperty(PropertyTarget.Dataset, "tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
@@ -56,7 +63,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetAvailableDatasetProperties()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var props = pr.GetAvailableProperties(PropertyTarget.Dataset).ToList();
             Assert.IsTrue(props.Count > 0);
             Console.WriteLine(props.Dump(new JsonFormatter()));
@@ -65,8 +72,10 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ResetPropertyTest()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var dsHelper = new Datasets(_remoteProcessCall);
+            dsHelper.RequiresSudo = pr.RequiresSudo;
+
             var dataset = $"tank/{Guid.NewGuid()}";
             var args = new DatasetCreationArgs
             {

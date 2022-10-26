@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Tests
         private PoolCreationArgs _args;
 
         public string Name => _args.Name;
-        
+
         public TestPool(IProcessCall remoteProcessCall)
         {
             _remoteProcessCall = remoteProcessCall;
@@ -29,6 +29,7 @@ namespace ROOT.Zfs.Tests
         {
             _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
             var zp = new ZPool(_remoteProcessCall);
+            zp.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             return zp.CreatePool(args);
         }
 
@@ -43,12 +44,14 @@ namespace ROOT.Zfs.Tests
         private void CreateBaseDirectory()
         {
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/mkdir", "-p /tmp/zfs-pool");
+            pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             pc.LoadResponse(true);
         }
 
         private bool DestroyPool()
         {
             var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.Name}");
+            pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             var response = pc.LoadResponse(false);
             if (!response.Success)
             {
@@ -59,12 +62,12 @@ namespace ROOT.Zfs.Tests
 
             return true;
         }
-
-
+        
         private void CreateTestDisk(string name)
         {
             var command = $"if=/dev/zero of={name} bs=100MB count=1";
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/dd", command);
+            pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             pc.LoadResponse(true);
         }
 
@@ -72,6 +75,7 @@ namespace ROOT.Zfs.Tests
         {
             var command = $"-f {name}";
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/rm", command);
+            pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             var response = pc.LoadResponse(false);
 
             if (!response.Success)
@@ -129,7 +133,7 @@ namespace ROOT.Zfs.Tests
                 Assert.AreEqual(State.Online, status.State);
                 return pool;
             }
-            catch 
+            catch
             {
                 pool.Dispose();
                 throw;

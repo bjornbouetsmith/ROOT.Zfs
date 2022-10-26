@@ -12,12 +12,19 @@ namespace ROOT.Zfs.Tests.Integration
     [TestClass]
     public class ZpoolTest
     {
-        private readonly IProcessCall _remoteProcessCall = Environment.MachineName == "BBS-DESKTOP" ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : new ProcessCall("/usr/bin/sudo");
+        private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+
+        private ZPool GetZpool()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.RequiresSudo = TestHelpers.RequiresSudo;
+            return zp;
+        }
 
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryTestWithSkip()
         {
-            var zp = new ZPool(_remoteProcessCall);
+            var zp = GetZpool();
             var lines = zp.GetHistory("tank").ToList().Count;
 
             var history = zp.GetHistory("tank", lines - 2).ToList();
@@ -26,10 +33,12 @@ namespace ROOT.Zfs.Tests.Integration
             Assert.AreEqual(2, history.Count);
         }
 
+
+
         [TestMethod, TestCategory("Integration")]
         public void GetHistory()
         {
-            var zp = new ZPool(_remoteProcessCall);
+            var zp = GetZpool();
             var history = zp.GetHistory("tank");
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
@@ -38,7 +47,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void GetHistoryAfterDate()
         {
-            var zp = new ZPool(_remoteProcessCall);
+            var zp = GetZpool();
             var last10AtMost = zp.GetHistory("tank").TakeLast(10).ToList();
 
             // This is safe, since zfs always have at last pool creation as a history event
@@ -57,7 +66,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void GetStatusTest()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var zp = new ZPool(_remoteProcessCall);
+            var zp = GetZpool();
             var status = zp.GetStatus(pool.Name);
             Assert.IsNotNull(status);
             Assert.AreEqual(pool.Name, status.Pool.Name);
@@ -102,7 +111,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void DestroyPoolTest()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var zp = new ZPool(_remoteProcessCall);
+            var zp = GetZpool();
             zp.DestroyPool(pool.Name);
         }
 

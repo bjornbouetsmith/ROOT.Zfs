@@ -117,8 +117,8 @@ namespace ROOT.Zfs.Core
         {
             var command = BuildCommand(Commands.BaseCommands.Which(binary));
             var response = command.LoadResponse(true);
-            Trace.WriteLine($"{binary}={response.StdOut}");
-            return response.StdOut;
+            Trace.WriteLine($"{binary}={response.StdOut.Trim()}");
+            return response.StdOut.Trim();
         }
     }
 }
