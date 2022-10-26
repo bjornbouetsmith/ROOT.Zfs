@@ -2,6 +2,7 @@
 ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate the ZFS file system.
 
 [![.NET CI Build](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-build.yml)
+[![.NET Integration](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-integration.yml/badge.svg)](https://github.com/bjornbouetsmith/ROOT.Zfs/actions/workflows/dotnet-ci-integration.yml)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=bjornbouetsmith_ROOT.Zfs&metric=bugs)](https://sonarcloud.io/summary/new_code?id=bjornbouetsmith_ROOT.Zfs)
