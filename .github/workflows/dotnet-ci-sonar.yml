@@ -3,7 +3,7 @@ run-name: Sonarcloud quality gate
 
 on:
   workflow_run:
-    workflows: ["ci-integration"]
+    workflows: ["ci-integration-test"]
     types:
       - completed
     
