@@ -96,5 +96,55 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, $"clone -p{propCommand} {datasetOrVolume}@{rawSnapName} {targetDatasetOrVolume}");
         }
+        /// <summary>
+        /// Returns a command to add a tag to a snapshot, i.e.
+        /// zfs hold
+        /// </summary>
+        internal static ProcessCall Hold(string snapshot, string tag, bool recursive)
+        {
+            if (string.IsNullOrWhiteSpace(snapshot))
+            {
+                throw new ArgumentException(nameof(snapshot));
+            }
+
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                throw new ArgumentException(nameof(tag));
+            }
+
+            snapshot = DatasetHelper.Decode(snapshot);
+            return new ProcessCall(WhichZfs, $"hold{(recursive ? " -r" : "")} {tag} {snapshot}");
+        }
+
+        /// <summary>
+        /// Returns a command to list holds on the given snapshot and possibly also descendents
+        /// </summary>
+        internal static ProcessCall Holds(string snapshot, bool recursive)
+        {
+            if (string.IsNullOrWhiteSpace(snapshot))
+            {
+                throw new ArgumentException(nameof(snapshot));
+            }
+            snapshot = DatasetHelper.Decode(snapshot);
+            return new ProcessCall(WhichZfs, $"holds{(recursive ? " -r" : "")} -H {snapshot}");
+        }
+
+        /// <summary>
+        /// Returns a command that releases a hold on a snapshot with the given tag and possibly also decendents
+        /// </summary>
+        internal static ProcessCall Release(string snapshot, string tag, bool recursive)
+        {
+            if (string.IsNullOrWhiteSpace(snapshot))
+            {
+                throw new ArgumentException(nameof(snapshot));
+            }
+
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                throw new ArgumentException(nameof(tag));
+            }
+            snapshot = DatasetHelper.Decode(snapshot);
+            return new ProcessCall(WhichZfs, $"release{(recursive ? " -r" : "")} {tag} {snapshot}");
+        }
     }
 }
