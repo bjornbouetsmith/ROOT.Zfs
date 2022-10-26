@@ -2,7 +2,7 @@ name: Sonarcloud quality gate
 
 on:
   workflow_run:
-    workflows: [".NET CI Build"]
+    workflows: ["ZFS Integration tests"]
     types:
       - completed
     
