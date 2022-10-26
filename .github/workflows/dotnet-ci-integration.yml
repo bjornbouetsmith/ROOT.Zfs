@@ -28,7 +28,7 @@ jobs:
         -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests is pending!","context":"continuous-integration/integration"}'
     - name: Reclaim disk space
       run: |
-        ${{ github.workspace }}/.github/workflows/scripts/reclaim_disk_space.sh
+        ./.github/workflows/scripts/reclaim_disk_space.sh
     - name: Install zfs
       run: |
         sudo apt-get update
