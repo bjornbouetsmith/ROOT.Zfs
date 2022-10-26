@@ -160,7 +160,7 @@ namespace ROOT.Zfs.Tests.Integration
 
         }
 
-        [TestMethod, TestCategory("IntegrationExt")]
+        [TestMethod, TestCategory("Integration")]
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]
@@ -208,7 +208,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(status.Dump(new JsonFormatter()));
         }
 
-        [TestMethod, TestCategory("Integration")]
+        [TestMethod, TestCategory("Integration"),Ignore]
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]
