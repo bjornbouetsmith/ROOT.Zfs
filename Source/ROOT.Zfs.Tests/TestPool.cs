@@ -20,6 +20,7 @@ namespace ROOT.Zfs.Tests
         public TestPool(IProcessCall remoteProcessCall)
         {
             _remoteProcessCall = remoteProcessCall;
+            CreateBaseDirectory();
         }
 
         private readonly List<string> _disks = new List<string>();
@@ -33,10 +34,16 @@ namespace ROOT.Zfs.Tests
 
         public string AddDisk()
         {
-            var name = "/tmp/" + Guid.NewGuid();
+            var name = "/tmp/zfs-pool/" + Guid.NewGuid();
             _disks.Add(name);
             CreateTestDisk(name);
             return name;
+        }
+
+        private void CreateBaseDirectory()
+        {
+            var pc = _remoteProcessCall | new ProcessCall("/usr/bin/mkdir", "-p /tmp/zfs-pool");
+            pc.LoadResponse(true);
         }
 
         private bool DestroyPool()

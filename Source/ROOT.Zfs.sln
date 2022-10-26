@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{9759C1
 		..\.github\workflows\dotnet-ci-integration.yml = ..\.github\workflows\dotnet-ci-integration.yml
 		..\.github\workflows\dotnet-ci-sonar.yml = ..\.github\workflows\dotnet-ci-sonar.yml
 		..\README.md = ..\README.md
-		..\.github\workflows\scripts\reclaim_disk_space.sh = ..\.github\workflows\scripts\reclaim_disk_space.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C77C430-E6E0-47B5-B60B-4B3C8C7CA513}"

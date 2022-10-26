@@ -26,9 +26,6 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
          ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
         -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests is pending!","context":"continuous-integration/integration"}'
-    - name: Reclaim disk space
-      run: |
-        ${{ github.workspace }}/.github/workflows/scripts/reclaim_disk_space.sh
     - name: Install zfs
       run: |
         sudo apt-get update
@@ -68,3 +65,8 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
          ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
         -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests succeeded!","context":"continuous-integration/integration"}'
+    - name: Clean up
+      if: always()
+# Cleans up potential left over from tests failing
+      run: sudo rm -rf /tmp/zfs-pool
+      continue-on-error: true
