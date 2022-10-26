@@ -128,6 +128,7 @@ namespace ROOT.Zfs.Tests.Integration
                     {
                         DataSetName = ds,
                         Type = DatasetTypes.Filesystem,
+                        CreateParents = true,
 
                     };
                     dsHelper.CreateDataset(args);

@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Tests.Integration
             sn.CreateSnapshot(pool.Name, $"{prefix}-2");
             sn.CreateSnapshot(pool.Name, $"{prefix}-3");
 
-            var snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}s@{prefix}")).ToList();
+            var snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
 
