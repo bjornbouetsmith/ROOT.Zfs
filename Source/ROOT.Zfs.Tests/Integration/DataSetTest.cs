@@ -8,14 +8,13 @@ using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.Datasets;
 
-namespace ROOT.Zfs.Tests
+namespace ROOT.Zfs.Tests.Integration
 {
     [TestClass]
     public class DataSetTest
     {
-        readonly SSHProcessCall _remoteProcessCall = new("bbs", "zfsdev.root.dom", true);
+        private readonly IProcessCall _remoteProcessCall = Environment.MachineName == "BBS-DESKTOP" ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : new ProcessCall("/usr/bin/sudo");
 
         [TestMethod, TestCategory("Integration")]
         public void GetDataSetList()

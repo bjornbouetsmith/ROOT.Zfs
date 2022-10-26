@@ -1,0 +1,70 @@
+name: ZFS Integration tests
+
+on:
+  workflow_dispatch:
+#  workflow_run:
+#    workflows: [".NET CI Build"]
+#    types:
+#      - completed
+    
+jobs:
+  build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [18.04, 20.04]
+    runs-on: ubuntu-${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set status pending
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests is pending!","context":"continuous-integration/integration"}'
+    - name: Reclaim disk space
+      run: |
+        ${{ github.workspace }}/.github/workflows/scripts/reclaim_disk_space.sh
+    - name: Install zfs
+      run: |
+        sudo apt-get update
+        sudo apt install -y zfsutils-linux
+        which zfs
+        sudo zpool status
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: |
+        dotnet nuget add source --username ${{ github.triggering_actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
+        dotnet restore Source/ROOT.Zfs.sln
+
+    - name: Build
+      run: dotnet build Source/ROOT.Zfs.sln --no-restore  --configuration Debug
+
+    - name: Test
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory=Integration"
+      
+    - name: Set failed status
+      if: failure()
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests failed!","context":"continuous-integration/integration"}'
+
+    - name: Set sucecss status
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests succeeded!","context":"continuous-integration/integration"}'
