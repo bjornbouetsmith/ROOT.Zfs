@@ -180,5 +180,27 @@ namespace ROOT.Zfs.Core.Commands
         {
             return new ProcessCall(WhichZpool, $"resilver {pool}");
         }
+
+        /// <summary>
+        /// returns a scrub command for the given pool
+        /// </summary>
+        /// <exception cref="ArgumentException">If the pool name is null or empty</exception>
+        public static IProcessCall Scrub(string pool, ScrubOption option)
+        {
+            if (string.IsNullOrWhiteSpace(pool))
+            {
+                throw new ArgumentException("Please specify a pool to scrub", nameof(pool));
+            }
+
+            switch (option)
+            {
+                case ScrubOption.Pause:
+                    return new ProcessCall(WhichZpool, $"scrub -p {pool}");
+                case ScrubOption.Stop:
+                    return new ProcessCall(WhichZpool, $"scrub -s {pool}");
+                default:
+                    return new ProcessCall(WhichZpool, $"scrub {pool}");
+            }
+        }
     }
 }

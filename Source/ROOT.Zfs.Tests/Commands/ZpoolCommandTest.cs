@@ -117,8 +117,8 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
         [TestMethod]
-        [DataRow("tank", "sda", false, false,"/sbin/zpool offline tank sda")]
-        [DataRow("tank", "sda", true, false,"/sbin/zpool offline tank sda -f")]
+        [DataRow("tank", "sda", false, false, "/sbin/zpool offline tank sda")]
+        [DataRow("tank", "sda", true, false, "/sbin/zpool offline tank sda -f")]
         [DataRow("tank", "sda", false, true, "/sbin/zpool offline tank sda -t")]
         [DataRow("tank", "sda", true, true, "/sbin/zpool offline tank sda -f -t")]
         public void OfflinePoolDeviceTest(string pool, string device, bool forceFault, bool temporary, string expectedCommand)
@@ -128,14 +128,14 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        [DataRow("tank",null,false,"/sbin/zpool iostat -LlPvH tank")] // only pool, exclude latency stats
+        [DataRow("tank", null, false, "/sbin/zpool iostat -LlPvH tank")] // only pool, exclude latency stats
         [DataRow("tank", null, true, "/sbin/zpool iostat -LlPvHl tank")] //only pool include latency stats
-        [DataRow("tank","",true, "/sbin/zpool iostat -LlPvHl tank")] //only pool include latency stats
+        [DataRow("tank", "", true, "/sbin/zpool iostat -LlPvHl tank")] //only pool include latency stats
         [DataRow("tank", "/dev/sda", false, "/sbin/zpool iostat -LlPvH tank /dev/sda")] //single device, exclude stats
         [DataRow("tank", "/dev/sda,/dev/sdb", false, "/sbin/zpool iostat -LlPvH tank /dev/sda /dev/sdb")] //multiple devices, exclude stats
         [DataRow("tank", "/dev/sda", true, "/sbin/zpool iostat -LlPvHl tank /dev/sda")] //single device, include stats
         [DataRow("tank", "/dev/sda,/dev/sdb", true, "/sbin/zpool iostat -LlPvHl tank /dev/sda /dev/sdb")] //multiple devices, include stats
-        public void IoStatTest(string pool, string deviceList, bool includeAverageLatency,string expectedCommand)
+        public void IoStatTest(string pool, string deviceList, bool includeAverageLatency, string expectedCommand)
         {
             var command = ZpoolCommands.IoStat(pool, deviceList?.Split(','), includeAverageLatency);
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
@@ -146,7 +146,27 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var command = ZpoolCommands.Resilver("tank");
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zpool resilver tank",command.FullCommandLine);
+            Assert.AreEqual("/sbin/zpool resilver tank", command.FullCommandLine);
+        }
+
+        [DataRow("tank", ScrubOption.None, "/sbin/zpool scrub tank")]
+        [DataRow("tank", ScrubOption.Stop, "/sbin/zpool scrub -s tank")]
+        [DataRow("tank", ScrubOption.Pause, "/sbin/zpool scrub -p tank")]
+        [DataRow(null, ScrubOption.None, null, true)]
+        [DataRow("", ScrubOption.None, null, true)]
+        [DataRow("  ", ScrubOption.None, null, true)]
+        [TestMethod]
+        public void ScrubTest(string pool, ScrubOption option, string expected, bool expectException = false)
+        {
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Scrub(pool, option));
+            }
+            else
+            {
+                var command = ZpoolCommands.Scrub(pool, option);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
         }
     }
 }
