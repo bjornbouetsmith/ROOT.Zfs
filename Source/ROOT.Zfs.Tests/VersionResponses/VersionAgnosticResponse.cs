@@ -122,6 +122,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return ("tank/myds@12345  mytag  Wed Oct 26 09:20 2022", null);
                 case "/sbin/zfs release mytag tank/myds@12345":
                     return (null, null);
+                case "/sbin/zpool scrub tank":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

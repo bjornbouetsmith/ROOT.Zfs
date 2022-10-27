@@ -94,5 +94,11 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.Resilver(pool));
             pc.LoadResponse(true);
         }
+
+        public void Scrub(string pool, ScrubOption option)
+        {
+            var pc = BuildCommand(ZpoolCommands.Scrub(pool, option));
+            pc.LoadResponse(true);
+        }
     }
 }

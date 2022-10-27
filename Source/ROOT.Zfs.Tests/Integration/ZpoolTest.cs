@@ -255,5 +255,13 @@ namespace ROOT.Zfs.Tests.Integration
             Assert.AreEqual(State.Online, status.State);
             Console.WriteLine(status.Dump(new JsonFormatter()));
         }
+
+        [TestMethod, TestCategory("Integration")]
+        public void ScrubTest()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            zp.Scrub(pool.Name, ScrubOption.None);
+        }
     }
 }

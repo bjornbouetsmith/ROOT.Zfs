@@ -215,5 +215,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual("/sbin/zpool status -vP mytest", commands[1]);
 
         }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void ScrubTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Scrub("tank",default);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1,commands.Count);
+            Assert.AreEqual("/sbin/zpool scrub tank",commands[0]);
+        }
     }
 }

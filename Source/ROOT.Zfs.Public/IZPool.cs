@@ -109,8 +109,17 @@ namespace ROOT.Zfs.Public
         /// If an existing resilver is already running it will be restarted from the beginning.
         /// Any drives that were scheduled for a deferred resilver will be added to the new one.
         /// This requires the resilver_defer pool feature.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-resilver.8.html
         /// </summary>
         /// <param name="pool">The name of the pool to start a resilver operation on.</param>
         void Resilver(string pool);
+
+        /// <summary>
+        /// Begin, resume, pause or stop scrub of ZFS storage pools
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-scrub.8.html
+        /// </summary>
+        /// <param name="pool">The pool to scrub</param>
+        /// <param name="option">The option to control start/pause/stop</param>
+        void Scrub(string pool, ScrubOption option);
     }
 }
