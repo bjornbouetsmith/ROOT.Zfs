@@ -44,4 +44,4 @@ jobs:
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
          ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
-        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Buildsucceeded!","context":"continuous-integration/build"}'
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build succeeded!","context":"continuous-integration/build"}'
