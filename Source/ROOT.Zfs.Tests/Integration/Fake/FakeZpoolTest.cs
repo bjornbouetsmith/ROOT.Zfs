@@ -245,5 +245,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zpool upgrade tank", commands[0]);
         }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void GetUpgradeablePoolsTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            var pools = zp.GetUpgradeablePools();
+            Assert.AreEqual(1,pools.Count);
+        }
     }
 }

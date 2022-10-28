@@ -128,9 +128,33 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool upgrade tank":
                     return (null, null);
+                case "/sbin/zpool upgrade":
+                    return (GetUpgradeablePools(), null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }
+        }
+
+        private static string GetUpgradeablePools()
+        {
+                return @"This system supports ZFS pool feature flags.
+
+All pools are formatted using feature flags.
+
+
+Some supported features are not enabled on the following pools. Once a
+feature is enabled the pool may become incompatible with software
+that does not support the feature. See zpool-features(7) for details.
+
+Note that the pool 'compatibility' feature can be used to inhibit
+feature upgrades.
+
+POOL  FEATURE
+---------------
+backup
+      edonr
+      draid
+";
         }
 
         private static string GetIOStats()
