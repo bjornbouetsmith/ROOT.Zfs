@@ -38,5 +38,37 @@ namespace ROOT.Zfs.Public.Data
 
             return stringVer;
         }
+
+        /// <summary>
+        /// Returns a string representation of DataSetTypes
+        /// </summary>
+        public static string AsString(this DatasetTypes listtypes)
+        {
+            List<string> types = new();
+            if (listtypes == DatasetTypes.None)
+            {
+                // This is what zfs does, if you do not specify type, you get filesystems and volumnes
+                listtypes = DatasetTypes.Filesystem | DatasetTypes.Volume;
+            }
+
+            if ((listtypes & DatasetTypes.Bookmark) != 0)
+            {
+                types.Add("bookmark");
+            }
+            if ((listtypes & DatasetTypes.Filesystem) != 0)
+            {
+                types.Add("filesystem");
+            }
+            if ((listtypes & DatasetTypes.Snapshot) != 0)
+            {
+                types.Add("snapshot");
+            }
+            if ((listtypes & DatasetTypes.Volume) != 0)
+            {
+                types.Add("volume");
+            }
+            
+            return string.Join(",", types);
+        }
     }
 }

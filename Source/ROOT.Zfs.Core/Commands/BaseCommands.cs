@@ -42,34 +42,7 @@ namespace ROOT.Zfs.Core.Commands
                 command += " -d 99";
             }
 
-            List<string> types = new();
-            if (listtypes == DatasetTypes.None)
-            {
-                // This is what zfs does, if you do not specify type, you get filesystems and volumnes
-                listtypes = DatasetTypes.Filesystem | DatasetTypes.Volume;
-            }
-
-            if ((listtypes & DatasetTypes.Bookmark) != 0)
-            {
-                types.Add("bookmark");
-            }
-            if ((listtypes & DatasetTypes.Filesystem) != 0)
-            {
-                types.Add("filesystem");
-            }
-            if ((listtypes & DatasetTypes.Snapshot) != 0)
-            {
-                types.Add("snapshot");
-            }
-            if ((listtypes & DatasetTypes.Volume) != 0)
-            {
-                types.Add("volume");
-            }
-
-            if (types.Count > 0)
-            {
-                command += " -t " + string.Join(",", types);
-            }
+            command += $" -t {listtypes.AsString()}";
 
             if (!string.IsNullOrWhiteSpace(root))
             {

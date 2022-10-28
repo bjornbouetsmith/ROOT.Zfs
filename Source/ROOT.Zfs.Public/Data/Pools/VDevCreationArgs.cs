@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// The type of vdev to create
         /// </summary>
         public VDevCreationType Type { get; set; }
-        
+
         /// <summary>
         /// The list of devices that should be part of this vdev
         /// </summary>
@@ -28,21 +28,27 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// <summary>
         /// Validates that the vdev arguments are correct and will not cause runtime errors when passed onto to zpool
         /// </summary>
-        /// <param name="errorMessage">The error message if any</param>
+        /// <param name="errors">The error messages if any</param>
         /// <returns>true if valid;false otherwise</returns>
-        public virtual bool Validate(out string errorMessage)
+        public virtual bool Validate(out IList<string> errors)
         {
             //TODO: Write validation logic, i.e. mirror needs at least two devices etc.
-
-            if (Type == VDevCreationType.Mirror && Devices?.Count < 2)
+            errors = null;
+            if ((Devices?.Count ?? 0) == 0)
             {
-                errorMessage = "Please provide at least two devices when creating a mirror";
+                errors = new List<string>();
+                errors.Add("Please provide the proper amount of minimum devices");
                 return false;
             }
 
+            if (Type == VDevCreationType.Mirror
+                && Devices.Count < 2)
+            {
+                errors = new List<string>();
+                errors.Add("Please provide at least two devices when creating a mirror");
+            }
 
-            errorMessage = null;
-            return true;
+            return errors == null;
         }
     }
 }

@@ -45,13 +45,13 @@ namespace ROOT.Zfs.Core.Commands
         /// <returns></returns>
         internal static ProcessCall CreatePool(PoolCreationArgs args)
         {
-            if (!args.Validate(out var errorMessage))
+            if (!args.Validate(out var errors))
             {
+                var errorMessage = string.Join(Environment.NewLine, errors);
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
             StringBuilder command = new StringBuilder($"create {args.Name}");
-
 
             if (!string.IsNullOrWhiteSpace(args.MountPoint))
             {
@@ -76,11 +76,6 @@ namespace ROOT.Zfs.Core.Commands
 
             foreach (var vdevArg in args.VDevs)
             {
-                if (!vdevArg.Validate(out errorMessage))
-                {
-                    throw new ArgumentException(errorMessage, nameof(args));
-                }
-
                 command.Append(" " + vdevArg);
             }
 

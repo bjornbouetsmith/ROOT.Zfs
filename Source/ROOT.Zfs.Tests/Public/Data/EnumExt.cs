@@ -26,7 +26,7 @@ namespace ROOT.Zfs.Tests.Public.Data
         /// <summary>
         /// Known <see cref="VDevCreationType"/> to string mappings
         /// </summary>
-        [DataRow(VDevCreationType.Special,"special")]
+        [DataRow(VDevCreationType.Special, "special")]
         [DataRow(VDevCreationType.Cache, "cache")]
         [DataRow(VDevCreationType.Dedup, "dedup")]
         [DataRow(VDevCreationType.DRaid1, "draid1")]
@@ -46,12 +46,27 @@ namespace ROOT.Zfs.Tests.Public.Data
         }
 
         [TestMethod]
-        public void UnsupportedShouldThrow()
+        public void UnsupportedVDevCreationTypeShouldThrow()
         {
-            VDevCreationType type = (VDevCreationType) (int)-999;
+            VDevCreationType type = (VDevCreationType)(int)-999;
 
             var ex = Assert.ThrowsException<NotSupportedException>(() => type.AsString());
             Console.WriteLine(ex.Message);
+        }
+
+        [DataRow(default, "filesystem,volume")]
+        [DataRow(DatasetTypes.Filesystem, "filesystem")]
+        [DataRow(DatasetTypes.Bookmark, "bookmark")]
+        [DataRow(DatasetTypes.Snapshot, "snapshot")]
+        [DataRow(DatasetTypes.Volume, "volume")]
+        [DataRow(DatasetTypes.Volume | DatasetTypes.Bookmark, "bookmark,volume")]
+        [DataRow(DatasetTypes.Volume | DatasetTypes.Bookmark | DatasetTypes.Snapshot, "bookmark,snapshot,volume")]
+        [DataRow(DatasetTypes.Volume | DatasetTypes.Bookmark | DatasetTypes.Snapshot| DatasetTypes.Filesystem, "bookmark,filesystem,snapshot,volume")]
+        [TestMethod]
+        public void DataSetTypesAsStringTest(DatasetTypes types, string expected)
+        {
+            var stringVer = types.AsString();
+            Assert.AreEqual(expected, stringVer);
         }
     }
 }
