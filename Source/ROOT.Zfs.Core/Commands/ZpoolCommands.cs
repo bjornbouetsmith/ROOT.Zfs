@@ -213,5 +213,27 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, $"trim{args}");
         }
+
+        /// <summary>
+        /// Returns a command that show what pools can be upgraded and what missing features they lack
+        /// </summary>
+        public static IProcessCall GetUpgradeablePools()
+        {
+            return new ProcessCall(WhichZpool, "upgrade");
+        }
+
+        /// <summary>
+        /// Returns a command to upgrade either one pool to all feature flags, or all pools
+        /// </summary>
+        public static IProcessCall Upgrade(ZpoolUpgradeArgs args)
+        {
+            if (!args.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
+            }
+
+            return new ProcessCall(WhichZpool, $"upgrade{args}");
+        }
     }
 }

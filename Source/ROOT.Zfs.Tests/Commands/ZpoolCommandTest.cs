@@ -195,5 +195,36 @@ namespace ROOT.Zfs.Tests.Commands
                 Assert.AreEqual(expected, command.FullCommandLine);
             }
         }
+
+        [TestMethod]
+        public void GetUpgradeablePoolsTest()
+        {
+            var command = ZpoolCommands.GetUpgradeablePools();
+            Assert.AreEqual("/sbin/zpool upgrade", command.FullCommandLine);
+        }
+
+        [DataRow("tank", false, "/sbin/zpool upgrade tank")]
+        [DataRow("tank", true, "/sbin/zpool upgrade -a")]
+        [DataRow("", true, "/sbin/zpool upgrade -a")]
+        [DataRow(null, true, "/sbin/zpool upgrade -a")]
+        [DataRow(" ", true, "/sbin/zpool upgrade -a")]
+        [DataRow(null, false, null, true)]
+        [DataRow("", false, null, true)]
+        [DataRow(" ", false, null, true)]
+        [TestMethod]
+        public void UpgradePoolTest(string poolName, bool all, string expected, bool expectException = false)
+        {
+            var args = new ZpoolUpgradeArgs { PoolName = poolName, AllPools = all };
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Upgrade(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Upgrade(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
+        }
     }
 }

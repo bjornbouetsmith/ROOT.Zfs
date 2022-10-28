@@ -131,5 +131,20 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="args">The arguments to the trim command</param>
         void Trim(ZpoolTrimArgs args);
+
+        /// <summary>
+        /// Displays pools which do not have all supported features enabled and pools formatted using a legacy ZFS version number.
+        /// These pools can continue to be used, but some features may not be available.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-upgrade.8.html
+        /// </summary>
+        /// <returns>List of upgradeable pools and their missing features</returns>
+        IList<UpgradeablePool> GetUpgradeablePools();
+
+        /// <summary>
+        /// Enable all features on the given pool or all pools
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-upgrade.8.html
+        /// </summary>
+        /// <param name="args">Args to control whether to upgrade a single pool or all pools</param>
+        void Upgrade(ZpoolUpgradeArgs args);
     }
 }

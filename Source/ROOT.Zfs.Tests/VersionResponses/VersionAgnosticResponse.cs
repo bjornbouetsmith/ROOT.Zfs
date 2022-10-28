@@ -126,6 +126,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool trim tank":
                     return (null, null);
+                case "/sbin/zpool upgrade tank":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

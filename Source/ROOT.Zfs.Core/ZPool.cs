@@ -114,9 +114,25 @@ namespace ROOT.Zfs.Core
             pc.LoadResponse(true);
         }
 
+        /// <inheritdoc />
         public void Trim(ZpoolTrimArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Trim(args));
+            pc.LoadResponse(true);
+        }
+
+        /// <inheritdoc />
+        public IList<UpgradeablePool> GetUpgradeablePools()
+        {
+            var pc = BuildCommand(ZpoolCommands.GetUpgradeablePools());
+            var response = pc.LoadResponse(true);
+            return UpgradeablePoolsParser.ParseStdOut(response.StdOut);
+        }
+
+        /// <inheritdoc />
+        public void Upgrade(ZpoolUpgradeArgs args)
+        {
+            var pc = BuildCommand(ZpoolCommands.Upgrade(args));
             pc.LoadResponse(true);
         }
     }

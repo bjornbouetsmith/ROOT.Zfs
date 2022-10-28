@@ -49,7 +49,6 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             {
                 Assert.IsTrue(afterDate.Count < last10AtMost.Count);
             }
-
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -235,6 +234,16 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zpool trim tank", commands[0]);
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void UpgradeTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Upgrade(new ZpoolUpgradeArgs { PoolName = "tank" });
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool upgrade tank", commands[0]);
         }
     }
 }
