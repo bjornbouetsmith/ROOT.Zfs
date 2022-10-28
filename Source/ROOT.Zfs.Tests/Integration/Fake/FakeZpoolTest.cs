@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
@@ -10,7 +11,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     [TestClass]
     public class FakeZpoolTest
     {
-        readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
+        readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetHistoryTestWithSkip()
@@ -166,7 +167,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
         }
-        
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void IOStatTest()
         {
@@ -220,10 +221,20 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void ScrubTest()
         {
             var zp = new ZPool(_remoteProcessCall);
-            zp.Scrub("tank",default);
+            zp.Scrub("tank", default);
             var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1,commands.Count);
-            Assert.AreEqual("/sbin/zpool scrub tank",commands[0]);
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool scrub tank", commands[0]);
+        }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void TrimTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            zp.Trim(new ZpoolTrimArgs { PoolName = "tank" });
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool trim tank", commands[0]);
         }
     }
 }

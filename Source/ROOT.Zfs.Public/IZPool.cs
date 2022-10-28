@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 using ROOT.Zfs.Public.Data.Statistics;
@@ -121,5 +122,14 @@ namespace ROOT.Zfs.Public
         /// <param name="pool">The pool to scrub</param>
         /// <param name="option">The option to control start/pause/stop</param>
         void Scrub(string pool, ScrubOption option);
+
+        /// <summary>
+        /// Initiates an immediate on-demand TRIM operation for all of the free space in a pool.
+        /// This operation informs the underlying storage devices of all blocks in the pool
+        /// which are no longer allocated and allows thinly provisioned devices to reclaim the space.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-trim.8.html
+        /// </summary>
+        /// <param name="args">The arguments to the trim command</param>
+        void Trim(ZpoolTrimArgs args);
     }
 }

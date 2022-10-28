@@ -69,7 +69,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zpool status -vP mytest":
                     return (GetMyTestPoolStatus(), null);
                 case "/sbin/zpool create mytest mirror /dev/sda /dev/sdb":
-                return (null, null);
+                    return (null, null);
                 case "/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd":
                     return (null, null);
                 case "/sbin/zpool destroy -f mytest":
@@ -123,6 +123,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs release mytag tank/myds@12345":
                     return (null, null);
                 case "/sbin/zpool scrub tank":
+                    return (null, null);
+                case "/sbin/zpool trim tank":
                     return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
@@ -507,7 +509,7 @@ tank2   16642998272     107520  16642890752     -       -       7.30       6.50 
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                var filtered = lines.Split(new[]{'\r','\n'},StringSplitOptions.RemoveEmptyEntries).Where(l=>l.StartsWith(filter));
+                var filtered = lines.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Where(l => l.StartsWith(filter));
                 return string.Join("\r\n", filtered);
             }
 

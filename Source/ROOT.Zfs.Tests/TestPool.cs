@@ -23,7 +23,7 @@ namespace ROOT.Zfs.Tests
             CreateBaseDirectory();
         }
 
-        private readonly List<string> _disks = new List<string>();
+        public List<string> Disks { get; } = new List<string>();
 
         public PoolStatus CreatePool(PoolCreationArgs args)
         {
@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Tests
         public string AddDisk()
         {
             var name = "/tmp/zfs-pool/" + Guid.NewGuid();
-            _disks.Add(name);
+            Disks.Add(name);
             CreateTestDisk(name);
             return name;
         }
@@ -94,7 +94,7 @@ namespace ROOT.Zfs.Tests
                 Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.Name);
             }
 
-            foreach (var disk in _disks)
+            foreach (var disk in Disks)
             {
                 if (!DeleteTestDisk(disk))
                 {

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration
@@ -29,7 +30,7 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var snap = new Snapshots(_remoteProcessCall);
             snap.RequiresSudo = TestHelpers.RequiresSudo;
-            snap.CreateSnapshot(pool.Name,"test1");
+            snap.CreateSnapshot(pool.Name, "test1");
             snap.CreateSnapshot(pool.Name, "test2");
             snap.CreateSnapshot(pool.Name, "test3");
             snap.CreateSnapshot(pool.Name);
@@ -208,7 +209,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(status.Dump(new JsonFormatter()));
         }
 
-        [TestMethod, TestCategory("Integration"),Ignore]
+        [TestMethod, TestCategory("Integration"), Ignore]
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]
@@ -262,6 +263,33 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             zp.Scrub(pool.Name, ScrubOption.None);
+            var status = zp.GetStatus(pool.Name);
+            Assert.AreEqual(State.Online, status.State);
+
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void TrimPoolTestSimple()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+
+            var args = new ZpoolTrimArgs { PoolName = pool.Name };
+            zp.Trim(args);
+            var status = zp.GetStatus(pool.Name);
+            Assert.AreEqual(State.Online, status.State);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void TrimDeviceTestSimple()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            var firstDisk = pool.Disks[0];
+            var args = new ZpoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
+            zp.Trim(args);
+            var status = zp.GetStatus(pool.Name);
+            Assert.AreEqual(State.Online, status.State);
         }
     }
 }
