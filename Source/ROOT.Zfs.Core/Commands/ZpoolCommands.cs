@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Commands
@@ -201,6 +202,21 @@ namespace ROOT.Zfs.Core.Commands
                 default:
                     return new ProcessCall(WhichZpool, $"scrub {pool}");
             }
+        }
+
+        /// <summary>
+        /// Returns a trim command for the given pool and optional device
+        /// </summary>
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        public static IProcessCall Trim(ZpoolTrimArgs args)
+        {
+            if (!args.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
+            }
+
+            return new ProcessCall(WhichZpool, $"trim{args}");
         }
     }
 }

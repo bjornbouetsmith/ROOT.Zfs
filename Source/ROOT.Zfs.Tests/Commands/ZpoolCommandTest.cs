@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -165,6 +166,32 @@ namespace ROOT.Zfs.Tests.Commands
             else
             {
                 var command = ZpoolCommands.Scrub(pool, option);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
+        }
+
+        [DataRow("tank", null, "/sbin/zpool trim tank")]
+        [DataRow("tank", "/dev/sda", "/sbin/zpool trim tank /dev/sda")]
+        [DataRow("", "/dev/sda", null, true)]
+        [DataRow(null, "/dev/sda", null, true)]
+        [DataRow(" ", "/dev/sda", null, true)]
+        [TestMethod]
+        public void TrimTest(string pool, string device, string expected, bool expectException = false)
+        {
+            var args = new ZpoolTrimArgs
+            {
+                PoolName = pool,
+                DeviceName = device,
+            };
+
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Trim(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Trim(args);
+                Console.WriteLine(command.FullCommandLine);
                 Assert.AreEqual(expected, command.FullCommandLine);
             }
         }
