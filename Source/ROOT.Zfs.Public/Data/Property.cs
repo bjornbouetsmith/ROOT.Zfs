@@ -6,6 +6,9 @@
     /// </summary>
     public class Property
     {
+        /// <summary>
+        /// Creates a new instance of the property class with the given property name and range of valid values
+        /// </summary>
         public Property(string name, params string[] validValues)
         {
             Name = name;
