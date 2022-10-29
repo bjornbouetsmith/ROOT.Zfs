@@ -14,12 +14,14 @@ namespace ROOT.Zfs.Core.Helpers
         /// rpool   31138512896     3078807552      28059705344     -       -       10      9       1.00    ONLINE  -
         /// tank    3813930958848   128800165888    3685130792960   -       -       9       3       1.00    ONLINE  -
         /// </summary>
-        public static IEnumerable<PoolInfo> ParseFromStdOut(string stdOut)
+        public static IList<PoolInfo> ParseFromStdOut(string stdOut)
         {
+            var list = new List<PoolInfo>();
             foreach (var line in stdOut.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries))
             {
-                yield return ParseLine(line);
+                list.Add(ParseLine(line));
             }
+            return list;
         }
         /// <summary>
         /// Parses a single line

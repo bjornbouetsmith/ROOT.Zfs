@@ -111,7 +111,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
 
-            var infos = zp.GetAllPoolInfos().ToList();
+            var infos = zp.GetAllPoolInfos();
             Assert.AreEqual(2, infos.Count);
 
         }
@@ -124,6 +124,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             var info = zp.GetPoolInfo("tank2");
             Assert.IsNotNull(info);
+            Assert.AreEqual(5000, info.Version);
             Assert.AreEqual("tank2", info.Name);
             Assert.AreEqual("15.5G", info.Size.ToString());
             Assert.AreEqual("105K", info.Allocated.ToString());

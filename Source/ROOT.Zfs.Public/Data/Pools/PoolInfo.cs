@@ -5,18 +5,8 @@ namespace ROOT.Zfs.Public.Data.Pools
     /// <summary>
     /// Contains information about a pool, output from zpool list
     /// </summary>
-    public class PoolInfo
+    public class PoolInfo : PoolVersionInfo
     {
-        /// <summary>
-        /// The underlying version of the pool
-        /// </summary>
-        public int Version { get; set; }
-        
-        /// <summary>
-        /// The name of the pool
-        /// </summary>
-        public string Name { get; set; }
-        
         /// <summary>
         /// Total size of the pool
         /// </summary>

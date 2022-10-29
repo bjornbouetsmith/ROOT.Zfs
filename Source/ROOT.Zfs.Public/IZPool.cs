@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Public
         /// Gets information about pools, returns data from the command: zpool list -v -P
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
-        IEnumerable<PoolInfo> GetAllPoolInfos(); //zpool list -v -P
+        IList<PoolInfo> GetAllPoolInfos(); //zpool list -v -P
 
         /// <summary>
         /// Gets information about a single pool zpool list -v -P {pool}

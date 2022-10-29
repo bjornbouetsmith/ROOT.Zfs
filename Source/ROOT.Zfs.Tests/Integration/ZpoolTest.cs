@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -290,6 +289,19 @@ namespace ROOT.Zfs.Tests.Integration
             zp.Trim(args);
             var status = zp.GetStatus(pool.Name);
             Assert.AreEqual(State.Online, status.State);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void GetPoolInfoTest()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+
+            var info = zp.GetPoolInfo(pool.Name);
+            Console.WriteLine(info.Dump(new JsonFormatter()));
+            Assert.IsNotNull(info);
+            Assert.AreNotEqual(0, info.Version);
+            Assert.AreEqual(pool.Name, info.Name);
         }
     }
 }

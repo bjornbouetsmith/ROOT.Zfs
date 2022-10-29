@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -38,12 +39,24 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<PoolInfo> GetAllPoolInfos()
+        public IList<PoolInfo> GetAllPoolInfos()
         {
             var pc = BuildCommand(ZpoolCommands.GetAllPoolInfos());
             var response = pc.LoadResponse(true);
+            
+            var list = ZPoolInfoParser.ParseFromStdOut(response.StdOut);
+            var versionCommand = BuildCommand(ZdbCommands.GetRawZdbOutput());
+            response = versionCommand.LoadResponse(true);
+            var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
 
-            return ZPoolInfoParser.ParseFromStdOut(response.StdOut);
+            foreach (var info in list)
+            {
+                // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
+                var versionInfo = versions.First(v => v.Name.Equals(info.Name, StringComparison.OrdinalIgnoreCase));
+                info.Version = versionInfo.Version;
+            }
+
+            return list;
         }
 
         /// <inheritdoc />
@@ -52,7 +65,17 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
             var response = pc.LoadResponse(true);
 
-            return ZPoolInfoParser.ParseLine(response.StdOut);
+            var info = ZPoolInfoParser.ParseLine(response.StdOut);
+
+            var versionCommand = BuildCommand(ZdbCommands.GetRawZdbOutput());
+            response = versionCommand.LoadResponse(true);
+
+            var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
+            // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
+            var versionInfo = versions.First(v=>v.Name.Equals(pool, StringComparison.OrdinalIgnoreCase));
+            info.Version = versionInfo.Version;
+
+            return info;
         }
 
         /// <inheritdoc />
