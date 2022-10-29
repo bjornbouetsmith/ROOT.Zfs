@@ -235,5 +235,13 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, $"upgrade{args}");
         }
+
+        /// <summary>
+        /// Returns a command to detach a device from a mirror
+        /// </summary>
+        public static IProcessCall Detach(string pool, string device)
+        {
+            return new ProcessCall(WhichZpool, $"detach {pool} {device}");
+        }
     }
 }

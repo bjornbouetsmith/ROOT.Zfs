@@ -132,6 +132,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (GetUpgradeablePools(), null);
                 case "/sbin/zdb":
                     return (GetZdbOutput(), null);
+                case "/sbin/zpool detach tank /dev/sdb":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

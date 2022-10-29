@@ -303,5 +303,15 @@ namespace ROOT.Zfs.Tests.Integration
             Assert.AreNotEqual(0, info.Version);
             Assert.AreEqual(pool.Name, info.Name);
         }
+
+        [TestMethod, TestCategory("Integration")]
+        public void DetachTest()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            zp.Detach(pool.Name, pool.Disks[0]);
+            var status = zp.GetStatus(pool.Name);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+        }
     }
 }

@@ -158,5 +158,12 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.Upgrade(args));
             pc.LoadResponse(true);
         }
+
+        /// <inheritdoc />
+        public void Detach(string pool, string device)
+        {
+            var pc = BuildCommand(ZpoolCommands.Detach(pool, device));
+            pc.LoadResponse(true);
+        }
     }
 }

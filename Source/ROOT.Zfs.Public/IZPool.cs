@@ -146,5 +146,12 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="args">Args to control whether to upgrade a single pool or all pools</param>
         void Upgrade(ZpoolUpgradeArgs args);
+
+        /// <summary>
+        /// Detaches device from a mirror. The operation is refused if there are no other valid replicas of the data.
+        /// If device may be re-added to the pool later on then consider the zpool offline command instead.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-detach.8.html
+        /// </summary>
+        void Detach(string pool, string device);
     }
 }

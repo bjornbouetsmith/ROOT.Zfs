@@ -226,5 +226,13 @@ namespace ROOT.Zfs.Tests.Commands
                 Assert.AreEqual(expected, command.FullCommandLine);
             }
         }
+
+        [DataRow("tank","/dev/sdc", "/sbin/zpool detach tank /dev/sdc")]
+        [TestMethod]
+        public void DetachTest(string pool, string device, string expected)
+        {
+            var command = ZpoolCommands.Detach(pool, device);
+            Assert.AreEqual(expected,command.FullCommandLine);
+        }
     }
 }
