@@ -36,6 +36,7 @@ namespace ROOT.Zfs.Core.Helpers
             var cap = parts[7];
             var dedup = parts[8];
             var health = parts[9];
+            var altRoot = parts[10];
 
             var info = new PoolInfo
             {
@@ -46,7 +47,8 @@ namespace ROOT.Zfs.Core.Helpers
                 Fragmentation= new Part(frag),
                 CapacityUsed= new Part(cap),
                 DedupRatio= new Ratio(dedup),
-                State = StateParser.Parse(health)
+                State = StateParser.Parse(health),
+                AltRoot=altRoot
             };
 
             return info;
