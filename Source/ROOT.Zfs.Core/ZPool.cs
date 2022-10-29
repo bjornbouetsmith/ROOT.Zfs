@@ -118,7 +118,7 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public IOStats GetIOStats(string pool, string[] devices)
         {
-            var pc = BuildCommand(ZpoolCommands.IoStat(pool, devices));
+            var pc = BuildCommand(ZpoolCommands.IoStats(pool, devices));
             var response = pc.LoadResponse(true);
             return ZPoolIOStatParser.ParseStdOut(pool, response.StdOut);
         }

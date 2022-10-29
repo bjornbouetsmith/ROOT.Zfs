@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="pool">The pool to show stats for</param>
         /// <param name="devices">The devices if any to show stats for</param>
-        internal static ProcessCall IoStat(string pool, string[] devices)
+        internal static ProcessCall IoStats(string pool, string[] devices)
         {
             var deviceList = devices != null && devices.Length > 0 ? string.Join(" ", devices) : string.Empty;
             if (!string.IsNullOrWhiteSpace(deviceList))

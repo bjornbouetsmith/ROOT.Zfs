@@ -135,7 +135,7 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb")] //multiple devices
         public void IoStatTest(string pool, string deviceList,string expectedCommand)
         {
-            var command = ZpoolCommands.IoStat(pool, deviceList?.Split(','));
+            var command = ZpoolCommands.IoStats(pool, deviceList?.Split(','));
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
 

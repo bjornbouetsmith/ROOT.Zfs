@@ -317,14 +317,33 @@ namespace ROOT.Zfs.Tests.Integration
 
 
         [TestMethod, TestCategory("Integration")]
-        public void IOStatTest()
+        public void IOStatTestSpecificDevice()
         {
             var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             var stats = zp.GetIOStats(pool.Name, new[] { pool.Disks[0] });
-            
+
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             Assert.IsNotNull(stats);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void IOStatTestEntirePool()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            var stats = zp.GetIOStats(pool.Name, null);
+
+            Console.WriteLine(stats.Dump(new JsonFormatter()));
+            Assert.IsNotNull(stats);
+            // pool
+            Assert.AreEqual(1, stats.Stats.Count);
+            var poolStat = stats.Stats[0];
+            //vdev
+            Assert.AreEqual(1, poolStat.ChildStats.Count);
+            var vdev = poolStat.ChildStats[0];
+            // actual devices
+            Assert.AreEqual(2,vdev.ChildStats.Count);
         }
     }
 }

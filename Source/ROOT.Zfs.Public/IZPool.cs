@@ -97,7 +97,7 @@ namespace ROOT.Zfs.Public
         void Clear(string pool, string device);
         
         /// <summary>
-        /// Returns basic iostats for the given pool and optinally specific devices
+        /// Returns basic iostats for the given pool and optionally specific devices
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-iostat.8.html
         /// </summary>
         /// <param name="pool">The pool to show stats for</param>
