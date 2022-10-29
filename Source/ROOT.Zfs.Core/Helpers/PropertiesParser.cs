@@ -61,7 +61,7 @@ namespace ROOT.Zfs.Core.Helpers
                 var enumerable = expectedColumns==4 ? parts.Skip(3) : parts.Skip(2);
                 var content = string.Join(' ', enumerable);
                 var validValues = content.Split('|').Select(v => v.Trim()).ToArray();
-                var prop = new Property(property, true, validValues);
+                var prop = new Property(property, validValues);
 
                 list.Add(prop);
 

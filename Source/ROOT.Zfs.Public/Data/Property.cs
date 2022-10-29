@@ -1,16 +1,26 @@
 ﻿namespace ROOT.Zfs.Public.Data
 {
+    /// <summary>
+    /// Represents a property on either a dataset or pool that can be set to a value.
+    /// Properties that are readonly will not be represented by this type
+    /// </summary>
     public class Property
     {
-        public Property(string name, bool settable = true, params string[] validValues)
+        public Property(string name, params string[] validValues)
         {
             Name = name;
-            Settable = settable;
             ValidValues = validValues;
         }
 
+        /// <summary>
+        /// The name of the property
+        /// </summary>
         public string Name { get; set; }
+        
+        /// <summary>
+        /// Expected valid values.
+        /// This should not be taken verbatim, but interpreted by a human.
+        /// </summary>
         public string[] ValidValues { get; }
-        public bool Settable { get; set; }
     }
 }
