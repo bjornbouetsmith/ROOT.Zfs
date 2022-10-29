@@ -73,7 +73,7 @@ namespace ROOT.Zfs.Core
         public IEnumerable<SmartInfo> GetSmartInfos()
         {
             List<SmartInfo> smartInfos = new List<SmartInfo>();
-            foreach (var id in ListDisks().Where(d => d.Type == DiskType.Disk).Select(disk => disk.Id))
+            foreach (var id in ListDisks().Where(d => d.Type == DeviceType.Disk).Select(disk => disk.Id))
             {
                 var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(id));
                 var response = command.LoadResponse(true);

@@ -23,10 +23,10 @@ namespace ROOT.Zfs.Tests.Helpers
         }
 
         [TestMethod]
-        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda", "/dev/sda", DiskType.Disk)]
-        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda1", "/dev/sda", DiskType.Partition)]
-        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda", null, DiskType.Partition)] // If no disks are loaded, then Partition is default
-        public void DiskInfoDiskTypeTest(string line, string disk, DiskType expectedType)
+        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda", "/dev/sda", DeviceType.Disk)]
+        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda1", "/dev/sda", DeviceType.Partition)]
+        [DataRow("scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda", null, DeviceType.Partition)] // If no disks are loaded, then Partition is default
+        public void DiskInfoDiskTypeTest(string line, string disk, DeviceType expectedType)
         {
             var disks = new HashSet<string> { disk };
             var info = DiskHelper.FromString(line, disks);

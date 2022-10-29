@@ -3,10 +3,9 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Tests
+namespace ROOT.Zfs.Tests.Helpers
 {
     [TestClass]
     public class ZpoolStatusParserTest

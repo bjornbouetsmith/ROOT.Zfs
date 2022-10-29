@@ -8,7 +8,7 @@
         /// <summary>
         /// The type this is - disk or partition
         /// </summary>
-        public DiskType Type { get; set; }
+        public DeviceType Type { get; set; }
         /// <summary>
         /// The ID of the disk/partition - prefer this to create pools with
         /// in the format /dev/disk/by-id/XXX
@@ -21,9 +21,18 @@
         public string DeviceName { get; set; }
     }
 
-    public enum DiskType
+    /// <summary>
+    /// Represents the kind of device
+    /// </summary>
+    public enum DeviceType
     {
+        /// <summary>
+        /// A physical disk
+        /// </summary>
         Disk,
+        /// <summary>
+        /// A partition on a given disk
+        /// </summary>
         Partition
     }
 }

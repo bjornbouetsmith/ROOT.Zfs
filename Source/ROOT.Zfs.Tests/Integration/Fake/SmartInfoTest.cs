@@ -26,7 +26,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var zfs = new Core.Zfs(_remoteProcessCall);
             var disks = zfs.ListDisks();
 
-            foreach (var disk in disks.Where(d => d.Type == DiskType.Disk))
+            foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
             {
                 var info = zfs.GetSmartInfo(disk.Id);
                 if (info.DeviceId.EndsWith("5"))

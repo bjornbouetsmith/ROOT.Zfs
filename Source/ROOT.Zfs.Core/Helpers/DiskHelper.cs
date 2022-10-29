@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Core.Helpers
             var disk = new DiskInfo();
             disk.Id = $"/dev/disk/by-id/{id}";
             disk.DeviceName = $"/dev/{device[lastIndexOfForwardSlash..]}";
-            disk.Type = blockDevices.Contains(disk.DeviceName) ? DiskType.Disk : DiskType.Partition;
+            disk.Type = blockDevices.Contains(disk.DeviceName) ? DeviceType.Disk : DeviceType.Partition;
 
             return disk;
         }

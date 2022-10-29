@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ROOT.Zfs.Public.Data.Pools
+﻿namespace ROOT.Zfs.Public.Data.Pools
 {
     /*
    pool: tank
@@ -35,13 +29,42 @@ config:
 
 
      */
+
+    /// <summary>
+    /// Represents the output from zpool status
+    /// </summary>
     public class PoolStatus
     {
+        /// <summary>
+        /// The overall status of the pool
+        /// </summary>
         public State State { get; set; }
+
+        /// <summary>
+        /// Information about the pool and its vdevs, devices etc.
+        /// </summary>
         public Pool Pool { get; set; }
+
+        /// <summary>
+        /// Any scan status text
+        /// </summary>
         public string ScanStatus { get; set; }
+
+        /// <summary>
+        /// The status text for the pool
+        /// </summary>
         public string StatusText { get; set; }
+        
+        /// <summary>
+        /// Action text for the pool if applicable, i.e. if some features are missing, this would be mentioned here.
+        /// Not implemented yet
+        /// </summary>
         public string Action { get; set; }
+
+        /// <summary>
+        /// Any references in zpool status
+        /// Not implemented yet
+        /// </summary>
         public string See { get; set; }
     }
 }
