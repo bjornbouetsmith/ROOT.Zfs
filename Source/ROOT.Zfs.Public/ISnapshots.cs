@@ -8,6 +8,10 @@ namespace ROOT.Zfs.Public
     /// </summary>
     public interface ISnapshots
     {
+        /// <summary>
+        /// Gets a list of snapshots for the given dataset or volumne.
+        /// i.e. zfs list -t snapshot <paramref name="datasetOrVolume"/>
+        /// </summary>
         IEnumerable<Snapshot> GetSnapshots(string datasetOrVolume);
 
         /// <summary>

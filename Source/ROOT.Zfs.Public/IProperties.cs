@@ -18,12 +18,25 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="targetType">The type of target, either Pool or Dataset</param>
         /// <param name="target">The target - this can either be a pool, dataset, filesystem, volume or snapshot</param>
-        /// <param name="property"></param>
+        /// <param name="property">The name of the property to get</param>
         /// <returns></returns>
         PropertyValue GetProperty(PropertyTarget targetType,string target, string property);
 
-        PropertyValue SetProperty(PropertyTarget targetType,string target, string property, string value);
+        /// <summary>
+        /// Sets a property to the given value
+        /// </summary>
+        /// <param name="targetType">The type of target, either Pool or Dataset</param>
+        /// <param name="target">The target - this can either be a pool, dataset, filesystem, volume or snapshot</param>
+        /// <param name="property">The name of the property to set</param>
+        /// <param name="value">The value of the property</param>
+        /// <returns></returns>
+        PropertyValue SetProperty(PropertyTarget targetType, string target, string property, string value);
 
+        /// <summary>
+        /// Gets all properties for the given target
+        /// </summary>
+        /// <param name="targetType">The type of target, either Pool or Dataset. If target is a pool, this has to be <see cref="PropertyTarget.Pool"/></param>
+        /// <param name="target">The target - this can either be a pool, dataset, filesystem, volume or snapshot</param>
         IEnumerable<PropertyValue> GetProperties(PropertyTarget targetType, string target);
 
         /// <summary>

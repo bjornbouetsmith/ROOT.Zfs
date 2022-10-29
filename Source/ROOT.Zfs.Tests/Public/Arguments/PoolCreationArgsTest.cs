@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             Assert.AreEqual(1, errors.Count);
             Assert.IsTrue(errors[0].Contains("Please provide vdevs"));
 
-            args.VDevs = new VDevCreationArgs[] { };
+            args.VDevs = Array.Empty<VDevCreationArgs>();
             valid = args.Validate(out errors);
             Assert.IsFalse(valid);
             Assert.AreEqual(1, errors.Count);

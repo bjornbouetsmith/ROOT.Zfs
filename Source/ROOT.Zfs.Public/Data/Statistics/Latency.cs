@@ -17,13 +17,13 @@ namespace ROOT.Zfs.Public.Data.Statistics
         /// <param name="write">Write latency in nanoseconds</param>
         public Latency(string read, string write)
         {
-            if(!long.TryParse(read, out var rNanos))
+            if (!long.TryParse(read, out var rNanos))
             {
-                Trace.WriteLine($"Could not parse {read} into nano seconds");
+                Trace.WriteLineIf(read != "-", $"Could not parse {read} into nano seconds");
             }
             if (!long.TryParse(write, out var wNanos))
             {
-                Trace.WriteLine($"Could not parse {write} into nano seconds");
+                Trace.WriteLineIf(write != "-",$"Could not parse { write} into nano seconds");
             }
 
             Read = new TimeSpan(rNanos / 100);

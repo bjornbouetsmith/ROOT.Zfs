@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (BaseCommands.WhichLsblk, null);
                 case "/bin/which smartctl":
                     return (BaseCommands.WhichSmartctl, null);
-                case "/sbin/zpool iostat -LlPvHl tank /dev/sda":
+                case "/sbin/zpool iostat -LlpPvH tank /dev/sda":
                     return (GetIOStats(), null);
                 case "/sbin/zpool offline tank /dev/sda":
                     return (null, null);
@@ -290,7 +290,7 @@ backup
 
         private static string GetIOStats()
         {
-            return "/dev/sda       -       -       0       11      10.4K   161K    592us   349us   183us   166us   8us     373us   15us    160us   434us   982us";
+            return "/dev/sda       0       0       1       17      47969   195641  2202421 669642  727243  176755  723335  95931   693500  514367  10005303        4934782";
         }
 
         private static string GetAvailablePoolProperties()

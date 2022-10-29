@@ -112,6 +112,11 @@ namespace ROOT.Zfs.Core.Helpers
 
         private static TimeSpan ParseNanos(string nanos)
         {
+            if (nanos.Trim() == "-")
+            {
+                return TimeSpan.Zero;
+            }
+
             if (!long.TryParse(nanos, out var nano))
             {
                 Trace.WriteLine($"Could not parse:{nanos} into a number");
@@ -139,7 +144,18 @@ namespace ROOT.Zfs.Core.Helpers
             }
 
             stat.Operations.Write = writes;
-            stat.Bandwidth = new Bandwidth { Read = parts[5], Write = parts[6] };
+            ulong bwReads;
+            if (!ulong.TryParse(parts[5], out bwReads))
+            {
+                Trace.WriteLine($"Could not parse:{parts[5]} into bandwidth reads");
+            }
+            ulong bwWrites;
+            if (!ulong.TryParse(parts[6], out bwWrites))
+            {
+                Trace.WriteLine($"Could not parse:{parts[6]} into bandwidth writes");
+            }
+
+            stat.Bandwidth = new Bandwidth { Read = bwReads, Write = bwWrites };
         }
     }
 }

@@ -102,8 +102,7 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="pool">The pool to show stats for</param>
         /// <param name="devices">The devices if any to show stats for</param>
-        /// <param name="includeAverageLatency">Whether to include average latency stats as well (-l)</param>
-        IOStats GetIOStats(string pool, string[] devices, bool includeAverageLatency);
+        IOStats GetIOStats(string pool, string[] devices);
 
         /// <summary>
         /// Starts a resilver of the specified pools.

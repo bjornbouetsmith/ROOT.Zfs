@@ -208,7 +208,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(status.Dump(new JsonFormatter()));
         }
 
-        [TestMethod, TestCategory("Integration"), Ignore]
+        [TestMethod, TestCategory("Integration"), Ignore("Not supported on ubuntu 20")]
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]
@@ -311,7 +311,20 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             zp.Detach(pool.Name, pool.Disks[0]);
             var status = zp.GetStatus(pool.Name);
+            Assert.IsNotNull(status);
             Console.WriteLine(status.Dump(new JsonFormatter()));
+        }
+
+
+        [TestMethod, TestCategory("Integration")]
+        public void IOStatTest()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            var stats = zp.GetIOStats(pool.Name, new[] { pool.Disks[0] });
+            
+            Console.WriteLine(stats.Dump(new JsonFormatter()));
+            Assert.IsNotNull(stats);
         }
     }
 }

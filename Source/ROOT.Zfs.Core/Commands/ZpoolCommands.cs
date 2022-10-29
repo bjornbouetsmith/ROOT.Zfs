@@ -96,8 +96,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="pool">The pool to show stats for</param>
         /// <param name="devices">The devices if any to show stats for</param>
-        /// <param name="includeAverageLatency">Whether to include average latency stats as well (-l)</param>
-        internal static ProcessCall IoStat(string pool, string[] devices, bool includeAverageLatency)
+        internal static ProcessCall IoStat(string pool, string[] devices)
         {
             var deviceList = devices != null && devices.Length > 0 ? string.Join(" ", devices) : string.Empty;
             if (!string.IsNullOrWhiteSpace(deviceList))
@@ -105,8 +104,7 @@ namespace ROOT.Zfs.Core.Commands
                 deviceList = " " + deviceList;
             }
 
-            var includeLatency = (includeAverageLatency ? "l" : "");
-            return new ProcessCall(WhichZpool, $"iostat -LlPvH{includeLatency} {pool}{deviceList}");
+            return new ProcessCall(WhichZpool, $"iostat -LlpPvH {pool}{deviceList}");
         }
 
         /// <summary>

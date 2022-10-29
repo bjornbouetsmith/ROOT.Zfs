@@ -172,10 +172,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void IOStatTest()
         {
             var zp = new ZPool(_remoteProcessCall);
-            zp.GetIOStats("tank", new[] { "/dev/sda" }, true);
+            var stats = zp.GetIOStats("tank", new[] { "/dev/sda" });
+            Console.WriteLine(stats.Dump(new JsonFormatter()));
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlPvHl tank /dev/sda"));
+            Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda"));
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
