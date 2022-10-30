@@ -38,7 +38,6 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// </summary>
         public bool Validate(out List<string> errors)
         {
-            //TODO: Write validation logic, i.e. name must be set etc.
             errors = null;
             if (string.IsNullOrWhiteSpace(Name))
             {

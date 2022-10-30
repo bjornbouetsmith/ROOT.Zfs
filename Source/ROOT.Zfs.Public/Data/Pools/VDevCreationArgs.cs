@@ -32,7 +32,6 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// <returns>true if valid;false otherwise</returns>
         public virtual bool Validate(out IList<string> errors)
         {
-            //TODO: Write validation logic, i.e. mirror needs at least two devices etc.
             errors = null;
             if ((Devices?.Count ?? 0) == 0)
             {
