@@ -38,7 +38,7 @@ namespace ROOT.Zfs.Core.Helpers
 
             if (parts.Length != 7)
             {
-                throw new ArgumentException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint from command 'zfs list'", nameof(line));
+                throw new FormatException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint from command 'zfs list'");
             }
 
             if (!Enum.TryParse<DatasetTypes>(parts[0], true, out var datasetType))

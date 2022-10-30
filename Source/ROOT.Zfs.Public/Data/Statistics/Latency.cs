@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Public.Data.Statistics
             {
                 Trace.WriteLineIf(write != "-",$"Could not parse { write} into nano seconds");
             }
-
+            
             Read = new TimeSpan(rNanos / 100);
             Write = new TimeSpan(wNanos / 100);
         }

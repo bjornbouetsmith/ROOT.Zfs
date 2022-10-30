@@ -2,15 +2,16 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Helpers
 {
     [TestClass]
-    public  class DataSetHelperTest
+    public class DataSetHelperTest
     {
 
         [TestMethod]
-        [DataRow("tank","myds","tank/myds")]
+        [DataRow("tank", "myds", "tank/myds")]
         [DataRow("tank/myds", "myds2", "tank/myds/myds2")]
         [DataRow("tank%2fmyds", "myds2", "tank/myds/myds2")]
         public void CreateDataSetNameTest(string parent, string dataset, string expected)
@@ -31,6 +32,24 @@ namespace ROOT.Zfs.Tests.Helpers
             Assert.AreEqual("378.3M", dataset.Available.ToString());
             Assert.AreEqual("3.2T", dataset.Refer.ToString());
             Assert.AreEqual("/tank/kubedata", dataset.Mountpoint);
+        }
+
+        [TestMethod]
+        public void ParseTruncatedFormatShouldThrow()
+        {
+            var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448";
+
+            Assert.ThrowsException<FormatException>(() => DatasetHelper.ParseStdOut(stdOut));
+        }
+
+        [TestMethod]
+        public void ParseUnknownDatasetTypeShouldNotThrow()
+        {
+            var stdOut = @"link      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
+
+            var dataset = DatasetHelper.ParseStdOut(stdOut);
+
+            Assert.AreEqual(DatasetTypes.None, dataset.Type);
         }
     }
 }
