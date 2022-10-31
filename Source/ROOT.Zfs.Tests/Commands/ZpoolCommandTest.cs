@@ -235,7 +235,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void AttachTest()
         {
-            var args = new ZpoolAttachArgs
+            var args = new ZpoolAttachReplaceArgs
             {
                 PoolName = "tank",
                 OldDevice = "/dev/sdb",
@@ -249,6 +249,27 @@ namespace ROOT.Zfs.Tests.Commands
             var command = ZpoolCommands.Attach(args);
             Console.WriteLine(command.FullCommandLine);
             var fullArgs = $"attach{stringVer}";
+            Assert.AreEqual(fullArgs, command.Arguments);
+            Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+        }
+
+        [TestMethod]
+        public void ReplaceTest()
+        {
+            var args = new ZpoolAttachReplaceArgs
+            {
+                PoolName = "tank",
+                OldDevice = "/dev/sdb",
+                NewDevice = "/dev/sdc",
+                Force = true,
+                RestoreSequentially = true,
+                PropertyValues = new[] { new PropertyValue { Property = "ashift", Value = "12" } }
+            };
+            var stringVer = args.ToString();
+
+            var command = ZpoolCommands.Replace(args);
+            Console.WriteLine(command.FullCommandLine);
+            var fullArgs = $"replace{stringVer}";
             Assert.AreEqual(fullArgs, command.Arguments);
             Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
         }

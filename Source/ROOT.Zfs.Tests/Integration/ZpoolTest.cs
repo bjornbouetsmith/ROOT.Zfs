@@ -343,19 +343,19 @@ namespace ROOT.Zfs.Tests.Integration
             Assert.AreEqual(1, poolStat.ChildStats.Count);
             var vdev = poolStat.ChildStats[0];
             // actual devices
-            Assert.AreEqual(2,vdev.ChildStats.Count);
+            Assert.AreEqual(2, vdev.ChildStats.Count);
         }
 
         [TestMethod, TestCategory("Integration")]
         public void AttachNewDeviceToPool()
         {
             var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-          
+
             var oldDevice = pool.Disks.Last();
             var newDevice = pool.AddDisk();
             var zp = GetZpool();
 
-            var args = new ZpoolAttachArgs
+            var args = new ZpoolAttachReplaceArgs
             {
                 PoolName = pool.Name,
                 OldDevice = oldDevice,
@@ -363,6 +363,26 @@ namespace ROOT.Zfs.Tests.Integration
             };
 
             zp.Attach(args);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void ReplaceNewDeviceToPool()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+
+            var oldDevice = pool.Disks.Last();
+            var newDevice = pool.AddDisk();
+            var zp = GetZpool();
+
+            var args = new ZpoolAttachReplaceArgs
+            {
+                PoolName = pool.Name,
+                OldDevice = oldDevice,
+                NewDevice = newDevice,
+                IsReplace = true
+            };
+
+            zp.Replace(args);
         }
     }
 }

@@ -245,9 +245,17 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to attach a device to a vdev
         /// </summary>
-        public static IProcessCall Attach(ZpoolAttachArgs attachArgs)
+        public static IProcessCall Attach(ZpoolAttachReplaceArgs attachArgs)
         {
             return new ProcessCall(WhichZpool, $"attach{attachArgs}");
+        }
+
+        /// <summary>
+        /// Returns a command to replace a device to a vdev
+        /// </summary>
+        public static IProcessCall Replace(ZpoolAttachReplaceArgs attachArgs)
+        {
+            return new ProcessCall(WhichZpool, $"replace{attachArgs}");
         }
     }
 }

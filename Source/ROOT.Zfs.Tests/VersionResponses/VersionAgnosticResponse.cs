@@ -136,6 +136,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool attach tank /dev/sdb /dev/sdc":
                     return (null, null);
+                case "/sbin/zpool replace tank /deb/sdb /dev/sdc":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

@@ -161,6 +161,19 @@ namespace ROOT.Zfs.Public
         /// In either case, new_device begins to resilver immediately and any running scrub is cancelled.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-attach.8.html
         /// </summary>
-        void Attach(ZpoolAttachArgs args);
+        void Attach(ZpoolAttachReplaceArgs args);
+
+        /// <summary>
+        /// Replaces device with new-device.
+        /// This is equivalent to attaching new-device, waiting for it to resilver, and then detaching device.
+        /// Any in progress scrub will be cancelled.
+        /// The size of new-device must be greater than or equal to the minimum size of all the devices in a mirror or raidz configuration.
+        /// new-device is required if the pool is not redundant.
+        /// If new-device is not specified, it defaults to device.
+        /// This form of replacement is useful after an existing disk has failed and has been physically replaced.
+        /// In this case, the new disk may have the same /dev path as the old device, even though it is actually a different disk.ZFS recognizes this.
+        /// </summary>
+        /// <param name="args"></param>
+        void Replace(ZpoolAttachReplaceArgs args);
     }
 }

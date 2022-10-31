@@ -6,22 +6,22 @@ using ROOT.Zfs.Public.Data;
 namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
-    /// Represents all arguments to zpool attach
+    /// Represents all arguments to zpool attach or replace
     /// </summary>
-    public class ZpoolAttachArgs
+    public class ZpoolAttachReplaceArgs
     {
         /// <summary>
-        /// Name of the pool to attach a device to
+        /// Name of the pool to attach or replace a device to
         /// </summary>
         public string PoolName { get; set; }
 
         /// <summary>
-        /// device to attach <see cref="NewDevice"/> to
+        /// device to either attach <see cref="NewDevice"/> to or replace with
         /// </summary>
         public string OldDevice { get; set; }
 
         /// <summary>
-        /// name of the new device to attach to give pool/vdev
+        /// name of the new device to attach/replace to given pool/device
         /// </summary>
         public string NewDevice { get; set; }
 
@@ -44,6 +44,12 @@ namespace ROOT.Zfs.Public.Arguments
         public PropertyValue[] PropertyValues { get; set; }
 
         /// <summary>
+        /// Gets or set whether or not this is a replace or attach.
+        /// This controls the validation of whether or not NewDevice is required
+        /// </summary>
+        public bool IsReplace { get; set; }
+
+        /// <summary>
         /// Validates the arguments and returns errors if not valid
         /// If no errors are found, the list <paramref name="errors"/> will be null
         /// </summary>
@@ -62,7 +68,7 @@ namespace ROOT.Zfs.Public.Arguments
                 errors.Add("Please specify an old device");
             }
 
-            if (string.IsNullOrWhiteSpace(NewDevice))
+            if (string.IsNullOrWhiteSpace(NewDevice) && !IsReplace)
             {
                 errors = new List<string>();
                 errors.Add("Please specify a new device");
@@ -72,7 +78,7 @@ namespace ROOT.Zfs.Public.Arguments
         }
 
         /// <summary>
-        /// Returns a string representation that can be passed directly onto zpool attach
+        /// Returns a string representation that can be passed directly onto zpool attach or replace
         /// </summary>
         public override string ToString()
         {
@@ -96,7 +102,12 @@ namespace ROOT.Zfs.Public.Arguments
 
             sb.Append($" {PoolName}");
             sb.Append($" {OldDevice}");
-            sb.Append($" {NewDevice}");
+            
+            if (!string.IsNullOrWhiteSpace(NewDevice))
+            {
+                sb.Append($" {NewDevice}");
+            }
+
             return sb.ToString();
         }
     }
