@@ -280,6 +280,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             };
 
             zp.Attach(args);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool attach tank /dev/sdb /dev/sdc", commands[0]);
         }
     }
 }
