@@ -238,7 +238,7 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new ZpoolAttachArgs
             {
                 PoolName = "tank",
-                VDev = "mirror-0",
+                OldDevice = "/dev/sdb",
                 NewDevice = "/dev/sdc",
                 Force = true,
                 RestoreSequentially = true,

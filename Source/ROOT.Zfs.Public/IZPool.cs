@@ -152,5 +152,15 @@ namespace ROOT.Zfs.Public
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-detach.8.html
         /// </summary>
         void Detach(string pool, string device);
+
+        /// <summary>
+        /// Attaches new_device to the existing mirrored or nonmirrored device.
+        /// The existing device cannot be part of a raidz configuration.
+        /// If device is not currently part of a mirrored configuration, device automatically transforms into a two-way mirror of device and new_device.
+        /// If device is part of a two-way mirror, attaching new_device creates a three-way mirror, and so on.
+        /// In either case, new_device begins to resilver immediately and any running scrub is cancelled.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-attach.8.html
+        /// </summary>
+        void Attach(ZpoolAttachArgs args);
     }
 }

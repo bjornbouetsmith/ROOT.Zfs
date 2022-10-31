@@ -165,5 +165,12 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.Detach(pool, device));
             pc.LoadResponse(true);
         }
+
+        /// <inheritdoc />
+        public void Attach(ZpoolAttachArgs args)
+        {
+            var pc = BuildCommand(ZpoolCommands.Attach(args));
+            pc.LoadResponse(true);
+        }
     }
 }

@@ -253,19 +253,33 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
             var pools = zp.GetUpgradeablePools();
-            Assert.AreEqual(1,pools.Count);
+            Assert.AreEqual(1, pools.Count);
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void DetachTest()
         {
             var zp = new ZPool(_remoteProcessCall);
-            zp.Detach("tank","/dev/sdb");
+            zp.Detach("tank", "/dev/sdb");
 
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zpool detach tank /dev/sdb", commands[0]);
+        }
 
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void AttachNewDeviceToPool()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+
+            var args = new ZpoolAttachArgs
+            {
+                PoolName = "tank",
+                OldDevice = "/dev/sdb",
+                NewDevice = "/dev/sdc"
+            };
+
+            zp.Attach(args);
         }
     }
 }

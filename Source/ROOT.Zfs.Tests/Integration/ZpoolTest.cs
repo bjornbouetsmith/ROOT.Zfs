@@ -345,5 +345,24 @@ namespace ROOT.Zfs.Tests.Integration
             // actual devices
             Assert.AreEqual(2,vdev.ChildStats.Count);
         }
+
+        [TestMethod, TestCategory("Integration")]
+        public void AttachNewDeviceToPool()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+          
+            var oldDevice = pool.Disks.Last();
+            var newDevice = pool.AddDisk();
+            var zp = GetZpool();
+
+            var args = new ZpoolAttachArgs
+            {
+                PoolName = pool.Name,
+                OldDevice = oldDevice,
+                NewDevice = newDevice
+            };
+
+            zp.Attach(args);
+        }
     }
 }

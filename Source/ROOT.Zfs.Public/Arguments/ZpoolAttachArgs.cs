@@ -16,9 +16,9 @@ namespace ROOT.Zfs.Public.Arguments
         public string PoolName { get; set; }
 
         /// <summary>
-        /// Vdev to attach <see cref="NewDevice"/> to
+        /// device to attach <see cref="NewDevice"/> to
         /// </summary>
-        public string VDev { get; set; }
+        public string OldDevice { get; set; }
 
         /// <summary>
         /// name of the new device to attach to give pool/vdev
@@ -56,10 +56,10 @@ namespace ROOT.Zfs.Public.Arguments
                 errors.Add("Please specify a pool name");
             }
 
-            if (string.IsNullOrWhiteSpace(VDev))
+            if (string.IsNullOrWhiteSpace(OldDevice))
             {
                 errors = new List<string>();
-                errors.Add("Please specify a vdev");
+                errors.Add("Please specify an old device");
             }
 
             if (string.IsNullOrWhiteSpace(NewDevice))
@@ -95,7 +95,7 @@ namespace ROOT.Zfs.Public.Arguments
             }
 
             sb.Append($" {PoolName}");
-            sb.Append($" {VDev}");
+            sb.Append($" {OldDevice}");
             sb.Append($" {NewDevice}");
             return sb.ToString();
         }
