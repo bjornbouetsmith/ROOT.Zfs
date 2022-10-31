@@ -64,7 +64,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void CreateDatasetWithArgumentsTest(DatasetTypes type, bool createParents, bool doNotMount, string properties, bool sparseVolume, string blockSize, string volumeSize, string expectedCommand)
         {
-            var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Source = a[1] }).ToArray();
+            var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
             var args = new DatasetCreationArgs
             {
                 Type = type,

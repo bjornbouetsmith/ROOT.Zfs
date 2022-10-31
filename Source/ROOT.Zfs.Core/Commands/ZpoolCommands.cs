@@ -241,5 +241,13 @@ namespace ROOT.Zfs.Core.Commands
         {
             return new ProcessCall(WhichZpool, $"detach {pool} {device}");
         }
+
+        /// <summary>
+        /// Returns a command to attach a device to a vdev
+        /// </summary>
+        public static IProcessCall Attach(ZpoolAttachArgs attachArgs)
+        {
+            return new ProcessCall(WhichZpool, $"attach{attachArgs}");
+        }
     }
 }

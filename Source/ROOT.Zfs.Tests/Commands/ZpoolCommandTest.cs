@@ -130,10 +130,10 @@ namespace ROOT.Zfs.Tests.Commands
 
         [TestMethod]
         [DataRow("tank", null, "/sbin/zpool iostat -LlpPvH tank")] // only pool
-        [DataRow("tank", "",  "/sbin/zpool iostat -LlpPvH tank")] //only pool 
+        [DataRow("tank", "", "/sbin/zpool iostat -LlpPvH tank")] //only pool 
         [DataRow("tank", "/dev/sda", "/sbin/zpool iostat -LlpPvH tank /dev/sda")] //single device
         [DataRow("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb")] //multiple devices
-        public void IoStatTest(string pool, string deviceList,string expectedCommand)
+        public void IoStatTest(string pool, string deviceList, string expectedCommand)
         {
             var command = ZpoolCommands.IoStats(pool, deviceList?.Split(','));
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
@@ -224,12 +224,33 @@ namespace ROOT.Zfs.Tests.Commands
             }
         }
 
-        [DataRow("tank","/dev/sdc", "/sbin/zpool detach tank /dev/sdc")]
+        [DataRow("tank", "/dev/sdc", "/sbin/zpool detach tank /dev/sdc")]
         [TestMethod]
         public void DetachTest(string pool, string device, string expected)
         {
             var command = ZpoolCommands.Detach(pool, device);
-            Assert.AreEqual(expected,command.FullCommandLine);
+            Assert.AreEqual(expected, command.FullCommandLine);
+        }
+
+        [TestMethod]
+        public void AttachTest()
+        {
+            var args = new ZpoolAttachArgs
+            {
+                PoolName = "tank",
+                VDev = "mirror-0",
+                NewDevice = "/dev/sdc",
+                Force = true,
+                RestoreSequentially = true,
+                PropertyValues = new[] { new PropertyValue { Property = "ashift", Value = "12" } }
+            };
+            var stringVer = args.ToString();
+
+            var command = ZpoolCommands.Attach(args);
+            Console.WriteLine(command.FullCommandLine);
+            var fullArgs = $"attach{stringVer}";
+            Assert.AreEqual(fullArgs, command.Arguments);
+            Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
         }
     }
 }
