@@ -346,6 +346,7 @@ namespace ROOT.Zfs.Tests.Integration
             Assert.AreEqual(2, vdev.ChildStats.Count);
         }
 
+        //Turn a two way mirror into a three way mirror
         [TestMethod, TestCategory("Integration")]
         public void AttachNewDeviceToPool()
         {
@@ -363,6 +364,11 @@ namespace ROOT.Zfs.Tests.Integration
             };
 
             zp.Attach(args);
+
+            var status = zp.GetStatus(pool.Name);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+
+            Assert.AreEqual(3, status.Pool.VDevs[0].Devices.Count);
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -383,6 +389,39 @@ namespace ROOT.Zfs.Tests.Integration
             };
 
             zp.Replace(args);
+
+            var status = zp.GetStatus(pool.Name);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
+            var newExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == newDevice));
+
+            Assert.IsFalse(oldExist);
+            Assert.IsTrue(newExist);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void AddExtraMirrorToMirrorPool()
+        {
+            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+            var status = zp.GetStatus(pool.Name);
+            Assert.AreEqual(1, status.Pool.VDevs.Count);
+            var disk1 = pool.AddDisk();
+            var disk2 = pool.AddDisk();
+
+            var args = new ZpoolAddArgs
+            {
+                PoolName = pool.Name,
+                Force = true,
+                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { disk1, disk2 } } },
+            };
+
+            
+            zp.Add(args);
+
+            status = zp.GetStatus(pool.Name);
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            Assert.AreEqual(2, status.Pool.VDevs.Count);
         }
     }
 }

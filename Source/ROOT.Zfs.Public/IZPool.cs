@@ -173,7 +173,14 @@ namespace ROOT.Zfs.Public
         /// This form of replacement is useful after an existing disk has failed and has been physically replaced.
         /// In this case, the new disk may have the same /dev path as the old device, even though it is actually a different disk.ZFS recognizes this.
         /// </summary>
-        /// <param name="args"></param>
         void Replace(ZpoolAttachReplaceArgs args);
+
+        /// <summary>
+        /// Adds the specified virtual devices to the given pool.
+        /// The vdev specification is described in the Virtual Devices section of zpoolconcepts(7).
+        /// The behavior of the -f option, and the device checks performed are described in the zpool create subcommand.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-add.8.html
+        /// </summary>
+        void Add(ZpoolAddArgs args);
     }
 }

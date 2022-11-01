@@ -293,11 +293,34 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var args = new ZpoolAttachReplaceArgs
             {
                 PoolName = "tank",
-                OldDevice = "/deb/sdb",
+                OldDevice = "/dev/sdb",
                 NewDevice = "/dev/sdc",
             };
 
             zp.Replace(args);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool replace tank /dev/sdb /dev/sdc", commands[0]);
+        }
+        
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void AddExtraMirrorToMirrorPool()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+
+            var args = new ZpoolAddArgs
+            {
+                PoolName = "tank",
+                Force = true,
+                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sda", "/dev/sdb" } } },
+            };
+
+
+            zp.Add(args);
+
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
         }
     }
 }

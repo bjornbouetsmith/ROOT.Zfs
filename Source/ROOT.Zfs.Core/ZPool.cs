@@ -179,5 +179,11 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.Replace(args));
             pc.LoadResponse(true);
         }
+        /// <inheritdoc />
+        public void Add(ZpoolAddArgs args)
+        {
+            var pc = BuildCommand(ZpoolCommands.Add(args));
+            pc.LoadResponse(true);
+        }
     }
 }

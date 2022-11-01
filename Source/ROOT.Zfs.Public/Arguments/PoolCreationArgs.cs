@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Text;
+using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Data.Pools
+namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Contains the parameters for creating a pool
@@ -65,6 +67,42 @@ namespace ROOT.Zfs.Public.Data.Pools
             }
 
             return errors == null;
+        }
+
+        /// <summary>
+        /// Returns a string representation of all arguments that can be passed directly onto zpool create
+        /// </summary>
+        public override string ToString()
+        {
+            StringBuilder arguments = new StringBuilder($" {Name}");
+
+            if (!string.IsNullOrWhiteSpace(MountPoint))
+            {
+                arguments.Append($" -m {MountPoint}");
+            }
+
+            if (PoolProperties != null && PoolProperties.Length > 0)
+            {
+                foreach (var property in PoolProperties)
+                {
+                    arguments.Append($" -o {property.Property}={property.Value}");
+                }
+            }
+
+            if (FileSystemProperties != null && FileSystemProperties.Length > 0)
+            {
+                foreach (var property in FileSystemProperties)
+                {
+                    arguments.Append($" -O {property.Property}={property.Value}");
+                }
+            }
+
+            foreach (var vdevArg in VDevs)
+            {
+                arguments.Append(" " + vdevArg);
+            }
+
+            return arguments.ToString();
         }
     }
 }

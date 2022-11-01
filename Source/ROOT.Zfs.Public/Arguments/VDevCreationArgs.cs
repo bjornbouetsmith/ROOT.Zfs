@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Public.Data.Pools
+namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Arguments for specifying a vdev when creating a pool

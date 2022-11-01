@@ -51,35 +51,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            StringBuilder command = new StringBuilder($"create {args.Name}");
-
-            if (!string.IsNullOrWhiteSpace(args.MountPoint))
-            {
-                command.Append($" -m {args.MountPoint}");
-            }
-
-            if (args.PoolProperties != null && args.PoolProperties.Length > 0)
-            {
-                foreach (var property in args.PoolProperties)
-                {
-                    command.Append($" -o {property.Property}={property.Value}");
-                }
-            }
-
-            if (args.FileSystemProperties != null && args.FileSystemProperties.Length > 0)
-            {
-                foreach (var property in args.FileSystemProperties)
-                {
-                    command.Append($" -O {property.Property}={property.Value}");
-                }
-            }
-
-            foreach (var vdevArg in args.VDevs)
-            {
-                command.Append(" " + vdevArg);
-            }
-
-            return new ProcessCall(WhichZpool, command.ToString());
+            return new ProcessCall(WhichZpool,$"create{args}");
         }
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
@@ -247,6 +219,11 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         public static IProcessCall Attach(ZpoolAttachReplaceArgs attachArgs)
         {
+            if (!attachArgs.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(attachArgs));
+            }
             return new ProcessCall(WhichZpool, $"attach{attachArgs}");
         }
 
@@ -255,7 +232,22 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         public static IProcessCall Replace(ZpoolAttachReplaceArgs attachArgs)
         {
+            if (!attachArgs.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(attachArgs));
+            }
             return new ProcessCall(WhichZpool, $"replace{attachArgs}");
+        }
+
+        public static IProcessCall Add(ZpoolAddArgs addArgs)
+        {
+            if (!addArgs.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(addArgs));
+            }
+            return new ProcessCall(WhichZpool, $"add{addArgs}");
         }
     }
 }
