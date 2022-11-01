@@ -81,5 +81,17 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             Assert.AreEqual(expected, args.ToString());
         }
 
+        [TestMethod]
+        public void MissingVDevsShouldThrowArgumentExceptionOnToString()
+        {
+            var args = new ZpoolAddArgs
+            {
+                PoolName = "tank"
+            };
+
+            var ex = Assert.ThrowsException<ArgumentException>(() => args.ToString());
+            Assert.AreEqual("Missing Vdevs", ex.Message);
+
+        }
     }
 }

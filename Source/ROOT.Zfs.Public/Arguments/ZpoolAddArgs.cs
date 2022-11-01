@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
@@ -90,12 +91,9 @@ namespace ROOT.Zfs.Public.Arguments
                 arguments.Append($" -o ashift={ashift.Value}");
             }
 
-            if (VDevs != null)
+            foreach (var vdevArg in VDevs ?? throw new ArgumentException("Missing Vdevs"))
             {
-                foreach (var vdevArg in VDevs)
-                {
-                    arguments.Append(" " + vdevArg);
-                }
+                arguments.Append(" " + vdevArg);
             }
 
             return arguments.ToString();
