@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
@@ -392,7 +393,14 @@ namespace ROOT.Zfs.Tests.Integration
 
             var status = zp.GetStatus(pool.Name);
             Console.WriteLine(status.Dump(new JsonFormatter()));
+            var stopwatch = Stopwatch.StartNew();
             var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
+            while(oldExist && stopwatch.Elapsed<TimeSpan.FromSeconds(5))
+            {
+                status = zp.GetStatus(pool.Name);
+                oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
+            }
+
             var newExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == newDevice));
 
             Assert.IsFalse(oldExist);
