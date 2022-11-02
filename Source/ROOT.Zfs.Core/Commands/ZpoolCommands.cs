@@ -249,5 +249,15 @@ namespace ROOT.Zfs.Core.Commands
             }
             return new ProcessCall(WhichZpool, $"add{addArgs}");
         }
+
+        public static IProcessCall Remove(ZpoolRemoveArgs removeArgs)
+        {
+            if (!removeArgs.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(removeArgs));
+            }
+            return new ProcessCall(WhichZpool, $"remove{removeArgs}");
+        }
     }
 }

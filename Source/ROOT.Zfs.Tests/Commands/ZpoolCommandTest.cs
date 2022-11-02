@@ -232,12 +232,14 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expected, command.FullCommandLine);
         }
 
+        [DataRow(true)]
+        [DataRow(false)]
         [TestMethod]
-        public void AttachTest()
+        public void AttachTest(bool valid)
         {
             var args = new ZpoolAttachReplaceArgs
             {
-                PoolName = "tank",
+                PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
                 NewDevice = "/dev/sdc",
                 Force = true,
@@ -245,20 +247,29 @@ namespace ROOT.Zfs.Tests.Commands
                 PropertyValues = new[] { new PropertyValue { Property = "ashift", Value = "12" } }
             };
             var stringVer = args.ToString();
+            if (!valid)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Attach(args));
+            }
+            else
+            {
 
-            var command = ZpoolCommands.Attach(args);
-            Console.WriteLine(command.FullCommandLine);
-            var fullArgs = $"attach{stringVer}";
-            Assert.AreEqual(fullArgs, command.Arguments);
-            Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+                var command = ZpoolCommands.Attach(args);
+                Console.WriteLine(command.FullCommandLine);
+                var fullArgs = $"attach{stringVer}";
+                Assert.AreEqual(fullArgs, command.Arguments);
+                Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+            }
         }
 
+        [DataRow(true)]
+        [DataRow(false)]
         [TestMethod]
-        public void ReplaceTest()
+        public void ReplaceTest(bool valid)
         {
             var args = new ZpoolAttachReplaceArgs
             {
-                PoolName = "tank",
+                PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
                 NewDevice = "/dev/sdc",
                 Force = true,
@@ -267,11 +278,62 @@ namespace ROOT.Zfs.Tests.Commands
             };
             var stringVer = args.ToString();
 
-            var command = ZpoolCommands.Replace(args);
-            Console.WriteLine(command.FullCommandLine);
-            var fullArgs = $"replace{stringVer}";
-            Assert.AreEqual(fullArgs, command.Arguments);
-            Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+            if (!valid)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Replace(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Replace(args);
+                Console.WriteLine(command.FullCommandLine);
+                var fullArgs = $"replace{stringVer}";
+                Assert.AreEqual(fullArgs, command.Arguments);
+                Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+            }
+        }
+
+        [DataRow(true)]
+        [DataRow(false)]
+        [TestMethod]
+        public void AddTest(bool valid)
+        {
+            var args = new ZpoolAddArgs
+            {
+                PoolName = valid ? "tank" : null,
+                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "disk1", "disk2" } } },
+            };
+            if (!valid)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Add(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Add(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual("/sbin/zpool add tank mirror disk1 disk2", command.FullCommandLine);
+            }
+        }
+
+        [DataRow(true)]
+        [DataRow(false)]
+        [TestMethod]
+        public void RemoveTest(bool valid)
+        {
+            var args = new ZpoolRemoveArgs
+            {
+                PoolName = valid ? "tank" : null,
+                VDevOrDevice = "mirror-0",
+            };
+            if (!valid)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Remove(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Remove(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual("/sbin/zpool remove tank mirror-0", command.FullCommandLine);
+            }
         }
     }
 }

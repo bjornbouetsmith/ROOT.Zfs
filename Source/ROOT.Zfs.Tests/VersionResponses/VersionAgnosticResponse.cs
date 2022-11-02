@@ -140,6 +140,8 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (null, null);
                 case "/sbin/zpool add -f tank mirror /dev/sda /dev/sdb":
                     return (null, null);
+                case "/sbin/zpool remove tank mirror-1":
+                    return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
             }

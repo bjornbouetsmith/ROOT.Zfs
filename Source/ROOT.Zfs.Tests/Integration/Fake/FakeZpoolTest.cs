@@ -322,5 +322,22 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
         }
+
+        [TestMethod]
+        public void ZpoolRemoveTest()
+        {
+            var zp = new ZPool(_remoteProcessCall);
+            var removeArgs = new ZpoolRemoveArgs
+            {
+                PoolName = "tank",
+                VDevOrDevice = "mirror-1"
+            };
+
+            
+            zp.Remove(removeArgs);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count);
+            Assert.AreEqual("/sbin/zpool remove tank mirror-1", commands[0]);
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests
@@ -34,11 +36,16 @@ namespace ROOT.Zfs.Tests
             return zp.CreatePool(args);
         }
 
-        public string AddDisk()
+        public string AddDisk(Size size = default)
         {
             var name = "/tmp/zfs-pool/" + Guid.NewGuid();
             Disks.Add(name);
-            CreateTestDisk(name);
+            if (size.Bytes == 0)
+            {
+                size = "100M";
+            }
+            
+            CreateTestDisk(name, size);
             return name;
         }
 
@@ -63,10 +70,10 @@ namespace ROOT.Zfs.Tests
 
             return true;
         }
-        
-        private void CreateTestDisk(string name)
+
+        private void CreateTestDisk(string name, Size size)
         {
-            var command = $"if=/dev/zero of={name} bs=100MB count=1";
+            var command = $"if=/dev/zero of={name} bs={size.Bytes} count=1";
             var pc = _remoteProcessCall | new ProcessCall("/usr/bin/dd", command);
             pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             pc.LoadResponse(true);
@@ -134,11 +141,13 @@ namespace ROOT.Zfs.Tests
                 Assert.AreEqual(State.Online, status.State);
                 return pool;
             }
-            catch
+            catch(Exception ex)
             {
+                Trace.TraceError(ex.ToString());
                 pool.Dispose();
                 throw;
             }
         }
+
     }
 }

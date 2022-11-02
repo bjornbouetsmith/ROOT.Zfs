@@ -185,5 +185,11 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(ZpoolCommands.Add(args));
             pc.LoadResponse(true);
         }
+
+        public void Remove(ZpoolRemoveArgs args)
+        {
+            var pc = BuildCommand(ZpoolCommands.Remove(args));
+            pc.LoadResponse(true);
+        }
     }
 }

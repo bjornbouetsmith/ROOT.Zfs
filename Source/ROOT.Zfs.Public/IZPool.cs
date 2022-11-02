@@ -182,5 +182,14 @@ namespace ROOT.Zfs.Public
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-add.8.html
         /// </summary>
         void Add(ZpoolAddArgs args);
+
+        /// <summary>
+        /// Removes the specified device from the pool. This command supports removing hot spare, cache, log, and both mirrored and non-redundant primary top-level vdevs, including dedup and special vdevs.
+        /// Top-level vdevs can only be removed if the primary pool storage does not contain a top-level raidz vdev, all top-level vdevs have the same sector size, and the keys for all encrypted datasets are loaded.
+        /// Removing a top-level vdev reduces the total amount of space in the storage pool.The specified device will be evacuated by copying all allocated space from it to the other devices in the pool.In this case, the zpool remove command initiates the removal and returns, while the evacuation continues in the background. The removal progress can be monitored with zpool status.If an I/O error is encountered during the removal process it will be cancelled.The device_removal feature flag must be enabled to remove a top-level vdev, see zpool-features(7).
+        /// A mirrored top-level device(log or data) can be removed by specifying the top-level mirror for the same.Non-log devices or data devices that are part of a mirrored configuration can be removed using the zpool detach command.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-remove.8.html
+        /// </summary>
+        void Remove(ZpoolRemoveArgs args);
     }
 }

@@ -308,7 +308,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void DetachTest()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             zp.Detach(pool.Name, pool.Disks[0]);
             var status = zp.GetStatus(pool.Name);
@@ -320,7 +320,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void IOStatTestSpecificDevice()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             var stats = zp.GetIOStats(pool.Name, new[] { pool.Disks[0] });
 
@@ -331,7 +331,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void IOStatTestEntirePool()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             var stats = zp.GetIOStats(pool.Name, null);
 
@@ -351,7 +351,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void AttachNewDeviceToPool()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
 
             var oldDevice = pool.Disks.Last();
             var newDevice = pool.AddDisk();
@@ -375,7 +375,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ReplaceNewDeviceToPool()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
 
             var oldDevice = pool.Disks.Last();
             var newDevice = pool.AddDisk();
@@ -395,7 +395,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(status.Dump(new JsonFormatter()));
             var stopwatch = Stopwatch.StartNew();
             var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
-            while(oldExist && stopwatch.Elapsed<TimeSpan.FromSeconds(5))
+            while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
             {
                 status = zp.GetStatus(pool.Name);
                 oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
@@ -410,7 +410,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void AddExtraMirrorToMirrorPool()
         {
-            var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             var status = zp.GetStatus(pool.Name);
             Assert.AreEqual(1, status.Pool.VDevs.Count);
@@ -424,12 +424,67 @@ namespace ROOT.Zfs.Tests.Integration
                 VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { disk1, disk2 } } },
             };
 
-            
+
             zp.Add(args);
 
             status = zp.GetStatus(pool.Name);
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(2, status.Pool.VDevs.Count);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void RemoveExtraMirrorFromPool()
+        {
+            using var pool = new TestPool(_remoteProcessCall);
+            var disk1 = pool.AddDisk("300M");
+            var disk2 = pool.AddDisk("300M");
+            var disk3 = pool.AddDisk("64M");
+            var disk4 = pool.AddDisk("64M");
+
+            var name = "TestP" + Guid.NewGuid();
+
+            var args = new PoolCreationArgs
+            {
+                Name = name,
+                MountPoint = "none",
+                VDevs = new VDevCreationArgs[]
+                {
+                    new()
+                    {
+                        Type = VDevCreationType.Mirror,
+                        Devices = new[] { disk1, disk2 },
+                    },
+                    new()
+                    {
+                        Type = VDevCreationType.Mirror,
+                        Devices = new[] { disk3, disk4 }
+                    }
+                }
+            };
+
+            var status = pool.CreatePool(args);
+            Assert.AreEqual(State.Online, status.State);
+
+            var removeArgs = new ZpoolRemoveArgs
+            {
+                PoolName = name,
+                VDevOrDevice = "mirror-1"
+            };
+
+            var zp = GetZpool();
+            zp.Remove(removeArgs);
+
+            status = zp.GetStatus(name);
+
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            var stopwatch = Stopwatch.StartNew();
+            var oldExist = status.Pool.VDevs.Count == 2;
+            while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
+            {
+                status = zp.GetStatus(pool.Name);
+                oldExist = status.Pool.VDevs.Count == 2;
+            }
+            Console.WriteLine(status.Dump(new JsonFormatter()));
         }
     }
 }
