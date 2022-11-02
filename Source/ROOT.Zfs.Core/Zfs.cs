@@ -95,12 +95,12 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public void Initialize()
         {
-            var zfs = GetBinaryLocation("zfs");
-            var zpool = GetBinaryLocation("zpool");
-            var zdb = GetBinaryLocation("zdb");
-            var ls = GetBinaryLocation("ls");
-            var lsblk = GetBinaryLocation("lsblk");
-            var smartctl = GetBinaryLocation("smartctl");
+            var zfs = GetBinaryLocation("zfs", Commands.BaseCommands.WhichZfs);
+            var zpool = GetBinaryLocation("zpool", Commands.BaseCommands.WhichZpool);
+            var zdb = GetBinaryLocation("zdb", Commands.BaseCommands.WhichZdb);
+            var ls = GetBinaryLocation("ls", Commands.BaseCommands.WhichLs);
+            var lsblk = GetBinaryLocation("lsblk", Commands.BaseCommands.WhichLsblk);
+            var smartctl = GetBinaryLocation("smartctl", Commands.BaseCommands.WhichSmartctl);
             Commands.BaseCommands.WhichZpool = zpool;
             Commands.BaseCommands.WhichZfs = zfs;
             Commands.BaseCommands.WhichZdb = zdb;
@@ -113,16 +113,19 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public bool Initialized { get; private set; }
 
-        private string GetBinaryLocation(string binary)
+        private string GetBinaryLocation(string binary, string defaultBinary)
         {
             var command = BuildCommand(Commands.BaseCommands.Which(binary));
             var response = command.LoadResponse(false);
+
             if (response.Success)
             {
                 Trace.WriteLine($"{binary}={response.StdOut.Trim()}");
+                return response.StdOut.Trim();
             }
 
-            return response.StdOut.Trim();
+            Trace.TraceError($"Could not find binary:{binary} will default to:{defaultBinary} - response from os was Out{response.StdOut}, Err:{response.StdError}");
+            return defaultBinary;
         }
     }
 }

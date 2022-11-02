@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
+using ROOT.Zfs.Core.Commands;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
@@ -33,7 +34,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Console.WriteLine(disks.Dump(new JsonFormatter()));
         }
 
-        [TestMethod]
+        // This test should be re-written to so we can assert properly that Smartctl does not get overriden with nothing
+        // But it requires a non-static BaseCommands - otherwise one test can ruin the binaries of other tests
+        [TestMethod, TestCategory("FakeIntegration")]
         public void InitializeTest()
         {
             var zfs = new Core.Zfs(_remoteProcessCall);
@@ -49,6 +52,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.IsTrue(asHashSet.Contains("/bin/which ls"));
             Assert.IsTrue(asHashSet.Contains("/bin/which lsblk"));
             Assert.IsTrue(asHashSet.Contains("/bin/which smartctl"));
+            
+            // our fake cannot find smartctl, so assert that it does not get overriden
+            Assert.AreEqual("/sbin/smartctl", BaseCommands.WhichSmartctl);
         }
     }
 }

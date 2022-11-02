@@ -99,7 +99,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/bin/which lsblk":
                     return (BaseCommands.WhichLsblk, null);
                 case "/bin/which smartctl":
-                    return (BaseCommands.WhichSmartctl, null);
+                    return (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)");
                 case "/sbin/zpool iostat -LlpPvH tank /dev/sda":
                     return (GetIOStats(), null);
                 case "/sbin/zpool offline tank /dev/sda":
