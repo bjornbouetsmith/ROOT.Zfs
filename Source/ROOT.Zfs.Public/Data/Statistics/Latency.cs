@@ -29,6 +29,7 @@ namespace ROOT.Zfs.Public.Data.Statistics
             Read = new TimeSpan(rNanos / 100);
             Write = new TimeSpan(wNanos / 100);
         }
+
         /// <summary>
         /// Ctor only for serialization purposes
         /// </summary>

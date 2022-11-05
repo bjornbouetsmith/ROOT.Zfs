@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -117,15 +118,29 @@ namespace ROOT.Zfs.Tests.Commands
             var command = ZpoolCommands.Online(pool, device, expandSize);
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
+ 
+        [DataRow("tank", null, null, true)]
+        [DataRow(null, "sda", null, true)]
+        [DataRow("tank", "sda", "/sbin/zpool offline tank sda", false)]
         [TestMethod]
-        [DataRow("tank", "sda", false, false, "/sbin/zpool offline tank sda")]
-        [DataRow("tank", "sda", true, false, "/sbin/zpool offline tank sda -f")]
-        [DataRow("tank", "sda", false, true, "/sbin/zpool offline tank sda -t")]
-        [DataRow("tank", "sda", true, true, "/sbin/zpool offline tank sda -f -t")]
-        public void OfflinePoolDeviceTest(string pool, string device, bool forceFault, bool temporary, string expectedCommand)
+        public void OfflinePoolDeviceTest(string pool, string device, string expectedCommand, bool expectException)
         {
-            var command = ZpoolCommands.Offline(pool, device, forceFault, temporary);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            var args = new ZpoolOfflineArgs
+            {
+                PoolName = pool,
+                Device = device,
+            };
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Offline(args));
+            }
+            else
+            {
+
+                var command = ZpoolCommands.Offline(args);
+
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [TestMethod]

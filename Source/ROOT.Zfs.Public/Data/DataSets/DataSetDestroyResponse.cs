@@ -1,4 +1,6 @@
-﻿namespace ROOT.Zfs.Public.Data.Datasets
+﻿using ROOT.Zfs.Public.Arguments;
+
+namespace ROOT.Zfs.Public.Data.Datasets
 {
     /// <summary>
     /// Class meant to contain data for when destroying datasets and if you request a dry-run.

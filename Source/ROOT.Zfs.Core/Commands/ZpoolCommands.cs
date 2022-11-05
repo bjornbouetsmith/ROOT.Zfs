@@ -2,6 +2,7 @@
 using System.Text;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Commands
@@ -78,30 +79,22 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, $"iostat -LlpPvH {pool}{deviceList}");
         }
-
+        
         /// <summary>
         /// Takes the specified physical device offline. While the device is offline, no attempt is made to read or write to the device.
         /// This command is not applicable to spares.
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="device"></param>
-        /// <param name="forceFault">Force fault. Instead of offlining the disk, put it into a faulted state.
-        /// The fault will persist across imports unless <paramref name="temporary"/> is true.</param>
-        /// <param name="temporary">Temporary. Upon reboot, the specified physical device reverts to its previous state.</param>
-        internal static ProcessCall Offline(string pool, string device, bool forceFault, bool temporary)
+        /// <param name="args">The arguments to zpool offline</param>
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        internal static IProcessCall Offline(ZpoolOfflineArgs args)
         {
-            var args = new StringBuilder();
-            if (forceFault)
+            if (!args.Validate(out var errors))
             {
-                args.Append(" -f");
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            if (temporary)
-            {
-                args.Append(" -t");
-            }
-
-            return new ProcessCall(WhichZpool, $"offline {pool} {device}{args}");
+            return new ProcessCall(WhichZpool, $"offline{args}");
         }
 
         /// <summary>

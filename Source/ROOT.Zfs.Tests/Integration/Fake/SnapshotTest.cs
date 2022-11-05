@@ -13,11 +13,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         private readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
         [TestMethod, TestCategory("FakeIntegration")]
-        public void GetSnapshotsTest()
+        public void ListSnapshotsTest()
         {
             var sn = new Snapshots(_remoteProcessCall);
 
-            var snapshots = sn.GetSnapshots("tank/myds");
+            var snapshots = sn.List("tank/myds");
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
@@ -36,10 +36,10 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             sn.CreateSnapshot("tank/myds", snapName);
 
-            var snaps = sn.GetSnapshots("tank/myds");
+            var snaps = sn.List("tank/myds");
             Assert.IsNotNull(snaps);
 
-            sn.DestroySnapshot("tank/myds", snapName, true);
+            sn.Destroy("tank/myds", snapName, true);
 
         }
 
@@ -61,11 +61,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             sn.CreateSnapshot("tank/myds", $"{prefix}-2");
             sn.CreateSnapshot("tank/myds", $"{prefix}-3");
 
-            var snaps = sn.GetSnapshots("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            var snaps = sn.List("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
 
-            sn.DestroySnapshot("tank/myds", prefix, false);
+            sn.Destroy("tank/myds", prefix, false);
         }
 
         [TestMethod]

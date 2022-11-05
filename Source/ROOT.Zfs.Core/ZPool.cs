@@ -6,6 +6,7 @@ using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 using ROOT.Zfs.Public.Data.Statistics;
@@ -39,7 +40,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IList<PoolInfo> GetAllPoolInfos()
+        public IList<PoolInfo> List()
         {
             var pc = BuildCommand(ZpoolCommands.GetAllPoolInfos());
             var response = pc.LoadResponse(true);
@@ -60,7 +61,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolInfo GetPoolInfo(string pool)
+        public PoolInfo List(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
             var response = pc.LoadResponse(true);
@@ -95,9 +96,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Offline(string pool, string device, bool forceFault, bool temporary)
+        public void Offline(ZpoolOfflineArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.Offline(pool, device, forceFault, temporary));
+            var pc = BuildCommand(ZpoolCommands.Offline(args));
             pc.LoadResponse(true);
         }
 

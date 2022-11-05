@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
@@ -111,7 +112,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
 
-            var infos = zp.GetAllPoolInfos();
+            var infos = zp.List();
             Assert.AreEqual(2, infos.Count);
 
         }
@@ -122,7 +123,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
 
-            var info = zp.GetPoolInfo("tank2");
+            var info = zp.List("tank2");
             Assert.IsNotNull(info);
             Assert.AreEqual(5000, info.Version);
             Assert.AreEqual("tank2", info.Name);
@@ -141,7 +142,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void OfflineTest()
         {
             var zp = new ZPool(_remoteProcessCall);
-            zp.Offline("tank", "/dev/sda", false, false);
+            var args = new ZpoolOfflineArgs { PoolName = "tank", Device = "/dev/sda" };
+            zp.Offline(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool offline tank /dev/sda"));

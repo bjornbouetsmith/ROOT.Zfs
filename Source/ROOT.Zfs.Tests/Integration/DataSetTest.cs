@@ -38,11 +38,11 @@ namespace ROOT.Zfs.Tests.Integration
         }
 
         [TestMethod, TestCategory("Integration")]
-        public void GetDataSetTest()
+        public void ListDataSetTest()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var dataset = ds.GetDatasets(pool.Name, default, false).FirstOrDefault();
+            var dataset = ds.List(pool.Name, default, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual(pool.Name, dataset.Name);
         }
@@ -75,7 +75,7 @@ namespace ROOT.Zfs.Tests.Integration
                     Type = DatasetTypes.Filesystem,
                     Properties = addProperties ? props : null
                 };
-                var dataSet = ds.CreateDataset(args);
+                var dataSet = ds.Create(args);
                 Assert.IsNotNull(dataSet);
                 Console.WriteLine(dataSet.Dump(new JsonFormatter()));
             }
@@ -84,17 +84,17 @@ namespace ROOT.Zfs.Tests.Integration
                 // Check to prevent issues in case dataset creation failed
                 if (fullName != null)
                 {
-                    ds.DestroyDataset(fullName, default);
+                    ds.Destroy(fullName, default);
                 }
             }
         }
 
         [TestMethod, TestCategory("Integration")]
-        public void GetDataSetShouldReturnDataSet()
+        public void ListDataSetShouldReturnDataSet()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var root = ds.GetDatasets(pool.Name, default, false).FirstOrDefault();
+            var root = ds.List(pool.Name, default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -104,7 +104,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = GetDataSets();
-            Assert.ThrowsException<ProcessCallException>(() => ds.GetDatasets("ungabunga", default, false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List("ungabunga", default, false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -131,11 +131,11 @@ namespace ROOT.Zfs.Tests.Integration
                         CreateParents = true,
 
                     };
-                    dsHelper.CreateDataset(args);
+                    dsHelper.Create(args);
                 }
 
                 var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
-                var response = dsHelper.DestroyDataset(root, flags);
+                var response = dsHelper.Destroy(root, flags);
                 Assert.AreEqual(flags, response.Flags);
                 var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
@@ -150,7 +150,7 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 try
                 {
-                    dsHelper.DestroyDataset(root, DatasetDestroyFlags.Recursive);
+                    dsHelper.Destroy(root, DatasetDestroyFlags.Recursive);
                 }
                 catch
                 {

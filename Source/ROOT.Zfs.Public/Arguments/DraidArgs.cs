@@ -1,4 +1,4 @@
-﻿namespace ROOT.Zfs.Public.Data.Pools
+﻿namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Extra arguments only for draid

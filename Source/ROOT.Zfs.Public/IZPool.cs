@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 using ROOT.Zfs.Public.Data.Statistics;
@@ -27,20 +28,20 @@ namespace ROOT.Zfs.Public
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-status.8.html
         /// </summary>
         /// <param name="pool"></param>
-        PoolStatus GetStatus(string pool); //zpool status {pool}
+        PoolStatus GetStatus(string pool);
 
         /// <summary>
         /// Gets information about pools, returns data from the command: zpool list -v -P
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
-        IList<PoolInfo> GetAllPoolInfos(); //zpool list -v -P
+        IList<PoolInfo> List();
 
         /// <summary>
         /// Gets information about a single pool zpool list -v -P {pool}
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
         /// <param name="pool">The pool to get info for</param>
-        PoolInfo GetPoolInfo(string pool); //zpool list -v -P {pool}
+        PoolInfo List(string pool);
 
         /// <summary>
         /// Creates a new zpool using the provided args
@@ -56,19 +57,15 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="pool">The name of the pool to destroy</param>
         void DestroyPool(string pool);
-
+        
         /// <summary>
         /// Takes the specified physical device offline.
         /// While the device is offline, no attempt is made to read or write to the device.
         /// This command is not applicable to spares.
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-offline.8.html
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="device"></param>
-        /// <param name="forceFault">Force fault. Instead of offlining the disk, put it into a faulted state.
-        /// The fault will persist across imports unless <paramref name="temporary"/> is true.</param>
-        /// <param name="temporary">Temporary. Upon reboot, the specified physical device reverts to its previous state.</param>
-        void Offline(string pool, string device, bool forceFault, bool temporary);
+        /// <param name="args">The arguments to the offline command</param>
+        void Offline(ZpoolOfflineArgs args);
 
         /// <summary>
         /// Brings the specified physical device online.

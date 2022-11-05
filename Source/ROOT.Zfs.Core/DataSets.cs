@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dataset> GetDatasets(string fullName, DatasetTypes datasetType, bool includeChildren)
+        public IEnumerable<Dataset> List(string fullName, DatasetTypes datasetType, bool includeChildren)
         {
             var pc = BuildCommand(DatasetCommands.ZfsList(datasetType, fullName, false));
 
@@ -34,11 +34,11 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public IEnumerable<Dataset> GetDatasets(DatasetTypes datasetType)
         {
-            return GetDatasets(null, datasetType, false);
+            return List(null, datasetType, false);
         }
 
         /// <inheritdoc />
-        public Dataset CreateDataset(DatasetCreationArgs arguments)
+        public Dataset Create(DatasetCreationArgs arguments)
         {
             if (!arguments.Validate(out var errors))
             {
@@ -49,11 +49,11 @@ namespace ROOT.Zfs.Core
 
             pc.LoadResponse(true);
 
-            return GetDatasets(arguments.DataSetName, arguments.Type, false).FirstOrDefault();
+            return List(arguments.DataSetName, arguments.Type, false).FirstOrDefault();
         }
 
         /// <inheritdoc />
-        public DatasetDestroyResponse DestroyDataset(string fullName, DatasetDestroyFlags destroyFlags)
+        public DatasetDestroyResponse Destroy(string fullName, DatasetDestroyFlags destroyFlags)
         {
             var pc = BuildCommand(DatasetCommands.DestroyDataset(fullName, destroyFlags));
 

@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Snapshot> GetSnapshots(string datasetOrVolume)
+        public IEnumerable<Snapshot> List(string datasetOrVolume)
         {
             var pc = BuildCommand(SnapshotCommands.ListSnapshots(datasetOrVolume));
 
@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void DestroySnapshot(string datasetOrVolume, string snapName, bool isExactName)
+        public void Destroy(string datasetOrVolume, string snapName, bool isExactName)
         {
             if (isExactName)
             {
@@ -41,9 +41,9 @@ namespace ROOT.Zfs.Core
             else
             {
                 // Find all snapshots that begins with snapName and delete them one by one
-                foreach (var snapshot in GetSnapshots(datasetOrVolume).Where(sn => SnapshotMatches(datasetOrVolume, sn.Name, snapName)))
+                foreach (var snapshot in List(datasetOrVolume).Where(sn => SnapshotMatches(datasetOrVolume, sn.Name, snapName)))
                 {
-                    DestroySnapshot(datasetOrVolume, snapshot.Name, true);
+                    Destroy(datasetOrVolume, snapshot.Name, true);
                 }
             }
         }
@@ -70,13 +70,7 @@ namespace ROOT.Zfs.Core
 
             return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
         }
-
-        /// <inheritdoc />
-        public void CreateSnapshot(string dataset)
-        {
-            CreateSnapshot(dataset, DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHHmmss"));
-        }
-
+        
         /// <inheritdoc />
         public void CreateSnapshot(string dataset, string snapName)
         {

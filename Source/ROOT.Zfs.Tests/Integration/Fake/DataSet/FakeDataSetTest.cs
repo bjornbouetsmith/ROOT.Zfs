@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(CreateProcessCall());
-            var root = ds.GetDatasets("tank", default, false).FirstOrDefault();
+            var root = ds.List("tank", default, false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
@@ -42,7 +42,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = new Datasets(CreateProcessCall());
-            Assert.ThrowsException<ProcessCallException>(() => ds.GetDatasets("ungabunga", default, false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List("ungabunga", default, false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
                 Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 
             };
-            var dataset = ds.CreateDataset(args);
+            var dataset = ds.Create(args);
             Assert.IsNotNull(dataset);
         }
 
@@ -71,14 +71,14 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
                 Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 
             };
-            Assert.ThrowsException<ArgumentException>(()=> ds.CreateDataset(args));
+            Assert.ThrowsException<ArgumentException>(()=> ds.Create(args));
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void DestroyDataSetTest()
         {
             var ds = new Datasets(CreateProcessCall());
-            var response = ds.DestroyDataset("tank/myds", DatasetDestroyFlags.Recursive);
+            var response = ds.Destroy("tank/myds", DatasetDestroyFlags.Recursive);
             Assert.AreEqual(DatasetDestroyFlags.Recursive, response.Flags);
         }
 

@@ -25,8 +25,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
-            sn.CreateSnapshot(pool.Name);
-            var snapshots = sn.GetSnapshots(pool.Name);
+            sn.CreateSnapshot(pool.Name, null);
+            var snapshots = sn.List(pool.Name);
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
@@ -45,13 +45,13 @@ namespace ROOT.Zfs.Tests.Integration
 
             sn.CreateSnapshot(pool.Name, snapName);
 
-            var snaps = sn.GetSnapshots(pool.Name);
+            var snaps = sn.List(pool.Name);
 
             var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
 
             Assert.IsNotNull(wasCreated);
 
-            sn.DestroySnapshot(pool.Name, snapName, true);
+            sn.Destroy(pool.Name, snapName, true);
 
         }
 
@@ -66,13 +66,13 @@ namespace ROOT.Zfs.Tests.Integration
             sn.CreateSnapshot(pool.Name, $"{prefix}-2");
             sn.CreateSnapshot(pool.Name, $"{prefix}-3");
 
-            var snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            var snaps = sn.List(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
 
-            sn.DestroySnapshot(pool.Name, prefix, false);
+            sn.Destroy(pool.Name, prefix, false);
 
-            snaps = sn.GetSnapshots(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            snaps = sn.List(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
             Assert.AreEqual(0, snaps.Count);
         }
     }

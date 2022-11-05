@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ROOT.Zfs.Public
+namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// See: https://openzfs.github.io/openzfs-docs/man/8/zfs-destroy.8.html

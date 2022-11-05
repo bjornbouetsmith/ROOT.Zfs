@@ -7,6 +7,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration
@@ -33,7 +34,7 @@ namespace ROOT.Zfs.Tests.Integration
             snap.CreateSnapshot(pool.Name, "test1");
             snap.CreateSnapshot(pool.Name, "test2");
             snap.CreateSnapshot(pool.Name, "test3");
-            snap.CreateSnapshot(pool.Name);
+            snap.CreateSnapshot(pool.Name, null);
             var lines = zp.GetHistory(pool.Name).ToList().Count;
 
             var history = zp.GetHistory(pool.Name, lines - 2).ToList();
@@ -64,7 +65,7 @@ namespace ROOT.Zfs.Tests.Integration
             snap.CreateSnapshot(pool.Name, "test1");
             snap.CreateSnapshot(pool.Name, "test2");
             snap.CreateSnapshot(pool.Name, "test3");
-            snap.CreateSnapshot(pool.Name);
+            snap.CreateSnapshot(pool.Name, null);
             var last10AtMost = zp.GetHistory(pool.Name).TakeLast(10).ToList();
 
             // This is safe, since zfs always have at last pool creation as a history event
@@ -298,7 +299,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
 
-            var info = zp.GetPoolInfo(pool.Name);
+            var info = zp.List(pool.Name);
             Console.WriteLine(info.Dump(new JsonFormatter()));
             Assert.IsNotNull(info);
             Assert.AreNotEqual(0, info.Version);
@@ -485,6 +486,23 @@ namespace ROOT.Zfs.Tests.Integration
                 oldExist = status.Pool.VDevs.Count == 2;
             }
             Console.WriteLine(status.Dump(new JsonFormatter()));
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void OfflineTest()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+
+            var device = pool.Disks.Last();
+            var args = new ZpoolOfflineArgs{PoolName=pool.Name,Device=device};
+            zp.Offline(args);
+
+            var status = zp.GetStatus(pool.Name);
+            
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            Assert.AreEqual(State.Degraded, status.State);
+
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Public.Arguments
 {

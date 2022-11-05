@@ -1,6 +1,6 @@
 ﻿using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments;
 
 namespace ROOT.Zfs.Core.Commands
 {

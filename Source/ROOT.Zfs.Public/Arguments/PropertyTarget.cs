@@ -1,4 +1,4 @@
-﻿namespace ROOT.Zfs.Public
+﻿namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Indicates what type of target a property is destined for

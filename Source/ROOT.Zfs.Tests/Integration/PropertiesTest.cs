@@ -86,7 +86,7 @@ namespace ROOT.Zfs.Tests.Integration
                 DataSetName = dataset,
                 Type = DatasetTypes.Filesystem
             };
-            dsHelper.CreateDataset(args);
+            dsHelper.Create(args);
             try
             {
                 var before = pr.GetProperty(PropertyTarget.Dataset, dataset, "atime");
@@ -99,7 +99,7 @@ namespace ROOT.Zfs.Tests.Integration
             }
             finally
             {
-                dsHelper.DestroyDataset(dataset, default);
+                dsHelper.Destroy(dataset, default);
             }
         }
     }
