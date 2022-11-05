@@ -9,20 +9,20 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
     [TestClass]
     public class PoolAttachReplaceArgsTest
     {
-        [DataRow("tank", "/dev/sdb", "/dev/sdc", false, false, null, " tank /dev/sdb /dev/sdc")]
-        [DataRow("tank", "/dev/sdb", null, false, false, null, " tank /dev/sdb")]
-        [DataRow("tank", "/dev/sdb", "", false, false, null, " tank /dev/sdb")]
-        [DataRow("tank", "/dev/sdb", " ", false, false, null, " tank /dev/sdb")]
-        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, false, null, " -f tank /dev/sdb /dev/sdc")]
-        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, null, " -f -s tank /dev/sdb /dev/sdc")]
-        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, "ashift=12", " -f -s -o ashift=12 tank /dev/sdb /dev/sdc")]
-        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, "atime=off", " -f -s tank /dev/sdb /dev/sdc")] // non supported property
+        [DataRow("tank", "/dev/sdb", "/dev/sdc", false, false, null, "attach tank /dev/sdb /dev/sdc")]
+        [DataRow("tank", "/dev/sdb", null, false, false, null, "attach tank /dev/sdb")]
+        [DataRow("tank", "/dev/sdb", "", false, false, null, "attach tank /dev/sdb")]
+        [DataRow("tank", "/dev/sdb", " ", false, false, null, "attach tank /dev/sdb")]
+        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, false, null, "attach -f tank /dev/sdb /dev/sdc")]
+        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, null, "attach -f -s tank /dev/sdb /dev/sdc")]
+        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, "ashift=12", "attach -f -s -o ashift=12 tank /dev/sdb /dev/sdc")]
+        [DataRow("tank", "/dev/sdb", "/dev/sdc", true, true, "atime=off", "attach -f -s tank /dev/sdb /dev/sdc")] // non supported property
 
         [TestMethod]
         public void ToStringTest(string pool, string vdev, string newDevice, bool force, bool sequential, string properties, string expected)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("attach")
             {
                 PoolName = pool,
                 OldDevice = vdev,
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         public void ValidateTest(string pool, string oldDevice, string newDevice, bool force, bool sequential, string properties, bool expectedValid)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("attach")
             {
                 PoolName = pool,
                 OldDevice = oldDevice,
@@ -77,12 +77,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateWhenReplacing(string pool, string oldDevice, string newDevice, bool expectedValid)
         {
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("replace")
             {
                 PoolName = pool,
                 OldDevice = oldDevice,
                 NewDevice = newDevice,
-                IsReplace = true
             };
 
             var valid = args.Validate(out var errors);

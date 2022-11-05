@@ -89,15 +89,15 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs create -o atime=off tank/myds":
                     return (null, null);
                 case "/bin/which zfs":
-                    return (BaseCommands.WhichZfs, null);
+                    return (Core.Commands.Commands.WhichZfs, null);
                 case "/bin/which zpool":
-                    return (BaseCommands.WhichZpool, null);
+                    return (Core.Commands.Commands.WhichZpool, null);
                 case "/bin/which zdb":
-                    return (BaseCommands.WhichZdb, null);
+                    return (Core.Commands.Commands.WhichZdb, null);
                 case "/bin/which ls":
-                    return (BaseCommands.WhichLs, null);
+                    return (Core.Commands.Commands.WhichLs, null);
                 case "/bin/which lsblk":
-                    return (BaseCommands.WhichLsblk, null);
+                    return (Core.Commands.Commands.WhichLsblk, null);
                 case "/bin/which smartctl":
                     return (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)");
                 case "/sbin/zpool iostat -LlpPvH tank /dev/sda":

@@ -9,7 +9,7 @@ using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    internal class DatasetCommands : BaseCommands
+    internal class DatasetCommands : Commands
     {
         /// <summary>
         /// Creates a dataset with the given properties if any

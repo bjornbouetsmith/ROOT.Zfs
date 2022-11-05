@@ -275,7 +275,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
 
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("attach")
             {
                 PoolName = "tank",
                 OldDevice = "/dev/sdb",
@@ -293,7 +293,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = new ZPool(_remoteProcessCall);
 
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("replace")
             {
                 PoolName = "tank",
                 OldDevice = "/dev/sdb",

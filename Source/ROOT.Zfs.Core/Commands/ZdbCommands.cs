@@ -2,7 +2,7 @@
 
 namespace ROOT.Zfs.Core.Commands
 {
-    internal class ZdbCommands : BaseCommands
+    internal class ZdbCommands : Commands
     {
         /// <summary>
         /// Returns a command that will output from zdb

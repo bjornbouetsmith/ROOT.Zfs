@@ -54,7 +54,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.IsTrue(asHashSet.Contains("/bin/which smartctl"));
             
             // our fake cannot find smartctl, so assert that it does not get overriden
-            Assert.AreEqual("/sbin/smartctl", BaseCommands.WhichSmartctl);
+            Assert.AreEqual("/sbin/smartctl", Core.Commands.Commands.WhichSmartctl);
         }
     }
 }

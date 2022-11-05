@@ -7,7 +7,7 @@ using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Commands
 {
-    internal class ZpoolCommands : BaseCommands
+    internal class ZpoolCommands : Commands
     {
         internal static ProcessCall GetHistory(string pool)
         {
@@ -93,7 +93,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            return new ProcessCall(WhichZpool, args.BuildArgs("offline"));
+            return new ProcessCall(WhichZpool, args.ToString());
         }
         
         /// <summary>
@@ -109,7 +109,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            return new ProcessCall(WhichZpool, args.BuildArgs("online"));
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>
@@ -212,27 +212,27 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to attach a device to a vdev
         /// </summary>
-        public static IProcessCall Attach(PoolAttachReplaceArgs attachArgs)
+        public static IProcessCall Attach(PoolAttachReplaceArgs args)
         {
-            if (!attachArgs.Validate(out var errors))
+            if (!args.Validate(out var errors))
             {
                 var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(attachArgs));
+                throw new ArgumentException(errorMessage, nameof(args));
             }
-            return new ProcessCall(WhichZpool, $"attach{attachArgs}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>
         /// Returns a command to replace a device to a vdev
         /// </summary>
-        public static IProcessCall Replace(PoolAttachReplaceArgs attachArgs)
+        public static IProcessCall Replace(PoolAttachReplaceArgs args)
         {
-            if (!attachArgs.Validate(out var errors))
+            if (!args.Validate(out var errors))
             {
                 var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(attachArgs));
+                throw new ArgumentException(errorMessage, nameof(args));
             }
-            return new ProcessCall(WhichZpool, $"replace{attachArgs}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         public static IProcessCall Add(PoolAddArgs addArgs)
@@ -242,7 +242,7 @@ namespace ROOT.Zfs.Core.Commands
                 var errorMessage = string.Join(Environment.NewLine, errors);
                 throw new ArgumentException(errorMessage, nameof(addArgs));
             }
-            return new ProcessCall(WhichZpool, addArgs.BuildArgs("add"));
+            return new ProcessCall(WhichZpool, addArgs.ToString());
         }
 
         public static IProcessCall Remove(PoolRemoveArgs removeArgs)

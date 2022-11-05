@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ROOT.Shared.Utils.OS;
+﻿using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Data;
 
@@ -9,7 +8,7 @@ namespace ROOT.Zfs.Core.Commands
     /// This should be improved, so we can have commands defined per version if required
     /// And a way to register commands for a given version
     /// </summary>
-    internal class BaseCommands
+    internal class Commands
     {
         public static string WhichZfs { get; set; } = "/sbin/zfs";
         public static string WhichZpool { get; set; } = "/sbin/zpool";

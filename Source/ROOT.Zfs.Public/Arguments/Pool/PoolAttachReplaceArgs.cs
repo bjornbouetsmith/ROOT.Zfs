@@ -8,8 +8,19 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Represents all arguments to zpool attach or replace
     /// </summary>
-    public class PoolAttachReplaceArgs
+    public class PoolAttachReplaceArgs : Args
     {
+        /// <summary>
+        /// Creates an instance of the attach/replace args class with the given command
+        /// </summary>
+        public PoolAttachReplaceArgs(string command) : base(command)
+        {
+            if (command.Equals("replace", System.StringComparison.OrdinalIgnoreCase))
+            {
+                IsReplace = true;
+            }
+        }
+
         /// <summary>
         /// Name of the pool to attach or replace a device to
         /// </summary>
@@ -49,11 +60,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// </summary>
         public bool IsReplace { get; set; }
 
-        /// <summary>
-        /// Validates the arguments and returns errors if not valid
-        /// If no errors are found, the list <paramref name="errors"/> will be null
-        /// </summary>
-        public bool Validate(out IList<string> errors)
+        /// <inheritdoc />
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (string.IsNullOrWhiteSpace(PoolName))
@@ -77,38 +85,38 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             return errors == null;
         }
 
-        /// <summary>
-        /// Returns a string representation that can be passed directly onto zpool attach or replace
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
-            var sb = new StringBuilder();
+            var args = new StringBuilder();
+            args.Append(command);
+
             if (Force)
             {
-                sb.Append(" -f");
+                args.Append(" -f");
             }
 
             if (RestoreSequentially)
             {
-                sb.Append(" -s");
+                args.Append(" -s");
             }
 
             var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", System.StringComparison.OrdinalIgnoreCase));
 
             if (ashift != null)
             {
-                sb.Append($" -o ashift={ashift.Value}");
+                args.Append($" -o ashift={ashift.Value}");
             }
 
-            sb.Append($" {PoolName}");
-            sb.Append($" {OldDevice}");
-            
+            args.Append($" {PoolName}");
+            args.Append($" {OldDevice}");
+
             if (!string.IsNullOrWhiteSpace(NewDevice))
             {
-                sb.Append($" {NewDevice}");
+                args.Append($" {NewDevice}");
             }
 
-            return sb.ToString();
+            return args.ToString();
         }
     }
 }

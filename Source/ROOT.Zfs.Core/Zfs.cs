@@ -50,12 +50,12 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public IEnumerable<DiskInfo> ListDisks()
         {
-            var disksCommand = BuildCommand(Commands.BaseCommands.ListBlockDevices());
+            var disksCommand = BuildCommand(Commands.Commands.ListBlockDevices());
             var disksReponse = disksCommand.LoadResponse(true);
 
             var blockDevices = DiskHelper.BlockDevicesFromStdOutput(disksReponse.StdOut);
 
-            var pc = BuildCommand(Commands.BaseCommands.ListDisks());
+            var pc = BuildCommand(Commands.Commands.ListDisks());
             var response = pc.LoadResponse(true);
 
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
@@ -75,7 +75,7 @@ namespace ROOT.Zfs.Core
             List<SmartInfo> smartInfos = new List<SmartInfo>();
             foreach (var id in ListDisks().Where(d => d.Type == DeviceType.Disk).Select(disk => disk.Id))
             {
-                var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(id));
+                var command = BuildCommand(Commands.Commands.GetSmartInfo(id));
                 var response = command.LoadResponse(true);
                 var info = SmartInfoParser.ParseStdOut(id, response.StdOut);
                 smartInfos.Add(info);
@@ -87,7 +87,7 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public SmartInfo GetSmartInfo(string name)
         {
-            var command = BuildCommand(Commands.BaseCommands.GetSmartInfo(name));
+            var command = BuildCommand(Commands.Commands.GetSmartInfo(name));
             var response = command.LoadResponse(true);
             return SmartInfoParser.ParseStdOut(name, response.StdOut);
         }
@@ -95,18 +95,18 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public void Initialize()
         {
-            var zfs = GetBinaryLocation("zfs", Commands.BaseCommands.WhichZfs);
-            var zpool = GetBinaryLocation("zpool", Commands.BaseCommands.WhichZpool);
-            var zdb = GetBinaryLocation("zdb", Commands.BaseCommands.WhichZdb);
-            var ls = GetBinaryLocation("ls", Commands.BaseCommands.WhichLs);
-            var lsblk = GetBinaryLocation("lsblk", Commands.BaseCommands.WhichLsblk);
-            var smartctl = GetBinaryLocation("smartctl", Commands.BaseCommands.WhichSmartctl);
-            Commands.BaseCommands.WhichZpool = zpool;
-            Commands.BaseCommands.WhichZfs = zfs;
-            Commands.BaseCommands.WhichZdb = zdb;
-            Commands.BaseCommands.WhichLs = ls;
-            Commands.BaseCommands.WhichLsblk = lsblk;
-            Commands.BaseCommands.WhichSmartctl = smartctl;
+            var zfs = GetBinaryLocation("zfs", Commands.Commands.WhichZfs);
+            var zpool = GetBinaryLocation("zpool", Commands.Commands.WhichZpool);
+            var zdb = GetBinaryLocation("zdb", Commands.Commands.WhichZdb);
+            var ls = GetBinaryLocation("ls", Commands.Commands.WhichLs);
+            var lsblk = GetBinaryLocation("lsblk", Commands.Commands.WhichLsblk);
+            var smartctl = GetBinaryLocation("smartctl", Commands.Commands.WhichSmartctl);
+            Commands.Commands.WhichZpool = zpool;
+            Commands.Commands.WhichZfs = zfs;
+            Commands.Commands.WhichZdb = zdb;
+            Commands.Commands.WhichLs = ls;
+            Commands.Commands.WhichLsblk = lsblk;
+            Commands.Commands.WhichSmartctl = smartctl;
             Initialized = true;
         }
 
@@ -115,7 +115,7 @@ namespace ROOT.Zfs.Core
 
         private string GetBinaryLocation(string binary, string defaultBinary)
         {
-            var command = BuildCommand(Commands.BaseCommands.Which(binary));
+            var command = BuildCommand(Commands.Commands.Which(binary));
             var response = command.LoadResponse(false);
 
             if (response.Success)

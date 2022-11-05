@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 }
             };
 
-            Assert.AreEqual(expected, args.BuildArgs("add"));
+            Assert.AreEqual(expected, args.ToString());
 
         }
 
@@ -79,7 +79,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 PropertyValues = props
             };
 
-            Assert.AreEqual(expected, args.BuildArgs("add"));
+            Assert.AreEqual(expected, args.ToString());
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 PoolName = "tank"
             };
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => args.BuildArgs("add"));
+            var ex = Assert.ThrowsException<ArgumentException>(() => args.ToString());
             Assert.AreEqual("Missing Vdevs", ex.Message);
 
         }

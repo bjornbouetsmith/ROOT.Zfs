@@ -1,12 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ROOT.Zfs.Public.Arguments
 {
     /// <summary>
     /// Base class for arguments
     /// </summary>
-    public abstract class ArgsBase
+    public abstract class Args
     {
+        /// <summary>
+        /// Gets the command this argument is meant for
+        /// </summary>
+        public string Command { get; }
+
+        /// <summary>
+        /// Creates a new args instance with the given command
+        /// </summary>
+        protected Args(string command)
+        {
+            Command = command;
+        }
+
         /// <summary>
         /// Validates the arguments and returns whether or not they are valid
         /// </summary>
@@ -18,12 +32,13 @@ namespace ROOT.Zfs.Public.Arguments
         /// Builds the arguments into a string that can be passed onto the respective binary
         /// Expects the returned string to start with <paramref name="command"/>
         /// </summary>
-        public abstract string BuildArgs(string command);
+        protected abstract string BuildArgs(string command);
 
         /// <inheritdoc />
+        [DebuggerNonUserCode]
         public override string ToString()
         {
-            return BuildArgs("");
+            return BuildArgs(Command);
         }
     }
 }

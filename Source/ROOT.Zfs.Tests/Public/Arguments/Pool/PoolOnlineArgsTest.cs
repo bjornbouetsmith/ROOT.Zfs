@@ -40,7 +40,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 Device = device,
                 ExpandSpace = expandSpace
             };
-            var stringVer = args.BuildArgs("online");
+            var stringVer = args.ToString();
 
             Assert.AreEqual(expected, stringVer);
         }

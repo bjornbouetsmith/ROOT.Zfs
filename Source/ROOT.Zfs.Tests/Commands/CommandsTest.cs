@@ -1,11 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Commands
 {
     [TestClass]
-    public class BaseCommandsTest
+    public class CommandsTest
     {
         [DataRow(DatasetTypes.None, "", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
         [DataRow(DatasetTypes.None, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
@@ -26,7 +25,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ListCommandTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = DatasetCommands.ZfsList(types, root, false);
+            var command = Core.Commands.Commands.ZfsList(types, root, false);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
@@ -37,7 +36,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ListCommandCombinationsTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = DatasetCommands.ZfsList(types, root, false);
+            var command = Core.Commands.Commands.ZfsList(types, root, false);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
@@ -48,28 +47,28 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ListWithChildrenTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = DatasetCommands.ZfsList(types, root, true);
+            var command = Core.Commands.Commands.ZfsList(types, root, true);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
         [TestMethod]
         public void WhichCommandTest()
         {
-            var command = BaseCommands.Which("smartctl");
+            var command = Core.Commands.Commands.Which("smartctl");
             Assert.AreEqual("/bin/which smartctl", command.FullCommandLine);
         }
 
         [TestMethod]
         public void ListBlockDevicesTest()
         {
-            var command = BaseCommands.ListBlockDevices();
+            var command = Core.Commands.Commands.ListBlockDevices();
             Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p|grep disk", command.FullCommandLine);
         }
 
         [TestMethod]
         public void ListDisksTest()
         {
-            var command = BaseCommands.ListDisks();
+            var command = Core.Commands.Commands.ListDisks();
             Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
         }
     }

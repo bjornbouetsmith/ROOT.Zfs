@@ -43,7 +43,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 ForceFault = forceFault,
                 Temporary = temporary
             };
-            var stringVer = args.BuildArgs("offline");
+            var stringVer = args.ToString();
 
             Assert.AreEqual(expected, stringVer);
         }

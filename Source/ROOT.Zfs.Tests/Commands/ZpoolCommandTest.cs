@@ -260,7 +260,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void AttachTest(bool valid)
         {
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("attach")
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
@@ -279,9 +279,9 @@ namespace ROOT.Zfs.Tests.Commands
 
                 var command = ZpoolCommands.Attach(args);
                 Console.WriteLine(command.FullCommandLine);
-                var fullArgs = $"attach{stringVer}";
-                Assert.AreEqual(fullArgs, command.Arguments);
-                Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+
+                Assert.AreEqual(stringVer, command.Arguments);
+                Assert.AreEqual($"/sbin/zpool {stringVer}", command.FullCommandLine);
             }
         }
 
@@ -290,7 +290,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ReplaceTest(bool valid)
         {
-            var args = new PoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs("replace")
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
@@ -309,9 +309,9 @@ namespace ROOT.Zfs.Tests.Commands
             {
                 var command = ZpoolCommands.Replace(args);
                 Console.WriteLine(command.FullCommandLine);
-                var fullArgs = $"replace{stringVer}";
-                Assert.AreEqual(fullArgs, command.Arguments);
-                Assert.AreEqual($"/sbin/zpool {fullArgs}", command.FullCommandLine);
+                
+                Assert.AreEqual(stringVer, command.Arguments);
+                Assert.AreEqual($"/sbin/zpool {stringVer}", command.FullCommandLine);
             }
         }
 

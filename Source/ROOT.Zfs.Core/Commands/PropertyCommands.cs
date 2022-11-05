@@ -7,7 +7,7 @@ namespace ROOT.Zfs.Core.Commands
     /// <summary>
     /// Contains all the commands that relates to properties
     /// </summary>
-    internal class PropertyCommands : BaseCommands
+    internal class PropertyCommands : Commands
     {
         internal static ProcessCall GetProperties(PropertyTarget targetType, string target)
         {

@@ -9,8 +9,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Encapsulates all the arguments to zpool add
     /// </summary>
-    public class PoolAddArgs : ArgsBase
+    public class PoolAddArgs : Args
     {
+        /// <summary>
+        /// Creates an add args instance
+        /// </summary>
+        public PoolAddArgs() : base("add")
+        {
+        }
+
         /// <summary>
         /// Name of the pool to add one or more vdevs to
         /// </summary>
@@ -71,7 +78,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         }
 
         /// <inheritdoc />
-        public override string BuildArgs(string command)
+        protected override string BuildArgs(string command)
         {
             var args = new StringBuilder();
 

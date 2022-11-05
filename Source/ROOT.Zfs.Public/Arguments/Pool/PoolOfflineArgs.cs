@@ -6,8 +6,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains the required arguments to a device offline inside a pool
     /// </summary>
-    public class PoolOfflineArgs : ArgsBase
+    public class PoolOfflineArgs : Args
     {
+        /// <summary>
+        /// Creates an offline args instance
+        /// </summary>
+        public PoolOfflineArgs() : base("offline")
+        {
+        }
+
         /// <summary>
         /// The name of the pool to take offline
         /// </summary>
@@ -48,7 +55,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         }
 
         /// <inheritdoc />
-        public override string BuildArgs(string command)
+        protected override string BuildArgs(string command)
         {
             var args = new StringBuilder();
             args.Append(command);

@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Core.Commands
     /// <summary>
     /// Contains all snapshot related commands
     /// </summary>
-    internal class SnapshotCommands : BaseCommands
+    internal class SnapshotCommands : Commands
     {
         private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-", RegexOptions.Compiled);
 
