@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Public.Arguments;
@@ -59,6 +60,38 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
             Assert.AreEqual(expectedValid, valid);
+        }
+
+        [DataRow(DatasetTypes.Filesystem, true, true, null, false, null, null, "create -p -u tank/child")]
+        [DataRow(DatasetTypes.Filesystem, true, false, null, false, null, null, "create -p tank/child")]
+        [DataRow(DatasetTypes.Filesystem, false, false, null, false, null, null, "create tank/child")]
+        [DataRow(DatasetTypes.Filesystem, false, false, "atime=off", false, null, null, "create -o atime=off tank/child")]
+        [DataRow(DatasetTypes.Filesystem, false, false, "atime=off,compression=off", false, null, null, "create -o atime=off -o compression=off tank/child")]
+
+        [DataRow(DatasetTypes.Volume, true, true, null, true, "8K", "18G", "create -b 8K -V 18G -s -p tank/child")]
+        [DataRow(DatasetTypes.Volume, false, false, null, true, "8K", "18G", "create -b 8K -V 18G -s tank/child")]
+        [DataRow(DatasetTypes.Volume, true, true, null, false, "8K", "18G", "create -b 8K -V 18G -p tank/child")]
+        [DataRow(DatasetTypes.Volume, false, false, null, false, "8K", "18G", "create -b 8K -V 18G tank/child")]
+        [TestMethod]
+        public void ToStringTest(DatasetTypes type, bool createParents, bool doNotMount, string properties, bool sparseVolume, string blockSize, string volumeSize, string expected)
+        {
+            var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
+            var args = new DatasetCreationArgs
+            {
+                Type = type,
+                CreateParents = createParents,
+                DataSetName = "tank/child",
+                DoNotMount = doNotMount,
+                Properties = props,
+                VolumeArguments = type == DatasetTypes.Filesystem ? null : new VolumeCreationArgs
+                {
+                    BlockSize = blockSize,
+                    VolumeSize = volumeSize,
+                    Sparse = sparseVolume
+                }
+            };
+            var stringVer = args.ToString();
+            Assert.AreEqual(expected, stringVer);
         }
     }
 }

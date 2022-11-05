@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Data;
 

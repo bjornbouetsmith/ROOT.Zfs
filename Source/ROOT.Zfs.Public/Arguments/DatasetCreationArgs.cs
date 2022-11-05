@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments
@@ -6,8 +8,15 @@ namespace ROOT.Zfs.Public.Arguments
     /// <summary>
     /// Container for arguments needed to create a dataset
     /// </summary>
-    public class DatasetCreationArgs
+    public class DatasetCreationArgs : Args
     {
+        /// <summary>
+        /// Creates an instance of dataset creation args
+        /// </summary>
+        public DatasetCreationArgs() :base("create")
+        {
+        }
+
         /// <summary>
         /// The full name of the dataset to create including all parent datasets
         /// </summary>
@@ -48,7 +57,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         /// <param name="errors">Any error messages;can be null if arguments are valid</param>
         /// <returns>true if valid;false otherwise</returns>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (VolumeArguments != null)
@@ -76,6 +85,42 @@ namespace ROOT.Zfs.Public.Arguments
             }
 
             return errors == null;
+        }
+
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
+        {
+            var args = new StringBuilder();
+            args.Append(command);
+
+            if (Type == DatasetTypes.Volume)
+            {
+                args.Append($" -b {VolumeArguments.BlockSize} -V {VolumeArguments.VolumeSize}");
+                if (VolumeArguments.Sparse)
+                {
+                    args.Append(" -s");
+                }
+            }
+
+            if (CreateParents)
+            {
+                args.Append(" -p");
+            }
+
+            if (DoNotMount && Type == DatasetTypes.Filesystem)
+            {
+                args.Append(" -u");
+            }
+
+            var propCommand = Properties != null ? string.Join(' ', Properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
+            if (propCommand != string.Empty)
+            {
+                args.Append($" {propCommand}");
+            }
+
+            args.Append($" {DataSetName}");
+
+            return args.ToString();
         }
     }
 
