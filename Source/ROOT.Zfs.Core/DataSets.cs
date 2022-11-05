@@ -5,7 +5,6 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
@@ -20,9 +19,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Dataset> List(string fullName, DatasetTypes datasetType, bool includeChildren)
+        public IEnumerable<Dataset> List(DatasetTypes datasetType, string fullName, bool includeChildren)
         {
-            var pc = BuildCommand(DatasetCommands.ZfsList(datasetType, fullName, false));
+            var pc = BuildCommand(Commands.Commands.ZfsList(datasetType, fullName, false));
 
             var response = pc.LoadResponse(true);
 
@@ -30,12 +29,6 @@ namespace ROOT.Zfs.Core
             {
                 yield return DatasetHelper.ParseStdOut(line);
             }
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<Dataset> GetDatasets(DatasetTypes datasetType)
-        {
-            return List(null, datasetType, false);
         }
 
         /// <inheritdoc />
@@ -50,7 +43,7 @@ namespace ROOT.Zfs.Core
 
             pc.LoadResponse(true);
 
-            return List(arguments.DataSetName, arguments.Type, false).FirstOrDefault();
+            return List(arguments.Type, arguments.DataSetName, false).FirstOrDefault();
         }
 
         /// <inheritdoc />

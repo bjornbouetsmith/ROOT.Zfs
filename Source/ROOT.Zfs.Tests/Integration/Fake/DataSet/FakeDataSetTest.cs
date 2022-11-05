@@ -4,11 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
-using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
 {
@@ -16,10 +13,10 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
     {
         internal abstract FakeRemoteConnection CreateProcessCall();
         [TestMethod, TestCategory("FakeIntegration")]
-        public void GetDataSetList()
+        public void ListTest()
         {
             var ds = new Datasets(CreateProcessCall());
-            var dataSets = ds.GetDatasets(default);
+            var dataSets = ds.List(default, null, false);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -31,7 +28,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = new Datasets(CreateProcessCall());
-            var root = ds.List("tank", default, false).FirstOrDefault();
+            var root = ds.List(default, "tank", false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
@@ -43,7 +40,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = new Datasets(CreateProcessCall());
-            Assert.ThrowsException<ProcessCallException>(() => ds.List("ungabunga", default, false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List(default, "ungabunga", false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -72,7 +69,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
                 Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 
             };
-            Assert.ThrowsException<ArgumentException>(()=> ds.Create(args));
+            Assert.ThrowsException<ArgumentException>(() => ds.Create(args));
         }
 
         [TestMethod, TestCategory("FakeIntegration")]

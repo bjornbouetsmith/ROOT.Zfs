@@ -5,8 +5,6 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
@@ -30,7 +28,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
 
             var ds = GetDataSets();
-            var dataSets = ds.GetDatasets(default);
+            var dataSets = ds.List(default, null, false);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -43,7 +41,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var dataset = ds.List(pool.Name, default, false).FirstOrDefault();
+            var dataset = ds.List(default, pool.Name, false).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual(pool.Name, dataset.Name);
         }
@@ -65,7 +63,7 @@ namespace ROOT.Zfs.Tests.Integration
                         new PropertyValue { Property = "compression", Value = "gzip" }
                     };
 
-                var dataSets = ds.GetDatasets(default).ToList();
+                var dataSets = ds.List(default, null, false).ToList();
                 var parent = dataSets.FirstOrDefault(d => d.Name == pool.Name);
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
@@ -95,7 +93,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var root = ds.List(pool.Name, default, false).FirstOrDefault();
+            var root = ds.List(default, pool.Name , false).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -105,7 +103,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = GetDataSets();
-            Assert.ThrowsException<ProcessCallException>(() => ds.List("ungabunga", default, false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List(default, "ungabunga" , false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("Integration")]

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
@@ -17,10 +16,10 @@ namespace ROOT.Zfs.Public
         /// List datasets with the given name, possibly also returning child datasets
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-list.8.html
         /// </summary>
-        /// <param name="fullName">The full name of the dataset, i.e. tank/xxx</param>
         /// <param name="datasetType">The type of dataset to retrieve, this can be a combination of dataset types, or just a single type.</param>
+        /// <param name="fullName">The full name of the dataset, i.e. tank/xxx. This is optional and null can be passed in to just retrieve all datasets of the given type</param>
         /// <param name="includeChildren">Whether or not to return child datasets to the dataset requested</param>
-        IEnumerable<Dataset> List(string fullName, DatasetTypes datasetType, bool includeChildren);
+        IEnumerable<Dataset> List(DatasetTypes datasetType, string fullName, bool includeChildren);
 
         /// <summary>
         /// Creates a dataset based on the input arguments.
