@@ -6,8 +6,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Encapsulates all the arguments for zpool remove
     /// </summary>
-    public class PoolRemoveArgs
+    public class PoolRemoveArgs : Args
     {
+        /// <summary>
+        /// Creates a remove args instance
+        /// </summary>
+        public PoolRemoveArgs() : base("remove")
+        {
+        }
+
         /// <summary>
         /// Name of the pool to remove a device from
         /// </summary>
@@ -27,7 +34,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <summary>
         /// Validates that the pool remove arguments contains the minimum required information
         /// </summary>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (string.IsNullOrWhiteSpace(PoolName))
@@ -44,13 +51,17 @@ namespace ROOT.Zfs.Public.Arguments.Pool
 
             return errors == null;
         }
+
         /// <summary>
         /// Returns a string represenation of all the arguments that can be passed onto zpool remove
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
+        protected override string BuildArgs(string command)
         {
             StringBuilder args = new StringBuilder();
+
+            args.Append(command);
+
             if (Cancel)
             {
                 args.Append($" -s {PoolName}");

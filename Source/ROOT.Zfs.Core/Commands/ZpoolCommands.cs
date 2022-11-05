@@ -252,7 +252,7 @@ namespace ROOT.Zfs.Core.Commands
                 var errorMessage = string.Join(Environment.NewLine, errors);
                 throw new ArgumentException(errorMessage, nameof(removeArgs));
             }
-            return new ProcessCall(WhichZpool, $"remove{removeArgs}");
+            return new ProcessCall(WhichZpool, removeArgs.ToString());
         }
     }
 }

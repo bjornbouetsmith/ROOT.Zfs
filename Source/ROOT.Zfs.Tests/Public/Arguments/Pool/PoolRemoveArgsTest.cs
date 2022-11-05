@@ -33,11 +33,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             Assert.AreEqual(expectedValid, valid);
         }
 
-        [DataRow("tank", "mirror-0", false, " tank mirror-0")]
-        [DataRow("tank", "mirror-0", true, " -s tank")]
-        [DataRow("tank", null, true, " -s tank")]
-        [DataRow("tank", "", true, " -s tank")]
-        [DataRow("tank", " ", true, " -s tank")]
+        [DataRow("tank", "mirror-0", false, "remove tank mirror-0")]
+        [DataRow("tank", "mirror-0", true, "remove -s tank")]
+        [DataRow("tank", null, true, "remove -s tank")]
+        [DataRow("tank", "", true, "remove -s tank")]
+        [DataRow("tank", " ", true, "remove -s tank")]
         [TestMethod]
         public void ToStringTest(string poolName, string vdevOrDevice, bool cancel, string expected)
         {
