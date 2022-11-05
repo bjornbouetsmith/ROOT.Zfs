@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            return new ProcessCall(WhichZpool,$"create{args}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
@@ -79,7 +79,7 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, $"iostat -LlpPvH {pool}{deviceList}");
         }
-        
+
         /// <summary>
         /// Returns a command to bring a device offline
         /// </summary>
@@ -95,7 +95,7 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, args.ToString());
         }
-        
+
         /// <summary>
         /// Returns a command to bring a device online
         /// </summary>

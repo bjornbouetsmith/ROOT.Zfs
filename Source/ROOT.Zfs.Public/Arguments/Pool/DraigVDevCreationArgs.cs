@@ -1,6 +1,6 @@
 ﻿using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Specialized version of <see cref="VDevCreationArgs" /> for creating draid

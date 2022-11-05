@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace ROOT.Zfs.Public.Arguments
 {
@@ -35,8 +34,7 @@ namespace ROOT.Zfs.Public.Arguments
         protected abstract string BuildArgs(string command);
 
         /// <inheritdoc />
-        [DebuggerNonUserCode]
-        public override string ToString()
+        public sealed override string ToString() // Sealed because we dont want implementation to override tostring
         {
             return BuildArgs(Command);
         }

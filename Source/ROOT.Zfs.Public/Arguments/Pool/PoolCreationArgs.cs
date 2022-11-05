@@ -2,13 +2,20 @@
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Contains the parameters for creating a pool
     /// </summary>
-    public class PoolCreationArgs
+    public class PoolCreationArgs : Args
     {
+        /// <summary>
+        /// Create an instance of the pool creation args class
+        /// </summary>
+        public PoolCreationArgs() : base("create")
+        {
+        }
+
         /// <summary>
         /// The name of the pool.
         /// Must be unique
@@ -38,7 +45,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// <summary>
         /// Validates that the pool creation arguments contains the minimum required information
         /// </summary>
-        public bool Validate(out List<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (string.IsNullOrWhiteSpace(Name))
@@ -62,30 +69,34 @@ namespace ROOT.Zfs.Public.Arguments
                     }
 
                     errors ??= new List<string>();
-                    errors.AddRange(vdevErrors);
+                    foreach (var error in vdevErrors)
+                    {
+                        errors.Add(error);
+                    }
                 }
             }
 
             return errors == null;
         }
-
-        /// <summary>
-        /// Returns a string representation of all arguments that can be passed directly onto zpool create
-        /// </summary>
-        public override string ToString()
+        
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
-            StringBuilder arguments = new StringBuilder($" {Name}");
+            var args = new StringBuilder();
+
+            args.Append(command);
+            args.Append($" {Name}");
 
             if (!string.IsNullOrWhiteSpace(MountPoint))
             {
-                arguments.Append($" -m {MountPoint}");
+                args.Append($" -m {MountPoint}");
             }
 
             if (PoolProperties != null && PoolProperties.Length > 0)
             {
                 foreach (var property in PoolProperties)
                 {
-                    arguments.Append($" -o {property.Property}={property.Value}");
+                    args.Append($" -o {property.Property}={property.Value}");
                 }
             }
 
@@ -93,16 +104,16 @@ namespace ROOT.Zfs.Public.Arguments
             {
                 foreach (var property in FileSystemProperties)
                 {
-                    arguments.Append($" -O {property.Property}={property.Value}");
+                    args.Append($" -O {property.Property}={property.Value}");
                 }
             }
 
             foreach (var vdevArg in VDevs)
             {
-                arguments.Append(" " + vdevArg);
+                args.Append(" " + vdevArg);
             }
 
-            return arguments.ToString();
+            return args.ToString();
         }
     }
 }
