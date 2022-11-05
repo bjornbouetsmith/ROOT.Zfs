@@ -5,8 +5,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains arguments for zpool upgrade
     /// </summary>
-    public class PoolUpgradeArgs
+    public class PoolUpgradeArgs : Args
     {
+        /// <summary>
+        /// Creates an instance of the pool upgrade args
+        /// </summary>
+        public PoolUpgradeArgs() : base("upgrade")
+        {
+        }
+
         /// <summary>
         /// Get or set the name for the pool that should be upgraded
         /// </summary>
@@ -22,7 +29,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// </summary>
         /// <param name="errors">Any errors</param>
         /// <returns>true if valid;false otherwise</returns>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (!AllPools && string.IsNullOrWhiteSpace(PoolName))
@@ -34,12 +41,10 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             return errors == null;
         }
 
-        /// <summary>
-        /// Returns a string representation of the arguments, that shoul be passed onto zpool upgrade
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
-            return AllPools ? " -a" : $" {PoolName}";
+            return AllPools ? $"{command} -a" : $"{command} {PoolName}";
         }
     }
 }
