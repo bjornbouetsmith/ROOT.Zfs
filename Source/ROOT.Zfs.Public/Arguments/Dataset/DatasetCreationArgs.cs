@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Dataset
 {
     /// <summary>
     /// Container for arguments needed to create a dataset

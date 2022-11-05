@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Dataset
 {
     /// <summary>
     /// Contains the required information to mount a filesystem

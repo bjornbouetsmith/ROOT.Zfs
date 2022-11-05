@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Tests.Public.Arguments
 {
