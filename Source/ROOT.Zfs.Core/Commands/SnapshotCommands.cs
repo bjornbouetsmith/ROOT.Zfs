@@ -53,6 +53,11 @@ namespace ROOT.Zfs.Core.Commands
         internal static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
         {
             datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
+            if (string.IsNullOrWhiteSpace(snapshotName))
+            {
+                snapshotName = CreateSnapshotName(DateTime.UtcNow.ToLocalTime());
+            }
+
             if (NameAllow.Matches(snapshotName).Count != snapshotName.Length)
             {
                 throw new ArgumentException($"{snapshotName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapshotName));
@@ -60,16 +65,7 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapshotName}");
         }
-
-        /// <summary>
-        /// Creates a snapshot of the dataset using the format: yyyyMMddHHmmss
-        /// </summary>
-        internal static ProcessCall CreateSnapshot(string datasetOrVolume)
-        {
-            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            return CreateSnapshot(datasetOrVolume, CreateSnapshotName(DateTime.UtcNow));
-        }
-
+        
         /// <summary>
         /// Creates a clone of the given snapshot targeting the dataset or volume
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-clone.8.html

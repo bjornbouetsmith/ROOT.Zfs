@@ -18,8 +18,8 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void CreateSnapshotWithoutNameTest()
         {
-            var expectedPrefix = $"/sbin/zfs snap tank/myds@{DateTime.UtcNow:yyyyMMddHHmm}";
-            var command = SnapshotCommands.CreateSnapshot("tank/myds");
+            var expectedPrefix = $"/sbin/zfs snap tank/myds@{DateTime.UtcNow.ToLocalTime():yyyyMMddHHmm}";
+            var command = SnapshotCommands.CreateSnapshot("tank/myds", null);
             Console.WriteLine(command.FullCommandLine);
             Console.WriteLine(expectedPrefix);
             Assert.IsTrue(command.FullCommandLine.StartsWith(expectedPrefix));
