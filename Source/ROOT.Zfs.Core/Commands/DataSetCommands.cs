@@ -81,7 +81,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(mountArgs));
             }
 
-            return new ProcessCall(WhichZfs, $"mount{mountArgs}");
+            return new ProcessCall(WhichZfs, mountArgs.ToString());
         }
         /// <summary>
         /// Returns a command to unmount a filesystem or mount point

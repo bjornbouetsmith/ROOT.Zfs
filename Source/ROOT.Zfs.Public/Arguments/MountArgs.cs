@@ -8,8 +8,14 @@ namespace ROOT.Zfs.Public.Arguments
     /// <summary>
     /// Contains the required information to mount a filesystem
     /// </summary>
-    public class MountArgs
+    public class MountArgs : Args
     {
+        /// <inheritdoc />
+        public MountArgs() : base("mount")
+        {
+            
+        }
+
         /// <summary>
         /// The name of the filesystem to mount
         /// </summary>
@@ -52,7 +58,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// Validates the arguments and returns errors if not valid
         /// If no errors are found, the list <paramref name="errors"/> will be null
         /// </summary>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
 
@@ -71,12 +77,13 @@ namespace ROOT.Zfs.Public.Arguments
             return errors == null;
         }
 
-        /// <summary>
-        /// Converts this instance into its string representation, so it can be passed onto the zfs command
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
-            StringBuilder args = new StringBuilder();
+            var args = new StringBuilder();
+
+            args.Append(command);
+
             if (OverLayMount)
             {
                 args.Append(" -O");
@@ -99,9 +106,9 @@ namespace ROOT.Zfs.Public.Arguments
                 // Invalid zfs properties will be ignored and filtered away because ToMountArguments
                 // will retun either null or an empty string to indicate if they are valid or not
                 var mountArgs = string.Join(',', Properties.Where(p => !string.IsNullOrWhiteSpace(p.Property)
-                                                                  && !string.IsNullOrWhiteSpace(p.Value))
-                                                            .Select(p => p.ToMountArgument())
-                                                            .Where(s => !string.IsNullOrWhiteSpace(s)));
+                                                                       && !string.IsNullOrWhiteSpace(p.Value))
+                    .Select(p => p.ToMountArgument())
+                    .Where(s => !string.IsNullOrWhiteSpace(s)));
 
                 if (!string.IsNullOrWhiteSpace(mountArgs))
                 {
