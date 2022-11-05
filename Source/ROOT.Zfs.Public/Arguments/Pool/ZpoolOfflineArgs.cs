@@ -58,10 +58,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override string ToString()
         {
             var args = new StringBuilder();
-
-            args.Append($" {PoolName}");
-            args.Append($" {Device}");
-
+            
             if (ForceFault)
             {
                 args.Append(" -f");
@@ -71,6 +68,9 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             {
                 args.Append(" -t");
             }
+
+            args.Append($" {PoolName}");
+            args.Append($" {Device}");
 
             return args.ToString();
         }
