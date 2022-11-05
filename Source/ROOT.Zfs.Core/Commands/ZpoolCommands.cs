@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Text;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -9,9 +7,14 @@ namespace ROOT.Zfs.Core.Commands
 {
     internal class ZpoolCommands : Commands
     {
-        internal static ProcessCall GetHistory(string pool)
+        internal static IProcessCall History(PoolHistoryArgs args)
         {
-            return new ProcessCall(WhichZpool, $"history -l {pool}");
+            if (!args.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
+            }
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         internal static ProcessCall GetStatus(string pool)

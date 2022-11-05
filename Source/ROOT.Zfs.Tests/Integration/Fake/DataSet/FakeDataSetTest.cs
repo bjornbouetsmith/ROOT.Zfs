@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
@@ -12,10 +13,16 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
     public abstract class FakeDataSetTest
     {
         internal abstract FakeRemoteConnection CreateProcessCall();
+
+        internal IDatasets GetDatasets(FakeRemoteConnection remoteConnection = null)
+        {
+            return new Datasets(remoteConnection ?? CreateProcessCall());
+        }
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void ListTest()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             var dataSets = ds.List(default, null, false);
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
@@ -24,10 +31,12 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             }
         }
 
+
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetDataSetShouldReturnDataSet()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             var root = ds.List(default, "tank", false).FirstOrDefault();
 
             Assert.IsNotNull(root);
@@ -39,14 +48,14 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetNonExistingDataSetShouldThrowException()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             Assert.ThrowsException<ProcessCallException>(() => ds.List(default, "ungabunga", false).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
         public void CreateDateSetTest()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             var args = new DatasetCreationArgs
             {
                 DataSetName = "tank/myds",
@@ -61,7 +70,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void CreateDateSetInvalidTest()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             var args = new DatasetCreationArgs
             {
                 DataSetName = "tank/myds",
@@ -75,7 +84,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         [TestMethod, TestCategory("FakeIntegration")]
         public void DestroyDataSetTest()
         {
-            var ds = new Datasets(CreateProcessCall());
+            var ds = GetDatasets();
             var response = ds.Destroy("tank/myds", DatasetDestroyFlags.Recursive);
             Assert.AreEqual(DatasetDestroyFlags.Recursive, response.Flags);
         }
@@ -84,7 +93,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void PromoteDatasetTest()
         {
             var processCall = CreateProcessCall();
-            var ds = new Datasets(processCall);
+            var ds = GetDatasets(processCall);
             ds.Promote("tank/myds");
             var commands = processCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
@@ -95,7 +104,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void MountDatasetTest()
         {
             var processCall = CreateProcessCall();
-            var ds = new Datasets(processCall);
+            var ds = GetDatasets(processCall);
             ds.Mount(new MountArgs { Filesystem = "tank/myds" });
             var commands = processCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
@@ -106,7 +115,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void UnmountDatasetTest()
         {
             var processCall = CreateProcessCall();
-            var ds = new Datasets(processCall);
+            var ds = GetDatasets(processCall);
             ds.Unmount(new UnmountArgs { Filesystem = "tank/myds" });
             var commands = processCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);

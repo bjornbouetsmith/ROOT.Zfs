@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ROOT.Zfs.Public.Arguments;
+﻿using System.Collections.Generic;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -12,22 +10,18 @@ namespace ROOT.Zfs.Public
     /// Contains methods that corresponds to commands you can run with the zpool binary
     /// see: https://openzfs.github.io/openzfs-docs/man/8/zpool.8.html?highlight=zpool
     /// </summary>
-    public interface IZPool
+    public interface IZPool : IBasicZfs
     {
         /// <summary>
         /// Gets command history for the pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-history.8.html
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="skipLines"></param>
-        /// <param name="afterDate"></param>
-        IEnumerable<CommandHistory> GetHistory(string pool, int skipLines = 0, DateTime afterDate = default);
+        IEnumerable<CommandHistory> History(PoolHistoryArgs args);
 
         /// <summary>
         /// Gets the pool status for the given pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-status.8.html
         /// </summary>
-        /// <param name="pool"></param>
         PoolStatus GetStatus(string pool);
 
         /// <summary>

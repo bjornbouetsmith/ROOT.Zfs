@@ -2,19 +2,24 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
-using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
     [TestClass]
     public class FakeZfsTest
     {
-        readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");// "bbs", "zfsdev.root.dom", true);
+        readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
+
+        private IZfs GetZfs()
+        {
+            return new Core.Zfs(_remoteProcessCall);
+        }
 
         [TestMethod,TestCategory("FakeIntegration")]
         public void GetVersionInfo()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = GetZfs();
             var info = zfs.GetVersionInfo();
             Assert.IsNotNull(info);
             Assert.IsTrue(info.Lines.Any());
@@ -23,11 +28,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 Console.WriteLine(line);
             }
         }
-
+        
         [TestMethod, TestCategory("FakeIntegration")]
         public void ListDisksTest()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = GetZfs();
             var disks = zfs.ListDisks();
             Assert.IsNotNull(disks);
             Assert.IsTrue(disks.Any());
@@ -39,7 +44,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void InitializeTest()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = GetZfs();
             zfs.Initialize();
 
             var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();

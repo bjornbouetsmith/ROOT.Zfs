@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using ROOT.Zfs.Core.Commands;
 
 namespace ROOT.Zfs.Tests.VersionResponses
 {
@@ -945,7 +944,7 @@ filesystem      1663946563      tank/myds34     24576   24576   524263424       
 filesystem      1663956157      tank/myds37     24576   24576   15011878912     /tank/myds37
 filesystem      1663946343      tank/myds44     24576   24576   15011878912     /tank/myds44
 filesystem      1663781153      tank/mytestds2  24576   24576   1073717248      /tank/mytestds2";
-            return string.Join("\r\n", content.Split(new[] { '\r', '\n' }).Where(l => l.Contains(contains)));
+            return string.Join("\r\n", content.Split('\r', '\n').Where(l => l.Contains(contains)));
         }
 
         private string GetVersion()

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
@@ -10,10 +11,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
+        private IZfs GetZfs()
+        {
+            return new Core.Zfs(_remoteProcessCall);
+        }
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetSmartInfosTest()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = GetZfs();
             var infos = zfs.GetSmartInfos().ToList();
 
             Assert.IsNotNull(infos);
@@ -23,7 +29,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod]
         public void GetSmartInfoTest()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = GetZfs();
             var disks = zfs.ListDisks();
 
             foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))

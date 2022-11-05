@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
@@ -15,7 +16,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private Properties GetProperties()
+        private IProperties GetProperties()
         {
             var props =  new Properties(_remoteProcessCall);
             props.RequiresSudo = TestHelpers.RequiresSudo;
@@ -77,7 +78,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-            var dsHelper = new Datasets(_remoteProcessCall);
+            IDatasets dsHelper = new Datasets(_remoteProcessCall);
             dsHelper.RequiresSudo = pr.RequiresSudo;
 
             var dataset = $"{pool.Name}/{Guid.NewGuid()}";

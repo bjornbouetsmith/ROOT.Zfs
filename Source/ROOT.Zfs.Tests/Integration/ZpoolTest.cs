@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private ZPool GetZpool()
+        private IZPool GetZpool()
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.RequiresSudo = TestHelpers.RequiresSudo;
@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Tests.Integration
         }
 
         [TestMethod, TestCategory("Integration")]
-        public void GetHistoryTestWithSkip()
+        public void HistoryTestWithSkip()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
@@ -35,9 +35,10 @@ namespace ROOT.Zfs.Tests.Integration
             snap.CreateSnapshot(pool.Name, "test2");
             snap.CreateSnapshot(pool.Name, "test3");
             snap.CreateSnapshot(pool.Name, null);
-            var lines = zp.GetHistory(pool.Name).ToList().Count;
-
-            var history = zp.GetHistory(pool.Name, lines - 2).ToList();
+            var args = new PoolHistoryArgs { PoolName = pool.Name };
+            var lines = zp.History(args).ToList().Count;
+            args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
+            var history = zp.History(args).ToList();
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
             Assert.AreEqual(2, history.Count);
@@ -46,17 +47,18 @@ namespace ROOT.Zfs.Tests.Integration
 
 
         [TestMethod, TestCategory("Integration")]
-        public void GetHistory()
+        public void HistoryTest()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var history = zp.GetHistory(pool.Name);
+            var args = new PoolHistoryArgs { PoolName = pool.Name };
+            var history = zp.History(args);
             Assert.IsNotNull(history);
             Console.WriteLine(history.Dump(new JsonFormatter()));
         }
 
         [TestMethod, TestCategory("Integration")]
-        public void GetHistoryAfterDate()
+        public void HistoryAfterDateTest()
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
@@ -66,12 +68,13 @@ namespace ROOT.Zfs.Tests.Integration
             snap.CreateSnapshot(pool.Name, "test2");
             snap.CreateSnapshot(pool.Name, "test3");
             snap.CreateSnapshot(pool.Name, null);
-            var last10AtMost = zp.GetHistory(pool.Name).TakeLast(10).ToList();
+            var args = new PoolHistoryArgs { PoolName = pool.Name };
+            var last10AtMost = zp.History(args).TakeLast(10).ToList();
 
             // This is safe, since zfs always have at last pool creation as a history event
             var history = last10AtMost.First();
-
-            var afterDate = zp.GetHistory(pool.Name, 0, history.Time).ToList();
+            args = new PoolHistoryArgs { PoolName = pool.Name, AfterDate = history.Time };
+            var afterDate = zp.History(args).ToList();
 
             if (last10AtMost.Count > 1)
             {
@@ -93,7 +96,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ZpoolStatusTest()
         {
-            var zfs = new Core.Zfs(_remoteProcessCall);
+            IZfs zfs = new Core.Zfs(_remoteProcessCall);
             using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
             var status = zfs.Pool.GetStatus(testPool.Name);
 
@@ -495,11 +498,11 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
 
             var device = pool.Disks.Last();
-            var args = new PoolOfflineArgs{PoolName=pool.Name,Device=device};
+            var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
             zp.Offline(args);
 
             var status = zp.GetStatus(pool.Name);
-            
+
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Degraded, status.State);
 
@@ -520,7 +523,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Degraded, status.State);
 
-            var onlineArgs = new PoolOnlineArgs{ PoolName = pool.Name, Device = device };
+            var onlineArgs = new PoolOnlineArgs { PoolName = pool.Name, Device = device };
             zp.Online(onlineArgs);
 
             status = zp.GetStatus(pool.Name);

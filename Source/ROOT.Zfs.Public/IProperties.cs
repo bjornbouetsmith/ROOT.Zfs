@@ -7,7 +7,7 @@ namespace ROOT.Zfs.Public
     /// <summary>
     /// Base properties interface with common functionality
     /// </summary>
-    public interface IProperties
+    public interface IProperties : IBasicZfs
     {
         /// <summary>
         /// Gets all available properties that can be set for the given type of root

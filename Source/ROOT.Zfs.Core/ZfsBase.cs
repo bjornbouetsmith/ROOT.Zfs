@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Core
 {
-    internal abstract class ZfsBase
+    internal abstract class ZfsBase : IBasicZfs
     {
         private readonly IProcessCall _remoteConnection;
 

@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Public
     /// Contains zfs dataset related commands, i.e.
     /// Create/Destroy filesystems &amp; volumes
     /// </summary>
-    public interface IDatasets
+    public interface IDatasets : IBasicZfs
     {
         /// <summary>
         /// List datasets with the given name, possibly also returning child datasets

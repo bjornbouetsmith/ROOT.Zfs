@@ -91,7 +91,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
 
             args.Append($" {PoolName}");
 
-            var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", System.StringComparison.OrdinalIgnoreCase));
+            var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", StringComparison.OrdinalIgnoreCase));
 
             if (ashift != null)
             {

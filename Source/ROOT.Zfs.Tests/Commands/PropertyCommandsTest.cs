@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 
 namespace ROOT.Zfs.Tests.Commands

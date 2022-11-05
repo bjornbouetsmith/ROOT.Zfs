@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
@@ -12,10 +13,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         private readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
+        private ISnapshots GetSnapshots()
+        {
+            return new Snapshots(_remoteProcessCall);
+        }
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void ListSnapshotsTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
 
             var snapshots = sn.List("tank/myds");
             Assert.IsNotNull(snapshots);
@@ -26,13 +32,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 Console.WriteLine(snap.Size.ToString());
             }
         }
-
+        
         [TestMethod, TestCategory("FakeIntegration")]
         public void RemoteCreateAndDestroySnapshot()
         {
             var snapName = "RemoteCreateSnapshot" + new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddhhmmss");
 
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
 
             sn.CreateSnapshot("tank/myds", snapName);
 
@@ -55,7 +61,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void CreateAndDeleteByPatternTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
             var prefix = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddHHmmssfff");
             sn.CreateSnapshot("tank/myds", $"{prefix}-1");
             sn.CreateSnapshot("tank/myds", $"{prefix}-2");
@@ -71,7 +77,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod]
         public void SnapshotHoldTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
             sn.Hold("tank/myds@12345", "mytag", false);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1,commands.Count);
@@ -81,7 +87,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod]
         public void SnapshotHoldsTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
             var holds = sn.Holds("tank/myds@12345", false);
             Assert.AreEqual(1,holds.Count);
             var commands = _remoteProcessCall.GetCommandsInvoked();
@@ -92,7 +98,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod]
         public void SnapshotReleaseTest()
         {
-            var sn = new Snapshots(_remoteProcessCall);
+            var sn = GetSnapshots();
             sn.Release("tank/myds@12345","mytag", false);
             
             var commands = _remoteProcessCall.GetCommandsInvoked();

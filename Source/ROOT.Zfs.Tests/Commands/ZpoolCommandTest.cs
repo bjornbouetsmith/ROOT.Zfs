@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -14,7 +13,8 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void GetHistoryCommandTest()
         {
-            var command = ZpoolCommands.GetHistory("tank");
+            var args = new PoolHistoryArgs { PoolName = "tank" };
+            var command = ZpoolCommands.History(args);
 
             Assert.AreEqual("/sbin/zpool history -l tank", command.FullCommandLine);
         }

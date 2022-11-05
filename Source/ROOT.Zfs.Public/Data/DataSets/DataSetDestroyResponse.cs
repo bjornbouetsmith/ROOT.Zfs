@@ -1,5 +1,4 @@
-﻿using ROOT.Zfs.Public.Arguments;
-using ROOT.Zfs.Public.Arguments.Dataset;
+﻿using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Public.Data.Datasets
 {

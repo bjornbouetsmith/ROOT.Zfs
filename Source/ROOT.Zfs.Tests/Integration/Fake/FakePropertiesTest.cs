@@ -14,10 +14,15 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         private readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
+        private IProperties GetProperties()
+        {
+            return new Properties(_remoteProcessCall);
+        }
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void ListAllProperties()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
 
             var props = pr.GetProperties(PropertyTarget.Dataset,"tank/myds");
             Assert.IsNotNull(props);
@@ -27,10 +32,12 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             }
         }
 
+        
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void SetDataSetProperty()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var newVal = pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
@@ -43,7 +50,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetDataSetProperty()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var newVal = pr.SetProperty(PropertyTarget.Dataset,"tank/myds", "atime", "off");
 
             Assert.AreEqual("off", newVal.Value);
@@ -56,7 +63,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetAvailableDatasetProperties()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var props = pr.GetAvailableProperties(PropertyTarget.Dataset).ToList();
             Assert.IsTrue(props.Count > 0);
             Console.WriteLine(props.Dump(new JsonFormatter()));
@@ -65,7 +72,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetAvailablePoolProperties()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
             var props = pr.GetAvailableProperties(PropertyTarget.Pool).ToList();
             Assert.IsTrue(props.Count > 0);
             Console.WriteLine(props.Dump(new JsonFormatter()));
@@ -77,7 +84,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void ResetPropertyTest()
         {
-            var pr = new Properties(_remoteProcessCall);
+            var pr = GetProperties();
 
             var before = pr.GetProperty(PropertyTarget.Dataset,"tank/myds", "atime");
             Assert.AreEqual("off", before.Value);

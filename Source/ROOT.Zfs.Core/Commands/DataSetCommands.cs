@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Core.Commands

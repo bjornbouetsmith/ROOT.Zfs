@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
@@ -15,7 +16,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private Datasets GetDataSets()
+        private IDatasets GetDataSets()
         {
             var ds = new Datasets(_remoteProcessCall);
             ds.RequiresSudo = TestHelpers.RequiresSudo;

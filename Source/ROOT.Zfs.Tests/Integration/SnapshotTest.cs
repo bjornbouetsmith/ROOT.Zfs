@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Tests.Integration
 {
@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private Snapshots GetSnapshots()
+        private ISnapshots GetSnapshots()
         {
             var sn = new Snapshots(_remoteProcessCall);
             sn.RequiresSudo = TestHelpers.RequiresSudo;

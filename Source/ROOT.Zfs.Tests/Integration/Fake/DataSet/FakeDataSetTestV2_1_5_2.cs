@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.OS;
 
 namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
 {

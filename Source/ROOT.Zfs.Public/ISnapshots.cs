@@ -6,7 +6,7 @@ namespace ROOT.Zfs.Public
     /// <summary>
     /// Contains methods to manipulate snapshots in a zfs dataset
     /// </summary>
-    public interface ISnapshots
+    public interface ISnapshots : IBasicZfs
     {
         /// <summary>
         /// Gets a list of snapshots for the given dataset or volumne.

@@ -5,7 +5,6 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
-using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -19,15 +18,14 @@ namespace ROOT.Zfs.Core
         public ZPool(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
-
-        /// <inheritdoc />
-        public IEnumerable<CommandHistory> GetHistory(string pool, int skipLines = 0, DateTime afterDate = default)
+        
+        public IEnumerable<CommandHistory> History(PoolHistoryArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.GetHistory(pool));
+            var pc = BuildCommand(ZpoolCommands.History(args));
 
             var response = pc.LoadResponse(true);
 
-            return CommandHistoryHelper.FromStdOut(response.StdOut, skipLines, afterDate);
+            return CommandHistoryHelper.FromStdOut(response.StdOut, args.SkipLines, args.AfterDate);
         }
 
         /// <inheritdoc />

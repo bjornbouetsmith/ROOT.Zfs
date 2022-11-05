@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Tests
         public PoolStatus CreatePool(PoolCreationArgs args)
         {
             _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
-            var zp = new ZPool(_remoteProcessCall);
+            IZPool zp = new ZPool(_remoteProcessCall);
             zp.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             return zp.CreatePool(args);
         }
