@@ -176,7 +176,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            return new ProcessCall(WhichZpool, $"trim{args}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>

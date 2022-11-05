@@ -7,8 +7,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains the required arguments to trim either a pool or a device inside the pool
     /// </summary>
-    public class PoolTrimArgs
+    public class PoolTrimArgs : Args
     {
+        /// <summary>
+        /// Creates an instance of the trim args
+        /// </summary>
+        public PoolTrimArgs() : base("trim")
+        {
+        }
+
         /// <summary>
         /// The name of the pool to trim
         /// </summary>
@@ -40,7 +47,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <summary>
         /// Validates thats the trim arguments have all required information
         /// </summary>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
 
@@ -53,13 +60,12 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             return errors == null;
         }
 
-        /// <summary>
-        /// Returns a string representation of this instance, that can be passed onto zpool trim
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
             StringBuilder args = new StringBuilder();
+
+            args.Append(command);
 
             if (Secure)
             {
