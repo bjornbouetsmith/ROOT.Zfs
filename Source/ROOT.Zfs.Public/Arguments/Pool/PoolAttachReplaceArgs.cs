@@ -3,12 +3,12 @@ using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Represents all arguments to zpool attach or replace
     /// </summary>
-    public class ZpoolAttachReplaceArgs
+    public class PoolAttachReplaceArgs
     {
         /// <summary>
         /// Name of the pool to attach or replace a device to

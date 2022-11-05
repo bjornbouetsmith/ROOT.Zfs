@@ -111,21 +111,29 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        [DataRow("tank", "sda", false, "/sbin/zpool online tank sda")]
-        [DataRow("tank", "sda", true, "/sbin/zpool online tank sda -e")]
-        public void OnlinePoolDeviceTest(string pool, string device, bool expandSize, string expectedCommand)
+        [DataRow("tank", "", null, true)]
+        [DataRow("tank", "sda", "/sbin/zpool online tank sda", false)]
+        public void OnlinePoolDeviceTest(string pool, string device, string expectedCommand, bool expectException)
         {
-            var command = ZpoolCommands.Online(pool, device, expandSize);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            var args = new PoolOnlineArgs { PoolName = pool, Device = device };
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Online(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Online(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
- 
+
         [DataRow("tank", null, null, true)]
         [DataRow(null, "sda", null, true)]
         [DataRow("tank", "sda", "/sbin/zpool offline tank sda", false)]
         [TestMethod]
         public void OfflinePoolDeviceTest(string pool, string device, string expectedCommand, bool expectException)
         {
-            var args = new ZpoolOfflineArgs
+            var args = new PoolOfflineArgs
             {
                 PoolName = pool,
                 Device = device,
@@ -190,7 +198,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void TrimTest(string pool, string device, string expected, bool expectException = false)
         {
-            var args = new ZpoolTrimArgs
+            var args = new PoolTrimArgs
             {
                 PoolName = pool,
                 DeviceName = device,
@@ -226,7 +234,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void UpgradePoolTest(string poolName, bool all, string expected, bool expectException = false)
         {
-            var args = new ZpoolUpgradeArgs { PoolName = poolName, AllPools = all };
+            var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
             if (expectException)
             {
                 Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Upgrade(args));
@@ -252,7 +260,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void AttachTest(bool valid)
         {
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
@@ -282,7 +290,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ReplaceTest(bool valid)
         {
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
@@ -312,7 +320,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void AddTest(bool valid)
         {
-            var args = new ZpoolAddArgs
+            var args = new PoolAddArgs
             {
                 PoolName = valid ? "tank" : null,
                 VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "disk1", "disk2" } } },
@@ -334,7 +342,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void RemoveTest(bool valid)
         {
-            var args = new ZpoolRemoveArgs
+            var args = new PoolRemoveArgs
             {
                 PoolName = valid ? "tank" : null,
                 VDevOrDevice = "mirror-0",

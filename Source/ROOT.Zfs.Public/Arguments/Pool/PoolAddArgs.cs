@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Encapsulates all the arguments to zpool add
     /// </summary>
-    public class ZpoolAddArgs
+    public class PoolAddArgs : ArgsBase
     {
         /// <summary>
         /// Name of the pool to add one or more vdevs to
@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// <summary>
         /// Validates that the pool creation arguments contains the minimum required information
         /// </summary>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (string.IsNullOrWhiteSpace(PoolName))
@@ -70,33 +70,33 @@ namespace ROOT.Zfs.Public.Arguments
             return errors == null;
         }
 
-        /// <summary>
-        /// Returns a string represenation of all the arguments that can be passed onto zpool add
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        public override string BuildArgs(string command)
         {
-            StringBuilder arguments = new StringBuilder();
+            var args = new StringBuilder();
+
+            args.Append(command);
 
             if (Force)
             {
-                arguments.Append(" -f");
+                args.Append(" -f");
             }
 
-            arguments.Append($" {PoolName}");
+            args.Append($" {PoolName}");
 
             var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", System.StringComparison.OrdinalIgnoreCase));
 
             if (ashift != null)
             {
-                arguments.Append($" -o ashift={ashift.Value}");
+                args.Append($" -o ashift={ashift.Value}");
             }
 
             foreach (var vdevArg in VDevs ?? throw new ArgumentException("Missing Vdevs"))
             {
-                arguments.Append(" " + vdevArg);
+                args.Append(" " + vdevArg);
             }
 
-            return arguments.ToString();
+            return args.ToString();
         }
     }
 }

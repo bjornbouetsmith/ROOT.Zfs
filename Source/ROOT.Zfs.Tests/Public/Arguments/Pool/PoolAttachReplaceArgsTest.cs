@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 {
     [TestClass]
-    public class ZpoolAttachReplaceArgsTest
+    public class PoolAttachReplaceArgsTest
     {
         [DataRow("tank", "/dev/sdb", "/dev/sdc", false, false, null, " tank /dev/sdb /dev/sdc")]
         [DataRow("tank", "/dev/sdb", null, false, false, null, " tank /dev/sdb")]
@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         public void ToStringTest(string pool, string vdev, string newDevice, bool force, bool sequential, string properties, string expected)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = pool,
                 OldDevice = vdev,
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         public void ValidateTest(string pool, string oldDevice, string newDevice, bool force, bool sequential, string properties, bool expectedValid)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = pool,
                 OldDevice = oldDevice,
@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ValidateWhenReplacing(string pool, string oldDevice, string newDevice, bool expectedValid)
         {
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = pool,
                 OldDevice = oldDevice,

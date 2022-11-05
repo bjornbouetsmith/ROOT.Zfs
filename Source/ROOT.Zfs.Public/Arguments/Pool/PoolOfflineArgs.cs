@@ -6,7 +6,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains the required arguments to a device offline inside a pool
     /// </summary>
-    public class ZpoolOfflineArgs
+    public class PoolOfflineArgs : ArgsBase
     {
         /// <summary>
         /// The name of the pool to take offline
@@ -28,13 +28,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// </summary>
         public bool Temporary { get; set; }
 
-
-        /// <summary>
-        /// Validates the arguments and returns whether or not they are valid
-        /// </summary>
-        /// <param name="errors">Any errors</param>
-        /// <returns>true if valid;false otherwise</returns>
-        public bool Validate(out IList<string> errors)
+        /// <inheritdoc />
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
             if (string.IsNullOrWhiteSpace(PoolName))
@@ -52,13 +47,11 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             return errors == null;
         }
 
-        /// <summary>
-        /// Returns a string representation of the arguments, that shoul be passed onto zpool upgrade
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        public override string BuildArgs(string command)
         {
             var args = new StringBuilder();
-            
+            args.Append(command);
             if (ForceFault)
             {
                 args.Append(" -f");

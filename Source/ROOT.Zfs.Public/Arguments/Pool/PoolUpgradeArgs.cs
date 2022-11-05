@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Contains arguments for zpool upgrade
     /// </summary>
-    public class ZpoolUpgradeArgs
+    public class PoolUpgradeArgs
     {
         /// <summary>
         /// Get or set the name for the pool that should be upgraded

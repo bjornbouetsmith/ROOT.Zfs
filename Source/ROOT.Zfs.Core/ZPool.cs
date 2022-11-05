@@ -96,16 +96,16 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Offline(ZpoolOfflineArgs args)
+        public void Offline(PoolOfflineArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Offline(args));
             pc.LoadResponse(true);
         }
 
         /// <inheritdoc />
-        public void Online(string pool, string device, bool expandSpace)
+        public void Online(PoolOnlineArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.Online(pool, device, expandSpace));
+            var pc = BuildCommand(ZpoolCommands.Online(args));
             pc.LoadResponse(true);
         }
 
@@ -139,7 +139,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Trim(ZpoolTrimArgs args)
+        public void Trim(PoolTrimArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Trim(args));
             pc.LoadResponse(true);
@@ -154,7 +154,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Upgrade(ZpoolUpgradeArgs args)
+        public void Upgrade(PoolUpgradeArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Upgrade(args));
             pc.LoadResponse(true);
@@ -168,26 +168,26 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Attach(ZpoolAttachReplaceArgs args)
+        public void Attach(PoolAttachReplaceArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Attach(args));
             pc.LoadResponse(true);
         }
 
         /// <inheritdoc />
-        public void Replace(ZpoolAttachReplaceArgs args)
+        public void Replace(PoolAttachReplaceArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Replace(args));
             pc.LoadResponse(true);
         }
         /// <inheritdoc />
-        public void Add(ZpoolAddArgs args)
+        public void Add(PoolAddArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Add(args));
             pc.LoadResponse(true);
         }
 
-        public void Remove(ZpoolRemoveArgs args)
+        public void Remove(PoolRemoveArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Remove(args));
             pc.LoadResponse(true);

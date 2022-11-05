@@ -65,18 +65,15 @@ namespace ROOT.Zfs.Public
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-offline.8.html
         /// </summary>
         /// <param name="args">The arguments to the offline command</param>
-        void Offline(ZpoolOfflineArgs args);
+        void Offline(PoolOfflineArgs args);
 
         /// <summary>
         /// Brings the specified physical device online.
         /// This command is not applicable to spares.
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-online.8.html
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="device"></param>
-        /// <param name="expandSpace"></param>
-        /// <returns></returns>
-        void Online(string pool, string device, bool expandSpace);
+        /// <param name="args">The arguments to the online command</param>
+        void Online(PoolOnlineArgs args);
 
         /// <summary>
         /// clear device errors in ZFS storage pool.
@@ -126,7 +123,7 @@ namespace ROOT.Zfs.Public
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-trim.8.html
         /// </summary>
         /// <param name="args">The arguments to the trim command</param>
-        void Trim(ZpoolTrimArgs args);
+        void Trim(PoolTrimArgs args);
 
         /// <summary>
         /// Displays pools which do not have all supported features enabled and pools formatted using a legacy ZFS version number.
@@ -141,7 +138,7 @@ namespace ROOT.Zfs.Public
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-upgrade.8.html
         /// </summary>
         /// <param name="args">Args to control whether to upgrade a single pool or all pools</param>
-        void Upgrade(ZpoolUpgradeArgs args);
+        void Upgrade(PoolUpgradeArgs args);
 
         /// <summary>
         /// Detaches device from a mirror. The operation is refused if there are no other valid replicas of the data.
@@ -158,7 +155,7 @@ namespace ROOT.Zfs.Public
         /// In either case, new_device begins to resilver immediately and any running scrub is cancelled.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-attach.8.html
         /// </summary>
-        void Attach(ZpoolAttachReplaceArgs args);
+        void Attach(PoolAttachReplaceArgs args);
 
         /// <summary>
         /// Replaces device with new-device.
@@ -170,7 +167,7 @@ namespace ROOT.Zfs.Public
         /// This form of replacement is useful after an existing disk has failed and has been physically replaced.
         /// In this case, the new disk may have the same /dev path as the old device, even though it is actually a different disk.ZFS recognizes this.
         /// </summary>
-        void Replace(ZpoolAttachReplaceArgs args);
+        void Replace(PoolAttachReplaceArgs args);
 
         /// <summary>
         /// Adds the specified virtual devices to the given pool.
@@ -178,7 +175,7 @@ namespace ROOT.Zfs.Public
         /// The behavior of the -f option, and the device checks performed are described in the zpool create subcommand.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-add.8.html
         /// </summary>
-        void Add(ZpoolAddArgs args);
+        void Add(PoolAddArgs args);
 
         /// <summary>
         /// Removes the specified device from the pool. This command supports removing hot spare, cache, log, and both mirrored and non-redundant primary top-level vdevs, including dedup and special vdevs.
@@ -187,6 +184,6 @@ namespace ROOT.Zfs.Public
         /// A mirrored top-level device(log or data) can be removed by specifying the top-level mirror for the same.Non-log devices or data devices that are part of a mirrored configuration can be removed using the zpool detach command.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-remove.8.html
         /// </summary>
-        void Remove(ZpoolRemoveArgs args);
+        void Remove(PoolRemoveArgs args);
     }
 }

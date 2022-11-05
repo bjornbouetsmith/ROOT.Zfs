@@ -81,12 +81,11 @@ namespace ROOT.Zfs.Core.Commands
         }
         
         /// <summary>
-        /// Takes the specified physical device offline. While the device is offline, no attempt is made to read or write to the device.
-        /// This command is not applicable to spares.
+        /// Returns a command to bring a device offline
         /// </summary>
         /// <param name="args">The arguments to zpool offline</param>
         /// <exception cref="ArgumentException">If arguments are missing required information</exception>
-        internal static IProcessCall Offline(ZpoolOfflineArgs args)
+        internal static IProcessCall Offline(PoolOfflineArgs args)
         {
             if (!args.Validate(out var errors))
             {
@@ -94,20 +93,23 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(errorMessage, nameof(args));
             }
 
-            return new ProcessCall(WhichZpool, $"offline{args}");
+            return new ProcessCall(WhichZpool, args.BuildArgs("offline"));
         }
-
+        
         /// <summary>
-        /// Brings the specified physical device online.
-        /// This command is not applicable to spares.
+        /// Returns a command to bring a device online
         /// </summary>
-        /// <param name="pool"></param>
-        /// <param name="device"></param>
-        /// <param name="expandSpace"></param>
-        /// <returns></returns>
-        internal static ProcessCall Online(string pool, string device, bool expandSpace)
+        /// <param name="args">The arguments to zpool online</param>
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        internal static IProcessCall Online(PoolOnlineArgs args)
         {
-            return new ProcessCall(WhichZpool, $"online {pool} {device}{(expandSpace ? " -e" : "")}");
+            if (!args.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
+            }
+
+            return new ProcessCall(WhichZpool, args.BuildArgs("online"));
         }
 
         /// <summary>
@@ -166,7 +168,7 @@ namespace ROOT.Zfs.Core.Commands
         /// Returns a trim command for the given pool and optional device
         /// </summary>
         /// <exception cref="ArgumentException">If arguments are missing required information</exception>
-        public static IProcessCall Trim(ZpoolTrimArgs args)
+        public static IProcessCall Trim(PoolTrimArgs args)
         {
             if (!args.Validate(out var errors))
             {
@@ -188,7 +190,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to upgrade either one pool to all feature flags, or all pools
         /// </summary>
-        public static IProcessCall Upgrade(ZpoolUpgradeArgs args)
+        public static IProcessCall Upgrade(PoolUpgradeArgs args)
         {
             if (!args.Validate(out var errors))
             {
@@ -210,7 +212,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to attach a device to a vdev
         /// </summary>
-        public static IProcessCall Attach(ZpoolAttachReplaceArgs attachArgs)
+        public static IProcessCall Attach(PoolAttachReplaceArgs attachArgs)
         {
             if (!attachArgs.Validate(out var errors))
             {
@@ -223,7 +225,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to replace a device to a vdev
         /// </summary>
-        public static IProcessCall Replace(ZpoolAttachReplaceArgs attachArgs)
+        public static IProcessCall Replace(PoolAttachReplaceArgs attachArgs)
         {
             if (!attachArgs.Validate(out var errors))
             {
@@ -233,17 +235,17 @@ namespace ROOT.Zfs.Core.Commands
             return new ProcessCall(WhichZpool, $"replace{attachArgs}");
         }
 
-        public static IProcessCall Add(ZpoolAddArgs addArgs)
+        public static IProcessCall Add(PoolAddArgs addArgs)
         {
             if (!addArgs.Validate(out var errors))
             {
                 var errorMessage = string.Join(Environment.NewLine, errors);
                 throw new ArgumentException(errorMessage, nameof(addArgs));
             }
-            return new ProcessCall(WhichZpool, $"add{addArgs}");
+            return new ProcessCall(WhichZpool, addArgs.BuildArgs("add"));
         }
 
-        public static IProcessCall Remove(ZpoolRemoveArgs removeArgs)
+        public static IProcessCall Remove(PoolRemoveArgs removeArgs)
         {
             if (!removeArgs.Validate(out var errors))
             {

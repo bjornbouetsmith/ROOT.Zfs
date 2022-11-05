@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Encapsulates all the arguments for zpool remove
     /// </summary>
-    public class ZpoolRemoveArgs
+    public class PoolRemoveArgs
     {
         /// <summary>
         /// Name of the pool to remove a device from

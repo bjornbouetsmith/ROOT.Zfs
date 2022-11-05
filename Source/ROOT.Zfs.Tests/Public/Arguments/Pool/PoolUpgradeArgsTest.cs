@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 {
     [TestClass]
-    public class ZpoolUpgradeArgsTest
+    public class PoolUpgradeArgsTest
     {
         [DataRow("tank",false,true)]
         [DataRow("tank", true, true)]
@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ValidTest(string poolName, bool all, bool expectedValid)
         {
-            var args = new ZpoolUpgradeArgs { PoolName = poolName, AllPools = all };
+            var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
             Assert.AreEqual(valid, expectedValid);

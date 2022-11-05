@@ -275,7 +275,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
 
-            var args = new ZpoolTrimArgs { PoolName = pool.Name };
+            var args = new PoolTrimArgs { PoolName = pool.Name };
             zp.Trim(args);
             var status = zp.GetStatus(pool.Name);
             Assert.AreEqual(State.Online, status.State);
@@ -287,7 +287,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             var firstDisk = pool.Disks[0];
-            var args = new ZpoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
+            var args = new PoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
             zp.Trim(args);
             var status = zp.GetStatus(pool.Name);
             Assert.AreEqual(State.Online, status.State);
@@ -358,7 +358,7 @@ namespace ROOT.Zfs.Tests.Integration
             var newDevice = pool.AddDisk();
             var zp = GetZpool();
 
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = pool.Name,
                 OldDevice = oldDevice,
@@ -382,7 +382,7 @@ namespace ROOT.Zfs.Tests.Integration
             var newDevice = pool.AddDisk();
             var zp = GetZpool();
 
-            var args = new ZpoolAttachReplaceArgs
+            var args = new PoolAttachReplaceArgs
             {
                 PoolName = pool.Name,
                 OldDevice = oldDevice,
@@ -418,7 +418,7 @@ namespace ROOT.Zfs.Tests.Integration
             var disk1 = pool.AddDisk();
             var disk2 = pool.AddDisk();
 
-            var args = new ZpoolAddArgs
+            var args = new PoolAddArgs
             {
                 PoolName = pool.Name,
                 Force = true,
@@ -466,7 +466,7 @@ namespace ROOT.Zfs.Tests.Integration
             var status = pool.CreatePool(args);
             Assert.AreEqual(State.Online, status.State);
 
-            var removeArgs = new ZpoolRemoveArgs
+            var removeArgs = new PoolRemoveArgs
             {
                 PoolName = name,
                 VDevOrDevice = "mirror-1"
@@ -495,13 +495,38 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
 
             var device = pool.Disks.Last();
-            var args = new ZpoolOfflineArgs{PoolName=pool.Name,Device=device};
+            var args = new PoolOfflineArgs{PoolName=pool.Name,Device=device};
             zp.Offline(args);
 
             var status = zp.GetStatus(pool.Name);
             
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Degraded, status.State);
+
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void OnlineTest()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+
+            var device = pool.Disks.Last();
+            var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
+            zp.Offline(args);
+
+            var status = zp.GetStatus(pool.Name);
+
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            Assert.AreEqual(State.Degraded, status.State);
+
+            var onlineArgs = new PoolOnlineArgs{ PoolName = pool.Name, Device = device };
+            zp.Online(onlineArgs);
+
+            status = zp.GetStatus(pool.Name);
+
+            Console.WriteLine(status.Dump(new JsonFormatter()));
+            Assert.AreEqual(State.Online, status.State);
 
         }
     }

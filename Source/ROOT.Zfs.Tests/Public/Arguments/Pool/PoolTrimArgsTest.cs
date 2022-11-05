@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 {
     [TestClass]
-    public class ZpoolTrimArgsTest
+    public class PoolTrimArgsTest
     {
         [DataRow("tank", true)]
         [DataRow("", false)]
@@ -14,7 +14,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ValidateShouldValidateCorrectly(string poolName, bool expectValid)
         {
-            var args = new ZpoolTrimArgs { PoolName = poolName };
+            var args = new PoolTrimArgs { PoolName = poolName };
 
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ToStringTest(string poolName, string deviceName, bool secure, string trimRate, TrimAction trimAction, string expectedCommand)
         {
-            var args = new ZpoolTrimArgs
+            var args = new PoolTrimArgs
             {
                 PoolName = poolName,
                 DeviceName = deviceName,

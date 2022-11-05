@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Pool;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 {
     [TestClass]
-    public class ZpoolRemoveArgsTest
+    public class PoolRemoveArgsTest
     {
         [DataRow("tank", "mirror-0", false, true)]
         [DataRow("tank", "mirror-0", true, true)]
@@ -21,7 +21,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ValidateTest(string poolName, string vdevOrDevice, bool cancel, bool expectedValid)
         {
-            var args = new ZpoolRemoveArgs
+            var args = new PoolRemoveArgs
             {
                 PoolName = poolName,
                 VDevOrDevice = vdevOrDevice,
@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void ToStringTest(string poolName, string vdevOrDevice, bool cancel, string expected)
         {
-            var args = new ZpoolRemoveArgs
+            var args = new PoolRemoveArgs
             {
                 PoolName = poolName,
                 VDevOrDevice = vdevOrDevice,

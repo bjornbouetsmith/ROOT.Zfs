@@ -2,12 +2,12 @@
 using System.Text;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Public.Arguments
+namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
     /// Contains the required arguments to trim either a pool or a device inside the pool
     /// </summary>
-    public class ZpoolTrimArgs
+    public class PoolTrimArgs
     {
         /// <summary>
         /// The name of the pool to trim
