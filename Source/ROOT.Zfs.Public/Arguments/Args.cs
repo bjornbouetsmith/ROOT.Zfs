@@ -33,7 +33,9 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         protected abstract string BuildArgs(string command);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns a string representation of the current args class that can be passed directly onto the appropriate binary
+        /// </summary>
         public sealed override string ToString() // Sealed because we dont want implementation to override tostring
         {
             return BuildArgs(Command);

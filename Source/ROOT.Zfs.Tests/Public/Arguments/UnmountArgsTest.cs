@@ -30,12 +30,12 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             Assert.AreEqual(expectedValid, valid);
         }
 
-        [DataRow(true, true, "tank/myds", false, " -f -u tank/myds")]
-        [DataRow(true, false, "tank/myds", false, " -f tank/myds")]
-        [DataRow(false, false, "tank/myds", false, " tank/myds")]
-        [DataRow(true, true, null, true, " -f -u -a")]
-        [DataRow(true, false, null, true, " -f -a")]
-        [DataRow(false, false, null, true, " -a")]
+        [DataRow(true, true, "tank/myds", false, "unmount -f -u tank/myds")]
+        [DataRow(true, false, "tank/myds", false, "unmount -f tank/myds")]
+        [DataRow(false, false, "tank/myds", false, "unmount tank/myds")]
+        [DataRow(true, true, null, true, "unmount -f -u -a")]
+        [DataRow(true, false, null, true, "unmount -f -a")]
+        [DataRow(false, false, null, true, "unmount -a")]
         [TestMethod]
         public void ToStringTest(bool force, bool unloadKeys, string mountpoint, bool all, string expectedString)
         {

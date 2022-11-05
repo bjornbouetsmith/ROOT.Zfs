@@ -6,8 +6,13 @@ namespace ROOT.Zfs.Public.Arguments
     /// <summary>
     /// Contains the required information to unmount a dataset
     /// </summary>
-    public class UnmountArgs
+    public class UnmountArgs : Args
     {
+        /// <inheritdoc />
+        public UnmountArgs() : base("unmount")
+        {
+        }
+
         /// <summary>
         /// The name of the filesystem or mountpoint to unmount
         /// This can either be a filesystem name, or a full path to a mountpoint, i.e, /mnt/tank
@@ -39,7 +44,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// Validates the arguments and returns errors if not valid
         /// If no errors are found, the list <paramref name="errors"/> will be null
         /// </summary>
-        public bool Validate(out IList<string> errors)
+        public override bool Validate(out IList<string> errors)
         {
             errors = null;
 
@@ -58,13 +63,12 @@ namespace ROOT.Zfs.Public.Arguments
             return errors == null;
         }
 
-        /// <summary>
-        /// Converts this instance into its string representation, so it can be passed onto the zfs command
-        /// </summary>
-        public override string ToString()
+        /// <inheritdoc />
+        protected override string BuildArgs(string command)
         {
-            StringBuilder args = new StringBuilder();
-          
+            var args = new StringBuilder();
+            
+            args.Append(command);
 
             if (Force)
             {

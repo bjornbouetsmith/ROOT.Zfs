@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(unmountArgs));
             }
 
-            return new ProcessCall(WhichZfs, $"unmount{unmountArgs}");
+            return new ProcessCall(WhichZfs, unmountArgs.ToString());
         }
     }
 }
