@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 {
     [TestClass]
-    public class PoolCreationArgsTest
+    public class PoolCreateArgsTest
     {
         [TestMethod]
         public void NameShouldBeSet()
         {
-            var args = new PoolCreationArgs();
+            var args = new PoolCreateArgs();
 
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);
@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void VDevsMustBeSpecified()
         {
-            var args = new PoolCreationArgs { Name = "tank" };
+            var args = new PoolCreateArgs { PoolName = "tank" };
 
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);
@@ -42,9 +42,9 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void AnyTypeOfVdevShouldRequireAtLeastOneDevice()
         {
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = "tank",
+                PoolName = "tank",
                 VDevs =
                     new[]
                     {
@@ -65,9 +65,9 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         [TestMethod]
         public void MirrorShouldRequireAtLeastTwoDevices()
         {
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = "tank",
+                PoolName = "tank",
                 VDevs =
                     new []
                     { 

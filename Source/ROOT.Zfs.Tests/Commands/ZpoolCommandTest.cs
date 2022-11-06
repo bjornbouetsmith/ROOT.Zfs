@@ -54,9 +54,9 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void CreateMirrorPoolTest()
         {
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = "tank3",
+                PoolName = "tank3",
                 VDevs = new[]
                     {
                         new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -77,9 +77,9 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow(false)]
         public void CreateWithEmptyNameShouldThrowArgumentException(bool nameNull)
         {
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = nameNull ? null : "",
+                PoolName = nameNull ? null : "",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -93,9 +93,9 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void CreateMirrorNeedsAtLeastTwoDevices()
         {
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = "tank2",
+                PoolName = "tank2",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc" } },

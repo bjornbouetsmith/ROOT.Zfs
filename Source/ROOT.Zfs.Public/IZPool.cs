@@ -39,11 +39,11 @@ namespace ROOT.Zfs.Public
 
         /// <summary>
         /// Creates a new zpool using the provided args
-        ///<see cref="PoolCreationArgs"/> for details
+        ///<see cref="PoolCreateArgs"/> for details
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-create.8.html
         /// </summary>
         /// <returns>The pool status for the newly created pool</returns>
-        PoolStatus Create(PoolCreationArgs args);
+        PoolStatus Create(PoolCreateArgs args);
 
         /// <summary>
         /// Destroys the given pool

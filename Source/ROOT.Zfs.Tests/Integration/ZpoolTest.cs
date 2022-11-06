@@ -146,9 +146,9 @@ namespace ROOT.Zfs.Tests.Integration
 
             var name = "TestP" + Guid.NewGuid();
 
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = name,
+                PoolName = name,
                 MountPoint = "none",
                 VDevs = new VDevCreationArgs[]
                 {
@@ -187,9 +187,9 @@ namespace ROOT.Zfs.Tests.Integration
 
             var name = "TestP" + Guid.NewGuid();
             VDevCreationType type = raidz == 1 ? VDevCreationType.Raidz1 : raidz == 2 ? VDevCreationType.Raidz2 : VDevCreationType.Raidz3;
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = name,
+                PoolName = name,
                 MountPoint = "none",
                 VDevs = new VDevCreationArgs[]
                 {
@@ -236,9 +236,9 @@ namespace ROOT.Zfs.Tests.Integration
 
             var name = "TestP" + Guid.NewGuid();
             VDevCreationType type = draid == 1 ? VDevCreationType.DRaid1 : draid == 2 ? VDevCreationType.DRaid2 : VDevCreationType.DRaid3;
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = name,
+                PoolName = name,
                 MountPoint = "none",
                 VDevs = new VDevCreationArgs[]
                 {
@@ -447,9 +447,9 @@ namespace ROOT.Zfs.Tests.Integration
 
             var name = "TestP" + Guid.NewGuid();
 
-            var args = new PoolCreationArgs
+            var args = new PoolCreateArgs
             {
-                Name = name,
+                PoolName = name,
                 MountPoint = "none",
                 VDevs = new VDevCreationArgs[]
                 {

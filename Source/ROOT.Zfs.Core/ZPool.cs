@@ -78,12 +78,12 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolStatus Create(PoolCreationArgs args)
+        public PoolStatus Create(PoolCreateArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.CreatePool(args));
             pc.LoadResponse(true);
 
-            return Status(args.Name);
+            return Status(args.PoolName);
         }
 
         /// <inheritdoc />

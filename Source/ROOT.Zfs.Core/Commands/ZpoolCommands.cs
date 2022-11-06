@@ -45,9 +45,9 @@ namespace ROOT.Zfs.Core.Commands
         /// https://openzfs.github.io/openzfs-docs/man/7/zpoolconcepts.7.html
         /// https://openzfs.github.io/openzfs-docs/man/7/zfsprops.7.html
         /// </summary>
-        /// <param name="args">The arguments used to create the pool <see cref="PoolCreationArgs"/></param>
+        /// <param name="args">The arguments used to create the pool <see cref="PoolCreateArgs"/></param>
         /// <returns></returns>
-        internal static ProcessCall CreatePool(PoolCreationArgs args)
+        internal static ProcessCall CreatePool(PoolCreateArgs args)
         {
             if (!args.Validate(out var errors))
             {

@@ -17,9 +17,9 @@ namespace ROOT.Zfs.Tests
     internal class TestPool : IDisposable
     {
         private readonly IProcessCall _remoteProcessCall;
-        private PoolCreationArgs _args;
+        private PoolCreateArgs _args;
 
-        public string Name => _args.Name;
+        public string Name => _args.PoolName;
 
         public TestPool(IProcessCall remoteProcessCall)
         {
@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Tests
 
         public List<string> Disks { get; } = new List<string>();
 
-        public PoolStatus CreatePool(PoolCreationArgs args)
+        public PoolStatus CreatePool(PoolCreateArgs args)
         {
             _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
             IZPool zp = new ZPool(_remoteProcessCall);
@@ -59,7 +59,7 @@ namespace ROOT.Zfs.Tests
 
         private bool DestroyPool()
         {
-            var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.Name}");
+            var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.PoolName}");
             pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             var response = pc.LoadResponse(false);
             if (!response.Success)
@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests
         {
             if (!DestroyPool())
             {
-                Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.Name);
+                Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
             }
 
             foreach (var disk in Disks)
@@ -124,9 +124,9 @@ namespace ROOT.Zfs.Tests
 
                 var name = "TestP" + Guid.NewGuid();
 
-                var args = new PoolCreationArgs
+                var args = new PoolCreateArgs
                 {
-                    Name = name,
+                    PoolName = name,
                     MountPoint = "none",
                     VDevs = new VDevCreationArgs[]
                     {

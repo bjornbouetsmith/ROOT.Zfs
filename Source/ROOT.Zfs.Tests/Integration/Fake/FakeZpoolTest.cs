@@ -100,9 +100,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void DestroyPoolTest()
         {
             var zp = GetZpool();
-            var pool = zp.Create(new PoolCreationArgs
+            var pool = zp.Create(new PoolCreateArgs
             {
-                Name = "mytest",
+                PoolName = "mytest",
                 VDevs = new VDevCreationArgs[]
                 {
                     new()
@@ -205,9 +205,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void CreateDraidTest()
         {
             var zp = GetZpool();
-            zp.Create(new PoolCreationArgs
+            zp.Create(new PoolCreateArgs
             {
-                Name = "mytest",
+                PoolName = "mytest",
                 VDevs = new VDevCreationArgs[]
                 {
                     new DraigVDevCreationArgs
