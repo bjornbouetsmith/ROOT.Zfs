@@ -3,22 +3,22 @@
 namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
-    /// Class with shared properties between online/offline
+    /// Class with shared properties between online/offline/detach
     /// </summary>
-    public abstract class PoolOnlineOfflineArgs : Args
+    public abstract class PoolOnlineOfflineDetachArgs : Args
     {
         /// <inheritdoc />
-        protected PoolOnlineOfflineArgs(string command) : base(command)
+        protected PoolOnlineOfflineDetachArgs(string command) : base(command)
         {
         }
 
         /// <summary>
-        /// The name of the pool in which to either take a device offline or online
+        /// The name of the pool in which to either take a device offline/online or detach
         /// </summary>
         public string PoolName { get; set; }
 
         /// <summary>
-        /// The device to take either offline or online
+        /// The device to take either offline/online or detach
         /// </summary>
         public string Device { get; set; }
 
