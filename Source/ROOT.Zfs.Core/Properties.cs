@@ -35,14 +35,14 @@ namespace ROOT.Zfs.Core
             return properties;
         }
 
-        public ICollection<Property> GetAvailableProperties(PropertyTarget targetType)
+        public ICollection<Property> GetAvailable(PropertyTarget targetType)
         {
             return targetType == PropertyTarget.Pool
                 ? GetAvailablePoolProperties()
                 : GetAvailableZfsProperties();
         }
 
-        public PropertyValue GetProperty(PropertyTarget targetType, string target, string property)
+        public PropertyValue Get(PropertyTarget targetType, string target, string property)
         {
             var pc = BuildCommand(PropertyCommands.GetProperty(targetType, target, property));
 
@@ -51,16 +51,16 @@ namespace ROOT.Zfs.Core
             return PropertyValueHelper.FromString(response.StdOut);
         }
 
-        public PropertyValue SetProperty(PropertyTarget targetType, string target, string property, string value)
+        public PropertyValue Set(PropertyTarget targetType, string target, string property, string value)
         {
             var pc = BuildCommand(PropertyCommands.SetProperty(targetType, target, property, value));
 
             pc.LoadResponse(true);
 
-            return GetProperty(targetType, target, property);
+            return Get(targetType, target, property);
         }
 
-        public IEnumerable<PropertyValue> GetProperties(PropertyTarget targetType, string target)
+        public IEnumerable<PropertyValue> GetAll(PropertyTarget targetType, string target)
         {
             var pc = BuildCommand(PropertyCommands.GetProperties(targetType, target));
 
@@ -69,7 +69,7 @@ namespace ROOT.Zfs.Core
             return DatasetProperties.FromStdOutput(response.StdOut);
         }
 
-        public void ResetPropertyToInherited(string dataset, string property)
+        public void Reset(string dataset, string property)
         {
             var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, property));
 
