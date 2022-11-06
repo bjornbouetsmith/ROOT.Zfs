@@ -15,7 +15,9 @@ Tested against ZoL
 * version 2.1.4 on Ubuntu 22.04
 * version 0.86 on Ubuntu 20.04 
 
-Will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different - or because the commands are simply not available in that version of zfs. 
+Will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different - or because the commands are simply not available in that version of zfs.
+
+Commands that do not exist in the version of zfs you are running against, will obviously also fail.
 
 This is something that could be fixed in future versions.
 
