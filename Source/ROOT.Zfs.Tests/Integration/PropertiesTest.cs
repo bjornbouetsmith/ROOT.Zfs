@@ -7,6 +7,7 @@ using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Dataset;
+using ROOT.Zfs.Public.Arguments.Properties;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration

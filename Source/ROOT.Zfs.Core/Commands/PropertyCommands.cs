@@ -1,6 +1,7 @@
 ﻿using System;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Properties;
 
 namespace ROOT.Zfs.Core.Commands
 {

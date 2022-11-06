@@ -6,6 +6,7 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Properties;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {

@@ -5,6 +5,7 @@ using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Properties;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core

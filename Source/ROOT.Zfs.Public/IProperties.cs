@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ROOT.Zfs.Public.Arguments;
+using ROOT.Zfs.Public.Arguments.Properties;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public
