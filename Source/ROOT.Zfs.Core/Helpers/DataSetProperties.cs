@@ -6,12 +6,15 @@ namespace ROOT.Zfs.Core.Helpers
 {
     internal static class DatasetProperties
     {
-        internal static IEnumerable<PropertyValue> FromStdOutput(string stdOutput)
+        internal static IList<PropertyValue> FromStdOutput(string stdOutput)
         {
+            var list = new List<PropertyValue>();
             foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                yield return PropertyValueHelper.FromString(line);
+                list.Add(PropertyValueHelper.FromString(line));
             }
+
+            return list;
         }
     }
 }

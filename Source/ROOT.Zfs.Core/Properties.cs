@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -13,68 +14,53 @@ namespace ROOT.Zfs.Core
         internal Properties(IProcessCall remoteConnection) : base(remoteConnection)
         {
         }
-        
-        private ICollection<Property> GetAvailableZfsProperties()
+
+        /// <inheritdoc />
+        public IList<Property> GetAvailable(PropertyTarget targetType)
         {
-            var pc = BuildCommand(PropertyCommands.GetDatasetProperties());
-
-            var response = pc.LoadResponse(false);
-
-            // This is because when you call zfs get -H, you get an error, so the data gets returned in StdError
-            return PropertiesParser.FromStdOutput(response.StdError, 4);
+            var args = new GetPropertyArgs { PropertyTarget = targetType };
+            return GetAvailable(args);
         }
 
-        private ICollection<Property> GetAvailablePoolProperties()
+        private IList<Property> GetAvailable(GetPropertyArgs args)
         {
-            var cmd = BuildCommand(PropertyCommands.GetPoolProperties());
+            // create new intance, just in case someone re-uses an existing GetPropertyArgs with extra values set that can cause us to call with wrong arguments
+            var newArgs = new GetPropertyArgs { PropertyTarget = args.PropertyTarget };
+
+            var cmd = BuildCommand(PropertyCommands.Get(newArgs));
+            // get -H returns an error, so to get available we have to create bogus command, which will return on std error
             var response = cmd.LoadResponse(false);
-
-            // This is because when you call zpool get -H, you get an error, so the data gets returned in StdError
-            var properties = PropertiesParser.FromStdOutput(response.StdError, 3);
-
-            return properties;
+            var expectedColumns = args.PropertyTarget == PropertyTarget.Pool ? 3 : 4;
+            return PropertiesParser.FromStdOutput(response.StdError, expectedColumns);
         }
 
-        public ICollection<Property> GetAvailable(PropertyTarget targetType)
+        /// <inheritdoc />
+        public IList<PropertyValue> Get(GetPropertyArgs args)
         {
-            return targetType == PropertyTarget.Pool
-                ? GetAvailablePoolProperties()
-                : GetAvailableZfsProperties();
-        }
-
-        public PropertyValue Get(PropertyTarget targetType, string target, string property)
-        {
-            var pc = BuildCommand(PropertyCommands.GetProperty(targetType, target, property));
+            var pc = BuildCommand(PropertyCommands.Get(args));
 
             var response = pc.LoadResponse(true);
-
-            return PropertyValueHelper.FromString(response.StdOut);
-        }
-
-        public PropertyValue Set(PropertyTarget targetType, string target, string property, string value)
-        {
-            var pc = BuildCommand(PropertyCommands.SetProperty(targetType, target, property, value));
-
-            pc.LoadResponse(true);
-
-            return Get(targetType, target, property);
-        }
-
-        public IEnumerable<PropertyValue> GetAll(PropertyTarget targetType, string target)
-        {
-            var pc = BuildCommand(PropertyCommands.GetProperties(targetType, target));
-
-            var response = pc.LoadResponse(true);
-
             return DatasetProperties.FromStdOutput(response.StdOut);
         }
 
-        public void Reset(string dataset, string property)
+        /// <inheritdoc />
+        public PropertyValue Set(SetPropertyArgs args)
         {
-            var pc = BuildCommand(PropertyCommands.ResetPropertyToInherited(dataset, property));
+            var pc = BuildCommand(PropertyCommands.Set(args));
 
             pc.LoadResponse(true);
+            var getArgs = new GetPropertyArgs { PropertyTarget = args.PropertyTarget, Property = args.Property, Target = args.Target };
 
+            // Should be safe - if not, then the set above would have failed - if we could not find a property to set
+            return Get(getArgs).First();
+        }
+
+        /// <inheritdoc />
+        public void Reset(InheritPropertyArgs args)
+        {
+            var pc = BuildCommand(PropertyCommands.Inherit(args));
+
+            pc.LoadResponse(true);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     [TestClass]
     public class FakePropertiesTest
     {
-        private readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
+        private readonly FakeRemoteConnection _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
         private IProperties GetProperties()
         {
@@ -23,8 +23,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void ListAllProperties()
         {
             var pr = GetProperties();
-
-            var props = pr.GetAll(PropertyTarget.Dataset,"tank/myds");
+            var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds" };
+            var props = pr.Get(args);
             Assert.IsNotNull(props);
             foreach (var prop in props)
             {
@@ -32,16 +32,18 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             }
         }
 
-        
-
         [TestMethod, TestCategory("FakeIntegration")]
         public void SetDataSetProperty()
         {
             var pr = GetProperties();
-            var newVal = pr.Set(PropertyTarget.Dataset,"tank/myds", "atime", "off");
+            var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime", Value = "off" };
+            pr.Set(args);
 
-            Assert.AreEqual("off", newVal.Value);
-            Console.WriteLine(newVal.Dump(new JsonFormatter()));
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(2, commands.Count); // Set+Get
+
+            Assert.AreEqual("/sbin/zfs set atime=off tank/myds", commands[0]);
+            Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[1]);
         }
 
         /// <summary>
@@ -51,13 +53,14 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void GetDataSetProperty()
         {
             var pr = GetProperties();
-            var newVal = pr.Set(PropertyTarget.Dataset,"tank/myds", "atime", "off");
-
-            Assert.AreEqual("off", newVal.Value);
+            var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime"};
+            var val = pr.Get(args).First();
             
-            newVal = pr.Set(PropertyTarget.Dataset,"tank/myds", "atime", "on");
+            Assert.AreEqual("off", val.Value);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(1, commands.Count); // Get
             
-            Console.WriteLine(newVal.Dump(new JsonFormatter()));
+            Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[0]);
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -86,11 +89,23 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var pr = GetProperties();
 
-            var before = pr.Get(PropertyTarget.Dataset,"tank/myds", "atime");
-            Assert.AreEqual("off", before.Value);
+            var target = "tank/myds";
+            var property = "atime";
 
-            pr.Set(PropertyTarget.Dataset,"tank/myds", "atime", "on");
-            pr.Reset("tank/myds", "atime");
+            var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
+            var before = pr.Get(args).First();
+            Assert.AreEqual("off", before.Value);
+            var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "on" };
+            pr.Set(setArg);
+            var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
+            pr.Reset(inheritArgs);
+
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+
+            Console.WriteLine(commands.Dump(new JsonFormatter()));
+            // Get, set & get, inherit
+            Assert.AreEqual(4, commands.Count);
+
         }
     }
 }

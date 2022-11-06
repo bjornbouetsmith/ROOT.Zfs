@@ -28,8 +28,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-
-            var props = pr.GetAll(PropertyTarget.Dataset, pool.Name);
+            var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name };
+            var props = pr.Get(args);
             Assert.IsNotNull(props);
             foreach (var prop in props)
             {
@@ -42,8 +42,9 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-            var newVal = pr.Set(PropertyTarget.Dataset, pool.Name, "atime", "off");
-
+            var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = "off" };
+            var newVal = pr.Set(args);
+            
             Assert.AreEqual("off", newVal.Value);
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
@@ -53,13 +54,13 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var pr = GetProperties();
-            var newVal = pr.Set(PropertyTarget.Dataset, pool.Name, "atime", "off");
+            var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime"};
+            var val = pr.Get(getArgs).First();
+            var newPropVal = val.Value == "off" ? "on" : "off";
 
-            Assert.AreEqual("off", newVal.Value);
-
-
-            newVal = pr.Set(PropertyTarget.Dataset, pool.Name, "atime", "on");
-            Assert.AreEqual("on", newVal.Value);
+            var setArgs = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = newPropVal };
+            var newVal = pr.Set(setArgs);
+            Assert.AreEqual(newPropVal, newVal.Value);
 
             Console.WriteLine(newVal.Dump(new JsonFormatter()));
         }
@@ -90,13 +91,22 @@ namespace ROOT.Zfs.Tests.Integration
             dsHelper.Create(args);
             try
             {
-                var before = pr.Get(PropertyTarget.Dataset, dataset, "atime");
-                Assert.AreEqual("on", before.Value);
 
-                pr.Set(PropertyTarget.Dataset, dataset, "atime", "off");
-                pr.Reset(dataset, "atime");
-                var reset = pr.Get(PropertyTarget.Dataset, dataset, "atime");
+                var target = dataset;
+                var property = "atime";
+
+                var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
+                var before = pr.Get(getArgs).First();
+                Assert.AreEqual("on", before.Value);
+                var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "off" };
+                var prop = pr.Set(setArg);
+                Assert.AreEqual("off", prop.Value);
+                var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
+                pr.Reset(inheritArgs);
+                getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
+                var reset = pr.Get(getArgs).First();
                 Assert.AreEqual("on", reset.Value);
+
             }
             finally
             {
