@@ -165,14 +165,14 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Attach(PoolAttachReplaceArgs args)
+        public void Attach(PoolAttachArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Attach(args));
             pc.LoadResponse(true);
         }
 
         /// <inheritdoc />
-        public void Replace(PoolAttachReplaceArgs args)
+        public void Replace(PoolReplaceArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.Replace(args));
             pc.LoadResponse(true);

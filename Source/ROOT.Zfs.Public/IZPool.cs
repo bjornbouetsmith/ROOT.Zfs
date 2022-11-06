@@ -149,7 +149,7 @@ namespace ROOT.Zfs.Public
         /// In either case, new_device begins to resilver immediately and any running scrub is cancelled.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-attach.8.html
         /// </summary>
-        void Attach(PoolAttachReplaceArgs args);
+        void Attach(PoolAttachArgs args);
 
         /// <summary>
         /// Replaces device with new-device.
@@ -161,7 +161,7 @@ namespace ROOT.Zfs.Public
         /// This form of replacement is useful after an existing disk has failed and has been physically replaced.
         /// In this case, the new disk may have the same /dev path as the old device, even though it is actually a different disk.ZFS recognizes this.
         /// </summary>
-        void Replace(PoolAttachReplaceArgs args);
+        void Replace(PoolReplaceArgs args);
 
         /// <summary>
         /// Adds the specified virtual devices to the given pool.

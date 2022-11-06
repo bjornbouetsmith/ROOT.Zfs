@@ -271,7 +271,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void AttachTest(bool valid)
         {
-            var args = new PoolAttachReplaceArgs("attach")
+            var args = new PoolAttachArgs
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",
@@ -301,7 +301,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ReplaceTest(bool valid)
         {
-            var args = new PoolAttachReplaceArgs("replace")
+            var args = new PoolReplaceArgs
             {
                 PoolName = valid ? "tank" : null,
                 OldDevice = "/dev/sdb",

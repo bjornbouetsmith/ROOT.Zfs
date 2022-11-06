@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         public void ToStringTest(string pool, string vdev, string newDevice, bool force, bool sequential, string properties, string expected)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new PoolAttachReplaceArgs("attach")
+            var args = new PoolAttachArgs
             {
                 PoolName = pool,
                 OldDevice = vdev,
@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         public void ValidateTest(string pool, string oldDevice, string newDevice, bool force, bool sequential, string properties, bool expectedValid)
         {
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new PoolAttachReplaceArgs("attach")
+            var args = new PoolAttachArgs
             {
                 PoolName = pool,
                 OldDevice = oldDevice,
@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateWhenReplacing(string pool, string oldDevice, string newDevice, bool expectedValid)
         {
-            var args = new PoolAttachReplaceArgs("replace")
+            var args = new PoolReplaceArgs
             {
                 PoolName = pool,
                 OldDevice = oldDevice,

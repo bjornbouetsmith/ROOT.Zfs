@@ -119,7 +119,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetPoolInfosTest()
         {
-            var zp = GetZpool(); ;
+            var zp = GetZpool();
 
             var infos = zp.List();
             Assert.AreEqual(2, infos.Count);
@@ -130,7 +130,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void GetPoolInfoTest()
         {
-            var zp = GetZpool(); ;
+            var zp = GetZpool();
 
             var info = zp.List("tank2");
             Assert.IsNotNull(info);
@@ -150,7 +150,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void OfflineTest()
         {
-            var zp = GetZpool(); ;
+            var zp = GetZpool();
             var args = new PoolOfflineArgs { PoolName = "tank", Device = "/dev/sda" };
             zp.Offline(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
@@ -285,7 +285,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = GetZpool();
 
-            var args = new PoolAttachReplaceArgs("attach")
+            var args = new PoolAttachArgs
             {
                 PoolName = "tank",
                 OldDevice = "/dev/sdb",
@@ -303,7 +303,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var zp = GetZpool();
 
-            var args = new PoolAttachReplaceArgs("replace")
+            var args = new PoolReplaceArgs
             {
                 PoolName = "tank",
                 OldDevice = "/dev/sdb",

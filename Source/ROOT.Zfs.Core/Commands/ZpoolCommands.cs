@@ -220,7 +220,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to attach a device to a vdev
         /// </summary>
-        public static IProcessCall Attach(PoolAttachReplaceArgs args)
+        public static IProcessCall Attach(PoolAttachArgs args)
         {
             if (!args.Validate(out var errors))
             {
@@ -233,7 +233,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to replace a device to a vdev
         /// </summary>
-        public static IProcessCall Replace(PoolAttachReplaceArgs args)
+        public static IProcessCall Replace(PoolReplaceArgs args)
         {
             if (!args.Validate(out var errors))
             {

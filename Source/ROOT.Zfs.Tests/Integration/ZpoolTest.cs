@@ -362,7 +362,7 @@ namespace ROOT.Zfs.Tests.Integration
             var newDevice = pool.AddDisk();
             var zp = GetZpool();
 
-            var args = new PoolAttachReplaceArgs("attach")
+            var args = new PoolAttachArgs
             {
                 PoolName = pool.Name,
                 OldDevice = oldDevice,
@@ -386,12 +386,11 @@ namespace ROOT.Zfs.Tests.Integration
             var newDevice = pool.AddDisk();
             var zp = GetZpool();
 
-            var args = new PoolAttachReplaceArgs("replace")
+            var args = new PoolReplaceArgs
             {
                 PoolName = pool.Name,
                 OldDevice = oldDevice,
-                NewDevice = newDevice,
-                IsReplace = true
+                NewDevice = newDevice
             };
 
             zp.Replace(args);

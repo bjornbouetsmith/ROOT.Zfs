@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <summary>
         /// Creates an instance of the attach/replace args class with the given command
         /// </summary>
-        public PoolAttachReplaceArgs(string command) : base(command)
+        protected PoolAttachReplaceArgs(string command) : base(command)
         {
             if (command.Equals("replace", System.StringComparison.OrdinalIgnoreCase))
             {
@@ -58,7 +58,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// Gets or set whether or not this is a replace or attach.
         /// This controls the validation of whether or not NewDevice is required
         /// </summary>
-        public bool IsReplace { get; set; }
+        public bool IsReplace { get; protected set; }
 
         /// <inheritdoc />
         public override bool Validate(out IList<string> errors)
