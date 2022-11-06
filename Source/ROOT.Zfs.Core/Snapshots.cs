@@ -51,7 +51,7 @@ namespace ROOT.Zfs.Core
         /// <summary>
         /// Snapshot name matching - will only match the pattern with a starts with, i.e. the raw snapshot name needs to begin with the raw pattern
         /// </summary>
-        internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
+        private static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
         {
             datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             var skipLen = datasetOrVolume.Length + 1;
@@ -62,12 +62,8 @@ namespace ROOT.Zfs.Core
                 trimmedName = pattern[skipPatternLen..];
             }
 
-            string realName = snapshotName;
-            if (snapshotName.Contains('@'))
-            {
-                realName = snapshotName[skipLen..];
-            }
-
+            var realName = snapshotName[skipLen..];
+            
             return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
         }
         
