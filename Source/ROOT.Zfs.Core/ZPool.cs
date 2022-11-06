@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolStatus GetStatus(string pool)
+        public PoolStatus Status(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.GetStatus(pool));
             var response = pc.LoadResponse(true);
@@ -78,16 +78,16 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolStatus CreatePool(PoolCreationArgs args)
+        public PoolStatus Create(PoolCreationArgs args)
         {
             var pc = BuildCommand(ZpoolCommands.CreatePool(args));
             pc.LoadResponse(true);
 
-            return GetStatus(args.Name);
+            return Status(args.Name);
         }
 
         /// <inheritdoc />
-        public void DestroyPool(string pool)
+        public void Destroy(string pool)
         {
             var pc = BuildCommand(ZpoolCommands.DestroyPool(pool));
             pc.LoadResponse(true);
@@ -115,7 +115,7 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IOStats GetIOStats(string pool, string[] devices)
+        public IOStats IOStats(string pool, string[] devices)
         {
             var pc = BuildCommand(ZpoolCommands.IoStats(pool, devices));
             var response = pc.LoadResponse(true);

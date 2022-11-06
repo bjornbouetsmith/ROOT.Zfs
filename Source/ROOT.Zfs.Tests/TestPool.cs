@@ -34,7 +34,7 @@ namespace ROOT.Zfs.Tests
             _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
             IZPool zp = new ZPool(_remoteProcessCall);
             zp.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
-            return zp.CreatePool(args);
+            return zp.Create(args);
         }
 
         public string AddDisk(Size size = default)

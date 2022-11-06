@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Public
         /// Gets the pool status for the given pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-status.8.html
         /// </summary>
-        PoolStatus GetStatus(string pool);
+        PoolStatus Status(string pool);
 
         /// <summary>
         /// Gets information about pools, returns data from the command: zpool list -v -P
@@ -43,14 +43,14 @@ namespace ROOT.Zfs.Public
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-create.8.html
         /// </summary>
         /// <returns>The pool status for the newly created pool</returns>
-        PoolStatus CreatePool(PoolCreationArgs args);
+        PoolStatus Create(PoolCreationArgs args);
 
         /// <summary>
         /// Destroys the given pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
         /// </summary>
         /// <param name="pool">The name of the pool to destroy</param>
-        void DestroyPool(string pool);
+        void Destroy(string pool);
         
         /// <summary>
         /// Takes the specified physical device offline.
@@ -90,7 +90,7 @@ namespace ROOT.Zfs.Public
         /// </summary>
         /// <param name="pool">The pool to show stats for</param>
         /// <param name="devices">The devices if any to show stats for</param>
-        IOStats GetIOStats(string pool, string[] devices);
+        IOStats IOStats(string pool, string[] devices);
 
         /// <summary>
         /// Starts a resilver of the specified pools.

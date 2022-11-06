@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             IZfs zfs = new Core.Zfs(_remoteProcessCall);
 
-            var status = zfs.Pool.GetStatus("tank");
+            var status = zfs.Pool.Status("tank");
 
             Assert.IsNotNull(status);
 
@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void DestroyPoolTest()
         {
             var zp = GetZpool();
-            var pool = zp.CreatePool(new PoolCreationArgs
+            var pool = zp.Create(new PoolCreationArgs
             {
                 Name = "mytest",
                 VDevs = new VDevCreationArgs[]
@@ -113,7 +113,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 }
             });
             Assert.IsNotNull(pool);
-            zp.DestroyPool("mytest");
+            zp.Destroy("mytest");
         }
 
         [TestMethod, TestCategory("FakeIntegration")]
@@ -184,7 +184,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void IOStatTest()
         {
             var zp = GetZpool();
-            var stats = zp.GetIOStats("tank", new[] { "/dev/sda" });
+            var stats = zp.IOStats("tank", new[] { "/dev/sda" });
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
@@ -205,7 +205,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void CreateDraidTest()
         {
             var zp = GetZpool();
-            zp.CreatePool(new PoolCreationArgs
+            zp.Create(new PoolCreationArgs
             {
                 Name = "mytest",
                 VDevs = new VDevCreationArgs[]

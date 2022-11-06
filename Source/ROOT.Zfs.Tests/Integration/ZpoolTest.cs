@@ -88,7 +88,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.IsNotNull(status);
             Assert.AreEqual(pool.Name, status.Pool.Name);
         }
@@ -98,7 +98,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             IZfs zfs = new Core.Zfs(_remoteProcessCall);
             using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var status = zfs.Pool.GetStatus(testPool.Name);
+            var status = zfs.Pool.Status(testPool.Name);
 
             Assert.IsNotNull(status);
 
@@ -133,7 +133,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            zp.DestroyPool(pool.Name);
+            zp.Destroy(pool.Name);
         }
 
 
@@ -267,7 +267,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
             zp.Scrub(pool.Name, ScrubOption.None);
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.AreEqual(State.Online, status.State);
 
         }
@@ -280,7 +280,7 @@ namespace ROOT.Zfs.Tests.Integration
 
             var args = new PoolTrimArgs { PoolName = pool.Name };
             zp.Trim(args);
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.AreEqual(State.Online, status.State);
         }
 
@@ -292,7 +292,7 @@ namespace ROOT.Zfs.Tests.Integration
             var firstDisk = pool.Disks[0];
             var args = new PoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
             zp.Trim(args);
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.AreEqual(State.Online, status.State);
         }
 
@@ -316,7 +316,7 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var args = new PoolDetachArgs { PoolName = pool.Name, Device = pool.Disks[1] };
             zp.Detach(args);
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.IsNotNull(status);
             Console.WriteLine(status.Dump(new JsonFormatter()));
         }
@@ -327,7 +327,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var stats = zp.GetIOStats(pool.Name, new[] { pool.Disks[0] });
+            var stats = zp.IOStats(pool.Name, new[] { pool.Disks[0] });
 
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             Assert.IsNotNull(stats);
@@ -338,7 +338,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var stats = zp.GetIOStats(pool.Name, null);
+            var stats = zp.IOStats(pool.Name, null);
 
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             Assert.IsNotNull(stats);
@@ -371,7 +371,7 @@ namespace ROOT.Zfs.Tests.Integration
 
             zp.Attach(args);
 
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Console.WriteLine(status.Dump(new JsonFormatter()));
 
             Assert.AreEqual(3, status.Pool.VDevs[0].Devices.Count);
@@ -395,13 +395,13 @@ namespace ROOT.Zfs.Tests.Integration
 
             zp.Replace(args);
 
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Console.WriteLine(status.Dump(new JsonFormatter()));
             var stopwatch = Stopwatch.StartNew();
             var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
             while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
             {
-                status = zp.GetStatus(pool.Name);
+                status = zp.Status(pool.Name);
                 oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
             }
 
@@ -416,7 +416,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
             Assert.AreEqual(1, status.Pool.VDevs.Count);
             var disk1 = pool.AddDisk();
             var disk2 = pool.AddDisk();
@@ -431,7 +431,7 @@ namespace ROOT.Zfs.Tests.Integration
 
             zp.Add(args);
 
-            status = zp.GetStatus(pool.Name);
+            status = zp.Status(pool.Name);
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(2, status.Pool.VDevs.Count);
         }
@@ -478,14 +478,14 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             zp.Remove(removeArgs);
 
-            status = zp.GetStatus(name);
+            status = zp.Status(name);
 
             Console.WriteLine(status.Dump(new JsonFormatter()));
             var stopwatch = Stopwatch.StartNew();
             var oldExist = status.Pool.VDevs.Count == 2;
             while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
             {
-                status = zp.GetStatus(pool.Name);
+                status = zp.Status(pool.Name);
                 oldExist = status.Pool.VDevs.Count == 2;
             }
             Console.WriteLine(status.Dump(new JsonFormatter()));
@@ -501,7 +501,7 @@ namespace ROOT.Zfs.Tests.Integration
             var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
             zp.Offline(args);
 
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
 
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Degraded, status.State);
@@ -518,7 +518,7 @@ namespace ROOT.Zfs.Tests.Integration
             var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
             zp.Offline(args);
 
-            var status = zp.GetStatus(pool.Name);
+            var status = zp.Status(pool.Name);
 
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Degraded, status.State);
@@ -526,7 +526,7 @@ namespace ROOT.Zfs.Tests.Integration
             var onlineArgs = new PoolOnlineArgs { PoolName = pool.Name, Device = device };
             zp.Online(onlineArgs);
 
-            status = zp.GetStatus(pool.Name);
+            status = zp.Status(pool.Name);
 
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Online, status.State);
