@@ -203,13 +203,18 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZpool, args.ToString());
         }
-
+        
         /// <summary>
         /// Returns a command to detach a device from a mirror
         /// </summary>
-        public static IProcessCall Detach(string pool, string device)
+        public static IProcessCall Detach(PoolDetachArgs args)
         {
-            return new ProcessCall(WhichZpool, $"detach {pool} {device}");
+            if (!args.Validate(out var errors))
+            {
+                var errorMessage = string.Join(Environment.NewLine, errors);
+                throw new ArgumentException(errorMessage, nameof(args));
+            }
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>

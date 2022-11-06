@@ -314,7 +314,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            zp.Detach(pool.Name, pool.Disks[0]);
+            var args = new PoolDetachArgs { PoolName = pool.Name, Device = pool.Disks[1] };
+            zp.Detach(args);
             var status = zp.GetStatus(pool.Name);
             Assert.IsNotNull(status);
             Console.WriteLine(status.Dump(new JsonFormatter()));

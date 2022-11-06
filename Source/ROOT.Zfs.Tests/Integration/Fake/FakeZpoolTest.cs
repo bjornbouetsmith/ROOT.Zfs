@@ -272,7 +272,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void DetachTest()
         {
             var zp = GetZpool();
-            zp.Detach("tank", "/dev/sdb");
+            var args = new PoolDetachArgs { PoolName = "tank", Device = "/dev/sdb" };
+            zp.Detach(args);
 
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);

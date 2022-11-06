@@ -247,12 +247,23 @@ namespace ROOT.Zfs.Tests.Commands
             }
         }
 
-        [DataRow("tank", "/dev/sdc", "/sbin/zpool detach tank /dev/sdc")]
+        [DataRow("tank", "/dev/sdc", "/sbin/zpool detach tank /dev/sdc", false)]
+        [DataRow("tank", "", null, true)]
+        [DataRow("", "/dev/sdc", null, true)]
         [TestMethod]
-        public void DetachTest(string pool, string device, string expected)
+        public void DetachTest(string pool, string device, string expected, bool expectException)
         {
-            var command = ZpoolCommands.Detach(pool, device);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            var args = new PoolDetachArgs { PoolName = pool, Device = device };
+
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Detach(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Detach(args);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
         }
 
         [DataRow(true)]
@@ -309,7 +320,7 @@ namespace ROOT.Zfs.Tests.Commands
             {
                 var command = ZpoolCommands.Replace(args);
                 Console.WriteLine(command.FullCommandLine);
-                
+
                 Assert.AreEqual(stringVer, command.Arguments);
                 Assert.AreEqual($"/sbin/zpool {stringVer}", command.FullCommandLine);
             }
