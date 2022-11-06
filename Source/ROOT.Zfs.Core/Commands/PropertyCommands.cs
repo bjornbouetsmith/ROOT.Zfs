@@ -1,6 +1,5 @@
 ﻿using System;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments;
 
 namespace ROOT.Zfs.Core.Commands
@@ -37,19 +36,6 @@ namespace ROOT.Zfs.Core.Commands
             return new ProcessCall(WhichZfs, args.ToString());
         }
 
-        internal static ProcessCall ResetPropertyToInherited(string dataset, string property)
-        {
-            dataset = DatasetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"inherit -rS {property} {dataset}");
-        }
-
-        internal static ProcessCall SetProperty(PropertyTarget targetType, string target, string name, string value)
-        {
-            var binary = targetType == PropertyTarget.Pool ? WhichZpool : WhichZfs;
-            target = DatasetHelper.Decode(target);
-            return new ProcessCall(binary, $"set {name}={value} {target}");
-        }
-
         internal static IProcessCall Set(SetPropertyArgs args)
         {
             if (!args.Validate(out var errors))
@@ -58,13 +44,6 @@ namespace ROOT.Zfs.Core.Commands
             }
             var binary = args.PropertyTarget == PropertyTarget.Pool ? WhichZpool : WhichZfs;
             return new ProcessCall(binary, args.ToString());
-        }
-
-        internal static ProcessCall GetProperty(PropertyTarget targetType, string target, string property)
-        {
-            var binary = targetType == PropertyTarget.Pool ? WhichZpool : WhichZfs;
-            target = DatasetHelper.Decode(target);
-            return new ProcessCall(binary, $"get {property} {target} -H");
         }
     }
 }
