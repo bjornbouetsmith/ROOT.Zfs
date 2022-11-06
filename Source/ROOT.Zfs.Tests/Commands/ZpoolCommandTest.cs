@@ -20,6 +20,14 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
+        public void GetHistoryCommandTestNotValid()
+        {
+            var args = new PoolHistoryArgs();
+            Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.History(args));
+
+        }
+
+        [TestMethod]
         public void GetStatusCommandTest()
         {
             var command = ZpoolCommands.GetStatus("tank");
