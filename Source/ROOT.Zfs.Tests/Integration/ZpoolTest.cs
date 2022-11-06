@@ -31,10 +31,10 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var snap = new Snapshots(_remoteProcessCall);
             snap.RequiresSudo = TestHelpers.RequiresSudo;
-            snap.CreateSnapshot(pool.Name, "test1");
-            snap.CreateSnapshot(pool.Name, "test2");
-            snap.CreateSnapshot(pool.Name, "test3");
-            snap.CreateSnapshot(pool.Name, null);
+            snap.Create(pool.Name, "test1");
+            snap.Create(pool.Name, "test2");
+            snap.Create(pool.Name, "test3");
+            snap.Create(pool.Name, null);
             var args = new PoolHistoryArgs { PoolName = pool.Name };
             var lines = zp.History(args).ToList().Count;
             args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
@@ -64,10 +64,10 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var snap = new Snapshots(_remoteProcessCall);
             snap.RequiresSudo = TestHelpers.RequiresSudo;
-            snap.CreateSnapshot(pool.Name, "test1");
-            snap.CreateSnapshot(pool.Name, "test2");
-            snap.CreateSnapshot(pool.Name, "test3");
-            snap.CreateSnapshot(pool.Name, null);
+            snap.Create(pool.Name, "test1");
+            snap.Create(pool.Name, "test2");
+            snap.Create(pool.Name, "test3");
+            snap.Create(pool.Name, null);
             var args = new PoolHistoryArgs { PoolName = pool.Name };
             var last10AtMost = zp.History(args).TakeLast(10).ToList();
 

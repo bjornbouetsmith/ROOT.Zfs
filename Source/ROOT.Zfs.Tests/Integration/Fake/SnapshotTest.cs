@@ -40,7 +40,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             var sn = GetSnapshots();
 
-            sn.CreateSnapshot("tank/myds", snapName);
+            sn.Create("tank/myds", snapName);
 
             var snaps = sn.List("tank/myds");
             Assert.IsNotNull(snaps);
@@ -63,9 +63,9 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var sn = GetSnapshots();
             var prefix = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddHHmmssfff");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-1");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-2");
-            sn.CreateSnapshot("tank/myds", $"{prefix}-3");
+            sn.Create("tank/myds", $"{prefix}-1");
+            sn.Create("tank/myds", $"{prefix}-2");
+            sn.Create("tank/myds", $"{prefix}-3");
 
             var snaps = sn.List("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
 

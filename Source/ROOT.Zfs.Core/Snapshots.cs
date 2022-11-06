@@ -72,7 +72,7 @@ namespace ROOT.Zfs.Core
         }
         
         /// <inheritdoc />
-        public void CreateSnapshot(string dataset, string snapName)
+        public void Create(string dataset, string snapName)
         {
             var pc = BuildCommand(SnapshotCommands.CreateSnapshot(dataset, snapName));
 

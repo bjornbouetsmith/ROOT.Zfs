@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Public
         /// <param name="snapName">The name of the snapshot.
         /// If null or empty string is passed an auto generated snapshot name in the format
         /// yyyyMMddHHmmss will be used</param>
-        void CreateSnapshot(string dataset, string snapName);
+        void Create(string dataset, string snapName);
 
         /// <summary>
         /// Adds a single reference, named with the tag argument, to the specified snapshots.
