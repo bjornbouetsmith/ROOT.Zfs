@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(args));
+                throw ToArgumentException(errors, args);
             }
             var binary = args.PropertyTarget == PropertyTarget.Pool ? WhichZpool : WhichZfs;
             return new ProcessCall(binary, args.ToString());
@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZfs, args.ToString());
@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(args));
+                throw ToArgumentException(errors, args);
             }
             var binary = args.PropertyTarget == PropertyTarget.Pool ? WhichZpool : WhichZfs;
             return new ProcessCall(binary, args.ToString());

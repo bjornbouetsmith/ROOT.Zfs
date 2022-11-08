@@ -87,5 +87,6 @@ namespace ROOT.Zfs.Tests.Commands
                 Assert.AreEqual(expectedCommand, command.FullCommandLine);
             }
         }
+
     }
 }

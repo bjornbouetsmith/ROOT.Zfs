@@ -87,7 +87,7 @@ namespace ROOT.Zfs.Tests.Commands
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
-            Assert.AreEqual("Please provide a name for the pool (Parameter 'args')", ex.Message);
+            Assert.AreEqual("Please provide a name for the pool (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace ROOT.Zfs.Tests.Commands
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
-            Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'args')", ex.Message);
+            Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
         [TestMethod]

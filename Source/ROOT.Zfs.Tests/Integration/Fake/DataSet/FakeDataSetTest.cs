@@ -23,7 +23,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void ListTest()
         {
             var ds = GetDatasets();
-            var dataSets = ds.List(default, null, false);
+            var dataSets = ds.List(new DatasetListArgs());
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -37,7 +37,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetDataSetShouldReturnDataSet()
         {
             var ds = GetDatasets();
-            var root = ds.List(default, "tank", false).FirstOrDefault();
+            var args = new DatasetListArgs { Root = "tank" };
+            var root = ds.List(args).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Assert.AreEqual("tank", root.Name);
@@ -49,7 +50,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = GetDatasets();
-            Assert.ThrowsException<ProcessCallException>(() => ds.List(default, "ungabunga", false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("FakeIntegration")]

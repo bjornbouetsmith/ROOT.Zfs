@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!arguments.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(arguments));
+                throw ToArgumentException(errors, arguments);
             }
 
             arguments.DataSetName = DatasetHelper.Decode(arguments.DataSetName);
@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!mountArgs.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(mountArgs));
+                throw ToArgumentException(errors, mountArgs);
             }
 
             return new ProcessCall(WhichZfs, mountArgs.ToString());
@@ -92,7 +92,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!unmountArgs.Validate(out var errors))
             {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(unmountArgs));
+                throw ToArgumentException(errors, unmountArgs);
             }
 
             return new ProcessCall(WhichZfs, unmountArgs.ToString());

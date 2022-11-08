@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Commands
@@ -6,48 +9,51 @@ namespace ROOT.Zfs.Tests.Commands
     [TestClass]
     public class CommandsTest
     {
-        [DataRow(DatasetTypes.None, "", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
-        [DataRow(DatasetTypes.None, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
-        [DataRow(DatasetTypes.None, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")]
-        [DataRow(DatasetTypes.None, "tank%2Fmyds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")] //test url encoded
+        [DataRow(DatasetTypes.None, "", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
+        [DataRow(DatasetTypes.None, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
+        [DataRow(DatasetTypes.None, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")]
+        [DataRow(DatasetTypes.None, "tank%2Fmyds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")] //test url encoded
 
-        [DataRow(DatasetTypes.Snapshot, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t snapshot")]
+        [DataRow(DatasetTypes.Snapshot, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds")]
+        [DataRow(DatasetTypes.Snapshot, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t snapshot")]
 
-        [DataRow(DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t bookmark tank/myds")]
-        [DataRow(DatasetTypes.Bookmark, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t bookmark")]
+        [DataRow(DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark tank/myds")]
+        [DataRow(DatasetTypes.Bookmark, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark")]
 
-        [DataRow(DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t volume tank/myds")]
-        [DataRow(DatasetTypes.Volume, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t volume")]
+        [DataRow(DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t volume tank/myds")]
+        [DataRow(DatasetTypes.Volume, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t volume")]
 
-        [DataRow(DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds")]
-        [DataRow(DatasetTypes.Filesystem, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem")]
+        [DataRow(DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds")]
+        [DataRow(DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem")]
         [TestMethod]
         public void ListCommandTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = Core.Commands.Commands.ZfsList(types, root, false);
+            var args = new DatasetListArgs { DatasetTypes = types, Root = root };
+            var command = Core.Commands.Commands.ZfsList(args);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot,volume tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -t bookmark,filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark,filesystem,snapshot,volume tank/myds")]
         [TestMethod]
         public void ListCommandCombinationsTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = Core.Commands.Commands.ZfsList(types, root, false);
+            var args = new DatasetListArgs { DatasetTypes = types, Root = root };
+            var command = Core.Commands.Commands.ZfsList(args);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
         [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,snapshot")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot")]
         [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,snapshot,volume tank/myds")]
         [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t bookmark,filesystem,snapshot,volume tank/myds")]
         [TestMethod]
         public void ListWithChildrenTest(DatasetTypes types, string root, string expectedCommand)
         {
-            var command = Core.Commands.Commands.ZfsList(types, root, true);
+            var args = new DatasetListArgs { DatasetTypes = types, Root = root, IncludeChildren = true };
+            var command = Core.Commands.Commands.ZfsList(args);
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
@@ -70,6 +76,25 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var command = Core.Commands.Commands.ListDisks();
             Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
+        }
+
+
+        [DataRow("tank", false)]
+        [DataRow("tank && rm -rf /", true)]
+        [TestMethod]
+        public void DataSetListTest(string root, bool expectException)
+        {
+            var args = new DatasetListArgs { Root = root };
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => Core.Commands.Commands.ZfsList(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = Core.Commands.Commands.ZfsList(args);
+                Assert.IsNotNull(command.FullCommandLine);
+            }
         }
     }
 }

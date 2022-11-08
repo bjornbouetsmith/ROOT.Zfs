@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Tests.Helpers
         {
             var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
 
-            var dataset = DatasetHelper.ParseStdOut(stdOut);
+            var dataset = DatasetHelper.ParseLine(stdOut);
             Console.WriteLine(dataset.Dump(new JsonFormatter()));
             Assert.AreEqual("tank/kubedata", dataset.Name);
             Assert.AreEqual("675.3M", dataset.Used.ToString());
@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Tests.Helpers
         {
             var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448";
 
-            Assert.ThrowsException<FormatException>(() => DatasetHelper.ParseStdOut(stdOut));
+            Assert.ThrowsException<FormatException>(() => DatasetHelper.ParseLine(stdOut));
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace ROOT.Zfs.Tests.Helpers
         {
             var stdOut = @"link      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
 
-            var dataset = DatasetHelper.ParseStdOut(stdOut);
+            var dataset = DatasetHelper.ParseLine(stdOut);
 
             Assert.AreEqual(DatasetTypes.None, dataset.Type);
         }

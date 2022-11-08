@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
         /// <summary>
         /// Creates an instance of dataset creation args
         /// </summary>
-        public DatasetCreationArgs() :base("create")
+        public DatasetCreationArgs() : base("create")
         {
         }
 
@@ -118,7 +118,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
                 args.Append($" {propCommand}");
             }
 
-            args.Append($" {DataSetName}");
+            args.Append($" {Decode(DataSetName)}");
 
             return args.ToString();
         }

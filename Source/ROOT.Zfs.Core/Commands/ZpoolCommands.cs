@@ -11,8 +11,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
             return new ProcessCall(WhichZpool, args.ToString());
         }
@@ -51,8 +50,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZpool, args.ToString());
@@ -92,8 +90,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZpool, args.ToString());
@@ -108,8 +105,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZpool, args.ToString());
@@ -175,8 +171,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZpool, args.ToString());
@@ -197,8 +192,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
 
             return new ProcessCall(WhichZpool, args.ToString());
@@ -211,8 +205,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
             return new ProcessCall(WhichZpool, args.ToString());
         }
@@ -224,8 +217,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
             return new ProcessCall(WhichZpool, args.ToString());
         }
@@ -237,8 +229,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!args.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(args));
+                throw ToArgumentException(errors, args);
             }
             return new ProcessCall(WhichZpool, args.ToString());
         }
@@ -247,8 +238,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!addArgs.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(addArgs));
+                throw ToArgumentException(errors, addArgs);
             }
             return new ProcessCall(WhichZpool, addArgs.ToString());
         }
@@ -257,8 +247,7 @@ namespace ROOT.Zfs.Core.Commands
         {
             if (!removeArgs.Validate(out var errors))
             {
-                var errorMessage = string.Join(Environment.NewLine, errors);
-                throw new ArgumentException(errorMessage, nameof(removeArgs));
+                throw ToArgumentException(errors, removeArgs);
             }
             return new ProcessCall(WhichZpool, removeArgs.ToString());
         }

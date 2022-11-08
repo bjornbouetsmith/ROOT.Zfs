@@ -6,7 +6,6 @@ using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Dataset;
-using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Core
@@ -18,17 +17,11 @@ namespace ROOT.Zfs.Core
         {
         }
 
-        /// <inheritdoc />
-        public IEnumerable<Dataset> List(DatasetTypes datasetType, string fullName, bool includeChildren)
+        public IList<Dataset> List(DatasetListArgs args)
         {
-            var pc = BuildCommand(Commands.Commands.ZfsList(datasetType, fullName, false));
-
+            var pc = BuildCommand(Commands.Commands.ZfsList(args));
             var response = pc.LoadResponse(true);
-
-            foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                yield return DatasetHelper.ParseStdOut(line);
-            }
+            return DatasetHelper.ParseStdOut(response.StdOut);
         }
 
         /// <inheritdoc />
@@ -42,8 +35,8 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(DatasetCommands.CreateDataset(arguments));
 
             pc.LoadResponse(true);
-
-            return List(arguments.Type, arguments.DataSetName, false).FirstOrDefault();
+            var listArgs = new DatasetListArgs { Root = arguments.DataSetName, IncludeChildren = false, DatasetTypes = arguments.Type };
+            return List(listArgs).FirstOrDefault();
         }
 
         /// <inheritdoc />

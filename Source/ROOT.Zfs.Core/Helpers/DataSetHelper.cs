@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Web;
 using ROOT.Zfs.Public.Data;
@@ -24,6 +25,17 @@ namespace ROOT.Zfs.Core.Helpers
             return $"{parent}/{dataSet}";
         }
 
+        public static IList<Dataset> ParseStdOut(string stdOut)
+        {
+            var list = new List<Dataset>();
+            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                list.Add(ParseLine(line));
+            }
+
+            return list;
+        }
+
         /// <summary>
         /// Parses a single line and returns a Dataset object.
         /// Only supports the format that is returned from
@@ -32,7 +44,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <param name="line">The single line to parse</param>
         /// <returns>A dataset object</returns>
         /// <exception cref="ArgumentException">If the line is not in the correct format</exception>
-        public static Dataset ParseStdOut(string line)
+        public static Dataset ParseLine(string line)
         {
             var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 

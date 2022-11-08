@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
 
             var ds = GetDataSets();
-            var dataSets = ds.List(default, null, false);
+            var dataSets = ds.List(new DatasetListArgs());
             Assert.IsNotNull(dataSets);
             foreach (var set in dataSets)
             {
@@ -42,7 +42,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var dataset = ds.List(default, pool.Name, false).FirstOrDefault();
+            var args = new DatasetListArgs { Root = pool.Name };
+            var dataset = ds.List(args).FirstOrDefault();
             Assert.IsNotNull(dataset);
             Assert.AreEqual(pool.Name, dataset.Name);
         }
@@ -64,7 +65,7 @@ namespace ROOT.Zfs.Tests.Integration
                         new PropertyValue { Property = "compression", Value = "gzip" }
                     };
 
-                var dataSets = ds.List(default, null, false).ToList();
+                var dataSets = ds.List(new DatasetListArgs()).ToList();
                 var parent = dataSets.FirstOrDefault(d => d.Name == pool.Name);
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
@@ -94,7 +95,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var ds = GetDataSets();
-            var root = ds.List(default, pool.Name , false).FirstOrDefault();
+            var args = new DatasetListArgs { Root = pool.Name };
+            var root = ds.List(args).FirstOrDefault();
 
             Assert.IsNotNull(root);
             Console.WriteLine(root.Dump(new JsonFormatter()));
@@ -104,7 +106,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void GetNonExistingDataSetShouldThrowException()
         {
             var ds = GetDataSets();
-            Assert.ThrowsException<ProcessCallException>(() => ds.List(default, "ungabunga" , false).FirstOrDefault());
+            Assert.ThrowsException<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
         }
 
         [TestMethod, TestCategory("Integration")]

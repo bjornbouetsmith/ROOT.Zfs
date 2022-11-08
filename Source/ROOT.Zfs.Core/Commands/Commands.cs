@@ -1,5 +1,9 @@
-﻿using ROOT.Shared.Utils.OS;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
@@ -18,6 +22,11 @@ namespace ROOT.Zfs.Core.Commands
         public static string WhichWhich { get; set; } = "/bin/which";
         public static string WhichSmartctl { get; set; } = "/sbin/smartctl";
 
+        internal static ArgumentException ToArgumentException(IList<string> errors, object args, [CallerArgumentExpression("args")] string nameOfArgs = "")
+        {
+            return new ArgumentException(string.Join(Environment.NewLine, errors),$"{args.GetType().Name} {nameOfArgs}");
+        }
+
         /// <summary>
         /// Lists the given types
         /// Root only have any effect for snapshots for wildcard purposes- unless only a single record is wanted
@@ -27,9 +36,24 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="listtypes">The types to return</param>
         /// <param name="root">The root to list types for - or the single element wanted</param>
         /// <param name="includeChildren">Whether or not to include child datasets in the return value</param>
-        public static ProcessCall ZfsList(DatasetTypes listtypes, string root, bool includeChildren)
+        public static IProcessCall ZfsList(DatasetTypes listtypes, string root, bool includeChildren)
         {
-            return BuildZfsListCommand(listtypes, root, includeChildren);
+            var args = new DatasetListArgs { Root = root, DatasetTypes = listtypes, IncludeChildren = includeChildren };
+            return ZfsList(args);
+            //return BuildZfsListCommand(listtypes, root, includeChildren);
+        }
+
+        /// <summary>
+        /// Returns a command that lists datasets
+        /// </summary>
+        public static IProcessCall ZfsList(DatasetListArgs args)
+        {
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         private static ProcessCall BuildZfsListCommand(DatasetTypes listtypes, string root, bool includeChildren)

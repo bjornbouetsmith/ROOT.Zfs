@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
+using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
@@ -23,9 +24,10 @@ namespace ROOT.Zfs.Core.Commands
         /// Lists snapshots in the given dataset or volume
         /// </summary>
         /// <param name="datasetOrVolume"></param>
-        internal static ProcessCall ListSnapshots(string datasetOrVolume)
+        internal static IProcessCall ListSnapshots(string datasetOrVolume)
         {
-            return ZfsList(DatasetTypes.Snapshot, datasetOrVolume, true);
+            var args = new DatasetListArgs { DatasetTypes = DatasetTypes.Snapshot, Root = datasetOrVolume, IncludeChildren = true };
+            return ZfsList(args);
         }
 
         /// <summary>
@@ -65,7 +67,7 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapshotName}");
         }
-        
+
         /// <summary>
         /// Creates a clone of the given snapshot targeting the dataset or volume
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-clone.8.html
