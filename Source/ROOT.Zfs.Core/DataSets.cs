@@ -35,7 +35,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(DatasetCommands.CreateDataset(arguments));
 
             pc.LoadResponse(true);
-            var listArgs = new DatasetListArgs { Root = arguments.DataSetName, IncludeChildren = false, DatasetTypes = arguments.Type };
+            var listArgs = new DatasetListArgs { Root = arguments.DatasetName, IncludeChildren = false, DatasetTypes = arguments.Type };
             return List(listArgs).FirstOrDefault();
         }
 

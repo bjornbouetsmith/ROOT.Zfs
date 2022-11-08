@@ -72,14 +72,16 @@ namespace ROOT.Zfs.Tests.Commands
 
         [DataRow("tank/myds", DatasetTypes.Filesystem, "/sbin/zfs create tank/myds", false)]
         [DataRow("tank/myds", DatasetTypes.Bookmark, "/sbin/zfs create tank/myds", true)]
+        [DataRow(null, DatasetTypes.Filesystem, "/sbin/zfs create tank/myds", true)]
         [TestMethod]
         public void CreateTest(string dataset, DatasetTypes type, string expectedCommand, bool expectException)
         {
-            var args = new DatasetCreationArgs { DataSetName = dataset, Type = type };
+            var args = new DatasetCreationArgs { DatasetName = dataset, Type = type };
 
             if (expectException)
             {
-                Assert.ThrowsException<ArgumentException>(() => DatasetCommands.CreateDataset(args));
+                var ex = Assert.ThrowsException<ArgumentException>(() => DatasetCommands.CreateDataset(args));
+                Console.WriteLine(ex);
             }
             else
             {

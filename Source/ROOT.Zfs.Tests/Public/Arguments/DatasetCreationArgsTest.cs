@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         {
             var args = new DatasetCreationArgs
             {
-                DataSetName = "tank/myvol",
+                DatasetName = "tank/myvol",
                 Type = DatasetTypes.Volume,
                 VolumeArguments = new VolumeCreationArgs
                 {
@@ -53,7 +53,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
         {
             var args = new DatasetCreationArgs
             {
-                DataSetName = name,
+                DatasetName = name,
                 Type = type,
             };
             Console.WriteLine(args.Dump(new JsonFormatter()));
@@ -80,7 +80,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             {
                 Type = type,
                 CreateParents = createParents,
-                DataSetName = "tank/child",
+                DatasetName = "tank/child",
                 DoNotMount = doNotMount,
                 Properties = props,
                 VolumeArguments = type == DatasetTypes.Filesystem ? null : new VolumeCreationArgs

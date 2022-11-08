@@ -59,7 +59,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             var ds = GetDatasets();
             var args = new DatasetCreationArgs
             {
-                DataSetName = "tank/myds",
+                DatasetName = "tank/myds",
                 Type = DatasetTypes.Filesystem,
                 Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 
@@ -74,7 +74,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             var ds = GetDatasets();
             var args = new DatasetCreationArgs
             {
-                DataSetName = "tank/myds",
+                DatasetName = "tank/myds",
                 Type = DatasetTypes.Bookmark,
                 Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
 

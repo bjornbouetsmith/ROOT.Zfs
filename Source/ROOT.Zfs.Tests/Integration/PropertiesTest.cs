@@ -86,7 +86,7 @@ namespace ROOT.Zfs.Tests.Integration
             var dataset = $"{pool.Name}/{Guid.NewGuid()}";
             var args = new DatasetCreationArgs
             {
-                DataSetName = dataset,
+                DatasetName = dataset,
                 Type = DatasetTypes.Filesystem
             };
             dsHelper.Create(args);

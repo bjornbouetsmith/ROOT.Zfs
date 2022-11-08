@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Core.Commands
                 throw ToArgumentException(errors, arguments);
             }
 
-            arguments.DataSetName = DatasetHelper.Decode(arguments.DataSetName);
+            arguments.DatasetName = DatasetHelper.Decode(arguments.DatasetName);
             
             return new ProcessCall(WhichZfs, arguments.ToString());
         }

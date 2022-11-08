@@ -72,7 +72,7 @@ namespace ROOT.Zfs.Tests.Integration
                 fullName = DatasetHelper.CreateDatasetName(parent.Name, dataSetName);
                 var args = new DatasetCreationArgs
                 {
-                    DataSetName = fullName,
+                    DatasetName = fullName,
                     Type = DatasetTypes.Filesystem,
                     Properties = addProperties ? props : null
                 };
@@ -128,7 +128,7 @@ namespace ROOT.Zfs.Tests.Integration
                 {
                     var args = new DatasetCreationArgs
                     {
-                        DataSetName = ds,
+                        DatasetName = ds,
                         Type = DatasetTypes.Filesystem,
                         CreateParents = true,
 

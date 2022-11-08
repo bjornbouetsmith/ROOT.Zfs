@@ -20,7 +20,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
         /// <summary>
         /// The full name of the dataset to create including all parent datasets
         /// </summary>
-        public string DataSetName { get; set; }
+        public string DatasetName { get; set; }
 
         /// <summary>
         /// The type of dataset to create.
@@ -78,12 +78,8 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
                 errors.Add("VolumeArguments needs to be specified for a Volume");
             }
 
-            if (string.IsNullOrWhiteSpace(DataSetName))
-            {
-                errors ??= new List<string>();
-                errors.Add("Datasetname needs to be specified");
-            }
-
+            ValidateString(DatasetName, false, ref errors);
+            
             return errors == null;
         }
 
@@ -118,7 +114,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
                 args.Append($" {propCommand}");
             }
 
-            args.Append($" {Decode(DataSetName)}");
+            args.Append($" {Decode(DatasetName)}");
 
             return args.ToString();
         }
