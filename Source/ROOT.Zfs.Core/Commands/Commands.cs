@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -28,22 +26,6 @@ namespace ROOT.Zfs.Core.Commands
         }
 
         /// <summary>
-        /// Lists the given types
-        /// Root only have any effect for snapshots for wildcard purposes- unless only a single record is wanted
-        /// i.e.
-        /// ListTypes.Snapshot &amp; root 'tank' will list snapshots in the root tank - but ListTypes.FileSystem &amp; tank, will only return tank
-        /// </summary>
-        /// <param name="listtypes">The types to return</param>
-        /// <param name="root">The root to list types for - or the single element wanted</param>
-        /// <param name="includeChildren">Whether or not to include child datasets in the return value</param>
-        public static IProcessCall ZfsList(DatasetTypes listtypes, string root, bool includeChildren)
-        {
-            var args = new DatasetListArgs { Root = root, DatasetTypes = listtypes, IncludeChildren = includeChildren };
-            return ZfsList(args);
-            //return BuildZfsListCommand(listtypes, root, includeChildren);
-        }
-
-        /// <summary>
         /// Returns a command that lists datasets
         /// </summary>
         public static IProcessCall ZfsList(DatasetListArgs args)
@@ -54,27 +36,6 @@ namespace ROOT.Zfs.Core.Commands
             }
 
             return new ProcessCall(WhichZfs, args.ToString());
-        }
-
-        private static ProcessCall BuildZfsListCommand(DatasetTypes listtypes, string root, bool includeChildren)
-        {
-            string command = "list -Hpr -o type,creation,name,used,refer,avail,mountpoint";
-
-            if (includeChildren)
-            {
-                command += " -d 99";
-            }
-
-            command += $" -t {listtypes.AsString()}";
-
-            if (!string.IsNullOrWhiteSpace(root))
-            {
-                // just to be safe
-                root = DatasetHelper.Decode(root);
-                command += $" {root}";
-            }
-
-            return new ProcessCall(WhichZfs, command);
         }
 
         /// <summary>

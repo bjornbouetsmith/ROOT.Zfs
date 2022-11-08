@@ -47,7 +47,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
             args.Append(" -Hp");
             if (IncludeChildren && !string.IsNullOrWhiteSpace(Root))// include children only makes sense if you have a root, and zfs does not care if you add -r -d 99 or not if you do not provide a root, output is the same
             {
-                args.Append("r");
+                args.Append('r');
             }
 
             args.Append(" -o type,creation,name,used,refer,avail,mountpoint");
