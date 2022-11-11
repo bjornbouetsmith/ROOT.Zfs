@@ -24,12 +24,6 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         {
             base.Validate(out errors);
             
-            //if (string.IsNullOrWhiteSpace(Name))
-            //{
-            //    errors = new List<string>();
-            //    errors.Add("Please provide a name for the pool");
-            //}
-
             if (VDevs == null || VDevs.Count == 0)
             {
                 errors ??= new List<string>();
