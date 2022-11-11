@@ -5,7 +5,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Encapsulates all the arguments to zpool status
     /// </summary>
-    public class PoolStatusArgs : PoolNameArg
+    public class PoolStatusArgs : PoolNameArgs
     {
         /// <inheritdoc />
         public PoolStatusArgs() : base("status")

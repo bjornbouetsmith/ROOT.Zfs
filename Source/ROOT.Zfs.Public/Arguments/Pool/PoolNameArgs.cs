@@ -5,7 +5,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Simple wrapper argument around a name of a pool
     /// </summary>
-    public class PoolNameArg : Args
+    public abstract class PoolNameArgs : Args
     {
         /// <summary>
         /// name of pool
@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public PoolNameArg(string command) : base(command)
+        protected PoolNameArgs(string command) : base(command)
         {
         }
 
@@ -36,14 +36,6 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         protected override string BuildArgs(string command)
         {
             return Decode(Name);
-        }
-
-        /// <summary>
-        /// Implicit converstion of a string into a PoolNameArg object
-        /// </summary>
-        public static implicit operator PoolNameArg(string name)
-        {
-            return new PoolNameArg(string.Empty) { Name = name };
         }
     }
 }

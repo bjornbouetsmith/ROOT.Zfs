@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
     [TestClass]
     public class PoolArgTest
     {
+        public class NameTest : PoolNameArgs
+        {
+            public NameTest() : base(string.Empty)
+            {
+            }
+        }
+
         [DataRow(null,false)]
         [DataRow("", false)]
         [DataRow(" ", false)]
@@ -22,7 +29,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateTest(string name, bool expectedValid)
         {
-            var poolArg = new PoolNameArg(string.Empty) { Name = name };
+            var poolArg = new NameTest { Name = name };
 
             var valid = poolArg.Validate(out var errors);
 
@@ -35,7 +42,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ToStringTest(string name, string expected)
         {
-            var poolArg = new PoolNameArg(string.Empty) { Name = name };
+            var poolArg = new NameTest { Name = name };
 
             var stringVer = poolArg.ToString();
             Console.WriteLine(stringVer);

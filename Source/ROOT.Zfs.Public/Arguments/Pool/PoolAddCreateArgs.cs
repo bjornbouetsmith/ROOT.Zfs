@@ -5,7 +5,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains whats common between create pool and add device(s) to a poool
     /// </summary>
-    public abstract class PoolAddCreateArgs : PoolNameArg
+    public abstract class PoolAddCreateArgs : PoolNameArgs
     {
         /// <inheritdoc />
         protected PoolAddCreateArgs(string command) : base(command)

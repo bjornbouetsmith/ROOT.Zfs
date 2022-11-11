@@ -5,7 +5,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Represents all arguments to zpool list pool
     /// </summary>
-    public class PoolListArgs : PoolNameArg
+    public class PoolListArgs : PoolNameArgs
     {
         /// <inheritdoc />
         public PoolListArgs() : base("list")
