@@ -25,6 +25,19 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             }
         }
 
+        public class TestArgWithoutValidation : Args
+        {
+            public TestArgWithoutValidation() : base("basic")
+            {
+            }
+
+            public override bool Validate(out IList<string> errors)
+            {
+                errors= null;
+                return true;
+            }
+        }
+
 
         [DataRow(null, false, false)]
         [DataRow("", false, false)]
@@ -47,6 +60,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             var valid = arg.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
             Assert.AreEqual(expectedValid, valid);
+        }
+
+        [TestMethod]
+        public void ArgsWillJustReturnCommand()
+        {
+            var arg = new TestArgWithoutValidation();
+            Assert.AreEqual("basic", arg.ToString());
         }
     }
 }

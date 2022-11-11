@@ -36,11 +36,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         /// <param name="errors">Any errors</param>
         /// <returns>true if valid;false otherwise</returns>
-        public virtual bool Validate(out IList<string> errors)
-        {
-            errors = new List<string> { "Missing Validate implementation" };
-            return false;
-        }
+        public abstract bool Validate(out IList<string> errors);
 
         /// <summary>
         /// Builds the arguments into a string that can be passed onto the respective binary
