@@ -30,7 +30,8 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void GetStatusCommandTest()
         {
-            var command = ZpoolCommands.GetStatus("tank");
+            var arg = new PoolStatusArgs { Name = "tank" };
+            var command = ZpoolCommands.GetStatus(arg);
 
             Assert.AreEqual("/sbin/zpool status -vP tank", command.FullCommandLine);
         }
@@ -43,12 +44,21 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zpool list -PHp", command.FullCommandLine);
         }
 
+        [DataRow("tank",false)]
+        [DataRow("tank/myds", true)]
         [TestMethod]
-        public void GetPoolInfoCommand()
+        public void GetPoolInfoCommand(string name, bool expectException)
         {
-            var command = ZpoolCommands.GetPoolInfo("tank");
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.GetPoolInfo(new PoolListArgs { Name = name }));
+            }
+            else
+            {
+                var command = ZpoolCommands.GetPoolInfo(new PoolListArgs { Name = name });
 
-            Assert.AreEqual("/sbin/zpool list -PHp tank", command.FullCommandLine);
+                Assert.AreEqual("/sbin/zpool list -PHp tank", command.FullCommandLine);
+            }
         }
 
         [TestMethod]
@@ -56,7 +66,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                PoolName = "tank3",
+                Name = "tank3",
                 VDevs = new[]
                     {
                         new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -79,7 +89,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                PoolName = nameNull ? null : "",
+                Name = nameNull ? null : "",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -87,7 +97,7 @@ namespace ROOT.Zfs.Tests.Commands
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
-            Assert.AreEqual("Please provide a name for the pool (Parameter 'PoolCreateArgs args')", ex.Message);
+            Assert.AreEqual("Name cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
         [TestMethod]
@@ -95,7 +105,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                PoolName = "tank2",
+                Name = "tank2",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc" } },
@@ -341,7 +351,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolAddArgs
             {
-                PoolName = valid ? "tank" : null,
+                Name = valid ? "tank" : null,
                 VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "disk1", "disk2" } } },
             };
             if (!valid)

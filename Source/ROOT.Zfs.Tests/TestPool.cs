@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Tests
         private readonly IProcessCall _remoteProcessCall;
         private PoolCreateArgs _args;
 
-        public string Name => _args.PoolName;
+        public string Name => _args.Name;
 
         public TestPool(IProcessCall remoteProcessCall)
         {
@@ -59,7 +59,7 @@ namespace ROOT.Zfs.Tests
 
         private bool DestroyPool()
         {
-            var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.PoolName}");
+            var pc = _remoteProcessCall | new ProcessCall("/sbin/zpool", $"destroy {_args.Name}");
             pc.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             var response = pc.LoadResponse(false);
             if (!response.Success)
@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests
         {
             if (!DestroyPool())
             {
-                Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
+                Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.Name);
             }
 
             foreach (var disk in Disks)
@@ -126,7 +126,7 @@ namespace ROOT.Zfs.Tests
 
                 var args = new PoolCreateArgs
                 {
-                    PoolName = name,
+                    Name = name,
                     MountPoint = "none",
                     VDevs = new VDevCreationArgs[]
                     {

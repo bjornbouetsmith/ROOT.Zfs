@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                     Type = VDevCreationType.Mirror,
                     Devices = new []{ "a"} }
             } : null;
-            var args = new PoolAddArgs { PoolName = poolName, VDevs = vdevs };
+            var args = new PoolAddArgs { Name = poolName, VDevs = vdevs };
 
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
@@ -45,7 +45,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolAddArgs
             {
-                PoolName = pool,
+                Name = pool,
                 Force = force,
                 VDevs = new List<VDevCreationArgs>
                 {
@@ -68,7 +68,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
             var args = new PoolAddArgs
             {
-                PoolName = pool,
+                Name = pool,
                 VDevs = new List<VDevCreationArgs>
                 {
                     new() {
@@ -86,7 +86,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolAddArgs
             {
-                PoolName = "tank"
+                Name = "tank"
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => args.ToString());

@@ -29,9 +29,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolStatus Status(string pool)
+        public PoolStatus Status(PoolStatusArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.GetStatus(pool));
+            var pc = BuildCommand(ZpoolCommands.GetStatus(args));
             var response = pc.LoadResponse(true);
 
             return ZPoolStatusParser.Parse(response.StdOut);
@@ -59,9 +59,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public PoolInfo List(string pool)
+        public PoolInfo List(PoolListArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.GetPoolInfo(pool));
+            var pc = BuildCommand(ZpoolCommands.GetPoolInfo(args));
             var response = pc.LoadResponse(true);
 
             var info = ZPoolInfoParser.ParseLine(response.StdOut);
@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Core
 
             var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
             // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
-            var versionInfo = versions.First(v=>v.Name.Equals(pool, StringComparison.OrdinalIgnoreCase));
+            var versionInfo = versions.First(v=>v.Name.Equals(args.Name, StringComparison.OrdinalIgnoreCase));
             info.Version = versionInfo.Version;
 
             return info;
@@ -82,8 +82,9 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.CreatePool(args));
             pc.LoadResponse(true);
-
-            return Status(args.PoolName);
+            var statusArg = new PoolStatusArgs { Name = args.Name };
+            
+            return Status(statusArg);
         }
 
         /// <inheritdoc />

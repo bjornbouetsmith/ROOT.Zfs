@@ -16,9 +16,13 @@ namespace ROOT.Zfs.Core.Commands
             return new ProcessCall(WhichZpool, args.ToString());
         }
 
-        internal static ProcessCall GetStatus(string pool)
+        internal static ProcessCall GetStatus(PoolStatusArgs args)
         {
-            return new ProcessCall(WhichZpool, $"status -vP {pool}");
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+            return new ProcessCall(WhichZpool, args.ToString());
         }
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
@@ -31,11 +35,13 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
-        /// <param name="pool"></param>
-        /// <returns></returns>
-        internal static ProcessCall GetPoolInfo(string pool)
+        internal static ProcessCall GetPoolInfo(PoolListArgs args)
         {
-            return new ProcessCall(WhichZpool, $"list -PHp {pool}");
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>

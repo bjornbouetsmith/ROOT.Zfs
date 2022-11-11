@@ -22,7 +22,7 @@ namespace ROOT.Zfs.Public
         /// Gets the pool status for the given pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-status.8.html
         /// </summary>
-        PoolStatus Status(string pool);
+        PoolStatus Status(PoolStatusArgs args);
 
         /// <summary>
         /// Gets information about pools, returns data from the command: zpool list -v -P
@@ -34,8 +34,8 @@ namespace ROOT.Zfs.Public
         /// Gets information about a single pool zpool list -v -P {pool}
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
         /// </summary>
-        /// <param name="pool">The pool to get info for</param>
-        PoolInfo List(string pool);
+        /// <param name="args">The pool to get info for</param>
+        PoolInfo List(PoolListArgs args);
 
         /// <summary>
         /// Creates a new zpool using the provided args

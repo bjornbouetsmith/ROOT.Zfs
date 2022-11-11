@@ -14,7 +14,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// The allowed characters in strings that should be passed onto zfs/zpool
         /// i.e. pool name, dataset name, snapshotname etc.
         /// </summary>
-        protected const string AllowedCharsDefinition = "[0-9]|[a-z]|[A-Z]|_|-|/";
+        protected const string AllowedCharsDefinition = "[0-9]|[a-z]|[A-Z]|_|-|/|:|\\.";
 
         private static readonly Regex AllowedChars = new Regex(AllowedCharsDefinition, RegexOptions.Compiled);
 
@@ -36,13 +36,20 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         /// <param name="errors">Any errors</param>
         /// <returns>true if valid;false otherwise</returns>
-        public abstract bool Validate(out IList<string> errors);
+        public virtual bool Validate(out IList<string> errors)
+        {
+            errors = new List<string> { "Missing Validate implementation" };
+            return false;
+        }
 
         /// <summary>
         /// Builds the arguments into a string that can be passed onto the respective binary
         /// Expects the returned string to start with <paramref name="command"/>
         /// </summary>
-        protected abstract string BuildArgs(string command);
+        protected virtual string BuildArgs(string command)
+        {
+            return command;
+        }
 
         /// <summary>
         /// Returns a string representation of the current args class that can be passed directly onto the appropriate binary

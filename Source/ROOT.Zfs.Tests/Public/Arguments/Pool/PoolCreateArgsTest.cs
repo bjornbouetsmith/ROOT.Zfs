@@ -18,14 +18,14 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             Assert.IsFalse(valid);
 
             Assert.AreEqual(2, errors.Count);
-            Assert.IsTrue(errors.Any(e => e.Contains("Please provide a name")));
+            Assert.IsTrue(errors.Any(e => e.Contains("Name cannot be empty")));
             Assert.IsTrue(errors.Any(e => e.Contains("Please provide vdevs")));
         }
 
         [TestMethod]
         public void VDevsMustBeSpecified()
         {
-            var args = new PoolCreateArgs { PoolName = "tank" };
+            var args = new PoolCreateArgs { Name = "tank" };
 
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);
@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolCreateArgs
             {
-                PoolName = "tank",
+                Name = "tank",
                 VDevs =
                     new[]
                     {
@@ -67,7 +67,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolCreateArgs
             {
-                PoolName = "tank",
+                Name = "tank",
                 VDevs =
                     new []
                     { 
