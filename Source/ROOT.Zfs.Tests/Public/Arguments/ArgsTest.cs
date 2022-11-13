@@ -23,6 +23,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments
                 ValidateString(Value, AllowEmpty, ref errors);
                 return errors == null;
             }
+
+            protected override string BuildArgs(string command)
+            {
+                return command;
+            }
         }
 
         public class TestArgWithoutValidation : Args
@@ -35,6 +40,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments
             {
                 errors= null;
                 return true;
+            }
+
+            protected override string BuildArgs(string command)
+            {
+                return command;
             }
         }
 

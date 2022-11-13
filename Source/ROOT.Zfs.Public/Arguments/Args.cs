@@ -42,10 +42,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// Builds the arguments into a string that can be passed onto the respective binary
         /// Expects the returned string to start with <paramref name="command"/>
         /// </summary>
-        protected virtual string BuildArgs(string command)
-        {
-            return command;
-        }
+        protected abstract string BuildArgs(string command);
 
         /// <summary>
         /// Returns a string representation of the current args class that can be passed directly onto the appropriate binary
@@ -98,7 +95,7 @@ namespace ROOT.Zfs.Public.Arguments
                 if (!IsStringValid(converted))
                 {
                     errors ??= new List<string>();
-                    errors.Add($"{nameOfString} contains invalid characters");
+                    errors.Add($"{nameOfString} contains invalid characters only '{AllowedCharsDefinition.Replace("\\","")}' is allowed");
                 }
             }
         }

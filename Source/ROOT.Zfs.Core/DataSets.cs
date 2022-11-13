@@ -55,9 +55,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Promote(string dataset)
+        public void Promote(PromoteArgs args)
         {
-            var pc = BuildCommand(DatasetCommands.Promote(dataset));
+            var pc = BuildCommand(DatasetCommands.Promote(args));
             pc.LoadResponse(true);
         }
 

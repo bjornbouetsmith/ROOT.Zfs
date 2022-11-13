@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Public
         /// Promotes the dataset or volume from a clone to a real dataset or volume.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
         /// </summary>
-        void Promote(string dataset);
+        void Promote(PromoteArgs args);
 
         /// <summary>
         /// Mount ZFS filesystem on a path described by its mountpoint property, if the path exists and is empty.

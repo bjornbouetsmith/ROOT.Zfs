@@ -9,7 +9,6 @@ namespace ROOT.Zfs.Tests.Commands
     [TestClass]
     public class DataSetCommandsTest
     {
-
         [DataRow(DatasetDestroyFlags.None, "/sbin/zfs destroy tank/myds")]
         [DataRow(DatasetDestroyFlags.Recursive, "/sbin/zfs destroy -r tank/myds")]
         [DataRow(DatasetDestroyFlags.RecursiveClones, "/sbin/zfs destroy -R tank/myds")]
@@ -24,12 +23,25 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
 
+        [DataRow("tank/myds/clone", "/sbin/zfs promote tank/myds/clone", false)]
+        [DataRow("tank/myds/clone && rm -rf /", "/sbin/zfs promote tank/myds/clone", true)]
         [TestMethod]
-        public void PromoteCommandTest()
+        public void PromoteCommandTest(string dataset, string expectedCommand, bool expectException)
         {
-            var command = DatasetCommands.Promote("tank/myds/clone");
-            Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zfs promote tank/myds/clone", command.FullCommandLine);
+            var args = new PromoteArgs { Name = dataset };
+
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Promote(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+
+                var command = DatasetCommands.Promote(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [TestMethod]

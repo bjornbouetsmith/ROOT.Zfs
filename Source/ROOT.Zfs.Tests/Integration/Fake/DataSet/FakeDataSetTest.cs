@@ -95,7 +95,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         {
             var processCall = CreateProcessCall();
             var ds = GetDatasets(processCall);
-            ds.Promote("tank/myds");
+            ds.Promote(new PromoteArgs { Name = "tank/myds" });
             var commands = processCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs promote tank/myds", commands[0]);

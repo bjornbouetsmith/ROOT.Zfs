@@ -5,7 +5,7 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Tests.Public.Arguments
+namespace ROOT.Zfs.Tests.Public.Arguments.Dataset
 {
     [TestClass]
     public class DatasetCreationArgsTest

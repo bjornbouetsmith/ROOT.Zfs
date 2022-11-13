@@ -62,10 +62,13 @@ namespace ROOT.Zfs.Core.Commands
         /// Promotes the dataset or volume from a clone to a real dataset or volume.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
         /// </summary>
-        internal static ProcessCall Promote(string dataset)
+        internal static ProcessCall Promote(PromoteArgs args)
         {
-            dataset = DatasetHelper.Decode(dataset);
-            return new ProcessCall(WhichZfs, $"promote {dataset}");
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         /// <summary>
