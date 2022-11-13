@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Core.Helpers
             var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 7)
             {
-                throw new ArgumentException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of  type,creation,name,used,refer,avail,mountpoint to be used for snapshot list", nameof(line));
+                throw new FormatException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of  type,creation,name,used,refer,avail,mountpoint to be used for snapshot list");
             }
 
             var snapshot = new Snapshot();

@@ -1,36 +1,42 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers
 {
     [TestClass]
-    public class SnapshotParserAndUtilTest
+    public class SnapshotHelperTest
     {
-        private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -
-snapshot        1664116109      tank/myds@20220925162825        13312   25600   -       -
-snapshot        1664121534      tank/myds@20220925175851        13312   25600   -       -
-snapshot        1664121611      tank/myds@20220925180007        14336   25600   -       -
-snapshot        1664303433      tank/myds@20220927203033        13312   25600   -       -";
+        private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -";
+
+        private const string JunkLine = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600";
+        private const string JunkLine2 = @"snapshot        2022-05-05      tank/myds@20220925162707        40G   80G   -       -";
 
         [TestMethod]
-        public void ParseTest()
+        public void BadInputTest1()
         {
-            var list = SnapshotParser.Parse(SnapshotList).ToList();
+            var ex = Assert.ThrowsException<FormatException>(() => SnapshotHelper.FromString(JunkLine));
+            Assert.IsTrue(ex.Message.Contains("expected 7 parts"));
 
-            Assert.AreEqual(5, list.Count);
-
-            foreach (var snap in list)
-            {
-                Console.WriteLine(snap.CreationDate.AsString());
-                Console.WriteLine(snap.Name);
-                Console.WriteLine(snap.Size.ToString());
-            }
         }
-        
+
+        [TestMethod]
+        public void BadInputTest2()
+        {
+            var snapshot = SnapshotHelper.FromString(JunkLine2);
+            Assert.AreEqual(default, snapshot.CreationDate);
+        }
+
+        [TestMethod]
+        public void GoodInput()
+        {
+            var snapshot = SnapshotHelper.FromString(SnapshotList);
+            Assert.AreEqual("tank/myds@20220925162707", snapshot.Name);
+            Assert.AreEqual(14336UL, snapshot.Size.Bytes);
+            Assert.AreEqual(new DateTime(2022, 09, 25, 14, 27, 11, DateTimeKind.Utc), snapshot.CreationDate);
+        }
+
         [TestMethod]
         [DataRow("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
         [DataRow("tank/myds", "tank/myds@testing123", "testing", true)] // partial match
