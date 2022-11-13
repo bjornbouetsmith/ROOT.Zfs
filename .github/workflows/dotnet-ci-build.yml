@@ -34,10 +34,20 @@ jobs:
 
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore
-
     - name: Test
       run: dotnet test --no-build Source/**/*.Tests.csproj --no-build --verbosity normal --filter "TestCategory!=Integration"
-    - name: Set status
+
+    - name: Set failed status
+      if: failure()
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build failed!","context":"continuous-integration/build"}'
+
+    - name: Set success status
       run: |
         curl \
         -X POST \

@@ -85,7 +85,7 @@ jobs:
          ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
         -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The quality gate failed!","context":"continuous-integration/sonarcloud"}'
 
-    - name: Set sucecss status
+    - name: Set success status
       run: |
         curl \
         -X POST \
