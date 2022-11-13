@@ -4,9 +4,12 @@ run-name: .NET CI Build
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '.github/**'
   pull_request:
     branches: [ "main" ]
-
+    paths-ignore:
+      - '.github/**'
 jobs:
   build-and-test:
 
