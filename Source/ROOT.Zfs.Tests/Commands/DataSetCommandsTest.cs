@@ -92,12 +92,12 @@ namespace ROOT.Zfs.Tests.Commands
 
             if (expectException)
             {
-                var ex = Assert.ThrowsException<ArgumentException>(() => DatasetCommands.CreateDataset(args));
+                var ex = Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Create(args));
                 Console.WriteLine(ex);
             }
             else
             {
-                var command = DatasetCommands.CreateDataset(args);
+                var command = DatasetCommands.Create(args);
                 Assert.AreEqual(expectedCommand, command.FullCommandLine);
             }
         }

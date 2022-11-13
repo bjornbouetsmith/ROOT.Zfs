@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <param name="arguments"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        internal static IProcessCall CreateDataset(DatasetCreationArgs arguments)
+        internal static IProcessCall Create(DatasetCreationArgs arguments)
         {
             if (!arguments.Validate(out var errors))
             {

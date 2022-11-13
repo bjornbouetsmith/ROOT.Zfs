@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
@@ -27,12 +26,7 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public Dataset Create(DatasetCreationArgs arguments)
         {
-            if (!arguments.Validate(out var errors))
-            {
-                throw new ArgumentException(string.Join(Environment.NewLine, errors), nameof(arguments));
-            }
-
-            var pc = BuildCommand(DatasetCommands.CreateDataset(arguments));
+            var pc = BuildCommand(DatasetCommands.Create(arguments));
 
             pc.LoadResponse(true);
             var listArgs = new DatasetListArgs { Root = arguments.DatasetName, IncludeChildren = false, DatasetTypes = arguments.Type };
