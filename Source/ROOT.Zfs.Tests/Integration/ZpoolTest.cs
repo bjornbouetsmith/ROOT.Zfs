@@ -135,7 +135,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            zp.Destroy(pool.Name);
+            zp.Destroy(new PoolDestroyArgs { Name = pool.Name });
         }
 
 

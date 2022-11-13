@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zpool list -PHp", command.FullCommandLine);
         }
 
-        [DataRow("tank",false)]
+        [DataRow("tank", false)]
         [DataRow("tank/myds", true)]
         [TestMethod]
         public void GetPoolInfoCommand(string name, bool expectException)
@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Tests.Commands
                 PoolProperties = new[] { new PropertyValue { Property = "ashift", Value = "12" } },
                 FileSystemProperties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
             };
-            var command = ZpoolCommands.CreatePool(args);
+            var command = ZpoolCommands.Create(args);
             Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
             Console.WriteLine(command.FullCommandLine);
         }
@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Tests.Commands
                 }
             };
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
+            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Create(args));
             Assert.AreEqual("Name cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
@@ -112,7 +112,7 @@ namespace ROOT.Zfs.Tests.Commands
                 }
             };
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.CreatePool(args));
+            var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Create(args));
             Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
@@ -385,6 +385,27 @@ namespace ROOT.Zfs.Tests.Commands
                 var command = ZpoolCommands.Remove(args);
                 Console.WriteLine(command.FullCommandLine);
                 Assert.AreEqual("/sbin/zpool remove tank mirror-0", command.FullCommandLine);
+            }
+        }
+        [DataRow("tank", "/sbin/zpool destroy -f tank", false)]
+        [DataRow("tank%5ftest", "/sbin/zpool destroy -f tank_test", false)]
+        [DataRow("tank/myds",null, true)]
+        [DataRow("tank%2fmyds", null, true)]
+        [DataRow("", null, true)]
+        [TestMethod]
+        public void DestroyTest(string name, string expected, bool expectException)
+        {
+            var args = new PoolDestroyArgs { Name = name };
+
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Destroy(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = ZpoolCommands.Destroy(args);
+                Assert.AreEqual(expected, command.FullCommandLine);
             }
         }
     }

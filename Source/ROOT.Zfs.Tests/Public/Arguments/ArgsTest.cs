@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Arguments;
 
-namespace ROOT.Zfs.Tests.Public.Arguments.Pool
+namespace ROOT.Zfs.Tests.Public.Arguments
 {
     [TestClass]
     public class ArgsTest

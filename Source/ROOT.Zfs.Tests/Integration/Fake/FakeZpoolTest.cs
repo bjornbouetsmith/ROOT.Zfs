@@ -113,7 +113,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 }
             });
             Assert.IsNotNull(pool);
-            zp.Destroy("mytest");
+            zp.Destroy(new PoolDestroyArgs { Name = "mytest" });
         }
 
         [TestMethod, TestCategory("FakeIntegration")]

@@ -80,7 +80,7 @@ namespace ROOT.Zfs.Core
         /// <inheritdoc />
         public PoolStatus Create(PoolCreateArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.CreatePool(args));
+            var pc = BuildCommand(ZpoolCommands.Create(args));
             pc.LoadResponse(true);
             var statusArg = new PoolStatusArgs { Name = args.Name };
             
@@ -88,9 +88,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Destroy(string pool)
+        public void Destroy(PoolDestroyArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.DestroyPool(pool));
+            var pc = BuildCommand(ZpoolCommands.Destroy(args));
             pc.LoadResponse(true);
         }
 

@@ -49,8 +49,8 @@ namespace ROOT.Zfs.Public
         /// Destroys the given pool
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
         /// </summary>
-        /// <param name="pool">The name of the pool to destroy</param>
-        void Destroy(string pool);
+        /// <param name="args">The name of the pool to destroy</param>
+        void Destroy(PoolDestroyArgs args);
         
         /// <summary>
         /// Takes the specified physical device offline.

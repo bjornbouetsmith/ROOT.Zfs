@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="args">The arguments used to create the pool <see cref="PoolCreateArgs"/></param>
         /// <returns></returns>
-        internal static ProcessCall CreatePool(PoolCreateArgs args)
+        internal static ProcessCall Create(PoolCreateArgs args)
         {
             if (!args.Validate(out var errors))
             {
@@ -64,10 +64,14 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
         /// </summary>
-        /// <param name="pool"></param>
-        internal static ProcessCall DestroyPool(string pool)
+        internal static ProcessCall Destroy(PoolDestroyArgs args)
         {
-            return new ProcessCall(WhichZpool, $"destroy -f {pool}");
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>
