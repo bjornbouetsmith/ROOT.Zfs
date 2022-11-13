@@ -11,11 +11,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Properties
         [DataRow(PropertyTarget.Pool, null, null, true)]
         [DataRow(PropertyTarget.Pool, "ashift", null, true)]
         [DataRow(PropertyTarget.Pool, "ashift", "tank", true)]
+        [DataRow(PropertyTarget.Pool, "ashift", "tank/myds", false)]
         [DataRow(PropertyTarget.Pool, null, "tank", true)]
         [DataRow(PropertyTarget.Dataset, null, null, true)]
         [DataRow(PropertyTarget.Dataset, "atime", null, true)]
         [DataRow(PropertyTarget.Dataset, "atime", "tank/myds", true)]
         [DataRow(PropertyTarget.Dataset, null, "tank/myds", true)]
+        [DataRow(PropertyTarget.Dataset, null, "tank/myds && rm -rf /", false)]
         [TestMethod]
         public void ValidateTest(PropertyTarget propertyTarget, string property, string target, bool expectedValid)
         {

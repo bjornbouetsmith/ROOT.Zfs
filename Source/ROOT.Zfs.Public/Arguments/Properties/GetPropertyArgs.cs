@@ -23,6 +23,27 @@ namespace ROOT.Zfs.Public.Arguments.Properties
             // get property target -H
             // get all target -H
 
+            if (!string.IsNullOrWhiteSpace(Property))
+            {
+                // if property is set, it has to be valid
+                ValidateString(Property,false, ref errors);
+            }
+
+            if (!string.IsNullOrEmpty(Target))
+            {
+                // If target is set it has to be valid
+                ValidateString(Target, false, ref errors);
+
+                if (errors == null 
+                    && PropertyTarget == PropertyTarget.Pool
+                    && Decode(Target).Contains('/'))
+                {
+                    //explicitly disallow / in a pool name
+                    errors = new List<string>();
+                    errors.Add("character '/' is not allowed in a pool name");
+                }
+            }
+
             return errors == null;
         }
 

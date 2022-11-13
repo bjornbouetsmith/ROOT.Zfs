@@ -30,11 +30,21 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow(PropertyTarget.Dataset, "atime", "", "/sbin/zfs get atime -H")]
         [DataRow(PropertyTarget.Dataset, "", "", "/sbin/zfs get -H")] // These will not work runtime, since parsing will fail
         [DataRow(PropertyTarget.Pool, "", "", "/sbin/zpool get -H")] // These will not work runime, since parsing will fail
-        public void GetPropertiesTest(PropertyTarget targetType, string property, string target, string expectedCommand)
+        [DataRow(PropertyTarget.Pool, "", "tank/myds", null, true)] 
+        [DataRow(PropertyTarget.Pool, "atime && rm -rf /", "", null, true)] 
+        public void GetPropertiesTest(PropertyTarget targetType, string property, string target, string expectedCommand, bool expectException = false)
         {
             var args = new GetPropertyArgs { PropertyTarget = targetType, Target = target, Property = property };
-            var command = PropertyCommands.Get(args);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => PropertyCommands.Get(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = PropertyCommands.Get(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [DataRow(PropertyTarget.Dataset, "atime", "tank/myds", "/sbin/zfs inherit -rS atime tank/myds", false)]
