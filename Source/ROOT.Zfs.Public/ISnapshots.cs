@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public
@@ -10,18 +11,15 @@ namespace ROOT.Zfs.Public
     {
         /// <summary>
         /// Gets a list of snapshots for the given dataset or volumne.
-        /// i.e. zfs list -t snapshot <paramref name="datasetOrVolume"/>
+        /// i.e. zfs list -t snapshot [root]
         /// </summary>
-        IEnumerable<Snapshot> List(string datasetOrVolume);
+        IList<Snapshot> List(SnapshotListArgs args);
 
         /// <summary>
         /// Destroy the given snapshot in the dataset
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-destroy.8.html
         /// </summary>
-        /// <param name="datasetOrVolume">The dataset or volume in which to destroy a snapshot</param>
-        /// <param name="snapName">The name of the snapshot.
-        /// Can be in the format of dataset@snapname - or just snapnaps</param>
-        /// <param name="isExactName">Whether or not to do exact matching on snapshot name, or partial matches where datasets must being withe <paramref name="snapName"/></param>
-        void Destroy(string datasetOrVolume, string snapName, bool isExactName);
+        void Destroy(SnapshotDestroyArgs args);
 
         /// <summary>
         /// Create a snapshot in the given dataset with the specified snapshot name

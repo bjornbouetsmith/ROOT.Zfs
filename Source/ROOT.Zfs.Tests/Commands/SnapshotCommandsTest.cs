@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Commands
@@ -39,7 +40,8 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void DestroyDatasetCommandTest(string dataset, string snapName, string expected)
         {
-            var command = SnapshotCommands.DestroySnapshot(dataset, snapName);
+            var args = new SnapshotDestroyArgs { Dataset = dataset, Snapshot = snapName };
+            var command = SnapshotCommands.DestroySnapshot(args);
             Assert.AreEqual(expected, command.FullCommandLine);
         }
 

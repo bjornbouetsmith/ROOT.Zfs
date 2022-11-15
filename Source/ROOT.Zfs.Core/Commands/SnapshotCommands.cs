@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public.Arguments.Dataset;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core.Commands
@@ -23,10 +23,13 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Lists snapshots in the given dataset or volume
         /// </summary>
-        /// <param name="datasetOrVolume"></param>
-        internal static IProcessCall ListSnapshots(string datasetOrVolume)
+        internal static IProcessCall ListSnapshots(SnapshotListArgs args)
         {
-            var args = new DatasetListArgs { DatasetTypes = DatasetTypes.Snapshot, Root = datasetOrVolume, IncludeChildren = true };
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+
             return ZfsList(args);
         }
 
@@ -34,18 +37,14 @@ namespace ROOT.Zfs.Core.Commands
         /// Destroys the snapshot in the given dataset
         /// Snapshot has to be a child of dataset
         /// </summary>
-        /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
-        /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
-        internal static ProcessCall DestroySnapshot(string datasetOrVolume, string snapshotName)
+        internal static ProcessCall DestroySnapshot(SnapshotDestroyArgs args)
         {
-            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            var rawSnapName = snapshotName;
-            if (snapshotName.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
+            if (!args.Validate(out var errors))
             {
-                rawSnapName = snapshotName[(datasetOrVolume.Length + 1)..];
+                throw ToArgumentException(errors, args);
             }
 
-            return new ProcessCall(WhichZfs, $"destroy {datasetOrVolume}@{rawSnapName}");
+            return new ProcessCall(WhichZfs, args.ToString());
         }
         /// <summary>
         /// Creates a snapshot of the dataset with the given name

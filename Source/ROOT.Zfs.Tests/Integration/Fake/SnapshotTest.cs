@@ -5,13 +5,14 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
     [TestClass]
     public class FakeSnapshotTest
     {
-        private readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
+        private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
         private ISnapshots GetSnapshots()
         {
@@ -23,7 +24,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var sn = GetSnapshots();
 
-            var snapshots = sn.List("tank/myds");
+            var snapshots = sn.List(new SnapshotListArgs { Root = "tank/myds" });
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
@@ -32,7 +33,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                 Console.WriteLine(snap.Size.ToString());
             }
         }
-        
+
         [TestMethod, TestCategory("FakeIntegration")]
         public void RemoteCreateAndDestroySnapshot()
         {
@@ -42,10 +43,10 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             sn.Create("tank/myds", snapName);
 
-            var snaps = sn.List("tank/myds");
+            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" });
             Assert.IsNotNull(snaps);
-
-            sn.Destroy("tank/myds", snapName, true);
+            var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = snapName, IsExactName = true };
+            sn.Destroy(args);
 
         }
 
@@ -67,11 +68,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             sn.Create("tank/myds", $"{prefix}-2");
             sn.Create("tank/myds", $"{prefix}-3");
 
-            var snaps = sn.List("tank/myds").Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
-
-            sn.Destroy("tank/myds", prefix, false);
+            var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = prefix, IsExactName = false };
+            sn.Destroy(args);
         }
 
         [TestMethod]
@@ -80,7 +81,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var sn = GetSnapshots();
             sn.Hold("tank/myds@12345", "mytag", false);
             var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1,commands.Count);
+            Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs hold mytag tank/myds@12345", commands[0]);
         }
 
@@ -89,7 +90,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         {
             var sn = GetSnapshots();
             var holds = sn.Holds("tank/myds@12345", false);
-            Assert.AreEqual(1,holds.Count);
+            Assert.AreEqual(1, holds.Count);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs holds -H tank/myds@12345", commands[0]);
@@ -99,8 +100,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void SnapshotReleaseTest()
         {
             var sn = GetSnapshots();
-            sn.Release("tank/myds@12345","mytag", false);
-            
+            sn.Release("tank/myds@12345", "mytag", false);
+
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs release mytag tank/myds@12345", commands[0]);

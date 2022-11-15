@@ -24,6 +24,7 @@ namespace ROOT.Zfs.Public
         /// <exception cref="ArgumentException">If any of the passed values in the arguments are not valid</exception>
         /// <returns>The dataset just created</returns>
         Dataset Create(DatasetCreationArgs arguments);
+
         /// <summary>
         /// Destroys the given dataset.
         /// </summary>

@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Core
@@ -16,34 +17,38 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IEnumerable<Snapshot> List(string datasetOrVolume)
+        public IList<Snapshot> List(SnapshotListArgs args)
         {
-            var pc = BuildCommand(SnapshotCommands.ListSnapshots(datasetOrVolume));
+            var pc = BuildCommand(SnapshotCommands.ListSnapshots(args));
 
             var response = pc.LoadResponse(true);
+            var list = new List<Snapshot>();
 
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                yield return SnapshotHelper.FromString(line);
+                list.Add(SnapshotHelper.FromString(line));
             }
+            return list;
         }
 
         /// <inheritdoc />
-        public void Destroy(string datasetOrVolume, string snapName, bool isExactName)
+        public void Destroy(SnapshotDestroyArgs args)
         {
-            if (isExactName)
+            if (args.IsExactName)
             {
-                var pc = BuildCommand(SnapshotCommands.DestroySnapshot(datasetOrVolume, snapName));
+                var pc = BuildCommand(SnapshotCommands.DestroySnapshot(args));
 
                 pc.LoadResponse(true);
 
             }
             else
             {
+                var listArg = new SnapshotListArgs { Root = args.Dataset };
                 // Find all snapshots that begins with snapName and delete them one by one
-                foreach (var snapshot in List(datasetOrVolume).Where(sn => SnapshotMatches(datasetOrVolume, sn.Name, snapName)))
+                foreach (var snapshot in List(listArg).Where(sn => SnapshotMatches(args.Dataset, sn.Name, args.Snapshot)))
                 {
-                    Destroy(datasetOrVolume, snapshot.Name, true);
+                    var subArgs = new SnapshotDestroyArgs { Dataset = args.Dataset, Snapshot = snapshot.Name, IsExactName = true };
+                    Destroy(subArgs);
                 }
             }
         }
@@ -63,10 +68,10 @@ namespace ROOT.Zfs.Core
             }
 
             var realName = snapshotName[skipLen..];
-            
+
             return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
         }
-        
+
         /// <inheritdoc />
         public void Create(string dataset, string snapName)
         {

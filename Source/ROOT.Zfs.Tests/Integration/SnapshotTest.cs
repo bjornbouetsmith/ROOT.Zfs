@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 
 namespace ROOT.Zfs.Tests.Integration
 {
@@ -26,7 +27,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
             sn.Create(pool.Name, null);
-            var snapshots = sn.List(pool.Name);
+            var snapshots = sn.List(new SnapshotListArgs { Root = pool.Name });
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
             {
@@ -45,13 +46,13 @@ namespace ROOT.Zfs.Tests.Integration
 
             sn.Create(pool.Name, snapName);
 
-            var snaps = sn.List(pool.Name);
+            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name });
 
             var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
 
             Assert.IsNotNull(wasCreated);
-
-            sn.Destroy(pool.Name, snapName, true);
+            var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = snapName, IsExactName = true };
+            sn.Destroy(args);
 
         }
 
@@ -66,13 +67,13 @@ namespace ROOT.Zfs.Tests.Integration
             sn.Create(pool.Name, $"{prefix}-2");
             sn.Create(pool.Name, $"{prefix}-3");
 
-            var snaps = sn.List(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
+            var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
+            sn.Destroy(args);
 
-            sn.Destroy(pool.Name, prefix, false);
-
-            snaps = sn.List(pool.Name).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
             Assert.AreEqual(0, snaps.Count);
         }
     }
