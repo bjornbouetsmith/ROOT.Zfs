@@ -35,14 +35,42 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("20220922211347", name);
         }
 
-        [DataRow("tank/myds", "projectX", "/sbin/zfs destroy tank/myds@projectX")]
-        [DataRow("tank/myds", "tank/myds@projectX", "/sbin/zfs destroy tank/myds@projectX")]
+        [DataRow("tank/myds", "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t snapshot tank/myds", false)]
+        [DataRow("tank/myds && rm -rf /", null, true)]
         [TestMethod]
-        public void DestroyDatasetCommandTest(string dataset, string snapName, string expected)
+        public void ListSnapshotsTest(string dataset, string expectedCommand, bool expectException)
+        {
+            var args = new SnapshotListArgs { Root = dataset };
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.ListSnapshots(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = SnapshotCommands.ListSnapshots(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
+        }
+
+        [DataRow("tank/myds", "projectX", "/sbin/zfs destroy tank/myds@projectX", false)]
+        [DataRow("tank/myds", "tank/myds@projectX", "/sbin/zfs destroy tank/myds@projectX", false)]
+        [DataRow("tank/myds", "tank/myds@projectX && rm -rf /", null, true)]
+        [TestMethod]
+        public void DestroyDatasetCommandTest(string dataset, string snapName, string expected, bool expectException)
         {
             var args = new SnapshotDestroyArgs { Dataset = dataset, Snapshot = snapName };
-            var command = SnapshotCommands.DestroySnapshot(args);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.DestroySnapshot(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = SnapshotCommands.DestroySnapshot(args);
+
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
         }
 
         [TestMethod]
