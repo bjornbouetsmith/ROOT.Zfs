@@ -57,6 +57,11 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         protected static string Decode(string dataset)
         {
+            if (string.IsNullOrWhiteSpace(dataset))
+            {
+                return string.Empty;
+            }
+
             if (dataset.Contains('%'))
             {
                 return HttpUtility.UrlDecode(dataset);

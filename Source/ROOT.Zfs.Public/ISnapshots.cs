@@ -24,11 +24,9 @@ namespace ROOT.Zfs.Public
         /// <summary>
         /// Create a snapshot in the given dataset with the specified snapshot name
         /// </summary>
-        /// <param name="dataset">The dataset in which to create a snapshot</param>
-        /// <param name="snapName">The name of the snapshot.
-        /// If null or empty string is passed an auto generated snapshot name in the format
-        /// yyyyMMddHHmmss will be used</param>
-        void Create(string dataset, string snapName);
+        /// <remarks>If null or empty string is passed an auto generated snapshot name in the format
+        /// yyyyMMddHHmmss will be used</remarks>
+        void Create(SnapshotCreateArgs args);
 
         /// <summary>
         /// Adds a single reference, named with the tag argument, to the specified snapshots.

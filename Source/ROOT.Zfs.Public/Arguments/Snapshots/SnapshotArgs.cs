@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots
 {
@@ -23,21 +24,40 @@ namespace ROOT.Zfs.Public.Arguments.Snapshots
         /// </summary>
         public string Snapshot { get; set; }
 
+        /// <summary>
+        /// Returns the raw snapshot name, where the dataset prefix if any has been removed.
+        /// Snapshot name is also decoded, so its no longer url encoded if that was the case
+        /// </summary>
+        protected string GetRawSnapshotName()
+        {
+            if (string.IsNullOrWhiteSpace(Snapshot))
+            {
+                return string.Empty;
+            }
+
+            var dataset = Decode(Dataset);
+            var rawSnapName = Decode(Snapshot);
+            if (rawSnapName.StartsWith(dataset, StringComparison.OrdinalIgnoreCase))
+            {
+                rawSnapName = rawSnapName[(dataset.Length + 1)..];
+            }
+
+            return rawSnapName;
+        }
+
         /// <inheritdoc />
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
             ValidateString(Dataset, false, ref errors);
-            var decoded = Decode(Snapshot);
-            var index = decoded.IndexOf('@');
-            if (index > -1)
+
+            var rawSnapshotName = GetRawSnapshotName();
+            ValidateString(rawSnapshotName, false, ref errors, "Snapshot");
+
+            if (rawSnapshotName.Contains('/'))
             {
-                decoded = decoded[(index + 1)..];
-                ValidateString(decoded, false, ref errors);
-            }
-            else
-            {
-                ValidateString(Snapshot, false, ref errors);
+                errors ??= new List<string>();
+                errors.Add("Snapshot cannot contain '/' unless its a part of the dataset prefix");
             }
 
             return errors == null;

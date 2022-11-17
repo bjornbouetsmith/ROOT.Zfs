@@ -11,6 +11,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Snapshots
         [DataRow("tank/myds", "tank/myds@snap123", true)]
         [DataRow("tank%2fmyds", "tank%2fmyds%40snap123", true)]
         [DataRow("tank%2fmyds", "snap123 %26%26+rm+-rf+%2f", false)]
+        [DataRow("tank%2fmyds", null, false)]
         [TestMethod]
         public void ValidateTest(string dataset, string snapshot, bool expectValid)
         {

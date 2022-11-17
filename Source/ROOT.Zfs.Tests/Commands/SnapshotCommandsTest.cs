@@ -9,31 +9,36 @@ namespace ROOT.Zfs.Tests.Commands
     [TestClass]
     public class SnapshotCommandsTest
     {
+        [DataRow("tank/myds", "projectX", "/sbin/zfs snap tank/myds@projectX", false)]
+        [DataRow("tank/myds", "", null, false)]
+        [DataRow("tank/myds", "\\test", null, true)]
         [TestMethod]
-        public void CreateSnapshotWithNameTest()
+        public void CreateSnapshotWithNameTest(string dataset, string snapshot, string expectedCommand, bool expectException)
         {
-            var command = SnapshotCommands.CreateSnapshot("tank/myds", "projectX");
-            Assert.AreEqual("/sbin/zfs snap tank/myds@projectX", command.FullCommandLine);
+            var args = new SnapshotCreateArgs { Dataset = dataset, Snapshot = snapshot };
+
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.CreateSnapshot(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = SnapshotCommands.CreateSnapshot(args);
+                Console.WriteLine(command.FullCommandLine);
+                if (!string.IsNullOrWhiteSpace(snapshot))
+                {
+                    Assert.AreEqual(expectedCommand, command.FullCommandLine);
+                }
+                else
+                {
+                    var expectedPrefix = $"/sbin/zfs snap {dataset}@{DateTime.UtcNow.ToLocalTime():yyyyMMddHHmm}";
+                    Assert.IsTrue(command.FullCommandLine.StartsWith(expectedPrefix));
+                }
+            }
+
         }
 
-        [TestMethod]
-        public void CreateSnapshotWithoutNameTest()
-        {
-            var expectedPrefix = $"/sbin/zfs snap tank/myds@{DateTime.UtcNow.ToLocalTime():yyyyMMddHHmm}";
-            var command = SnapshotCommands.CreateSnapshot("tank/myds", null);
-            Console.WriteLine(command.FullCommandLine);
-            Console.WriteLine(expectedPrefix);
-            Assert.IsTrue(command.FullCommandLine.StartsWith(expectedPrefix));
-        }
-
-        [TestMethod]
-        public void CreateSnapshotNameTest()
-        {
-            var time = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local);
-
-            var name = SnapshotCommands.CreateSnapshotName(time);
-            Assert.AreEqual("20220922211347", name);
-        }
 
         [DataRow("tank/myds", "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t snapshot tank/myds", false)]
         [DataRow("tank/myds && rm -rf /", null, true)]
@@ -73,13 +78,6 @@ namespace ROOT.Zfs.Tests.Commands
             }
         }
 
-        [TestMethod]
-        public void CreateSnapshotWithInvalidNameShouldThrowArgumentException()
-        {
-            var bogusName = "2022/05/17";
-            var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.CreateSnapshot("tank/myds", bogusName));
-            Assert.IsTrue(ex.Message.StartsWith(bogusName));
-        }
 
         [TestMethod]
         public void CloneSnapshotTestWithoutProperties()

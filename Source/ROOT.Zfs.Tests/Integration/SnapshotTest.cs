@@ -26,7 +26,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
-            sn.Create(pool.Name, null);
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name });
             var snapshots = sn.List(new SnapshotListArgs { Root = pool.Name });
             Assert.IsNotNull(snapshots);
             foreach (var snap in snapshots)
@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests.Integration
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var sn = GetSnapshots();
 
-            sn.Create(pool.Name, snapName);
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = snapName });
 
             var snaps = sn.List(new SnapshotListArgs { Root = pool.Name });
 
@@ -63,9 +63,9 @@ namespace ROOT.Zfs.Tests.Integration
             var sn = GetSnapshots();
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-            sn.Create(pool.Name, $"{prefix}-1");
-            sn.Create(pool.Name, $"{prefix}-2");
-            sn.Create(pool.Name, $"{prefix}-3");
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" });
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" });
 
             var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
 

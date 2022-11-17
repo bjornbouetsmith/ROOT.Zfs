@@ -13,8 +13,7 @@ namespace ROOT.Zfs.Core.Commands
     /// </summary>
     internal class SnapshotCommands : Commands
     {
-        private static readonly Regex NameAllow = new Regex("[0-9]|[a-z]|[A-Z]|_|-", RegexOptions.Compiled);
-
+        
         /// <summary>
         /// Creates a standard snapshot name based on the time passed into the method
         /// </summary>
@@ -49,22 +48,14 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Creates a snapshot of the dataset with the given name
         /// </summary>
-        /// <param name="datasetOrVolume">The dataset or volume where the snapshot resides in</param>
-        /// <param name="snapshotName">Name of the snapshot - can be in the form: dataset@snapshot or just snapshot</param>
-        internal static ProcessCall CreateSnapshot(string datasetOrVolume, string snapshotName)
+        internal static ProcessCall CreateSnapshot(SnapshotCreateArgs args)
         {
-            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            if (string.IsNullOrWhiteSpace(snapshotName))
+            if (!args.Validate(out var errors))
             {
-                snapshotName = CreateSnapshotName(DateTime.UtcNow.ToLocalTime());
+                throw ToArgumentException(errors, args);
             }
 
-            if (NameAllow.Matches(snapshotName).Count != snapshotName.Length)
-            {
-                throw new ArgumentException($"{snapshotName} is not a valid snapshot name - valid characters are [0-9]|[a-z]|[A-Z]|_|-", nameof(snapshotName));
-            }
-
-            return new ProcessCall(WhichZfs, $"snap {datasetOrVolume}@{snapshotName}");
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         /// <summary>

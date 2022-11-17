@@ -8,6 +8,7 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration
@@ -31,10 +32,10 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var snap = new Snapshots(_remoteProcessCall);
             snap.RequiresSudo = TestHelpers.RequiresSudo;
-            snap.Create(pool.Name, "test1");
-            snap.Create(pool.Name, "test2");
-            snap.Create(pool.Name, "test3");
-            snap.Create(pool.Name, null);
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name });
             var args = new PoolHistoryArgs { PoolName = pool.Name };
             var lines = zp.History(args).ToList().Count;
             args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
@@ -64,10 +65,10 @@ namespace ROOT.Zfs.Tests.Integration
             var zp = GetZpool();
             var snap = new Snapshots(_remoteProcessCall);
             snap.RequiresSudo = TestHelpers.RequiresSudo;
-            snap.Create(pool.Name, "test1");
-            snap.Create(pool.Name, "test2");
-            snap.Create(pool.Name, "test3");
-            snap.Create(pool.Name, null);
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" });
+            snap.Create(new SnapshotCreateArgs { Dataset = pool.Name });
             var args = new PoolHistoryArgs { PoolName = pool.Name };
             var last10AtMost = zp.History(args).TakeLast(10).ToList();
 
