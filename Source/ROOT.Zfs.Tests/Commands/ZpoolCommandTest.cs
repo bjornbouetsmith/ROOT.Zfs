@@ -27,13 +27,25 @@ namespace ROOT.Zfs.Tests.Commands
 
         }
 
+        [DataRow("", true)]
+        [DataRow("tank",false)]
+        [DataRow("tank && rm -rf /", true)]
         [TestMethod]
-        public void GetStatusCommandTest()
+        public void GetStatusCommandTest(string pool, bool expectException)
         {
-            var arg = new PoolStatusArgs { Name = "tank" };
-            var command = ZpoolCommands.GetStatus(arg);
+            var arg = new PoolStatusArgs { Name = pool };
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.GetStatus(arg));
+                Console.WriteLine(ex);
+            }
+            else
+            {
 
-            Assert.AreEqual("/sbin/zpool status -vP tank", command.FullCommandLine);
+                var command = ZpoolCommands.GetStatus(arg);
+
+                Assert.AreEqual("/sbin/zpool status -vP tank", command.FullCommandLine);
+            }
         }
 
         [TestMethod]
