@@ -59,13 +59,13 @@ namespace ROOT.Zfs.Core
         internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
         {
             datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            var skipLen = datasetOrVolume.Length + 1;
+            pattern = DatasetHelper.Decode(pattern);
             var trimmedName = pattern;
             var realName = snapshotName;
             var decodedSnapshot = DatasetHelper.Decode(snapshotName);
             if (decodedSnapshot.Contains('@'))
             {
-                realName = decodedSnapshot.Substring(decodedSnapshot.IndexOf('@') + 1);
+                realName = decodedSnapshot[(decodedSnapshot.IndexOf('@') + 1)..];
                 if (!decodedSnapshot.StartsWith(datasetOrVolume))
                 {
                     // Wrong dataset
