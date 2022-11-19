@@ -88,20 +88,14 @@ namespace ROOT.Zfs.Core.Commands
         /// Returns a command to add a tag to a snapshot, i.e.
         /// zfs hold
         /// </summary>
-        internal static ProcessCall Hold(string snapshot, string tag, bool recursive)
+        internal static ProcessCall Hold(SnapshotHoldArgs args)
         {
-            if (string.IsNullOrWhiteSpace(snapshot))
+            if (!args.Validate(out var errors))
             {
-                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
+                throw ToArgumentException(errors, args);
             }
 
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                throw new ArgumentException("Please provide a tag name", nameof(tag));
-            }
-
-            snapshot = DatasetHelper.Decode(snapshot);
-            return new ProcessCall(WhichZfs, $"hold{(recursive ? " -r" : "")} {tag} {snapshot}");
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         /// <summary>

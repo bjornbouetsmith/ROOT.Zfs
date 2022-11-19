@@ -100,23 +100,24 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zfs clone -p -o atime=off -o compression=off tank/myds@projectX /tank/clones/projectX", command.FullCommandLine);
         }
 
-        [DataRow("tank/myds@12345", "myhold", true, "/sbin/zfs hold -r myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds@12345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds%4012345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds%4012345", "", false, null, true)]
-        [DataRow("tank%2fmyds%4012345", null, false, null, true)]
-        [DataRow("", "myhold", false, null, true)]
-        [DataRow(null, "myhold", false, null, true)]
+        [DataRow("tank/myds","tank/myds@12345", "myhold", true, "/sbin/zfs hold -r myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "tank%2fmyds@12345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "tank%2fmyds%4012345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "tank%2fmyds%4012345", "", false, null, true)]
+        [DataRow("tank%2fmyds", "tank%2fmyds%4012345", null, false, null, true)]
+        [DataRow("tank/myds", "", "myhold", false, null, true)]
+        [DataRow("tank/myds", null, "myhold", false, null, true)]
         [TestMethod]
-        public void HoldTest(string snapshot, string tag, bool recursive, string expected, bool expectException = false)
+        public void HoldTest(string dataset, string snapshot, string tag, bool recursive, string expected, bool expectException = false)
         {
+            var args = new SnapshotHoldArgs{Dataset = dataset, Snapshot=snapshot,Tag=tag,Recursive=recursive};
             if (expectException)
             {
-                Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Hold(snapshot, tag, recursive));
+                Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Hold(args));
             }
             else
             {
-                var command = SnapshotCommands.Hold(snapshot, tag, recursive);
+                var command = SnapshotCommands.Hold(args);
                 Console.WriteLine(command.FullCommandLine);
                 Assert.AreEqual(expected, command.FullCommandLine);
             }

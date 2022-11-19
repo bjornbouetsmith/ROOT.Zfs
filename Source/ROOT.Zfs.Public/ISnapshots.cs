@@ -35,10 +35,7 @@ namespace ROOT.Zfs.Public
         /// <see cref=" Release(string, string, bool)"/>
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-hold.8.html
         /// </summary>
-        /// <param name="snapshot">The full name of the snapshot in which to create a hold</param>
-        /// <param name="tag">The tag to use for the hold</param>
-        /// <param name="recursive">Specifies that a hold with the given tag is applied recursively to the snapshots of all descendent file systems.</param>
-        void Hold(string snapshot, string tag, bool recursive);
+        void Hold(SnapshotHoldArgs args);
 
         /// <summary>
         /// Lists all existing user references for the given snapshot or snapshots.

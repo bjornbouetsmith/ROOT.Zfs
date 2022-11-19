@@ -8,9 +8,15 @@ namespace ROOT.Zfs.Public.Data
     public class Snapshot
     {
         /// <summary>
+        /// The dataset the snapshot belongs to
+        /// </summary>
+        public string Dataset { get; set; }
+
+        /// <summary>
         /// The name of the snapshot
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// Time when snapshot was created
         /// </summary>

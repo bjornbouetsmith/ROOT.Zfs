@@ -61,13 +61,25 @@ namespace ROOT.Zfs.Core
             datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
             var skipLen = datasetOrVolume.Length + 1;
             var trimmedName = pattern;
+            var realName = snapshotName;
+            var decodedSnapshot = DatasetHelper.Decode(snapshotName);
+            if (decodedSnapshot.Contains('@'))
+            {
+                realName = decodedSnapshot.Substring(decodedSnapshot.IndexOf('@') + 1);
+                if (!decodedSnapshot.StartsWith(datasetOrVolume))
+                {
+                    // Wrong dataset
+                    return false;
+                }
+            }
+
             if (pattern.Contains('@'))
             {
                 var skipPatternLen = pattern.IndexOf('@') + 1;
                 trimmedName = pattern[skipPatternLen..];
             }
 
-            var realName = snapshotName[skipLen..];
+           
 
             return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
         }
@@ -81,9 +93,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Hold(string snapshot, string tag, bool recursive)
+        public void Hold(SnapshotHoldArgs args)
         {
-            var command = BuildCommand(SnapshotCommands.Hold(snapshot, tag, recursive));
+            var command = BuildCommand(SnapshotCommands.Hold(args));
             command.LoadResponse(true);
         }
 

@@ -16,7 +16,14 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         protected const string AllowedCharsDefinition = "[0-9]|[a-z]|[A-Z]|_|-|/|:|\\.";
 
-        private static readonly Regex AllowedChars = new Regex(AllowedCharsDefinition, RegexOptions.Compiled);
+        /// <summary>
+        /// The allowed characters in strings that should be passed onto zfs/zpool
+        /// i.e. pool name, dataset name, snapshotname etc.
+        /// </summary>
+        protected const string AllowedCharsDefinitionWithAt = "[0-9]|[a-z]|[A-Z]|_|-|/|:|\\.|@";
+
+        private static readonly Regex AllowedChars = new (AllowedCharsDefinition, RegexOptions.Compiled);
+        private static readonly Regex AllowedCharsWithAt = new (AllowedCharsDefinitionWithAt, RegexOptions.Compiled);
 
         /// <summary>
         /// Gets the command this argument is meant for
@@ -72,10 +79,16 @@ namespace ROOT.Zfs.Public.Arguments
         /// <summary>
         /// Validates that the given string is 'safe' to be passed onto a command line
         /// </summary>
-        protected static bool IsStringValid(string value)
+        protected static bool IsStringValid(string value, bool allowAtSign)
         {
             // Simple check, just to see if we get back the number of characters passed in
             // And if not that means something was there which was not allowed
+
+            if (allowAtSign)
+            {
+                return AllowedCharsWithAt.Matches(value).Count == value.Length;
+            }
+            
             return AllowedChars.Matches(value).Count == value.Length;
         }
 
@@ -85,22 +98,30 @@ namespace ROOT.Zfs.Public.Arguments
         /// <param name="value">The value to validate</param>
         /// <param name="allowEmpty">Whether or not null and string.empty is allowed</param>
         /// <param name="errors">The list of errors - will be allocated if null and an error is detected</param>
+        /// <param name="allowAtSign">Whether or not allow an @ sign</param>
         /// <param name="nameOfString">Used for making an error message - do not set this, unless you set it to nameof(Value) where value is the name of the variable or property you are testing</param>
-        protected static void ValidateString(string value, bool allowEmpty, ref IList<string> errors, [CallerArgumentExpression("value")] string nameOfString="")
+        protected static void ValidateString(string value, bool allowEmpty, ref IList<string> errors, bool allowAtSign = false, [CallerArgumentExpression("value")] string nameOfString = "")
         {
             if (string.IsNullOrWhiteSpace(value) && !allowEmpty)
             {
-                errors ??=new List<string>();
+                errors ??= new List<string>();
                 errors.Add($"{nameOfString} cannot be empty");
             }
 
-            if (!string.IsNullOrWhiteSpace(value) )
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 var converted = Decode(value);
-                if (!IsStringValid(converted))
+                if (!IsStringValid(converted, allowAtSign))
                 {
                     errors ??= new List<string>();
-                    errors.Add($"{nameOfString} contains invalid characters only '{AllowedCharsDefinition.Replace("\\","")}' is allowed");
+                    if (!allowAtSign)
+                    {
+                        errors.Add($"{nameOfString} contains invalid characters only '{AllowedCharsDefinition.Replace("\\", "")}' is allowed");
+                    }
+                    else
+                    {
+                        errors.Add($"{nameOfString} contains invalid characters only '{AllowedCharsDefinitionWithAt.Replace("\\", "")}' is allowed");
+                    }
                 }
             }
         }

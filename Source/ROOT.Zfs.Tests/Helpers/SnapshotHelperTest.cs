@@ -32,13 +32,15 @@ namespace ROOT.Zfs.Tests.Helpers
         public void GoodInput()
         {
             var snapshot = SnapshotHelper.FromString(SnapshotList);
-            Assert.AreEqual("tank/myds@20220925162707", snapshot.Name);
+            Assert.AreEqual("tank/myds", snapshot.Dataset);
+            Assert.AreEqual("20220925162707", snapshot.Name);
             Assert.AreEqual(14336UL, snapshot.Size.Bytes);
             Assert.AreEqual(new DateTime(2022, 09, 25, 14, 27, 11, DateTimeKind.Utc), snapshot.CreationDate);
         }
 
         [TestMethod]
         [DataRow("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
+        [DataRow("tank/mydsnameisverylong", "testing123", "testing123", true)] // Exact match 
         [DataRow("tank/myds", "tank/myds@testing123", "testing", true)] // partial match
         [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@testing123", true)] // ExactMatch
         [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@tes", true)] // partial match

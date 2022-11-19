@@ -52,7 +52,7 @@ namespace ROOT.Zfs.Public.Arguments.Snapshots
             ValidateString(Dataset, false, ref errors);
 
             var rawSnapshotName = GetRawSnapshotName();
-            ValidateString(rawSnapshotName, false, ref errors, "Snapshot");
+            ValidateString(rawSnapshotName, false, ref errors, false, "Snapshot");
 
             if (rawSnapshotName.Contains('/'))
             {

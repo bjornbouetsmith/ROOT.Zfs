@@ -68,24 +68,24 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-2" });
             sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-3" });
 
-            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.Name.StartsWith($"tank/myds@{prefix}")).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.Name.StartsWith($"{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
             var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = prefix, IsExactName = false };
             sn.Destroy(args);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("FakeIntegration")]
         public void SnapshotHoldTest()
         {
             var sn = GetSnapshots();
-            sn.Hold("tank/myds@12345", "mytag", false);
+            sn.Hold(new SnapshotHoldArgs { Dataset = "tank/myds", Snapshot = "12345", Tag = "mytag" });
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs hold mytag tank/myds@12345", commands[0]);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("FakeIntegration")]
         public void SnapshotHoldsTest()
         {
             var sn = GetSnapshots();
@@ -96,7 +96,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual("/sbin/zfs holds -H tank/myds@12345", commands[0]);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("FakeIntegration")]
         public void SnapshotReleaseTest()
         {
             var sn = GetSnapshots();

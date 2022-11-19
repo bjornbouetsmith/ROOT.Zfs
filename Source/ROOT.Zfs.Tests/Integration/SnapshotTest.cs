@@ -67,13 +67,13 @@ namespace ROOT.Zfs.Tests.Integration
             sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
             sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" });
 
-            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith(prefix)).ToList();
 
             Assert.AreEqual(3, snaps.Count);
             var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
             sn.Destroy(args);
 
-            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith($"{pool.Name}@{prefix}")).ToList();
+            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith(prefix)).ToList();
             Assert.AreEqual(0, snaps.Count);
         }
     }

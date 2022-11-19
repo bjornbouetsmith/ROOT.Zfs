@@ -22,8 +22,9 @@ namespace ROOT.Zfs.Core.Helpers
             }
 
             var snapshot = new Snapshot();
-
-            snapshot.Name = parts[2];
+            var snapshotNameParts = parts[2].Split('@', StringSplitOptions.RemoveEmptyEntries);
+            snapshot.Dataset = snapshotNameParts[0].Trim();
+            snapshot.Name = snapshotNameParts[1].Trim();
             if (long.TryParse(parts[1], out var secs))
             {
                 snapshot.CreationDate = DateUtils.ToDateTime(secs);
