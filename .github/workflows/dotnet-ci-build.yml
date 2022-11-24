@@ -2,6 +2,7 @@ name: ci-unit-test
 run-name: .NET CI Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths-ignore:
