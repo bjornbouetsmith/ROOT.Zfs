@@ -108,9 +108,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Release(string snapshot, string tag, bool recursive)
+        public void Release(SnapshotReleaseArgs args)
         {
-            var command = BuildCommand(SnapshotCommands.Release(snapshot, tag, recursive));
+            var command = BuildCommand(SnapshotCommands.Release(args));
             command.LoadResponse(true);
         }
     }

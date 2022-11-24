@@ -114,19 +114,14 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command that releases a hold on a snapshot with the given tag and possibly also decendents
         /// </summary>
-        internal static ProcessCall Release(string snapshot, string tag, bool recursive)
+        internal static ProcessCall Release(SnapshotReleaseArgs args)
         {
-            if (string.IsNullOrWhiteSpace(snapshot))
+            if (!args.Validate(out var errors))
             {
-                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
+                throw ToArgumentException(errors, args);
             }
 
-            if (string.IsNullOrWhiteSpace(tag))
-            {
-                throw new ArgumentException("Please provide a tag name", nameof(tag));
-            }
-            snapshot = DatasetHelper.Decode(snapshot);
-            return new ProcessCall(WhichZfs, $"release{(recursive ? " -r" : "")} {tag} {snapshot}");
+            return new ProcessCall(WhichZfs, args.ToString());
         }
     }
 }

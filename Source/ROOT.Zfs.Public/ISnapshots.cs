@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Public
         /// Adds a single reference, named with the tag argument, to the specified snapshots.
         /// Each snapshot has its own tag namespace, and tags must be unique within that space.
         /// Beware that when making a hold on a snapshot, zfs destroy will return busy when trying to destroy the given snapshot and its only possible to destroy the snapshot if you release the hold first via
-        /// <see cref=" Release(string, string, bool)"/>
+        /// <see cref=" Release(SnapshotReleaseArgs)"/>
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-hold.8.html
         /// </summary>
         void Hold(SnapshotHoldArgs args);
@@ -50,9 +50,6 @@ namespace ROOT.Zfs.Public
         /// Removes a single reference, named with the tag argument, from the specified snapshot or snapshots. The tag must already exist for each snapshot.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-hold.8.html
         /// </summary>
-        /// <param name="snapshot">The snapshot in which to release the hold</param>
-        /// <param name="tag">The tag to release</param>
-        /// <param name="recursive">Recursively releases a hold with the given tag on the snapshots of all descendent file systems.</param>
-        void Release(string snapshot, string tag, bool recursive);
+        void Release(SnapshotReleaseArgs args);
     }
 }

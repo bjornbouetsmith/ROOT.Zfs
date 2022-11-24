@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual("/sbin/zfs clone -p -o atime=off -o compression=off tank/myds@projectX /tank/clones/projectX", command.FullCommandLine);
         }
 
-        [DataRow("tank/myds","tank/myds@12345", "myhold", true, "/sbin/zfs hold -r myhold tank/myds@12345")]
+        [DataRow("tank/myds", "tank/myds@12345", "myhold", true, "/sbin/zfs hold -r myhold tank/myds@12345")]
         [DataRow("tank%2fmyds", "tank%2fmyds@12345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
         [DataRow("tank%2fmyds", "tank%2fmyds%4012345", "myhold", false, "/sbin/zfs hold myhold tank/myds@12345")]
         [DataRow("tank%2fmyds", "tank%2fmyds%4012345", "", false, null, true)]
@@ -110,7 +110,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void HoldTest(string dataset, string snapshot, string tag, bool recursive, string expected, bool expectException = false)
         {
-            var args = new SnapshotHoldArgs{Dataset = dataset, Snapshot=snapshot,Tag=tag,Recursive=recursive};
+            var args = new SnapshotHoldArgs { Dataset = dataset, Snapshot = snapshot, Tag = tag, Recursive = recursive };
             if (expectException)
             {
                 Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Hold(args));
@@ -142,23 +142,24 @@ namespace ROOT.Zfs.Tests.Commands
                 Assert.AreEqual(expected, command.FullCommandLine);
             }
         }
-        [DataRow("tank/myds@12345", "myhold", true, "/sbin/zfs release -r myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds@12345", "myhold", false, "/sbin/zfs release myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds%4012345", "myhold", false, "/sbin/zfs release myhold tank/myds@12345")]
-        [DataRow("tank%2fmyds%4012345", "", false, null, true)]
-        [DataRow("tank%2fmyds%4012345", null, false, null, true)]
-        [DataRow("", "myhold", false, null, true)]
-        [DataRow(null, "myhold", false, null, true)]
+        [DataRow("tank/myds", "12345", "myhold", true, "/sbin/zfs release -r myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "12345", "myhold", false, "/sbin/zfs release myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "12345", "myhold", false, "/sbin/zfs release myhold tank/myds@12345")]
+        [DataRow("tank%2fmyds", "tank%2fmyds%4012345", "", false, null, true)]
+        [DataRow("tank%2fmyds", "tank%2fmyds%4012345", null, false, null, true)]
+        [DataRow("tank%2fmyds", "", "myhold", false, null, true)]
+        [DataRow("tank%2fmyds", null, "myhold", false, null, true)]
         [TestMethod]
-        public void ReleaseTest(string snapshot, string tag, bool recursive, string expected, bool expectException = false)
+        public void ReleaseTest(string dataset, string snapshot, string tag, bool recursive, string expected, bool expectException = false)
         {
+            var args = new SnapshotReleaseArgs { Dataset = dataset, Snapshot = snapshot, Tag = tag, Recursive = recursive };
             if (expectException)
             {
-                Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Release(snapshot, tag, recursive));
+                Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Release(args));
             }
             else
             {
-                var command = SnapshotCommands.Release(snapshot, tag, recursive);
+                var command = SnapshotCommands.Release(args);
                 Console.WriteLine(command.FullCommandLine);
                 Assert.AreEqual(expected, command.FullCommandLine);
             }

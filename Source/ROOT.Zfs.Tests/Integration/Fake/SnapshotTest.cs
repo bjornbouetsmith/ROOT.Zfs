@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void SnapshotReleaseTest()
         {
             var sn = GetSnapshots();
-            sn.Release("tank/myds@12345", "mytag", false);
+            sn.Release(new SnapshotReleaseArgs{Dataset="tank/myds",Snapshot= "12345", Tag="mytag"});
 
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
