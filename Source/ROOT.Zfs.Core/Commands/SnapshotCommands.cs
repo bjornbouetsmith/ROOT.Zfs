@@ -101,14 +101,14 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to list holds on the given snapshot and possibly also descendents
         /// </summary>
-        internal static ProcessCall Holds(string snapshot, bool recursive)
+        internal static ProcessCall Holds(SnapshotHoldsArgs args)
         {
-            if (string.IsNullOrWhiteSpace(snapshot))
+            if (!args.Validate(out var errors))
             {
-                throw new ArgumentException("Please provide a snapshot name", nameof(snapshot));
+                throw ToArgumentException(errors, args);
             }
-            snapshot = DatasetHelper.Decode(snapshot);
-            return new ProcessCall(WhichZfs, $"holds{(recursive ? " -r" : "")} -H {snapshot}");
+
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         /// <summary>

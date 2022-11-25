@@ -100,9 +100,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IList<SnapshotHold> Holds(string snapshot, bool recursive)
+        public IList<SnapshotHold> Holds(SnapshotHoldsArgs args)
         {
-            var command = BuildCommand(SnapshotCommands.Holds(snapshot, recursive));
+            var command = BuildCommand(SnapshotCommands.Holds(args));
             var response = command.LoadResponse(true);
             return SnapshotHoldParser.ParseStdOut(response.StdOut);
         }

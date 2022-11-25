@@ -25,11 +25,7 @@ namespace ROOT.Zfs.Public.Arguments.Snapshots
             args.Append(command);
 
             var dataset = Decode(Dataset);
-            var rawSnapName = Decode(Snapshot);
-            if (rawSnapName.StartsWith(dataset, StringComparison.OrdinalIgnoreCase))
-            {
-                rawSnapName = rawSnapName[(dataset.Length + 1)..];
-            }
+            var rawSnapName = GetRawSnapshotName();
 
             args.Append($" {dataset}@{rawSnapName}");
 

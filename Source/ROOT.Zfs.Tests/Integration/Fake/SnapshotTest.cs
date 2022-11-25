@@ -6,6 +6,7 @@ using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Snapshots;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
 {
@@ -89,7 +90,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void SnapshotHoldsTest()
         {
             var sn = GetSnapshots();
-            var holds = sn.Holds("tank/myds@12345", false);
+            var args = new SnapshotHoldsArgs { Dataset = "tank/myds", Snapshot = "tank/myds@12345"};
+            var holds = sn.Holds(args);
             Assert.AreEqual(1, holds.Count);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);

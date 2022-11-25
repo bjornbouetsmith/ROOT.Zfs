@@ -41,10 +41,8 @@ namespace ROOT.Zfs.Public
         /// Lists all existing user references for the given snapshot or snapshots.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-hold.8.html
         /// </summary>
-        /// <param name="snapshot">The full name of the snapshot</param>
-        /// <param name="recursive">Lists the holds that are set on the named descendent snapshots, in addition to listing the holds on the named snapshot.</param>
         /// <returns>a list of holds for the given snapsho and possibly descendent</returns>
-        IList<SnapshotHold> Holds(string snapshot, bool recursive);
+        IList<SnapshotHold> Holds(SnapshotHoldsArgs args);
 
         /// <summary>
         /// Removes a single reference, named with the tag argument, from the specified snapshot or snapshots. The tag must already exist for each snapshot.
