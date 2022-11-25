@@ -81,6 +81,13 @@ config:
         }
 
         [TestMethod]
+        public void PoolNotFoundShouldReturnInNull()
+        {
+            var status = ZPoolStatusParser.Parse("cannot open 'unbabunga': no such pool");
+            Assert.IsNull(status);
+        }
+
+        [TestMethod]
         public void ParseTruncatedStatus()
         {
             Assert.ThrowsException<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));

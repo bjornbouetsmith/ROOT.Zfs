@@ -96,6 +96,14 @@ namespace ROOT.Zfs.Tests.Integration
         }
 
         [TestMethod, TestCategory("Integration")]
+        public void NonExistingPoolStatus()
+        {
+            var zp = GetZpool();
+            var ex = Assert.ThrowsException<ProcessCallException>(()=>zp.Status(new PoolStatusArgs{Name="A"+Guid.NewGuid().ToString()}));
+            Console.WriteLine(ex.Message);
+        }
+
+        [TestMethod, TestCategory("Integration")]
         public void ZpoolStatusTest()
         {
             IZfs zfs = new Core.Zfs(_remoteProcessCall);

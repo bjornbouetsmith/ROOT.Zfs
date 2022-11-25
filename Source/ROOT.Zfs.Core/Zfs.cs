@@ -60,11 +60,6 @@ namespace ROOT.Zfs.Core
 
             foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (line.Trim().Length == 0)
-                {
-                    continue;
-                }
-
                 yield return DiskHelper.FromString(line, blockDevices);
             }
         }

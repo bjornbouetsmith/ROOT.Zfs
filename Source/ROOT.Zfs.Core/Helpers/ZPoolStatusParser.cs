@@ -37,7 +37,7 @@ config:
         public static PoolStatus Parse(string input)
         {
             // Handle not found
-            // cannot open 'tank2': no such pool
+            // cannot open 'tank2': no such pool, comes on std error, so will probably never happen
             if (input.StartsWith("cannot open") && input.Contains("no such pool"))
             {
                 return null;
