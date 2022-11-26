@@ -23,6 +23,17 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
          ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
         -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The quality gate is pending!","context":"continuous-integration/sonarcloud"}'
+    - name: Install zfs
+      run: |
+        sudo apt-get update
+        sudo apt install -y smartmontools
+        sudo apt install -y zfsutils-linux
+        which zfs
+        which zpool
+        which smartctl
+        which ls
+        which lsblk
+        sudo zpool status
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
