@@ -1,6 +1,5 @@
 ﻿using System;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Core.Commands
@@ -33,39 +32,6 @@ namespace ROOT.Zfs.Core.Commands
                 throw ToArgumentException(errors, args);
             }
             return new ProcessCall(WhichZfs, args.ToString());
-        }
-
-        /// <summary>
-        /// Destroys a dataset
-        /// </summary>
-        /// <param name="datasetName">The name of the dataset</param>
-        /// <param name="destroyFlags">The flags to control how to destroy the dataset <see cref="DatasetDestroyFlags"/></param>
-        internal static ProcessCall DestroyDataset(string datasetName, DatasetDestroyFlags destroyFlags)
-        {
-            datasetName = DatasetHelper.Decode(datasetName);
-
-            var args = string.Empty;
-            if (destroyFlags.HasFlag(DatasetDestroyFlags.Recursive))
-            {
-                args += " -r";
-            }
-
-            if (destroyFlags.HasFlag(DatasetDestroyFlags.RecursiveClones))
-            {
-                args += " -R";
-            }
-
-            if (destroyFlags.HasFlag(DatasetDestroyFlags.ForceUmount))
-            {
-                args += " -f";
-            }
-
-            if (destroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
-            {
-                args += " -nvp";
-            }
-
-            return new ProcessCall(WhichZfs, $"destroy{args} {datasetName}");
         }
 
         /// <summary>
