@@ -68,19 +68,19 @@ jobs:
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore  --configuration Debug
 
-    - name: Test
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
-      
-      #run: |
-      #  dotnet publish
-      #  dotnet test  /TestCaseFilter:TestCategory!=Integration --collect:"Code Coverage" Source\ROOT.Zfs.Tests\bin\Debug\net6.0\ROOT.Zfs.Tests.dll
-#        dotnet test Source/ROOT.Zfs.sln --configuration Debug --verbosity normal --filter "TestCategory!=Integration"  /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Unit Test
+      run: |
+        dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+
+    - name: Integration Test
+      run: |
+        dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Attach coverage xml
       uses: actions/upload-artifact@v3
       with:
-        name: coverage.opencover.xml
-        path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml
+        name: coverage-reports
+        path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover*.xml
     - name: Analyze with sonarcloud
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
