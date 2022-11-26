@@ -63,7 +63,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=Source/ROOT.Zfs.Tests/coverage.opencover.xml /d:sonar.qualitygate.wait=true
+      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=Source/ROOT.Zfs.Tests/coverage.opencover*.xml /d:sonar.qualitygate.wait=true
 
     - name: Build
       run: dotnet build Source/ROOT.Zfs.sln --no-restore  --configuration Debug
