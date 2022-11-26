@@ -27,11 +27,9 @@ namespace ROOT.Zfs.Public
 
         /// <summary>
         /// Destroys the given dataset.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-destroy.8.html
         /// </summary>
-        /// <param name="fullName">Full name of the dataset</param>
-        /// <param name="destroyFlags">Controls how the dataset is destroyed <see cref="DatasetDestroyFlags"/> </param>
-        /// <returns>A dataset response with the flags used and potential dry run response</returns>
-        DatasetDestroyResponse Destroy(string fullName, DatasetDestroyFlags destroyFlags);
+        DatasetDestroyResponse Destroy(DatasetDestroyArgs args);
         
         /// <summary>
         /// Promotes the dataset or volume from a clone to a real dataset or volume.

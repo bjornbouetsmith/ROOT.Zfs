@@ -34,18 +34,18 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public DatasetDestroyResponse Destroy(string fullName, DatasetDestroyFlags destroyFlags)
+        public DatasetDestroyResponse Destroy(DatasetDestroyArgs args)
         {
-            var pc = BuildCommand(DatasetCommands.DestroyDataset(fullName, destroyFlags));
+            var pc = BuildCommand(DatasetCommands.Destroy(args));
 
             var response = pc.LoadResponse(true);
 
-            if (!destroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
+            if (!args.DestroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
             {
-                return new DatasetDestroyResponse { Flags = destroyFlags };
+                return new DatasetDestroyResponse { Flags = args.DestroyFlags };
             }
 
-            return new DatasetDestroyResponse { Flags = destroyFlags, DryRun = response.StdOut };
+            return new DatasetDestroyResponse { Flags = args.DestroyFlags, DryRun = response.StdOut };
         }
 
         /// <inheritdoc />

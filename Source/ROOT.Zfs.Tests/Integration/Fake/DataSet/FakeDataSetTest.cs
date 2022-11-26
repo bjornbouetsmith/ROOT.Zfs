@@ -86,7 +86,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
         public void DestroyDataSetTest()
         {
             var ds = GetDatasets();
-            var response = ds.Destroy("tank/myds", DatasetDestroyFlags.Recursive);
+            var destroyArgs = new DatasetDestroyArgs { Dataset = "tank/myds", DestroyFlags = DatasetDestroyFlags.Recursive };
+            var response = ds.Destroy(destroyArgs);
             Assert.AreEqual(DatasetDestroyFlags.Recursive, response.Flags);
         }
 

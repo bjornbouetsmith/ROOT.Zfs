@@ -85,7 +85,8 @@ namespace ROOT.Zfs.Tests.Integration
                 // Check to prevent issues in case dataset creation failed
                 if (fullName != null)
                 {
-                    ds.Destroy(fullName, default);
+                    var args = new DatasetDestroyArgs { Dataset = fullName };
+                    ds.Destroy(args);
                 }
             }
         }
@@ -137,7 +138,8 @@ namespace ROOT.Zfs.Tests.Integration
                 }
 
                 var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
-                var response = dsHelper.Destroy(root, flags);
+                var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
+                var response = dsHelper.Destroy(destroyArgs);
                 Assert.AreEqual(flags, response.Flags);
                 var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
@@ -152,7 +154,8 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 try
                 {
-                    dsHelper.Destroy(root, DatasetDestroyFlags.Recursive);
+                    var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = DatasetDestroyFlags.Recursive };
+                    dsHelper.Destroy(destroyArgs);
                 }
                 catch
                 {

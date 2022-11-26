@@ -111,7 +111,8 @@ namespace ROOT.Zfs.Tests.Integration
             }
             finally
             {
-                dsHelper.Destroy(dataset, default);
+                var destroyArgs = new DatasetDestroyArgs { Dataset = dataset };
+                dsHelper.Destroy(destroyArgs);
             }
         }
     }

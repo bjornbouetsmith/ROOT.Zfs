@@ -12,17 +12,27 @@ namespace ROOT.Zfs.Core.Commands
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">If arguments are not valid or missing</exception>
         internal static IProcessCall Create(DatasetCreationArgs arguments)
         {
             if (!arguments.Validate(out var errors))
             {
                 throw ToArgumentException(errors, arguments);
             }
-
-            arguments.DatasetName = DatasetHelper.Decode(arguments.DatasetName);
             
             return new ProcessCall(WhichZfs, arguments.ToString());
+        }
+        /// <summary>
+        /// Returns a command to destroy a dataset
+        /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid or missing</exception>
+        internal static ProcessCall Destroy(DatasetDestroyArgs args)
+        {
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+            return new ProcessCall(WhichZfs, args.ToString());
         }
 
         /// <summary>

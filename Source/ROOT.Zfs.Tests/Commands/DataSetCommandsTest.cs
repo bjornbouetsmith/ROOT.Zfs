@@ -9,18 +9,28 @@ namespace ROOT.Zfs.Tests.Commands
     [TestClass]
     public class DataSetCommandsTest
     {
-        [DataRow(DatasetDestroyFlags.None, "/sbin/zfs destroy tank/myds")]
-        [DataRow(DatasetDestroyFlags.Recursive, "/sbin/zfs destroy -r tank/myds")]
-        [DataRow(DatasetDestroyFlags.RecursiveClones, "/sbin/zfs destroy -R tank/myds")]
-        [DataRow(DatasetDestroyFlags.ForceUmount, "/sbin/zfs destroy -f tank/myds")]
-        [DataRow(DatasetDestroyFlags.DryRun, "/sbin/zfs destroy -nvp tank/myds")]
-        [DataRow((DatasetDestroyFlags)(int)-1, "/sbin/zfs destroy -r -R -f -nvp tank/myds")]
+        [DataRow("tank/myds", DatasetDestroyFlags.None, "/sbin/zfs destroy tank/myds", false)]
+        [DataRow("tank/myds", DatasetDestroyFlags.Recursive, "/sbin/zfs destroy -r tank/myds", false)]
+        [DataRow("tank/myds", DatasetDestroyFlags.RecursiveClones, "/sbin/zfs destroy -R tank/myds", false)]
+        [DataRow("tank/myds", DatasetDestroyFlags.ForceUmount, "/sbin/zfs destroy -f tank/myds", false)]
+        [DataRow("tank/myds", DatasetDestroyFlags.DryRun, "/sbin/zfs destroy -nvp tank/myds", false)]
+        [DataRow("tank/myds", (DatasetDestroyFlags)(int)-1, "/sbin/zfs destroy -r -R -f -nvp tank/myds", false)]
+        [DataRow("tank/myds@test", (DatasetDestroyFlags)(int)-1, "/sbin/zfs destroy -r -R -f -nvp tank/myds", true)]
         [TestMethod]
-        public void DestroyFlagsShouldBeCorrectlyReflected(DatasetDestroyFlags flags, string expectedCommand)
+        public void DestroyFlagsShouldBeCorrectlyReflected(string dataset, DatasetDestroyFlags flags, string expectedCommand, bool throwException)
         {
-            var command = DatasetCommands.DestroyDataset("tank/myds", flags);
-            Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            var args = new DatasetDestroyArgs { Dataset = dataset, DestroyFlags = flags };
+            if (throwException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => DatasetCommands.Destroy(args));
+                Console.WriteLine(ex.Message);
+            }
+            else
+            {
+                var command = DatasetCommands.Destroy(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [DataRow("tank/myds/clone", "/sbin/zfs promote tank/myds/clone", false)]
