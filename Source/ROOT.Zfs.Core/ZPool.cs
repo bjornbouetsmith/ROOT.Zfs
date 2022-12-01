@@ -131,9 +131,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Scrub(string pool, ScrubOption option)
+        public void Scrub(PoolScrubArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.Scrub(pool, option));
+            var pc = BuildCommand(ZpoolCommands.Scrub(args));
             pc.LoadResponse(true);
         }
 

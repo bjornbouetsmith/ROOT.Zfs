@@ -236,7 +236,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void ScrubTest()
         {
             var zp = GetZpool();
-            zp.Scrub("tank", default);
+            var args = new PoolScrubArgs { Name = "tank" };
+            zp.Scrub(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zpool scrub tank", commands[0]);

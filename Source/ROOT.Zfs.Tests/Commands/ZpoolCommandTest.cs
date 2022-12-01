@@ -206,10 +206,10 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
 
-        [DataRow("tank", "/sbin/zpool resilver tank",false)]
+        [DataRow("tank", "/sbin/zpool resilver tank", false)]
         [DataRow("", null, true)]
         [TestMethod]
-        public void ResilverCommandTest(string pool, string expected,  bool expectException)
+        public void ResilverCommandTest(string pool, string expected, bool expectException)
         {
             var args = new PoolResilverArgs { Name = pool };
             if (expectException)
@@ -233,13 +233,14 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ScrubTest(string pool, ScrubOption option, string expected, bool expectException = false)
         {
+            var args = new PoolScrubArgs { Name = pool, Options = option };
             if (expectException)
             {
-                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Scrub(pool, option));
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Scrub(args));
             }
             else
             {
-                var command = ZpoolCommands.Scrub(pool, option);
+                var command = ZpoolCommands.Scrub(args);
                 Assert.AreEqual(expected, command.FullCommandLine);
             }
         }

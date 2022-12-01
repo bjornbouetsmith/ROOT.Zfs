@@ -277,7 +277,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            zp.Scrub(pool.Name, ScrubOption.None);
+            var args = new PoolScrubArgs { Name = pool.Name };
+            zp.Scrub(args);
             var arg = new PoolStatusArgs { Name = pool.Name };
             var status = zp.Status(arg);
             Assert.AreEqual(State.Online, status.State);

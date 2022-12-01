@@ -104,9 +104,8 @@ namespace ROOT.Zfs.Public
         /// Begin, resume, pause or stop scrub of ZFS storage pools
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-scrub.8.html
         /// </summary>
-        /// <param name="pool">The pool to scrub</param>
-        /// <param name="option">The option to control start/pause/stop</param>
-        void Scrub(string pool, ScrubOption option);
+        /// <param name="args">The arguments for the scrub command</param>
+        void Scrub(PoolScrubArgs args);
 
         /// <summary>
         /// Initiates an immediate on-demand TRIM operation for all of the free space in a pool.
