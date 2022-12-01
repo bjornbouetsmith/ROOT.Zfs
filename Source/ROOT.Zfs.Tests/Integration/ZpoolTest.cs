@@ -343,7 +343,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var stats = zp.IOStats(pool.Name, new[] { pool.Disks[0] });
+            var args = new PoolIOStatsArgs { Name = pool.Name, Devices = new[] { pool.Disks[0] } };
+            var stats = zp.IOStats(args);
 
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             Assert.IsNotNull(stats);
@@ -354,7 +355,8 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var stats = zp.IOStats(pool.Name, null);
+            var args = new PoolIOStatsArgs { Name = pool.Name };
+            var stats = zp.IOStats(args);
 
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             Assert.IsNotNull(stats);

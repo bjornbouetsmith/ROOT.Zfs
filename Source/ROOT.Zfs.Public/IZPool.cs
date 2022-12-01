@@ -86,9 +86,8 @@ namespace ROOT.Zfs.Public
         /// Returns basic iostats for the given pool and optionally specific devices
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-iostat.8.html
         /// </summary>
-        /// <param name="pool">The pool to show stats for</param>
-        /// <param name="devices">The devices if any to show stats for</param>
-        IOStats IOStats(string pool, string[] devices);
+        /// <param name="args">The arguments for zpool iostat</param>
+        IOStats IOStats(PoolIOStatsArgs args);
 
         /// <summary>
         /// Starts a resilver of the specified pools.

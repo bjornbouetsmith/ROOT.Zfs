@@ -116,11 +116,11 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public IOStats IOStats(string pool, string[] devices)
+        public IOStats IOStats(PoolIOStatsArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.IoStats(pool, devices));
+            var pc = BuildCommand(ZpoolCommands.IoStats(args));
             var response = pc.LoadResponse(true);
-            return ZPoolIOStatParser.ParseStdOut(pool, response.StdOut);
+            return ZPoolIOStatParser.ParseStdOut(args.Name, response.StdOut);
         }
 
         /// <inheritdoc />

@@ -196,14 +196,25 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        [DataRow("tank", null, "/sbin/zpool iostat -LlpPvH tank")] // only pool
-        [DataRow("tank", "", "/sbin/zpool iostat -LlpPvH tank")] //only pool 
-        [DataRow("tank", "/dev/sda", "/sbin/zpool iostat -LlpPvH tank /dev/sda")] //single device
-        [DataRow("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb")] //multiple devices
-        public void IoStatTest(string pool, string deviceList, string expectedCommand)
+        [DataRow("tank", null, "/sbin/zpool iostat -LlpPvH tank", false)] // only pool
+        [DataRow("tank", "", "/sbin/zpool iostat -LlpPvH tank", false)] //only pool 
+        [DataRow("tank", "/dev/sda", "/sbin/zpool iostat -LlpPvH tank /dev/sda", false)] //single device
+        [DataRow("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb", false)] //multiple devices
+        [DataRow("tank", "rm -rf /tank", null, true)] //multiple devices
+        public void IoStatTest(string pool, string deviceList, string expectedCommand, bool expectException)
         {
-            var command = ZpoolCommands.IoStats(pool, deviceList?.Split(','));
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            var args = new PoolIOStatsArgs { Name = pool, Devices = deviceList?.Split(',') };
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.IoStats(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+
+                var command = ZpoolCommands.IoStats(args);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [DataRow("tank", "/sbin/zpool resilver tank", false)]

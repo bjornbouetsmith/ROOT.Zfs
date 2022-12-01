@@ -185,7 +185,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void IOStatTest()
         {
             var zp = GetZpool();
-            var stats = zp.IOStats("tank", new[] { "/dev/sda" });
+            var args = new PoolIOStatsArgs { Name = "tank", Devices = new[]{"/dev/sda"} };
+            var stats = zp.IOStats(args);
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);

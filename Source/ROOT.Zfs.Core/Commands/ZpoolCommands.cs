@@ -1,7 +1,6 @@
 ﻿using System;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Arguments.Pool;
-using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Core.Commands
 {
@@ -51,7 +50,6 @@ namespace ROOT.Zfs.Core.Commands
         /// https://openzfs.github.io/openzfs-docs/man/7/zfsprops.7.html
         /// </summary>
         /// <param name="args">The arguments used to create the pool <see cref="PoolCreateArgs"/></param>
-        /// <returns></returns>
         internal static ProcessCall Create(PoolCreateArgs args)
         {
             if (!args.Validate(out var errors))
@@ -75,20 +73,19 @@ namespace ROOT.Zfs.Core.Commands
         }
 
         /// <summary>
-        /// Returns basic iostats for the given pool and optinally specific devices
+        /// Builds a command to return basic iostats for the given pool and optinally specific devices
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-iostat.8.html
         /// </summary>
-        /// <param name="pool">The pool to show stats for</param>
-        /// <param name="devices">The devices if any to show stats for</param>
-        internal static ProcessCall IoStats(string pool, string[] devices)
+        /// <param name="args">The arguments for zpool iostat</param>
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        internal static ProcessCall IoStats(PoolIOStatsArgs args)
         {
-            var deviceList = devices != null && devices.Length > 0 ? string.Join(" ", devices) : string.Empty;
-            if (!string.IsNullOrWhiteSpace(deviceList))
+            if (!args.Validate(out var errors))
             {
-                deviceList = " " + deviceList;
+                throw ToArgumentException(errors, args);
             }
 
-            return new ProcessCall(WhichZpool, $"iostat -LlpPvH {pool}{deviceList}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>
