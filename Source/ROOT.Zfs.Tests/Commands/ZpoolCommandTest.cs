@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualBasic.FileIO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments.Pool;
@@ -205,12 +206,22 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }
 
+        [DataRow("tank", "/sbin/zpool resilver tank",false)]
+        [DataRow("", null, true)]
         [TestMethod]
-        public void ResilverCommandTest()
+        public void ResilverCommandTest(string pool, string expected,  bool expectException)
         {
-            var command = ZpoolCommands.Resilver("tank");
-            Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zpool resilver tank", command.FullCommandLine);
+            var args = new PoolResilverArgs { Name = pool };
+            if (expectException)
+            {
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Resilver(args));
+            }
+            else
+            {
+                var command = ZpoolCommands.Resilver(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
         }
 
         [DataRow("tank", ScrubOption.None, "/sbin/zpool scrub tank")]

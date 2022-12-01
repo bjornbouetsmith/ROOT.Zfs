@@ -97,8 +97,8 @@ namespace ROOT.Zfs.Public
         /// This requires the resilver_defer pool feature.
         /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-resilver.8.html
         /// </summary>
-        /// <param name="pool">The name of the pool to start a resilver operation on.</param>
-        void Resilver(string pool);
+        /// <param name="args">Arguments for the resilver command</param>
+        void Resilver(PoolResilverArgs args);
 
         /// <summary>
         /// Begin, resume, pause or stop scrub of ZFS storage pools

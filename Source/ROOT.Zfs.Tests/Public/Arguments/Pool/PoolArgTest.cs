@@ -12,6 +12,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             public NameTest() : base(string.Empty)
             {
             }
+
+            protected override string BuildArgs(string command)
+            {
+                return string.Empty;
+            }
         }
 
         [DataRow(null,false)]
@@ -35,18 +40,6 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
 
             Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
             Assert.AreEqual(expectedValid, valid);
-        }
-
-        [DataRow("tank","tank")]
-        [DataRow("tank-0d702869-7f72-4bdd-bbe8-6007fc58ad51", "tank-0d702869-7f72-4bdd-bbe8-6007fc58ad51")]
-        [TestMethod]
-        public void ToStringTest(string name, string expected)
-        {
-            var poolArg = new NameTest { Name = name };
-
-            var stringVer = poolArg.ToString();
-            Console.WriteLine(stringVer);
-            Assert.AreEqual(expected, stringVer);
         }
     }
 }

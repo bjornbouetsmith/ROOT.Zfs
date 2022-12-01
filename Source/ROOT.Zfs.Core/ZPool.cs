@@ -124,9 +124,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Resilver(string pool)
+        public void Resilver(PoolResilverArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.Resilver(pool));
+            var pc = BuildCommand(ZpoolCommands.Resilver(args));
             pc.LoadResponse(true);
         }
 

@@ -137,9 +137,14 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a resilver command for the given pool
         /// </summary>
-        public static IProcessCall Resilver(string pool)
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        public static IProcessCall Resilver(PoolResilverArgs args)
         {
-            return new ProcessCall(WhichZpool, $"resilver {pool}");
+            if (!args.Validate(out var errors))
+            {
+                throw ToArgumentException(errors, args);
+            }
+            return new ProcessCall(WhichZpool, args.ToString());
         }
 
         /// <summary>

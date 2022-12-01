@@ -25,17 +25,13 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             if (errors == null && Decode(Name).Contains('/'))
             {
                 //explicitly disallow / in a pool name
-                errors = new List<string>();
-                errors.Add("character '/' is not allowed in a pool name");
+                errors = new List<string>
+                {
+                    "character '/' is not allowed in a pool name"
+                };
             }
 
             return errors == null;
-        }
-
-        /// <inheritdoc />
-        protected override string BuildArgs(string command)
-        {
-            return Decode(Name);
         }
     }
 }

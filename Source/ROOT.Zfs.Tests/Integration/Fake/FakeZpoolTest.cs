@@ -196,7 +196,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void ResilverTest()
         {
             var zp = GetZpool();
-            zp.Resilver("tank");
+            var args = new PoolResilverArgs { Name = "tank" };
+            zp.Resilver(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
