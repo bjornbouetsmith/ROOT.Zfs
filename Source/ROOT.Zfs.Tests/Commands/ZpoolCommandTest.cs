@@ -110,7 +110,7 @@ namespace ROOT.Zfs.Tests.Commands
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Create(args));
-            Assert.AreEqual("Name cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
+            Assert.AreEqual("PoolName cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
         }
 
         [TestMethod]
