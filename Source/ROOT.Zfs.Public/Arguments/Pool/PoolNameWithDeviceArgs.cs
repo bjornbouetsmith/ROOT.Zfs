@@ -3,13 +3,16 @@
 namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
-    /// Class with shared properties between online/offline/detach
+    /// Class with shared properties between online/offline/detach/clear
     /// </summary>
-    public abstract class PoolOnlineOfflineDetachArgs : Args
+    public abstract class PoolNameWithDeviceArgs : Args
     {
+        private readonly bool _requireDevice;
+
         /// <inheritdoc />
-        protected PoolOnlineOfflineDetachArgs(string command) : base(command)
+        protected PoolNameWithDeviceArgs(string command, bool requireDevice) : base(command)
         {
+            _requireDevice = requireDevice;
         }
 
         /// <summary>
@@ -26,17 +29,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            if (string.IsNullOrWhiteSpace(PoolName))
-            {
-                errors = new List<string>();
-                errors.Add("Please specify a pool name");
-            }
-
-            if (string.IsNullOrWhiteSpace(Device))
-            {
-                errors ??= new List<string>();
-                errors.Add("Please specify a device");
-            }
+            ValidateString(PoolName, false, ref errors);
+            ValidateString(Device, _requireDevice == false, ref errors);
 
             return errors == null;
         }

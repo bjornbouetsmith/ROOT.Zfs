@@ -5,15 +5,15 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains the required arguments to a device offline inside a pool
     /// </summary>
-    public class PoolOfflineArgs : PoolOnlineOfflineDetachArgs
+    public class PoolOfflineArgs : PoolNameWithDeviceArgs
     {
         /// <summary>
         /// Creates an offline args instance
         /// </summary>
-        public PoolOfflineArgs() : base("offline")
+        public PoolOfflineArgs() : base("offline", true)
         {
         }
-        
+
         /// <summary>
         /// Force fault. Instead of offlining the disk, put it into a faulted state. The fault will persist across imports unless the -t flag was specified.
         /// </summary>

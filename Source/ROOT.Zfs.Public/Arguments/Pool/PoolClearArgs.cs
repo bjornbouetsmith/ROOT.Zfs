@@ -3,12 +3,12 @@
 namespace ROOT.Zfs.Public.Arguments.Pool
 {
     /// <summary>
-    /// Represents all the arguments to the command zpool detach
+    /// Contains required and optional arguments for zpool clear
     /// </summary>
-    public class PoolDetachArgs : PoolNameWithDeviceArgs
+    public class PoolClearArgs : PoolNameWithDeviceArgs
     {
         /// <inheritdoc />
-        public PoolDetachArgs() : base("detach", true)
+        public PoolClearArgs() : base("clear",false)
         {
         }
 
@@ -17,8 +17,12 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         {
             var args = new StringBuilder();
             args.Append(command);
-            args.Append($" {PoolName} {Device}");
-
+            args.Append($" {Decode(PoolName)}");
+            if (!string.IsNullOrWhiteSpace(Device))
+            {
+                args.Append($" {Decode(Device)}");
+            }
+           
             return args.ToString();
         }
     }

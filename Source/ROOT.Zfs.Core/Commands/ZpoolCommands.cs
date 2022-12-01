@@ -122,26 +122,17 @@ namespace ROOT.Zfs.Core.Commands
         }
 
         /// <summary>
-        /// clear device errors in ZFS storage pool.
-        /// Clears device errors in a pool.
-        /// If no arguments are specified, all device errors within the pool are cleared.
-        /// If one or more devices is specified, only those errors associated with the specified device or devices are cleared.
-        /// If the pool was suspended it will be brought back online provided the devices can be accessed.
-        /// Pools with multihost enabled which have been suspended cannot be resumed.
-        /// While the pool was suspended, it may have been imported on another host, and resuming I/O could result in pool damage.
+        /// Returns a command to clear device errors in ZFS storage pool.
         /// </summary>
-        /// <param name="pool">The pool for which to clear errors</param>
-        /// <param name="device">The devices to clear errors for. This is optional - can be a vdev or a device part of a vdev</param>
-        /// <returns></returns>
-        internal static ProcessCall Clear(string pool, string device)
+        /// <exception cref="ArgumentException">If arguments are missing required information</exception>
+        internal static ProcessCall Clear(PoolClearArgs args)
         {
-            var command = new ProcessCall(WhichZpool, $"clear {pool}");
-            if (string.IsNullOrWhiteSpace(device))
+            if (!args.Validate(out var errors))
             {
-                return command;
+                throw ToArgumentException(errors, args);
             }
 
-            return new ProcessCall(WhichZpool, $"clear {pool} {device}");
+            return new ProcessCall(WhichZpool, args.ToString());
         }
         /// <summary>
         /// Returns a resilver command for the given pool

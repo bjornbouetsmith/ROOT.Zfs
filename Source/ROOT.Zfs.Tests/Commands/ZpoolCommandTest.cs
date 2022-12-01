@@ -135,7 +135,9 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow("tank", null, "/sbin/zpool clear tank")]
         public void ClearPoolTest(string pool, string device, string expectedCommand)
         {
-            var command = ZpoolCommands.Clear(pool, device);
+            var args = new PoolClearArgs{PoolName=pool,Device=device};
+
+            var command = ZpoolCommands.Clear(args);
             Console.WriteLine(command.FullCommandLine);
             Assert.AreEqual(expectedCommand, command.FullCommandLine);
         }

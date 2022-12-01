@@ -5,12 +5,12 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     /// <summary>
     /// Contains the required arguments to a device offline inside a pool
     /// </summary>
-    public class PoolOnlineArgs : PoolOnlineOfflineDetachArgs
+    public class PoolOnlineArgs : PoolNameWithDeviceArgs
     {
         /// <summary>
         /// Creates an instance of the online args
         /// </summary>
-        public PoolOnlineArgs() : base("online")
+        public PoolOnlineArgs() : base("online", true)
         {
         }
 

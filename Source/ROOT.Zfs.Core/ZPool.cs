@@ -109,9 +109,9 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
-        public void Clear(string pool, string device)
+        public void Clear(PoolClearArgs args)
         {
-            var pc = BuildCommand(ZpoolCommands.Clear(pool, device));
+            var pc = BuildCommand(ZpoolCommands.Clear(args));
             pc.LoadResponse(true);
         }
 

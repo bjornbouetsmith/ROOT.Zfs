@@ -79,10 +79,8 @@ namespace ROOT.Zfs.Public
         /// While the pool was suspended, it may have been imported on another host, and resuming I/O could result in pool damage.
         /// https://openzfs.github.io/openzfs-docs/man/8/zpool-clear.8.html
         /// </summary>
-        /// <param name="pool">The pool for which to clear errors</param>
-        /// <param name="device">The devices to clear errors for. This is optional - can be a vdev or a device part of a vdev</param>
-        /// <returns></returns>
-        void Clear(string pool, string device);
+        /// <param name="args">The arguments for the clear command</param>
+        void Clear(PoolClearArgs args);
         
         /// <summary>
         /// Returns basic iostats for the given pool and optionally specific devices

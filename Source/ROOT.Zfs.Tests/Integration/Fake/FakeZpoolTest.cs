@@ -174,7 +174,8 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void ClearTest()
         {
             var zp = GetZpool();
-            zp.Clear("tank", "/dev/sda");
+            var args = new PoolClearArgs { PoolName = "tank", Device = "/dev/sda" };
+            zp.Clear(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(1, commands.Count);
             Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
