@@ -34,7 +34,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateTest(string name, bool expectedValid)
         {
-            var poolArg = new NameTest { Name = name };
+            var poolArg = new NameTest { PoolName = name };
 
             var valid = poolArg.Validate(out var errors);
 

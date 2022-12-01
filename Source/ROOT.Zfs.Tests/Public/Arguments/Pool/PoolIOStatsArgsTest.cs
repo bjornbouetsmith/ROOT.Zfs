@@ -21,7 +21,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateTest(string pool, string devices, bool expectValid)
         {
-            var args = new PoolIOStatsArgs { Name = pool, Devices = devices?.Split(',') };
+            var args = new PoolIOStatsArgs { PoolName = pool, Devices = devices?.Split(',') };
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
             Assert.AreEqual(expectValid, valid);
@@ -35,7 +35,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ToStringTest(string pool, string devices, string expected)
         {
-            var args = new PoolIOStatsArgs { Name = pool, Devices = devices?.Split(',') };
+            var args = new PoolIOStatsArgs { PoolName = pool, Devices = devices?.Split(',') };
             var stringVer = args.ToString();
             Assert.AreEqual(expected, stringVer);
         }

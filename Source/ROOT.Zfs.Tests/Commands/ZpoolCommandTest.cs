@@ -34,7 +34,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void GetStatusCommandTest(string pool, bool expectException)
         {
-            var arg = new PoolStatusArgs { Name = pool };
+            var arg = new PoolStatusArgs { PoolName = pool };
             if (expectException)
             {
                 var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.GetStatus(arg));
@@ -64,11 +64,11 @@ namespace ROOT.Zfs.Tests.Commands
         {
             if (expectException)
             {
-                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.GetPoolInfo(new PoolListArgs { Name = name }));
+                Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.GetPoolInfo(new PoolListArgs { PoolName = name }));
             }
             else
             {
-                var command = ZpoolCommands.GetPoolInfo(new PoolListArgs { Name = name });
+                var command = ZpoolCommands.GetPoolInfo(new PoolListArgs { PoolName = name });
 
                 Assert.AreEqual("/sbin/zpool list -PHp tank", command.FullCommandLine);
             }
@@ -79,7 +79,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                Name = "tank3",
+                PoolName = "tank3",
                 VDevs = new[]
                     {
                         new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -102,7 +102,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                Name = nameNull ? null : "",
+                PoolName = nameNull ? null : "",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
@@ -118,7 +118,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolCreateArgs
             {
-                Name = "tank2",
+                PoolName = "tank2",
                 VDevs = new[]
                 {
                     new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc" } },
@@ -203,7 +203,7 @@ namespace ROOT.Zfs.Tests.Commands
         [DataRow("tank", "rm -rf /tank", null, true)] //multiple devices
         public void IoStatTest(string pool, string deviceList, string expectedCommand, bool expectException)
         {
-            var args = new PoolIOStatsArgs { Name = pool, Devices = deviceList?.Split(',') };
+            var args = new PoolIOStatsArgs { PoolName = pool, Devices = deviceList?.Split(',') };
             if (expectException)
             {
                 var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.IoStats(args));
@@ -222,7 +222,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ResilverCommandTest(string pool, string expected, bool expectException)
         {
-            var args = new PoolResilverArgs { Name = pool };
+            var args = new PoolResilverArgs { PoolName = pool };
             if (expectException)
             {
                 Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Resilver(args));
@@ -244,7 +244,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void ScrubTest(string pool, ScrubOption option, string expected, bool expectException = false)
         {
-            var args = new PoolScrubArgs { Name = pool, Options = option };
+            var args = new PoolScrubArgs { PoolName = pool, Options = option };
             if (expectException)
             {
                 Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Scrub(args));
@@ -399,7 +399,7 @@ namespace ROOT.Zfs.Tests.Commands
         {
             var args = new PoolAddArgs
             {
-                Name = valid ? "tank" : null,
+                PoolName = valid ? "tank" : null,
                 VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "disk1", "disk2" } } },
             };
             if (!valid)
@@ -443,7 +443,7 @@ namespace ROOT.Zfs.Tests.Commands
         [TestMethod]
         public void DestroyTest(string name, string expected, bool expectException)
         {
-            var args = new PoolDestroyArgs { Name = name };
+            var args = new PoolDestroyArgs { PoolName = name };
 
             if (expectException)
             {

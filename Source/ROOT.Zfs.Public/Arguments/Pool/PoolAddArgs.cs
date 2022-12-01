@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                 args.Append(" -f");
             }
 
-            args.Append($" {Name}");
+            args.Append($" {PoolName}");
 
             var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", StringComparison.OrdinalIgnoreCase));
 

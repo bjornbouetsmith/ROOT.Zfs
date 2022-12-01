@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ToStringTest(string pool, string expected)
         {
-            var args = new PoolDestroyArgs { Name = pool };
+            var args = new PoolDestroyArgs { PoolName = pool };
 
             var stringVer = args.ToString();
 

@@ -38,7 +38,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                     break;
             }
 
-            args.Append($" {Decode(Name)}");
+            args.Append($" {Decode(PoolName)}");
             return args.ToString();
         }
     }

@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateTest(string pool, bool expectedValid)
         {
-            var args = new PoolScrubArgs { Name = pool };
+            var args = new PoolScrubArgs { PoolName = pool };
             var valid = args.Validate(out var errors);
             Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
             Assert.AreEqual(expectedValid, valid);
@@ -28,7 +28,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ToStringTest(string pool, ScrubOption option, string expected)
         {
-            var args = new PoolScrubArgs { Name = pool, Options = option };
+            var args = new PoolScrubArgs { PoolName = pool, Options = option };
             var stringVer = args.ToString();
             Assert.AreEqual(expected, stringVer);
         }

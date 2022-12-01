@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             var args = new StringBuilder();
 
             args.Append(command);
-            args.Append($" {Name}");
+            args.Append($" {PoolName}");
 
             if (!string.IsNullOrWhiteSpace(MountPoint))
             {

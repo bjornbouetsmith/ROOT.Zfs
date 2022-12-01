@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ToStringMethod(string name, string expected)
         {
-            var args = new PoolListArgs { Name = name };
+            var args = new PoolListArgs { PoolName = name };
 
             var stringVer = args.ToString();
             Assert.AreEqual(expected, stringVer);

@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             var args = new StringBuilder();
             args.Append(command);
             args.Append(" -LlpPvH");
-            args.Append($" {Decode(Name)}");
+            args.Append($" {Decode(PoolName)}");
             if (Devices != null && Devices.Count > 0)
             {
                 foreach (var device in Devices)

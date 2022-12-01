@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void VDevsMustBeSpecified()
         {
-            var args = new PoolCreateArgs { Name = "tank" };
+            var args = new PoolCreateArgs { PoolName = "tank" };
 
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);
@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolCreateArgs
             {
-                Name = "tank",
+                PoolName = "tank",
                 VDevs =
                     new[]
                     {
@@ -67,7 +67,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         {
             var args = new PoolCreateArgs
             {
-                Name = "tank",
+                PoolName = "tank",
                 VDevs =
                     new []
                     { 

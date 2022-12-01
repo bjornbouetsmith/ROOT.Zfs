@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         {
             var args = new StringBuilder();
             args.Append(command);
-            args.Append($" {Decode(Name)}");
+            args.Append($" {Decode(PoolName)}");
             return args.ToString();
         }
     }

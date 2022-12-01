@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <summary>
         /// name of pool
         /// </summary>
-        public string Name { get; set; }
+        public string PoolName { get; set; }
 
         /// <inheritdoc />
         protected PoolNameArgs(string command) : base(command)
@@ -21,8 +21,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            ValidateString(Name, false, ref errors);
-            if (errors == null && Decode(Name).Contains('/'))
+            ValidateString(PoolName, false, ref errors);
+            if (errors == null && Decode(PoolName).Contains('/'))
             {
                 //explicitly disallow / in a pool name
                 errors = new List<string>

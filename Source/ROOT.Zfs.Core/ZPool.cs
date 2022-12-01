@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Core
 
             var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
             // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
-            var versionInfo = versions.First(v=>v.Name.Equals(args.Name, StringComparison.OrdinalIgnoreCase));
+            var versionInfo = versions.First(v=>v.Name.Equals(args.PoolName, StringComparison.OrdinalIgnoreCase));
             info.Version = versionInfo.Version;
 
             return info;
@@ -82,7 +82,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.Create(args));
             pc.LoadResponse(true);
-            var statusArg = new PoolStatusArgs { Name = args.Name };
+            var statusArg = new PoolStatusArgs { PoolName = args.PoolName };
             
             return Status(statusArg);
         }
@@ -120,7 +120,7 @@ namespace ROOT.Zfs.Core
         {
             var pc = BuildCommand(ZpoolCommands.IoStats(args));
             var response = pc.LoadResponse(true);
-            return ZPoolIOStatParser.ParseStdOut(args.Name, response.StdOut);
+            return ZPoolIOStatParser.ParseStdOut(args.PoolName, response.StdOut);
         }
 
         /// <inheritdoc />
