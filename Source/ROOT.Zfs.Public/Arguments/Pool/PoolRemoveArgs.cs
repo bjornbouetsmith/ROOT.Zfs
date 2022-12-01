@@ -19,12 +19,13 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// Name of the pool to remove a device from
         /// </summary>
         public string PoolName { get; set; }
-        
+
         /// <summary>
-        /// name of vdev or name of device to remove.
-        /// Please be aware that not all types of vdevs and sinle devices can be removed.
+        /// name of vdev to remove.
+        /// Please be aware that not all types of vdevs can be removed.
+        /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-remove.8.html for detals
         /// </summary>
-        public string VDevOrDevice { get; set; }
+        public string VDev { get; set; }
 
         /// <summary>
         /// Stops and cancel existing removal process for <see cref="PoolName"/>
@@ -37,18 +38,9 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            if (string.IsNullOrWhiteSpace(PoolName))
-            {
-                errors = new List<string>();
-                errors.Add("Please provide a pool name to add a vdev to");
-            }
-
-            if (string.IsNullOrWhiteSpace(VDevOrDevice) && !Cancel)
-            {
-                errors ??= new List<string>();
-                errors.Add("Please provide a vdev or device name to remove");
-            }
-
+            ValidateString(PoolName, false, ref errors);
+            ValidateString(VDev, Cancel,ref errors);
+            
             return errors == null;
         }
 
@@ -64,12 +56,12 @@ namespace ROOT.Zfs.Public.Arguments.Pool
 
             if (Cancel)
             {
-                args.Append($" -s {PoolName}");
+                args.Append($" -s {Decode(PoolName)}");
             }
             else
             {
-                args.Append($" {PoolName}");
-                args.Append($" {VDevOrDevice}");
+                args.Append($" {Decode(PoolName)}");
+                args.Append($" {Decode(VDev)}");
             }
 
             return args.ToString();

@@ -48,13 +48,9 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
         {
             errors = null;
 
-            if (string.IsNullOrWhiteSpace(Filesystem) && !UnmountAllFileSystems)
-            {
-                errors = new List<string>();
-                errors.Add("Filesystem or mountpoint must be specified");
-            }
+            ValidateString(Filesystem, UnmountAllFileSystems, ref errors);
 
-            if (UnmountAllFileSystems && !string.IsNullOrWhiteSpace(Filesystem))
+            if (UnmountAllFileSystems && !string.IsNullOrWhiteSpace(Decode(Filesystem)))
             {
                 errors ??= new List<string>();
                 errors.Add("Specify either a filesystem/mountpoint or UnMountAllFileSystems - not both");
@@ -67,7 +63,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
         protected override string BuildArgs(string command)
         {
             var args = new StringBuilder();
-            
+
             args.Append(command);
 
             if (Force)

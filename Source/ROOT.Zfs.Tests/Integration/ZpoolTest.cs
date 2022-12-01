@@ -491,7 +491,7 @@ namespace ROOT.Zfs.Tests.Integration
             var removeArgs = new PoolRemoveArgs
             {
                 PoolName = name,
-                VDevOrDevice = "mirror-1"
+                VDev = "mirror-1"
             };
 
             var zp = GetZpool();

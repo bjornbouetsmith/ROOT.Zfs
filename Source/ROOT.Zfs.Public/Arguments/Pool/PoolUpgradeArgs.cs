@@ -32,10 +32,10 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            if (!AllPools && string.IsNullOrWhiteSpace(PoolName))
+            ValidateString(PoolName, AllPools, ref errors);
+            if (errors != null)
             {
-                errors = new List<string>();
-                errors.Add("Please specify either a PoolName or set AllPools to true");
+                errors.Add("Please specify either PoolName or set AllPools to true");
             }
 
             return errors == null;

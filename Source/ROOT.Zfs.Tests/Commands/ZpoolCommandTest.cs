@@ -422,7 +422,7 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new PoolRemoveArgs
             {
                 PoolName = valid ? "tank" : null,
-                VDevOrDevice = "mirror-0",
+                VDev = "mirror-0",
             };
             if (!valid)
             {

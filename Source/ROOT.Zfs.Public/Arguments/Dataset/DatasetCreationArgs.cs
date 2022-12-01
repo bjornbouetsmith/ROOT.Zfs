@@ -79,7 +79,16 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
             }
 
             ValidateString(DatasetName, false, ref errors);
-            
+
+            if (Properties != null && Properties.Length > 0)
+            {
+                foreach (var prop in Properties)
+                {
+                    ValidateString(prop.Property, false, ref errors, true);
+                    ValidateString(prop.Value, false, ref errors, true);
+                }
+            }
+
             return errors == null;
         }
 
@@ -108,7 +117,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
                 args.Append(" -u");
             }
 
-            var propCommand = Properties != null ? string.Join(' ', Properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
+            var propCommand = Properties != null ? string.Join(' ', Properties.Select(p => $"-o {Decode(p.Property)}={Decode(p.Value)}")) : string.Empty;
             if (propCommand != string.Empty)
             {
                 args.Append($" {propCommand}");

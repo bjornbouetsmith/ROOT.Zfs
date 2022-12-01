@@ -347,7 +347,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var removeArgs = new PoolRemoveArgs
             {
                 PoolName = "tank",
-                VDevOrDevice = "mirror-1"
+                VDev = "mirror-1"
             };
 
 

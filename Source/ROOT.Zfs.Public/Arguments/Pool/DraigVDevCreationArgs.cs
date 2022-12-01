@@ -1,4 +1,5 @@
 ﻿using ROOT.Zfs.Public.Data;
+using System.Linq;
 
 namespace ROOT.Zfs.Public.Arguments.Pool
 {
@@ -18,7 +19,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{Type.AsString()}:{DraidArgs.DataDevices}d:{DraidArgs.Children}c:{DraidArgs.Spares}s {string.Join(' ', Devices)}";
+            return $"{Type.AsString()}:{DraidArgs.DataDevices}d:{DraidArgs.Children}c:{DraidArgs.Spares}s {string.Join(' ', Devices.Select(Args.Decode))}";
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ROOT.Zfs.Public.Arguments.Snapshots
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            if (string.IsNullOrWhiteSpace(Snapshot))
+            if (string.IsNullOrWhiteSpace(Decode(Snapshot)))
             {
                 ValidateString(Dataset, false, ref errors);
                 

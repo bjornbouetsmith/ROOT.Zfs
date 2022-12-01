@@ -33,12 +33,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-
-            if (string.IsNullOrWhiteSpace(PoolName))
-            {
-                errors = new List<string>();
-                errors.Add("Please specify a pool name");
-            }
+            ValidateString(PoolName, false, ref errors);
 
             return errors == null;
         }
@@ -46,7 +41,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         /// <inheritdoc />
         protected override string BuildArgs(string command)
         {
-            return $"{command} -l {PoolName}";
+            return $"{command} -l {Decode(PoolName)}";
         }
 
     }

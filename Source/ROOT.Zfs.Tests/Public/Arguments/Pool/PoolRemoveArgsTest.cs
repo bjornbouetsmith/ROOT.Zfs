@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             var args = new PoolRemoveArgs
             {
                 PoolName = poolName,
-                VDevOrDevice = vdevOrDevice,
+                VDev = vdevOrDevice,
                 Cancel = cancel,
             };
 
@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             var args = new PoolRemoveArgs
             {
                 PoolName = poolName,
-                VDevOrDevice = vdevOrDevice,
+                VDev = vdevOrDevice,
                 Cancel = cancel,
             };
 

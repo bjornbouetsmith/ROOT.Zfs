@@ -62,7 +62,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// <summary>
         /// Decodes the dataset into its correct format, in case we receive a url encoded dataset name
         /// </summary>
-        protected static string Decode(string dataset)
+        internal static string Decode(string dataset)
         {
             if (string.IsNullOrWhiteSpace(dataset))
             {
@@ -79,7 +79,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// <summary>
         /// Validates that the given string is 'safe' to be passed onto a command line
         /// </summary>
-        protected static bool IsStringValid(string value, bool allowAtSign)
+        internal static bool IsStringValid(string value, bool allowAtSign)
         {
             // Simple check, just to see if we get back the number of characters passed in
             // And if not that means something was there which was not allowed
@@ -100,7 +100,7 @@ namespace ROOT.Zfs.Public.Arguments
         /// <param name="errors">The list of errors - will be allocated if null and an error is detected</param>
         /// <param name="allowAtSign">Whether or not allow an @ sign</param>
         /// <param name="nameOfString">Used for making an error message - do not set this, unless you set it to nameof(Value) where value is the name of the variable or property you are testing</param>
-        protected static void ValidateString(string value, bool allowEmpty, ref IList<string> errors, bool allowAtSign = false, [CallerArgumentExpression("value")] string nameOfString = "")
+        internal static void ValidateString(string value, bool allowEmpty, ref IList<string> errors, bool allowAtSign = false, [CallerArgumentExpression("value")] string nameOfString = "")
         {
             if (string.IsNullOrWhiteSpace(value) && !allowEmpty)
             {

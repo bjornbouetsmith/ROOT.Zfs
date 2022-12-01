@@ -18,24 +18,10 @@ namespace ROOT.Zfs.Public.Arguments.Properties
         {
             errors = null;
 
-            if (string.IsNullOrWhiteSpace(Property))
-            {
-                errors = new List<string>();
-                errors.Add("Please specify a property to set");
-            }
-
-            if (string.IsNullOrWhiteSpace(Value))
-            {
-                errors ??= new List<string>();
-                errors.Add("Please value to set the property to");
-            }
-
-            if (string.IsNullOrWhiteSpace(Target))
-            {
-                errors ??= new List<string>();
-                errors.Add("Please specify a dataset in which you want to set the property");
-            }
-
+            ValidateString(Property,false, ref errors);
+            ValidateString(Value, false, ref errors);
+            ValidateString(Target, false, ref errors);
+            
             return errors == null;
         }
 
@@ -44,7 +30,7 @@ namespace ROOT.Zfs.Public.Arguments.Properties
         {
             var args = new StringBuilder();
             args.Append(command);
-            args.Append($" {Property}={Value} {Target}");
+            args.Append($" {Decode(Property)}={Decode(Value)} {Decode(Target)}");
             return args.ToString();
         }
     }

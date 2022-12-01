@@ -50,12 +50,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-
-            if (string.IsNullOrWhiteSpace(PoolName))
-            {
-                errors = new List<string>();
-                errors.Add("Pool name must be specified");
-            }
+            ValidateString(PoolName, false, ref errors);
+            ValidateString(DeviceName, true, ref errors);
 
             return errors == null;
         }
@@ -82,11 +78,11 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                 args.Append(Action == TrimAction.Cancel ? " -c" : " -s");
             }
 
-            args.Append($" {PoolName}");
-
-            if (!string.IsNullOrWhiteSpace(DeviceName))
+            args.Append($" {Decode(PoolName)}");
+            var device = Decode(DeviceName);
+            if (!string.IsNullOrWhiteSpace(device))
             {
-                args.Append($" {DeviceName}");
+                args.Append($" {device}");
             }
 
             return args.ToString();

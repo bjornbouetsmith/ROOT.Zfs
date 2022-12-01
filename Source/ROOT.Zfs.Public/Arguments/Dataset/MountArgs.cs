@@ -62,13 +62,9 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
         {
             errors = null;
 
-            if (string.IsNullOrWhiteSpace(Filesystem) && !MountAllFileSystems)
-            {
-                errors = new List<string>();
-                errors.Add("Filesyste must be specified");
-            }
+            ValidateString(Filesystem, MountAllFileSystems, ref errors);
 
-            if (MountAllFileSystems && !string.IsNullOrWhiteSpace(Filesystem))
+            if (MountAllFileSystems && !string.IsNullOrWhiteSpace(Decode(Filesystem)))
             {
                 errors ??= new List<string>();
                 errors.Add("Specify either a filesystem or MountAllFileSystems - not both");

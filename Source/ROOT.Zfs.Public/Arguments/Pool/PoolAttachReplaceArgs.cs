@@ -64,23 +64,10 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         public override bool Validate(out IList<string> errors)
         {
             errors = null;
-            if (string.IsNullOrWhiteSpace(PoolName))
-            {
-                errors = new List<string>();
-                errors.Add("Please specify a pool name");
-            }
-
-            if (string.IsNullOrWhiteSpace(OldDevice))
-            {
-                errors = new List<string>();
-                errors.Add("Please specify an old device");
-            }
-
-            if (string.IsNullOrWhiteSpace(NewDevice) && !IsReplace)
-            {
-                errors = new List<string>();
-                errors.Add("Please specify a new device");
-            }
+            ValidateString(PoolName, false, ref errors);
+            ValidateString(OldDevice, false, ref errors);
+            // Only replace allows not setting new device, to cater for the special scenario where a device has been removed and a new disk has been inserted and got the same device name
+            ValidateString(NewDevice, IsReplace, ref errors);
 
             return errors == null;
         }
@@ -108,12 +95,13 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                 args.Append($" -o ashift={ashift.Value}");
             }
 
-            args.Append($" {PoolName}");
-            args.Append($" {OldDevice}");
+            args.Append($" {Decode(PoolName)}");
+            args.Append($" {Decode(OldDevice)}");
 
-            if (!string.IsNullOrWhiteSpace(NewDevice))
+            var newDev = Decode(NewDevice);
+            if (!string.IsNullOrWhiteSpace(newDev))
             {
-                args.Append($" {NewDevice}");
+                args.Append($" {newDev}");
             }
 
             return args.ToString();

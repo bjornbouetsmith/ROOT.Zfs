@@ -19,21 +19,14 @@ namespace ROOT.Zfs.Public.Arguments.Properties
             errors = null;
             if (PropertyTarget == PropertyTarget.Pool)
             {
-                errors = new List<string>();
-                errors.Add("You cannot reset a property to inherited on a pool");
+                errors = new List<string>
+                {
+                    "You cannot reset a property to inherited on a pool"
+                };
             }
 
-            if (string.IsNullOrWhiteSpace(Property))
-            {
-                errors ??= new List<string>();
-                errors.Add("Please specify a property to reset");
-            }
-
-            if (string.IsNullOrWhiteSpace(Target))
-            {
-                errors ??= new List<string>();
-                errors.Add("Please specify a dataset in which you want to reset the property");
-            }
+            ValidateString(Property, false, ref errors);
+            ValidateString(Target, false, ref errors);
 
             return errors == null;
         }

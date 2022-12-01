@@ -59,9 +59,10 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
             
             args.Append($" -t {DatasetTypes.AsString()}");
 
-            if (!string.IsNullOrWhiteSpace(Root))
+            var root = Decode(Root);
+            if (!string.IsNullOrWhiteSpace(root))
             {
-                args.Append($" {Decode(Root)}");
+                args.Append($" {root}");
             }
 
             return args.ToString();

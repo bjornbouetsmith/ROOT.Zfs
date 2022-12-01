@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
     public class PoolClearArgs : PoolNameWithDeviceArgs
     {
         /// <inheritdoc />
-        public PoolClearArgs() : base("clear",false)
+        public PoolClearArgs() : base("clear", false)
         {
         }
 
@@ -18,11 +18,12 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             var args = new StringBuilder();
             args.Append(command);
             args.Append($" {Decode(PoolName)}");
-            if (!string.IsNullOrWhiteSpace(Device))
+            var device = Decode(Device);
+            if (!string.IsNullOrWhiteSpace(device))
             {
-                args.Append($" {Decode(Device)}");
+                args.Append($" {device}");
             }
-           
+
             return args.ToString();
         }
     }

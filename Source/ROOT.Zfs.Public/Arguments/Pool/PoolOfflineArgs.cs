@@ -39,8 +39,8 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                 args.Append(" -t");
             }
 
-            args.Append($" {PoolName}");
-            args.Append($" {Device}");
+            args.Append($" {Decode(PoolName)}");
+            args.Append($" {Decode(Device)}");
 
             return args.ToString();
         }

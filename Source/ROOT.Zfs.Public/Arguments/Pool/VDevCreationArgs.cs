@@ -49,6 +49,11 @@ namespace ROOT.Zfs.Public.Arguments.Pool
                 errors.Add("Please provide at least two devices when creating a mirror");
             }
 
+            foreach (var device in Devices)
+            {
+                Args.ValidateString(device,false,ref errors,false,nameof(Devices));
+            }
+
             return errors == null;
         }
     }
