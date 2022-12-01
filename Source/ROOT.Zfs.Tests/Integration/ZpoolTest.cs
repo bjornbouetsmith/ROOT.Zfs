@@ -92,7 +92,7 @@ namespace ROOT.Zfs.Tests.Integration
             var arg = new PoolStatusArgs { PoolName = pool.Name };
             var status = zp.Status(arg);
             Assert.IsNotNull(status);
-            Assert.AreEqual(pool.Name, status.Pool.Name);
+            Assert.AreEqual(pool.Name, status.Pool.PoolName);
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -126,7 +126,7 @@ namespace ROOT.Zfs.Tests.Integration
                     continue;
                 }
 
-                Console.WriteLine("vdev:{0}, State:{1}", vdev.Name, vdev.State);
+                Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
                 foreach (var device in vdev.Devices)
                 {
                     if (device.State == State.Online)
@@ -321,7 +321,7 @@ namespace ROOT.Zfs.Tests.Integration
             Console.WriteLine(info.Dump(new JsonFormatter()));
             Assert.IsNotNull(info);
             Assert.AreNotEqual(0, info.Version);
-            Assert.AreEqual(pool.Name, info.Name);
+            Assert.AreEqual(pool.Name, info.PoolName);
         }
 
         [TestMethod, TestCategory("Integration")]

@@ -33,7 +33,7 @@ namespace ROOT.Zfs.Tests.Helpers
         {
             var snapshot = SnapshotHelper.FromString(SnapshotList);
             Assert.AreEqual("tank/myds", snapshot.Dataset);
-            Assert.AreEqual("20220925162707", snapshot.Name);
+            Assert.AreEqual("20220925162707", snapshot.SnapshotName);
             Assert.AreEqual(14336UL, snapshot.Size.Bytes);
             Assert.AreEqual(new DateTime(2022, 09, 25, 14, 27, 11, DateTimeKind.Utc), snapshot.CreationDate);
         }

@@ -42,7 +42,7 @@ namespace ROOT.Zfs.Core.Helpers
 
             var info = new PoolInfo
             {
-                Name= name,
+                PoolName= name,
                 Size= new Size(size),
                 Allocated= new Size(alloc),
                 Free= new Size(free),

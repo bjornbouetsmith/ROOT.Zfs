@@ -139,11 +139,11 @@ tank3:
             Console.WriteLine(versions.Dump(new JsonFormatter()));
             Assert.AreEqual(2, versions.Count);
             var info = versions[0];
-            Assert.AreEqual("backup", info.Name);
+            Assert.AreEqual("backup", info.PoolName);
             Assert.AreEqual(5000, info.Version);
             info = versions[1];
 
-            Assert.AreEqual("tank3", info.Name);
+            Assert.AreEqual("tank3", info.PoolName);
             Assert.AreEqual(5000, info.Version);
         }
 
@@ -162,7 +162,7 @@ tank3:
 
             Assert.AreEqual(1, versions.Count);
             var info = versions[0];
-            Assert.AreEqual("backup", info.Name);
+            Assert.AreEqual("backup", info.PoolName);
             Assert.AreEqual(0, info.Version);
         }
 

@@ -51,7 +51,7 @@ namespace ROOT.Zfs.Core
             foreach (var info in list)
             {
                 // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
-                var versionInfo = versions.First(v => v.Name.Equals(info.Name, StringComparison.OrdinalIgnoreCase));
+                var versionInfo = versions.First(v => v.PoolName.Equals(info.PoolName, StringComparison.OrdinalIgnoreCase));
                 info.Version = versionInfo.Version;
             }
 
@@ -71,7 +71,7 @@ namespace ROOT.Zfs.Core
 
             var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
             // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
-            var versionInfo = versions.First(v=>v.Name.Equals(args.PoolName, StringComparison.OrdinalIgnoreCase));
+            var versionInfo = versions.First(v=>v.PoolName.Equals(args.PoolName, StringComparison.OrdinalIgnoreCase));
             info.Version = versionInfo.Version;
 
             return info;

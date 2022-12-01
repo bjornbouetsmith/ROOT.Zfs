@@ -74,7 +74,7 @@ config:
 
             var status = ZPoolStatusParser.Parse(OkPool);
             Assert.IsNotNull(status);
-            Assert.AreEqual("tank", status.Pool.Name);
+            Assert.AreEqual("tank", status.Pool.PoolName);
             Assert.AreEqual(State.Online, status.State);
             Console.WriteLine(status.Dump(new JsonFormatter()));
 
@@ -99,7 +99,7 @@ config:
 
             var status = ZPoolStatusParser.Parse(BadPool1);
             Assert.IsNotNull(status);
-            Assert.AreEqual("tank", status.Pool.Name);
+            Assert.AreEqual("tank", status.Pool.PoolName);
             Assert.AreEqual(State.Degraded, status.State);
             Console.WriteLine(status.Dump(new JsonFormatter()));
 
@@ -110,7 +110,7 @@ config:
         {
             var status = ZPoolStatusParser.Parse(PoolWithSpare);
             Assert.IsNotNull(status);
-            var spares = status.Pool.VDevs.First(d => d.Name == "spares");
+            var spares = status.Pool.VDevs.First(d => d.VDevName == "spares");
             Assert.AreEqual(State.Available, spares.State);
             var spare = spares.Devices.First();
             Assert.AreEqual(State.Available, spare.State);

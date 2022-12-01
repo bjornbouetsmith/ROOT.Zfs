@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             var root = ds.List(args).FirstOrDefault();
 
             Assert.IsNotNull(root);
-            Assert.AreEqual("tank", root.Name);
+            Assert.AreEqual("tank", root.DatasetName);
             Assert.AreEqual(DatasetTypes.Filesystem, root.Type);
             Console.WriteLine(root.Dump(new JsonFormatter()));
         }

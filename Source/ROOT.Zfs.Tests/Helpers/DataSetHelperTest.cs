@@ -27,7 +27,7 @@ namespace ROOT.Zfs.Tests.Helpers
 
             var dataset = DatasetHelper.ParseLine(stdOut);
             Console.WriteLine(dataset.Dump(new JsonFormatter()));
-            Assert.AreEqual("tank/kubedata", dataset.Name);
+            Assert.AreEqual("tank/kubedata", dataset.DatasetName);
             Assert.AreEqual("675.3M", dataset.Used.ToString());
             Assert.AreEqual("378.3M", dataset.Available.ToString());
             Assert.AreEqual("3.2T", dataset.Refer.ToString());

@@ -11,14 +11,14 @@
         /// </summary>
         public Property(string name, params string[] validValues)
         {
-            Name = name;
+            PropertyName = name;
             ValidValues = validValues;
         }
 
         /// <summary>
         /// The name of the property
         /// </summary>
-        public string Name { get; set; }
+        public string PropertyName { get; set; }
         
         /// <summary>
         /// Expected valid values.

@@ -53,7 +53,7 @@ config:
                 if (poolParts.Length == 2 && poolParts[0].Trim().Equals("pool", StringComparison.OrdinalIgnoreCase))
                 {
                     poolStatus.Pool = new Pool();
-                    poolStatus.Pool.Name = poolParts[1].Trim();
+                    poolStatus.Pool.PoolName = poolParts[1].Trim();
                     ParseStatusLines(poolStatus, lines, ref currentIndex);
                     ParseVDevs(poolStatus, lines, ref currentIndex);
                 }
@@ -141,7 +141,7 @@ config:
 
             var vdev = new VDev();
             var data = ParseDevLine(lines, ref currentIndex);
-            vdev.Name = data.Name;
+            vdev.VDevName = data.Name;
             vdev.State = data.State;
             vdev.Errors = data.Errors;
             vdev.Devices = new List<Device>();

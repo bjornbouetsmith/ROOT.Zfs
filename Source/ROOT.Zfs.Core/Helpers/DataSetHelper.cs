@@ -61,7 +61,7 @@ namespace ROOT.Zfs.Core.Helpers
             var dataset = new Dataset
             {
                 Type = datasetType,
-                Name = parts[2],
+                DatasetName = parts[2],
                 Used = new Size(parts[3]),
                 Available = new Size(parts[4]),
                 Refer = new Size(parts[5]),

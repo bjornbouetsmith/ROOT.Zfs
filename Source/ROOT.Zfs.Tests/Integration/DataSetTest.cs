@@ -45,7 +45,7 @@ namespace ROOT.Zfs.Tests.Integration
             var args = new DatasetListArgs { Root = pool.Name };
             var dataset = ds.List(args).FirstOrDefault();
             Assert.IsNotNull(dataset);
-            Assert.AreEqual(pool.Name, dataset.Name);
+            Assert.AreEqual(pool.Name, dataset.DatasetName);
         }
 
         [TestMethod, TestCategory("Integration")]
@@ -66,10 +66,10 @@ namespace ROOT.Zfs.Tests.Integration
                     };
 
                 var dataSets = ds.List(new DatasetListArgs()).ToList();
-                var parent = dataSets.FirstOrDefault(d => d.Name == pool.Name);
+                var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
                 Assert.IsNotNull(parent);
                 Console.WriteLine(parent.Dump(new JsonFormatter()));
-                fullName = DatasetHelper.CreateDatasetName(parent.Name, dataSetName);
+                fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
                 var args = new DatasetCreationArgs
                 {
                     DatasetName = fullName,

@@ -56,7 +56,7 @@ namespace ROOT.Zfs.Core.Helpers
                     // pool
                     info = new PoolVersionInfo();
                     var indexOfColon = line.IndexOf(':');
-                    info.Name = line[..indexOfColon].Trim();
+                    info.PoolName = line[..indexOfColon].Trim();
                     result.Add(info);
                 }
             }

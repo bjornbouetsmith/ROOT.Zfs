@@ -8,7 +8,7 @@
         /// <summary>
         /// The name of the dataset
         /// </summary>
-        public string Name { get; set; }
+        public string DatasetName { get; set; }
         
         /// <summary>
         /// The type of dataset, i.e. Filesyste, Volume etc.

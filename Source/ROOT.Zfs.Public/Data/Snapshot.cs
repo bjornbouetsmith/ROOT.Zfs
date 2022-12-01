@@ -15,7 +15,7 @@ namespace ROOT.Zfs.Public.Data
         /// <summary>
         /// The name of the snapshot
         /// </summary>
-        public string Name { get; set; }
+        public string SnapshotName { get; set; }
 
         /// <summary>
         /// Time when snapshot was created

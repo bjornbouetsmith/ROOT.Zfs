@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// Name of the vdev.
         /// This is also the type of vded, i.e. mirrors are called 'mirror-x' where x is the number of mirror, where first mirror is 0
         /// </summary>
-        public string Name { get; set; }
+        public string VDevName { get; set; }
         
         /// <summary>
         /// State of the vdev

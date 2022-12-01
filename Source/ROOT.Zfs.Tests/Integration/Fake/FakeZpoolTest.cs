@@ -83,7 +83,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                     continue;
                 }
 
-                Console.WriteLine("vdev:{0}, State:{1}", vdev.Name, vdev.State);
+                Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
                 foreach (var device in vdev.Devices)
                 {
                     if (device.State == State.Online)
@@ -135,7 +135,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var info = zp.List(new PoolListArgs { PoolName = "tank2" });
             Assert.IsNotNull(info);
             Assert.AreEqual(5000, info.Version);
-            Assert.AreEqual("tank2", info.Name);
+            Assert.AreEqual("tank2", info.PoolName);
             Assert.AreEqual("15.5G", info.Size.ToString());
             Assert.AreEqual("105K", info.Allocated.ToString());
             Assert.AreEqual("15.5G", info.Free.ToString());

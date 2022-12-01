@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Tests.Integration
             foreach (var snap in snapshots)
             {
                 Console.WriteLine(snap.CreationDate.AsString());
-                Console.WriteLine(snap.Name);
+                Console.WriteLine(snap.SnapshotName);
                 Console.WriteLine(snap.Size.ToString());
             }
         }
@@ -48,7 +48,7 @@ namespace ROOT.Zfs.Tests.Integration
 
             var snaps = sn.List(new SnapshotListArgs { Root = pool.Name });
 
-            var wasCreated = snaps.FirstOrDefault(snap => snap.Name.EndsWith(snapName));
+            var wasCreated = snaps.FirstOrDefault(snap => snap.SnapshotName.EndsWith(snapName));
 
             Assert.IsNotNull(wasCreated);
             var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = snapName, IsExactName = true };
@@ -67,13 +67,13 @@ namespace ROOT.Zfs.Tests.Integration
             sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
             sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" });
 
-            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith(prefix)).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
 
             Assert.AreEqual(3, snaps.Count);
             var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
             sn.Destroy(args);
 
-            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.Name.StartsWith(prefix)).ToList();
+            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
             Assert.AreEqual(0, snaps.Count);
         }
     }

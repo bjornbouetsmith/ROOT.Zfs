@@ -8,7 +8,7 @@
         /// <summary>
         /// The name of the pool
         /// </summary>
-        public string Name { get; set; }
+        public string PoolName { get; set; }
 
         /// <summary>
         /// The underlying zfs version of the pool

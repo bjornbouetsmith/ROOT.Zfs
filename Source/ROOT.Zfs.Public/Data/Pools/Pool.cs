@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Public.Data.Pools
         /// <summary>
         /// The name of the pool
         /// </summary>
-        public string Name { get; set; }
+        public string PoolName { get; set; }
         
         /// <summary>
         /// The vdevs part of this pool

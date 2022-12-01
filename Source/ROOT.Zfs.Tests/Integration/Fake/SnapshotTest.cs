@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             foreach (var snap in snapshots)
             {
                 Console.WriteLine(snap.CreationDate.AsString());
-                Console.WriteLine(snap.Name);
+                Console.WriteLine(snap.SnapshotName);
                 Console.WriteLine(snap.Size.ToString());
             }
         }
@@ -69,7 +69,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-2" });
             sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-3" });
 
-            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.Name.StartsWith($"{prefix}")).ToList();
+            var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.SnapshotName.StartsWith($"{prefix}")).ToList();
 
             Assert.AreEqual(3, snaps.Count);
             var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = prefix, IsExactName = false };

@@ -45,9 +45,9 @@ namespace ROOT.Zfs.Core
             {
                 var listArg = new SnapshotListArgs { Root = args.Dataset };
                 // Find all snapshots that begins with snapName and delete them one by one
-                foreach (var snapshot in List(listArg).Where(sn => SnapshotMatches(args.Dataset, sn.Name, args.Snapshot)))
+                foreach (var snapshot in List(listArg).Where(sn => SnapshotMatches(args.Dataset, sn.SnapshotName, args.Snapshot)))
                 {
-                    var subArgs = new SnapshotDestroyArgs { Dataset = args.Dataset, Snapshot = snapshot.Name, IsExactName = true };
+                    var subArgs = new SnapshotDestroyArgs { Dataset = args.Dataset, Snapshot = snapshot.SnapshotName, IsExactName = true };
                     Destroy(subArgs);
                 }
             }
