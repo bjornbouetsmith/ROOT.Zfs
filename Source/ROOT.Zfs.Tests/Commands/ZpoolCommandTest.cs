@@ -28,7 +28,7 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [DataRow("", true)]
-        [DataRow("tank",false)]
+        [DataRow("tank", false)]
         [DataRow("tank && rm -rf /", true)]
         [TestMethod]
         public void GetStatusCommandTest(string pool, bool expectException)
@@ -129,17 +129,28 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
         [TestMethod]
-        [DataRow("tank", "mirror-0", "/sbin/zpool clear tank mirror-0")]
-        [DataRow("tank", "sda", "/sbin/zpool clear tank sda")]
-        [DataRow("tank", "", "/sbin/zpool clear tank")]
-        [DataRow("tank", null, "/sbin/zpool clear tank")]
-        public void ClearPoolTest(string pool, string device, string expectedCommand)
+        [DataRow("tank", "mirror-0", "/sbin/zpool clear tank mirror-0", false)]
+        [DataRow("tank", "sda", "/sbin/zpool clear tank sda", false)]
+        [DataRow("tank", "", "/sbin/zpool clear tank", false)]
+        [DataRow("tank", null, "/sbin/zpool clear tank", false)]
+        [DataRow("tank", "rm -rf /tank", null, true)]
+        [DataRow("tank", "rm /tank", null, true)]
+        [DataRow("tank", "rm%20-rf%20/tank", null, true)]
+        public void ClearPoolTest(string pool, string device, string expectedCommand, bool expectException)
         {
-            var args = new PoolClearArgs{PoolName=pool,Device=device};
+            var args = new PoolClearArgs { PoolName = pool, Device = device };
 
-            var command = ZpoolCommands.Clear(args);
-            Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Clear(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = ZpoolCommands.Clear(args);
+                Console.WriteLine(command.FullCommandLine);
+                Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            }
         }
 
         [TestMethod]
@@ -403,7 +414,7 @@ namespace ROOT.Zfs.Tests.Commands
         }
         [DataRow("tank", "/sbin/zpool destroy -f tank", false)]
         [DataRow("tank%5ftest", "/sbin/zpool destroy -f tank_test", false)]
-        [DataRow("tank/myds",null, true)]
+        [DataRow("tank/myds", null, true)]
         [DataRow("tank%2fmyds", null, true)]
         [DataRow("", null, true)]
         [TestMethod]
