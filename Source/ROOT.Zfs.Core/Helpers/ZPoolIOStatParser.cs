@@ -23,15 +23,15 @@ namespace ROOT.Zfs.Core.Helpers
             var stats = new IOStats();
             var lines = stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
             int index = 0;
-            var firstLine = ParseLine(lines[index], index++);
+            var root = ParseLine(lines[index], index++);
             stats.Pool = poolName;
             stats.Stats = new List<IOStat>();
 
-            if (firstLine.Capacity.Allocated.Bytes == 0)
+            if (root.Capacity.Allocated.Bytes == 0)
             {
                 // Its an output from a zpool iostats <pool> device, device
                 // so just loop over each line and add to stats
-                stats.Stats.Add(firstLine);
+                stats.Stats.Add(root);
                 foreach (var line in lines.Skip(1))
                 {
                     var device = ParseLine(line, index++);
@@ -39,24 +39,24 @@ namespace ROOT.Zfs.Core.Helpers
                 }
                 return stats;
             }
-            stats.Stats.Add(firstLine);
-            firstLine.ChildStats = new List<IOStat>();
+            stats.Stats.Add(root);
+            root.ChildStats = new List<IOStat>();
             IOStat currentDevice = null;
             foreach (var line in lines.Skip(1))
             {
                 var device = ParseLine(line, index++);
-                if (device.Capacity.Allocated.Bytes != 0)
+                if (device.Capacity.Allocated.Bytes != 0) // A vdev
                 {
                     currentDevice = device;
                     device.ChildStats = new List<IOStat>();
-                    firstLine.ChildStats.Add(currentDevice);
+                    root.ChildStats.Add(currentDevice); // Vdevs gets added to the root io stat object
                     // new vdev
                 }
                 else if (currentDevice != null)
                 {
                     currentDevice.ChildStats.Add(device);
                 }
-                else
+                else // This should not happen, but if it does, we want a format exception, not any other exception
                 {
                     throw ExceptionHelper.FormatException(index, line);
                 }
@@ -117,12 +117,8 @@ namespace ROOT.Zfs.Core.Helpers
                 return TimeSpan.Zero;
             }
 
-            if (!long.TryParse(nanos, out var nano))
-            {
-                Trace.WriteLine($"Could not parse:{nanos} into a number");
-                return TimeSpan.Zero;
-            }
-
+            var nano = long.Parse(nanos);
+            
             return new TimeSpan(nano / 100);
         }
 
@@ -130,31 +126,16 @@ namespace ROOT.Zfs.Core.Helpers
         {
             stat.Device = parts[0];
             stat.Capacity = new Capacity { Allocated = new Size(parts[1]), Free = new Size(parts[2]) };
-            stat.Operations = new Operations();
-            if (!int.TryParse(parts[3], out var reads))
+            stat.Operations = new Operations
             {
-                Trace.WriteLine($"Could not parse:{parts[3]} into reads");
-            }
+                Read = int.Parse(parts[3]),
+                Write = int.Parse(parts[4])
+            };
 
-            stat.Operations.Read = reads;
 
-            if (!int.TryParse(parts[4], out var writes))
-            {
-                Trace.WriteLine($"Could not parse:{parts[4]} into reads");
-            }
-
-            stat.Operations.Write = writes;
-            ulong bwReads;
-            if (!ulong.TryParse(parts[5], out bwReads))
-            {
-                Trace.WriteLine($"Could not parse:{parts[5]} into bandwidth reads");
-            }
-            ulong bwWrites;
-            if (!ulong.TryParse(parts[6], out bwWrites))
-            {
-                Trace.WriteLine($"Could not parse:{parts[6]} into bandwidth writes");
-            }
-
+            ulong bwReads = ulong.Parse(parts[5]);
+            ulong bwWrites = ulong.Parse(parts[6]);
+            
             stat.Bandwidth = new Bandwidth { Read = bwReads, Write = bwWrites };
         }
     }

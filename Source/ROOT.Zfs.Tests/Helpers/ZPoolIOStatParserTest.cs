@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Tests.Helpers
 
             var stat = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
             Console.WriteLine(stat.Dump(new JsonFormatter()));
-            Assert.AreEqual(2,stat.Stats.Count);
+            Assert.AreEqual(2, stat.Stats.Count);
             Assert.AreEqual("/dev/sde1", stat.Stats[0].Device);
             Assert.AreEqual("/dev/sdc1", stat.Stats[1].Device);
 
@@ -35,6 +35,33 @@ namespace ROOT.Zfs.Tests.Helpers
             Assert.IsNotNull(stat.Stats[0].LatencyStats);
             Assert.IsNotNull(stat.Stats[1].LatencyStats);
         }
+
+
+        // Pool, where VDEV line is missing
+        [TestMethod]
+        public void UnsupportedOutputWithMissingVDEVLine()
+        {
+            var stdOut = @"rpool   3078639616      28059873280     0       30      3033    355200
+/dev/sdi3       0       0       0       15      1528    177600
+/dev/sdj3       0       0       0       14      1505    177600";
+
+            var ex = Assert.ThrowsException<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
+            Console.WriteLine(ex.Message);
+        }
+
+        [TestMethod]
+        public void NewUnsupportedFormatShouldthrow() // Added an extra field at the end
+        {
+
+            var stdOut = @"rpool   3078639616      28059873280     0       30      3033    355200   10
+mirror-0        3078639616      28059873280     0       30      3033    355200   10
+/dev/sdi3       0       0       0       15      1528    177600   10
+/dev/sdj3       0       0       0       14      1505    177600   10";
+
+            var ex = Assert.ThrowsException<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
+            Console.WriteLine(ex.Message);
+        }
+
 
         [TestMethod]
         public void PoolWithSingleVDev()
