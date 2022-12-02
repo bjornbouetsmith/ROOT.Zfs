@@ -27,9 +27,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             {
                 foreach (var device in Devices)
                 {
-                    {
-                        ValidateString(device, true, ref errors, false, nameof(Devices));
-                    }
+                    ValidateString(device, true, ref errors);
                 }
             }
             return errors == null;

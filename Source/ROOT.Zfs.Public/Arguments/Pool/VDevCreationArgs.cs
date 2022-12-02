@@ -37,21 +37,25 @@ namespace ROOT.Zfs.Public.Arguments.Pool
             errors = null;
             if ((Devices?.Count ?? 0) == 0)
             {
-                errors = new List<string>();
-                errors.Add("Please provide the proper amount of minimum devices");
+                errors = new List<string>
+                {
+                    "Please provide the proper amount of minimum devices"
+                };
                 return false;
             }
 
             if (Type == VDevCreationType.Mirror
                 && Devices.Count < 2)
             {
-                errors = new List<string>();
-                errors.Add("Please provide at least two devices when creating a mirror");
+                errors = new List<string>
+                {
+                    "Please provide at least two devices when creating a mirror"
+                };
             }
 
             foreach (var device in Devices)
             {
-                Args.ValidateString(device,false,ref errors,false,nameof(Devices));
+                Args.ValidateString(device,false,ref errors);
             }
 
             return errors == null;

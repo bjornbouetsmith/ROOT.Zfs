@@ -30,7 +30,7 @@ namespace ROOT.Zfs.Public.Arguments.Pool
         {
             errors = null;
             ValidateString(PoolName, false, ref errors);
-            ValidateString(Device, _requireDevice == false, ref errors);
+            ValidateString(Device, !_requireDevice, ref errors);
 
             return errors == null;
         }
