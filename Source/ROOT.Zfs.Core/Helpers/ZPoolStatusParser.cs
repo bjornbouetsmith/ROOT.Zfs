@@ -50,13 +50,15 @@ config:
 
                 var poolLine = lines[currentIndex++];
                 var poolParts = poolLine.Split(':');
-                if (poolParts.Length == 2 && poolParts[0].Trim().Equals("pool", StringComparison.OrdinalIgnoreCase))
+                if (poolParts.Length != 2 || !poolParts[0].Trim().Equals("pool", StringComparison.OrdinalIgnoreCase))
                 {
-                    poolStatus.Pool = new Pool();
-                    poolStatus.Pool.PoolName = poolParts[1].Trim();
-                    ParseStatusLines(poolStatus, lines, ref currentIndex);
-                    ParseVDevs(poolStatus, lines, ref currentIndex);
+                    throw ExceptionHelper.FormatException(currentIndex, input);
                 }
+
+                poolStatus.Pool = new Pool();
+                poolStatus.Pool.PoolName = poolParts[1].Trim();
+                ParseStatusLines(poolStatus, lines, ref currentIndex);
+                ParseVDevs(poolStatus, lines, ref currentIndex);
 
                 return poolStatus;
             }

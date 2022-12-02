@@ -24,7 +24,6 @@ config:
 	    /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi7-part1  ONLINE       0     0     0
 	    /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi8-part1  ONLINE       0     0     0
 errors: No known data errors";
-        private const string OkPool2 = @"";
 
         private const string TruncatedResponse = @"  pool: tank
  state: ONLINE
@@ -54,7 +53,6 @@ config:
             /dev/disk/by-id/2252240780663618111        UNAVAIL      0     0     0  was /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017-part1
 
 errors: No known data errors";
-        private const string BadPool2 = @"";
 
         private const string PoolWithSpare = @"  pool: TestP768e8f58-4091-4c3a-91c6-35c65c7336a1
  state: ONLINE
@@ -78,6 +76,16 @@ config:
             Assert.AreEqual(State.Online, status.State);
             Console.WriteLine(status.Dump(new JsonFormatter()));
 
+        }
+
+        // Code expect that first line of zpool status contains the name of the pool. 
+        // This tests that we get the expected exception if thats not the case
+        [TestMethod]
+        public void UnknownNewPrefix()
+        {
+            var stdOut = "New Data not expected" + Environment.NewLine + OkPool;
+            var ex = Assert.ThrowsException<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
+            Console.WriteLine(ex);
         }
 
         [TestMethod]
