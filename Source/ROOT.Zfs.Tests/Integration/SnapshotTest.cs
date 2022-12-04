@@ -6,6 +6,7 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Snapshots;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration
 {
@@ -56,7 +57,6 @@ namespace ROOT.Zfs.Tests.Integration
 
         }
 
-
         [TestMethod, TestCategory("Integration")]
         public void CreateAndDeleteByPatternTest()
         {
@@ -75,6 +75,21 @@ namespace ROOT.Zfs.Tests.Integration
 
             snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
             Assert.AreEqual(0, snaps.Count);
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void CloneSnapshotTest()
+        {
+            var sn = GetSnapshots();
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
+
+            var args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone" };
+            sn.Clone(args);
+
+            args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone2",Properties=new[]{new PropertyValue{Property="atime",Value="off"}} };
+            sn.Clone(args);
+
         }
     }
 }

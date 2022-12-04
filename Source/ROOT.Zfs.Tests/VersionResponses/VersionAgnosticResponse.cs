@@ -54,6 +54,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zfs snap tank/myds@20220922211347000-1":
                 case "/sbin/zfs snap tank/myds@20220922211347000-2":
                 case "/sbin/zfs snap tank/myds@20220922211347000-3":
+                case "/sbin/zfs snap tank/myds@12345":
                     return (null, null);
                 case "/sbin/zfs destroy tank/myds@RemoteCreateSnapshot20220922091347":
                 case "/sbin/zfs destroy tank/myds@20220922211347000-1":
@@ -138,6 +139,9 @@ namespace ROOT.Zfs.Tests.VersionResponses
                 case "/sbin/zpool add -f tank mirror /dev/sda /dev/sdb":
                     return (null, null);
                 case "/sbin/zpool remove tank mirror-1":
+                    return (null, null);
+                case "/sbin/zfs clone -p tank/myds@12345 tank/myds/mysnap_clone":
+                case "/sbin/zfs clone -p -o atime=off tank/myds@12345 tank/myds/mysnap_clone2":
                     return (null, null);
                 default:
                     throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");

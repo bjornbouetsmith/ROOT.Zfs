@@ -29,6 +29,12 @@ namespace ROOT.Zfs.Public
         void Create(SnapshotCreateArgs args);
 
         /// <summary>
+        /// Clones a snapshot of ZFS dataset.
+        /// Will create all parent datasets of the target dataset as required.
+        /// </summary>
+        void Clone(SnapshotCloneArgs args);
+
+        /// <summary>
         /// Adds a single reference, named with the tag argument, to the specified snapshots.
         /// Each snapshot has its own tag namespace, and tags must be unique within that space.
         /// Beware that when making a hold on a snapshot, zfs destroy will return busy when trying to destroy the given snapshot and its only possible to destroy the snapshot if you release the hold first via

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments.Snapshots;
@@ -78,26 +79,25 @@ namespace ROOT.Zfs.Tests.Commands
             }
         }
 
-
+        [DataRow("tank/myds", "mysnap", "tank2/mysnap_clone", null, "/sbin/zfs clone -p tank/myds@mysnap tank2/mysnap_clone", false)]
+        [DataRow("tank/myds", "mysnap", "tank2/mysnap_clone", "atime=off", "/sbin/zfs clone -p -o atime=off tank/myds@mysnap tank2/mysnap_clone", false)]
+        [DataRow("tank/myds", "mysnap", "", null, null,true)]
         [TestMethod]
-        public void CloneSnapshotTestWithoutProperties()
+        public void CloneSnapshotTest(string dataset, string snapshot, string target, string properties, string expected, bool expectException)
         {
-            var command = SnapshotCommands.Clone("tank/myds", "projectX", "/tank/clones/projectX", null);
-            Assert.AreEqual("/sbin/zfs clone -p tank/myds@projectX /tank/clones/projectX", command.FullCommandLine);
-        }
+            var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
+            var args = new SnapshotCloneArgs { Dataset = dataset, Snapshot = snapshot, TargetDataset = target, Properties = props };
+            if (expectException)
+            {
+                var ex = Assert.ThrowsException<ArgumentException>(() => SnapshotCommands.Clone(args));
+                Console.WriteLine(ex);
+            }
+            else
+            {
+                var command = SnapshotCommands.Clone(args);
 
-        [TestMethod]
-        public void CloneSnapshotTestWithoutProperties2()
-        {
-            var command = SnapshotCommands.Clone("tank/myds", "tank/myds@projectX", "/tank/clones/projectX", null);
-            Assert.AreEqual("/sbin/zfs clone -p tank/myds@projectX /tank/clones/projectX", command.FullCommandLine);
-        }
-
-        [TestMethod]
-        public void CloneSnapshotTestWithProperties()
-        {
-            var command = SnapshotCommands.Clone("tank/myds", "projectX", "/tank/clones/projectX", new[] { new PropertyValue { Property = "atime", Value = "off" }, new PropertyValue { Property = "compression", Value = "off" } });
-            Assert.AreEqual("/sbin/zfs clone -p -o atime=off -o compression=off tank/myds@projectX /tank/clones/projectX", command.FullCommandLine);
+                Assert.AreEqual(expected, command.FullCommandLine);
+            }
         }
 
         [DataRow("tank/myds", "tank/myds@12345", "myhold", true, "/sbin/zfs hold -r myhold tank/myds@12345")]

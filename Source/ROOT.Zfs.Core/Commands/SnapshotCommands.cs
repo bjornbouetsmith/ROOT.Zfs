@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Snapshots;
@@ -20,8 +19,9 @@ namespace ROOT.Zfs.Core.Commands
         internal static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
 
         /// <summary>
-        /// Lists snapshots in the given dataset or volume
+        /// Returns a command to list snapshots in the given dataset or volume
         /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static IProcessCall ListSnapshots(SnapshotListArgs args)
         {
             if (!args.Validate(out var errors))
@@ -33,9 +33,10 @@ namespace ROOT.Zfs.Core.Commands
         }
 
         /// <summary>
-        /// Destroys the snapshot in the given dataset
+        /// Returns a command to destroy the snapshot in the given dataset
         /// Snapshot has to be a child of dataset
         /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static ProcessCall DestroySnapshot(SnapshotDestroyArgs args)
         {
             if (!args.Validate(out var errors))
@@ -45,9 +46,11 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, args.ToString());
         }
+
         /// <summary>
-        /// Creates a snapshot of the dataset with the given name
+        /// Returns a command to create a snapshot of the dataset with the given name
         /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static ProcessCall CreateSnapshot(SnapshotCreateArgs args)
         {
             if (!args.Validate(out var errors))
@@ -59,31 +62,19 @@ namespace ROOT.Zfs.Core.Commands
         }
 
         /// <summary>
-        /// Creates a clone of the given snapshot targeting the dataset or volume
-        /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-clone.8.html
+        /// Returns a command to clone a snapshot into the given target dataset
         /// </summary>
-        /// <param name="datasetOrVolume">The dataset or volume where the snapshot is from</param>
-        /// <param name="snapshotName">The name of the snapshot to clone</param>
-        /// <param name="targetDatasetOrVolume">The name of the dataset or volume where to clone to</param>
-        /// <param name="properties">The properties to set on the target - if any</param>
-        internal static ProcessCall Clone(string datasetOrVolume, string snapshotName, string targetDatasetOrVolume, PropertyValue[] properties)
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
+        internal static IProcessCall Clone(SnapshotCloneArgs args)
         {
-            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            targetDatasetOrVolume = DatasetHelper.Decode(targetDatasetOrVolume);
-            var rawSnapName = snapshotName;
-            var propCommand = properties != null ? string.Join(' ', properties.Select(p => $"-o {p.Property}={p.Value}")) : string.Empty;
-            if (propCommand != string.Empty)
+            if (!args.Validate(out var errors))
             {
-                propCommand = " " + propCommand;
+                throw ToArgumentException(errors, args);
             }
 
-            if (snapshotName.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
-            {
-                rawSnapName = snapshotName[(datasetOrVolume.Length + 1)..];
-            }
-
-            return new ProcessCall(WhichZfs, $"clone -p{propCommand} {datasetOrVolume}@{rawSnapName} {targetDatasetOrVolume}");
+            return new ProcessCall(WhichZfs, args.ToString());
         }
+
         /// <summary>
         /// Returns a command to add a tag to a snapshot, i.e.
         /// zfs hold

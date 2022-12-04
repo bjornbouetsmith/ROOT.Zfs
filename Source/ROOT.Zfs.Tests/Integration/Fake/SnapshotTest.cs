@@ -108,5 +108,20 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             Assert.AreEqual(1, commands.Count);
             Assert.AreEqual("/sbin/zfs release mytag tank/myds@12345", commands[0]);
         }
+
+        [TestMethod, TestCategory("FakeIntegration")]
+        public void CloneSnapshotTest()
+        {
+            var sn = GetSnapshots();
+            var snapName = "tank/myds@12345";
+            sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = snapName });
+
+            var args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone" };
+            sn.Clone(args);
+
+            args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone2", Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } } };
+            sn.Clone(args);
+
+        }
     }
 }

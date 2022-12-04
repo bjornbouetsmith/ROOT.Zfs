@@ -93,6 +93,13 @@ namespace ROOT.Zfs.Core
         }
 
         /// <inheritdoc />
+        public void Clone(SnapshotCloneArgs args)
+        {
+            var pc = BuildCommand(SnapshotCommands.Clone(args));
+            pc.LoadResponse(true);
+        }
+
+        /// <inheritdoc />
         public void Hold(SnapshotHoldArgs args)
         {
             var command = BuildCommand(SnapshotCommands.Hold(args));
