@@ -121,6 +121,11 @@ namespace ROOT.Zfs.Tests.Integration.Fake
 
             args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone2", Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } } };
             sn.Clone(args);
+            var commands = _remoteProcessCall.GetCommandsInvoked();
+            Assert.AreEqual(3, commands.Count);
+            Assert.AreEqual("/sbin/zfs snap tank/myds@12345", commands[0]);
+            Assert.AreEqual("/sbin/zfs clone -p tank/myds@12345 tank/myds/mysnap_clone", commands[1]);
+            Assert.AreEqual("/sbin/zfs clone -p -o atime=off tank/myds@12345 tank/myds/mysnap_clone2", commands[2]);
 
         }
     }
