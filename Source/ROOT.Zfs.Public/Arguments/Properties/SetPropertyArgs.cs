@@ -18,10 +18,10 @@ namespace ROOT.Zfs.Public.Arguments.Properties
         {
             errors = null;
 
-            ValidateString(Property,false, ref errors);
-            ValidateString(Value, false, ref errors);
+            ValidateString(Property, false, ref errors, true);
+            ValidateString(Value, false, ref errors, true);
             ValidateString(Target, false, ref errors);
-            
+
             return errors == null;
         }
 

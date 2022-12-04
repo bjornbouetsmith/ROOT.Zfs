@@ -9,6 +9,8 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Properties
     public class SetPropertyArgsTest
     {
         [DataRow(PropertyTarget.Pool, "autotrim", "on", "tank", true)]
+        [DataRow(PropertyTarget.Pool, "mycustom:trim:schedule", "1D", "tank", true)]
+        [DataRow(PropertyTarget.Pool, "userobjquota@bbs", "1G", "tank", true)]
 
         [DataRow(PropertyTarget.Pool, null, "on", "tank", false)]
         [DataRow(PropertyTarget.Pool, "", "on", "tank", false)]
