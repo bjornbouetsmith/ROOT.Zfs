@@ -4,13 +4,14 @@ using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Core.Commands
 {
+    /// <summary>
+    /// Contains all command related to datasets.
+    /// </summary>
     internal class DatasetCommands : Commands
     {
         /// <summary>
         /// returns a command to create a dataset
         /// </summary>
-        /// <param name="arguments"></param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">If arguments are not valid or missing</exception>
         internal static IProcessCall Create(DatasetCreationArgs arguments)
         {
@@ -21,6 +22,7 @@ namespace ROOT.Zfs.Core.Commands
             
             return new ProcessCall(WhichZfs, arguments.ToString());
         }
+
         /// <summary>
         /// Returns a command to destroy a dataset
         /// </summary>
@@ -61,11 +63,10 @@ namespace ROOT.Zfs.Core.Commands
 
             return new ProcessCall(WhichZfs, mountArgs.ToString());
         }
+
         /// <summary>
         /// Returns a command to unmount a filesystem or mount point
         /// </summary>
-        /// <param name="unmountArgs">The arguments</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static ProcessCall Unmount(UnmountArgs unmountArgs)
         {

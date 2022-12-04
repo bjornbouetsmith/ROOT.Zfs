@@ -13,6 +13,7 @@ namespace ROOT.Zfs.Core.Commands
         /// <summary>
         /// Returns a command to get a single, many or all properties depending on the values on the args instance
         /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static IProcessCall Get(GetPropertyArgs args)
         {
             if (!args.Validate(out var errors))
@@ -37,6 +38,10 @@ namespace ROOT.Zfs.Core.Commands
             return new ProcessCall(WhichZfs, args.ToString());
         }
 
+        /// <summary>
+        /// Returns a command to set a single property value
+        /// </summary>
+        /// <exception cref="ArgumentException">If arguments are not valid</exception>
         internal static IProcessCall Set(SetPropertyArgs args)
         {
             if (!args.Validate(out var errors))
