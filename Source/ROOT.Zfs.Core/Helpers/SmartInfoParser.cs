@@ -222,10 +222,7 @@ namespace ROOT.Zfs.Core.Helpers
         {
             var attribute = new SmartInfoAttribute();
             var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (int.TryParse(parts[0], out var id))
-            {
-                attribute.Id = id;
-            }
+            attribute.Id = int.Parse(parts[0].Trim());
             attribute.Name = parts[1];
             attribute.RawValue = string.Join(" ", parts.Skip(9));
             attribute.RawLine = line;
