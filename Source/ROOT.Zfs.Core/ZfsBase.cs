@@ -5,18 +5,31 @@ using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Core
 {
-    internal abstract class ZfsBase : IBasicZfs
+    /// <inheritdoc />
+    public abstract class ZfsBase : IBasicZfs
     {
         private readonly IProcessCall _remoteConnection;
 
+        /// <summary>
+        /// Creates bas
+        /// </summary>
+        /// <param name="remoteConnection"></param>
         protected ZfsBase(IProcessCall remoteConnection)
         {
             _remoteConnection = remoteConnection;
         }
 
+        /// <inheritdoc />
         public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
+        /// <inheritdoc />
         public bool RequiresSudo { get; set; } = false;
 
+        /// <summary>
+        /// Builds a command so any settings are applied correctly
+        /// </summary>
+        /// <param name="current">The current command to modify if required</param>
+        /// <returns>The command built</returns>
         protected IProcessCall BuildCommand(IProcessCall current)
         {
             // First use any remote connection

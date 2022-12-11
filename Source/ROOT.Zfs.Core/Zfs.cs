@@ -11,7 +11,7 @@ using ROOT.Zfs.Public.Data.Smart;
 namespace ROOT.Zfs.Core
 {
     /// <inheritdoc cref="IZfs" />
-    internal class Zfs : ZfsBase, IZfs
+    public class Zfs : ZfsBase, IZfs
     {
         /// <summary>
         /// Creates an instance of the Zfs class.
