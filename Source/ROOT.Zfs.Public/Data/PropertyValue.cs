@@ -8,6 +8,11 @@ namespace ROOT.Zfs.Public.Data
     public class PropertyValue
     {
         /// <summary>
+        /// The name of the dataset or pool
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// The name of the property
         /// </summary>
         public string Property { get; set; }

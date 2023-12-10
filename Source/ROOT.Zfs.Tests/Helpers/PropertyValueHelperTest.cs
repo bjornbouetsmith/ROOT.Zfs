@@ -8,7 +8,6 @@ namespace ROOT.Zfs.Tests.Helpers
     [TestClass]
     public class PropertyValueHelperTest
     {
-
         [TestMethod]
         public void ValidFormatShouldParse()
         {
@@ -17,6 +16,7 @@ namespace ROOT.Zfs.Tests.Helpers
             Assert.AreEqual("on", value.Value);
             Assert.AreEqual("atime", value.Property); 
             Assert.AreEqual("default", value.Source);
+            Assert.AreEqual("tank", value.Name);
         }
 
         [TestMethod]
