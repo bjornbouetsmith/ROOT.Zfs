@@ -33,14 +33,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.1.5
       with:
         token: ${{ secrets.BUILD_SVC_PAT }}
     - name: Validate user
       if: ${{ github.triggering_actor != 'bjornbouetsmith' }}
       run: exit 1
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4.0.0
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
