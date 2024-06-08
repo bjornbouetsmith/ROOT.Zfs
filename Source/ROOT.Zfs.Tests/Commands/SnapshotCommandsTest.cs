@@ -41,7 +41,7 @@ namespace ROOT.Zfs.Tests.Commands
         }
 
 
-        [DataRow("tank/myds", "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t snapshot tank/myds", false)]
+        [DataRow("tank/myds", "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t snapshot tank/myds", false)]
         [DataRow("tank/myds && rm -rf /", null, true)]
         [TestMethod]
         public void ListSnapshotsTest(string dataset, string expectedCommand, bool expectException)

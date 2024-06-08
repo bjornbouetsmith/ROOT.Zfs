@@ -9,22 +9,22 @@ namespace ROOT.Zfs.Tests.Commands
     [TestClass]
     public class CommandsTest
     {
-        [DataRow(DatasetTypes.None, "", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
-        [DataRow(DatasetTypes.None, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
-        [DataRow(DatasetTypes.None, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")]
-        [DataRow(DatasetTypes.None, "tank%2Fmyds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds")] //test url encoded
+        [DataRow(DatasetTypes.None, "", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
+        [DataRow(DatasetTypes.None, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
+        [DataRow(DatasetTypes.None, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")]
+        [DataRow(DatasetTypes.None, "tank%2Fmyds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")] //test url encoded
 
-        [DataRow(DatasetTypes.Snapshot, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t snapshot")]
+        [DataRow(DatasetTypes.Snapshot, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot tank/myds")]
+        [DataRow(DatasetTypes.Snapshot, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot")]
 
-        [DataRow(DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark tank/myds")]
-        [DataRow(DatasetTypes.Bookmark, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark")]
+        [DataRow(DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark tank/myds")]
+        [DataRow(DatasetTypes.Bookmark, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark")]
 
-        [DataRow(DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t volume tank/myds")]
-        [DataRow(DatasetTypes.Volume, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t volume")]
+        [DataRow(DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume tank/myds")]
+        [DataRow(DatasetTypes.Volume, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume")]
 
-        [DataRow(DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds")]
-        [DataRow(DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem")]
+        [DataRow(DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds")]
+        [DataRow(DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem")]
         [TestMethod]
         public void ListCommandTest(DatasetTypes types, string root, string expectedCommand)
         {
@@ -33,10 +33,10 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot,volume tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t bookmark,filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark,filesystem,snapshot,volume tank/myds")]
         [TestMethod]
         public void ListCommandCombinationsTest(DatasetTypes types, string root, string expectedCommand)
         {
@@ -45,10 +45,10 @@ namespace ROOT.Zfs.Tests.Commands
             Assert.AreEqual(expectedCommand, command.Arguments);
         }
 
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,snapshot tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,snapshot")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,snapshot,volume tank/myds")]
-        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t bookmark,filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot,volume tank/myds")]
+        [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t bookmark,filesystem,snapshot,volume tank/myds")]
         [TestMethod]
         public void ListWithChildrenTest(DatasetTypes types, string root, string expectedCommand)
         {

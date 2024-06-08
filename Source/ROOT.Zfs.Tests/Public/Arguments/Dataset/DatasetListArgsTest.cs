@@ -22,11 +22,11 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset
         }
 
 
-        [DataRow("tank", default, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank")]
-        [DataRow("tank", DatasetTypes.Filesystem, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank")]
-        [DataRow("tank", default, true, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem,volume tank")]
-        [DataRow(null, default, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")]
-        [DataRow(null, default, true, "list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume")] // include children have no effect when a root is not specified
+        [DataRow("tank", default, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank")]
+        [DataRow("tank", DatasetTypes.Filesystem, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank")]
+        [DataRow("tank", default, true, "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,volume tank")]
+        [DataRow(null, default, false, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
+        [DataRow(null, default, true, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")] // include children have no effect when a root is not specified
         [TestMethod]
         public void ToStringTest(string root, DatasetTypes types, bool includeChildren, string expected)
         {

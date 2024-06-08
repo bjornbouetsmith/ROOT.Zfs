@@ -21,9 +21,9 @@ namespace ROOT.Zfs.Tests.Helpers
         }
 
         [TestMethod]
-        public void ParseDataSetTest()
+        public void ParseDataSetTestNotAClone()
         {
-            var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
+            var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata   -";
 
             var dataset = DatasetHelper.ParseLine(stdOut);
             Console.WriteLine(dataset.Dump(new JsonFormatter()));
@@ -32,6 +32,22 @@ namespace ROOT.Zfs.Tests.Helpers
             Assert.AreEqual("378.3M", dataset.Available.ToString());
             Assert.AreEqual("3.2T", dataset.Refer.ToString());
             Assert.AreEqual("/tank/kubedata", dataset.Mountpoint);
+            Assert.IsFalse(dataset.IsClone);
+        }
+
+        [TestMethod]
+        public void ParseDataSetTestAClone()
+        {
+            var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata   tank/kubedata@1234";
+
+            var dataset = DatasetHelper.ParseLine(stdOut);
+            Console.WriteLine(dataset.Dump(new JsonFormatter()));
+            Assert.AreEqual("tank/kubedata", dataset.DatasetName);
+            Assert.AreEqual("675.3M", dataset.Used.ToString());
+            Assert.AreEqual("378.3M", dataset.Available.ToString());
+            Assert.AreEqual("3.2T", dataset.Refer.ToString());
+            Assert.AreEqual("/tank/kubedata", dataset.Mountpoint);
+            Assert.IsTrue(dataset.IsClone);
         }
 
         [TestMethod]
@@ -45,7 +61,7 @@ namespace ROOT.Zfs.Tests.Helpers
         [TestMethod]
         public void ParseUnknownDatasetTypeShouldNotThrow()
         {
-            var stdOut = @"link      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata";
+            var stdOut = @"link      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata   -";
 
             var dataset = DatasetHelper.ParseLine(stdOut);
 
