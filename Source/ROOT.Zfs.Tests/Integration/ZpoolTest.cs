@@ -99,7 +99,7 @@ namespace ROOT.Zfs.Tests.Integration
         public void NonExistingPoolStatus()
         {
             var zp = GetZpool();
-            var ex = Assert.ThrowsException<ProcessCallException>(()=>zp.Status(new PoolStatusArgs{PoolName="A"+Guid.NewGuid().ToString()}));
+            var ex = Assert.ThrowsException<ProcessCallException>(() => zp.Status(new PoolStatusArgs { PoolName = "A" + Guid.NewGuid().ToString() }));
             Console.WriteLine(ex.Message);
         }
 
@@ -549,6 +549,18 @@ namespace ROOT.Zfs.Tests.Integration
 
             Console.WriteLine(status.Dump(new JsonFormatter()));
             Assert.AreEqual(State.Online, status.State);
+
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public void GetPoolInfosTest()
+        {
+            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+            var zp = GetZpool();
+
+            var infos = zp.List();
+            Console.WriteLine(infos.Dump(new JsonFormatter()));
+            Assert.IsTrue(infos.Count > 0, "No pools found, this is a bug");
 
         }
     }
