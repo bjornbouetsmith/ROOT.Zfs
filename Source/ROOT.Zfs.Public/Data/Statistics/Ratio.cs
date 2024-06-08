@@ -32,7 +32,7 @@ namespace ROOT.Zfs.Public.Data.Statistics
         {
             if (!double.TryParse(ratio, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
             {
-                Trace.WriteLine($"Could not parse '{ratio}' into a double");
+                Trace.TraceWarning($"Could not parse '{ratio}' into a double");
             }
             Value = value;
         }

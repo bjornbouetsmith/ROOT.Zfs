@@ -55,7 +55,7 @@ namespace ROOT.Zfs.Core.Helpers
 
             if (!Enum.TryParse<DatasetTypes>(parts[0], true, out var datasetType))
             {
-                Trace.WriteLine($"Could not parse:'{parts[0]}' into a valid dataset type - this is probably a bug - or a new unsupported dataset type has been added");
+                Trace.TraceWarning($"Could not parse:'{parts[0]}' into a valid dataset type - this is probably a bug - or a new unsupported dataset type has been added");
             }
 
             var dataset = new Dataset

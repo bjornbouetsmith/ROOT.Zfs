@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Core.Helpers
             catch (Exception e)
             {
                 info.ParsingFailed = true;
-                Trace.WriteLine(e);
+                Trace.TraceWarning("Failed parsing smart info "+ e.ToString());
             }
             return info;
         }
@@ -203,7 +203,7 @@ namespace ROOT.Zfs.Core.Helpers
             catch (Exception e)
             {
                 section.ParsingFailed = true;
-                Trace.WriteLine(e);
+                Trace.TraceWarning("Failed parsing smart data section, section will be empty: " + e.ToString());
             }
 
             return section;

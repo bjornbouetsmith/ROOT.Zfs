@@ -31,7 +31,7 @@ namespace ROOT.Zfs.Public.Data.Statistics
         {
             if (!double.TryParse(percentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
             {
-                Trace.WriteLine($"Could not parse '{percentage}' into a double");
+                Trace.TraceWarning($"Could not parse '{percentage}' into a double");
             }
             Value = value;
         }

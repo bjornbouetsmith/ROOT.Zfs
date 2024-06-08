@@ -115,7 +115,7 @@ namespace ROOT.Zfs.Core
 
             if (response.Success)
             {
-                Trace.WriteLine($"{binary}={response.StdOut.Trim()}");
+                Trace.TraceInformation($"{binary}={response.StdOut.Trim()}");
                 return response.StdOut.Trim();
             }
 

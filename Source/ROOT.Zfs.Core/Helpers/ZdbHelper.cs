@@ -25,7 +25,7 @@ namespace ROOT.Zfs.Core.Helpers
                 return version;
             }
 
-            Trace.WriteLine($"Could not parse '{stdOut}' into a version");
+            Trace.TraceError($"Could not parse '{stdOut}' into a version");
             return 0;
         }
         /// <summary>

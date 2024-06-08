@@ -46,7 +46,7 @@ namespace ROOT.Zfs.Core.Helpers
 
                 if (parts.Length < expectedColumns)
                 {
-                    Trace.WriteLine($"Error parsing line:'{line}' - data is missing");
+                    Trace.TraceWarning($"Error parsing line:'{line}' - data is missing");
                     continue;
                 }
 

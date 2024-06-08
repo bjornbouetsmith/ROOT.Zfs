@@ -36,7 +36,7 @@ namespace ROOT.Zfs.Public.Data
         {
             if (!ulong.TryParse(bytes, out var b))
             {
-                Trace.WriteLine($"Cannnot parse {bytes} into a number");
+                Trace.TraceWarning($"Cannnot parse {bytes} into a number");
             }
             Bytes = b;
         }
