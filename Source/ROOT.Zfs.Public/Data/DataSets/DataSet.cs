@@ -34,5 +34,12 @@
         /// Mountpoint of the dataset if any
         /// </summary>
         public string Mountpoint { get; set; }
+
+        /// <summary>
+        /// Whether or not this dataset is a clone
+        /// Determined by inspecting the dataset property 'origin'
+        /// If origin is different from '-' its a clone
+        /// </summary>
+        public bool IsClone { get; set; }
     }
 }

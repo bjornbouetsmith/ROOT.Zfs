@@ -39,7 +39,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <summary>
         /// Parses a single line and returns a Dataset object.
         /// Only supports the format that is returned from
-        /// 'zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint'
+        /// 'zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin'
         /// </summary>
         /// <param name="line">The single line to parse</param>
         /// <returns>A dataset object</returns>
@@ -48,9 +48,9 @@ namespace ROOT.Zfs.Core.Helpers
         {
             var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (parts.Length != 7)
+            if (parts.Length != 8)
             {
-                throw new FormatException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint from command 'zfs list'");
+                throw new FormatException($"{line} could not be parsed, expected 8 parts, got: {parts.Length} - requires an output of type,creation,name,used,refer,avail,mountpoint,origin from command 'zfs list'");
             }
 
             if (!Enum.TryParse<DatasetTypes>(parts[0], true, out var datasetType))
@@ -65,7 +65,8 @@ namespace ROOT.Zfs.Core.Helpers
                 Used = new Size(parts[3]),
                 Available = new Size(parts[4]),
                 Refer = new Size(parts[5]),
-                Mountpoint = parts[6]
+                Mountpoint = parts[6],
+                IsClone = parts[7].Equals("-", StringComparison.InvariantCultureIgnoreCase) == false,
             };
 
             return dataset;

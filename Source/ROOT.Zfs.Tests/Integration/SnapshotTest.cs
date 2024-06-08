@@ -5,6 +5,7 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
@@ -18,6 +19,13 @@ namespace ROOT.Zfs.Tests.Integration
         private ISnapshots GetSnapshots()
         {
             var sn = new Snapshots(_remoteProcessCall);
+            sn.RequiresSudo = TestHelpers.RequiresSudo;
+            return sn;
+        }
+
+        private IDatasets GetDatasets()
+        {
+            var sn = new Datasets(_remoteProcessCall);
             sn.RequiresSudo = TestHelpers.RequiresSudo;
             return sn;
         }
@@ -81,15 +89,18 @@ namespace ROOT.Zfs.Tests.Integration
         public void CloneSnapshotTest()
         {
             var sn = GetSnapshots();
+            var ds = GetDatasets();
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
 
             var args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone" };
             sn.Clone(args);
 
-            args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone2",Properties=new[]{new PropertyValue{Property="atime",Value="off"}} };
-            sn.Clone(args);
-
+            var getds = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
+            var datasets = ds.List(getds);
+            var myClone = datasets.FirstOrDefault(d => d.DatasetName == $"{pool.Name}/mysnap_clone");
+            Assert.IsNotNull(myClone);
+            Assert.IsTrue(myClone.IsClone);
         }
     }
 }

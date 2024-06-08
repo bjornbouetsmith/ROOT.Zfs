@@ -21,21 +21,21 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return (LoadBlockDevices(), null);
                 case "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
                     return (LoadDisks(), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume":
                     return (LoadFileSystems(""), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem tank":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank":
                     return (LoadFileSystems("tank"), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem tank/myds":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume tank/myds":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem tank/myds":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint tank/myds":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank/myds":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin tank/myds":
                     return (LoadFileSystems("tank/myds"), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem ungabunga":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint -t filesystem,volume ungabunga":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t filesystem ungabunga":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem ungabunga":
+                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume ungabunga":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem ungabunga":
                     return (null, "cannot open 'ungabunga': dataset does not exist");
                 case "/sbin/zfs get -H":
                     return (null, GetAvailableProperties());
@@ -48,7 +48,7 @@ namespace ROOT.Zfs.Tests.VersionResponses
                     return ("tank/myd	satime	off	local", null);
                 case "/sbin/zfs inherit -rS atime tank/myds":
                     return (null, null);
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint -d 99 -t snapshot tank/myds":
+                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t snapshot tank/myds":
                     return (GetSnapshots(), null);
                 case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
                 case "/sbin/zfs snap tank/myds@20220922211347000-1":
@@ -936,16 +936,16 @@ a user|group|project specifier of one of these forms:
         private static string LoadFileSystems(string contains)
         {
 
-            var content = @"filesystem      1663702213      tank    1111025664      33792   15011878912     /tank
-filesystem      1664632596      tank/45dfe1b7-5e45-496c-b887-dcc9eded8201       24576   24576   15011878912     /tank/45dfe1b7-5e45-496c-b887-dcc9eded8201
-filesystem      1663777408      tank/myds       292864  25600   15011878912     /tank/myds
-filesystem      1664209129      tank/myds/ROOT  75776   25600   15011878912     /tank/myds/ROOT
-filesystem      1664210834      tank/myds/ROOT/child    50176   25600   15011878912     /tank/myds/ROOT/child
-filesystem      1664210840      tank/myds/ROOT/child/granchild  24576   24576   15011878912     /tank/myds/ROOT/child/granchild
-filesystem      1663946563      tank/myds34     24576   24576   524263424       /tank/myds34
-filesystem      1663956157      tank/myds37     24576   24576   15011878912     /tank/myds37
-filesystem      1663946343      tank/myds44     24576   24576   15011878912     /tank/myds44
-filesystem      1663781153      tank/mytestds2  24576   24576   1073717248      /tank/mytestds2";
+            var content = @"filesystem      1663702213      tank    1111025664      33792   15011878912     /tank     -
+filesystem      1664632596      tank/45dfe1b7-5e45-496c-b887-dcc9eded8201       24576   24576   15011878912     /tank/45dfe1b7-5e45-496c-b887-dcc9eded8201     -
+filesystem      1663777408      tank/myds       292864  25600   15011878912     /tank/myds     -
+filesystem      1664209129      tank/myds/ROOT  75776   25600   15011878912     /tank/myds/ROOT     -
+filesystem      1664210834      tank/myds/ROOT/child    50176   25600   15011878912     /tank/myds/ROOT/child     -
+filesystem      1664210840      tank/myds/ROOT/child/granchild  24576   24576   15011878912     /tank/myds/ROOT/child/granchild     -
+filesystem      1663946563      tank/myds34     24576   24576   524263424       /tank/myds34     -
+filesystem      1663956157      tank/myds37     24576   24576   15011878912     /tank/myds37     -
+filesystem      1663946343      tank/myds44     24576   24576   15011878912     /tank/myds44     -
+filesystem      1663781153      tank/mytestds2  24576   24576   1073717248      /tank/mytestds2     -";
             return string.Join("\r\n", content.Split('\r', '\n').Where(l => l.Contains(contains)));
         }
 

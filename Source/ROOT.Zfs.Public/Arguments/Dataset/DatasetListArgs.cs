@@ -50,7 +50,7 @@ namespace ROOT.Zfs.Public.Arguments.Dataset
                 args.Append('r');
             }
 
-            args.Append(" -o type,creation,name,used,refer,avail,mountpoint");
+            args.Append(" -o type,creation,name,used,refer,avail,mountpoint,origin");
             
             if (IncludeChildren && !string.IsNullOrWhiteSpace(Root)) // include children only makes sense if you have a root, and zfs does not care if you add -d 99 or not if you do not provide a root
             {
