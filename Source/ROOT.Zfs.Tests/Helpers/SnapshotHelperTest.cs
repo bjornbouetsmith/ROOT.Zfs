@@ -8,16 +8,16 @@ namespace ROOT.Zfs.Tests.Helpers
     [TestClass]
     public class SnapshotHelperTest
     {
-        private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -";
+        private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -   -";
 
         private const string JunkLine = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600";
-        private const string JunkLine2 = @"snapshot        2022-05-05      tank/myds@20220925162707        40G   80G   -       -";
+        private const string JunkLine2 = @"snapshot        2022-05-05      tank/myds@20220925162707        40G   80G   -       -   -";
 
         [TestMethod]
         public void BadInputTest1()
         {
             var ex = Assert.ThrowsException<FormatException>(() => SnapshotHelper.FromString(JunkLine));
-            Assert.IsTrue(ex.Message.Contains("expected 7 parts"));
+            Assert.IsTrue(ex.Message.Contains("expected 8 parts"));
 
         }
 
