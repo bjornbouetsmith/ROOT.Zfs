@@ -161,7 +161,7 @@ config:
                 {
                     break;
                 }
-            } while (trimmed.StartsWith("/") && currentIndex <= lines.Length);
+            } while (trimmed.StartsWith('/') && currentIndex <= lines.Length);
 
             return vdev;
         }

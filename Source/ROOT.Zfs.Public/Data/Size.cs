@@ -123,11 +123,11 @@ namespace ROOT.Zfs.Public.Data
                 return new Size();
             }
 
-            if (!sizeString.EndsWith("B")
-                && !sizeString.EndsWith("K")
-                && !sizeString.EndsWith("M")
-                && !sizeString.EndsWith("G")
-                && !sizeString.EndsWith("T"))
+            if (!sizeString.EndsWith('B')
+                && !sizeString.EndsWith('K')
+                && !sizeString.EndsWith('M')
+                && !sizeString.EndsWith('G')
+                && !sizeString.EndsWith('T'))
             {
                 throw new ArgumentException("size must be a string that ends in either B, K, M, G, T");
             }

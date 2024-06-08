@@ -649,7 +649,7 @@ Offline data collection status:  (0x03) Offline data collection activity
             var stdOut = @"Smart data not supported";
 
             var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-            Assert.AreEqual(true, info.ParsingFailed);
+            Assert.IsTrue(info.ParsingFailed);
         }
 
         [TestMethod]
@@ -679,7 +679,7 @@ SMART support is: Enabled
 === START OF READ SMART DATA SECTION ===
 SMART Attributes Data Structure revision number: 17";
             var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-            Assert.AreEqual(true, info.ParsingFailed);
+            Assert.IsTrue(info.ParsingFailed);
         }
 
         [TestMethod]
@@ -709,7 +709,7 @@ SMART support is: Enabled
 === START OF READ SMART DATA SECTION ===SMART overall-health self-assessment test result:PASSEDSMART Attributes Data Structure revision number: 17
 ";
             var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-            Assert.AreEqual(true, info.ParsingFailed);
+            Assert.IsTrue(info.ParsingFailed);
         }
 
         [TestMethod]

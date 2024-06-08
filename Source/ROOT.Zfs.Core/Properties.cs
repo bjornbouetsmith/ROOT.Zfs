@@ -53,7 +53,7 @@ namespace ROOT.Zfs.Core
             var getArgs = new GetPropertyArgs { PropertyTarget = args.PropertyTarget, Property = args.Property, Target = args.Target };
 
             // Should be safe - if not, then the set above would have failed - if we could not find a property to set
-            return Get(getArgs).First();
+            return Get(getArgs)[0];
         }
 
         /// <inheritdoc />
