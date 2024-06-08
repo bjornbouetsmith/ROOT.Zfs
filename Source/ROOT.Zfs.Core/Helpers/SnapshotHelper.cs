@@ -9,16 +9,16 @@ namespace ROOT.Zfs.Core.Helpers
         /// <summary>
         /// Expects one line of output from the zfs list -t snapshot command
         /// With the following:
-        /// 'zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint'
+        /// 'zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin'
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
         internal static Snapshot FromString(string line)
         {
             var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 7)
+            if (parts.Length != 8)
             {
-                throw new FormatException($"{line} could not be parsed, expected 7 parts, got: {parts.Length} - requires an output of  type,creation,name,used,refer,avail,mountpoint to be used for snapshot list");
+                throw new FormatException($"{line} could not be parsed, expected 8 parts, got: {parts.Length} - requires an output of  type,creation,name,used,refer,avail,mountpoint,origin to be used for snapshot list");
             }
 
             var snapshot = new Snapshot();
