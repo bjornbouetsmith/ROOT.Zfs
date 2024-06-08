@@ -66,7 +66,7 @@ namespace ROOT.Zfs.Core.Helpers
                 Available = new Size(parts[4]),
                 Refer = new Size(parts[5]),
                 Mountpoint = parts[6],
-                IsClone = parts[7].Equals("-", StringComparison.InvariantCultureIgnoreCase) == false,
+                IsClone = !parts[7].Equals("-", StringComparison.InvariantCultureIgnoreCase),
             };
 
             return dataset;
