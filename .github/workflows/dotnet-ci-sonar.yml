@@ -78,10 +78,11 @@ jobs:
         dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Attach coverage xml
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: coverage-reports
         path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover*.xml
+        archive: false
     - name: Analyze with sonarcloud
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
