@@ -675,7 +675,7 @@ tank2   16642998272     107520  16642890752     -       -       7.30       6.50 
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                var filtered = lines.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Where(l => l.StartsWith(filter));
+                var filtered = lines.Split(Core.Helpers.Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Where(l => l.StartsWith(filter));
                 return string.Join("\r\n", filtered);
             }
 

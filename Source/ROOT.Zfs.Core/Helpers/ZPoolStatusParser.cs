@@ -46,7 +46,7 @@ config:
             try
             {
                 var poolStatus = new PoolStatus();
-                var lines = input.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = input.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries);
 
                 var poolLine = lines[currentIndex++];
                 var poolParts = poolLine.Split(':');
@@ -113,7 +113,7 @@ config:
         private static void ParseVDevs(PoolStatus status, string[] lines, ref int currentIndex)
         {
             // first line is the pool status itself
-            var parts = lines[currentIndex++].Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = lines[currentIndex++].Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
             status.Pool.State = ParseState(parts[1]);
             status.Pool.Errors = ParseErrors(parts);
             status.Pool.VDevs = new List<VDev>();
@@ -179,11 +179,11 @@ config:
 
         private static (string Name, State State, Errors Errors) ParseDevLine(string[] lines, ref int currentIndex)
         {
-            var parts = lines[currentIndex++].Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = lines[currentIndex++].Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
             var name = parts[0].Trim();
             if (name == "spares" && parts.Length == 1)
             {
-                return (name, State.Available, default);
+                return (name, State.Available, null);
             }
 
             var state = ParseState(parts[1]);

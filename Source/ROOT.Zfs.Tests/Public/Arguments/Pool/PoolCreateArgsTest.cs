@@ -46,13 +46,12 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             {
                 PoolName = "tank",
                 VDevs =
-                    new[]
-                    {
-                        new VDevCreationArgs
+                [
+                    new VDevCreationArgs
                         {
                             Type= VDevCreationType.Mirror,
                         }
-                    }
+                ]
             };
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);
@@ -69,14 +68,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
             {
                 PoolName = "tank",
                 VDevs =
-                    new []
-                    { 
-                        new VDevCreationArgs
+                [
+                    new VDevCreationArgs
                         {
                             Type= VDevCreationType.Mirror,
-                            Devices = new[]{"/dev/sda"}
+                            Devices = ["/dev/sda"]
                         }
-                    }
+                ]
             };
             var valid = args.Validate(out var errors);
             Assert.IsFalse(valid);

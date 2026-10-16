@@ -77,7 +77,7 @@ namespace ROOT.Zfs.Core.Helpers
             var endIndex = stdOut.IndexOf(end, startIndex, StringComparison.InvariantCulture);
 
             var infoSection = stdOut[startIndex..endIndex].Trim();
-            var lines = infoSection.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = infoSection.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
 
@@ -211,7 +211,7 @@ namespace ROOT.Zfs.Core.Helpers
 
         private static IEnumerable<SmartInfoAttribute> ParseSmartInfoAttributes(string stdOut)
         {
-            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+            foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Skip(1))
             {
                 yield return ParseAttributeLine(line);
 

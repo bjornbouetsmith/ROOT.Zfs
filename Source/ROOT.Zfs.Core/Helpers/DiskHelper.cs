@@ -43,7 +43,7 @@ namespace ROOT.Zfs.Core.Helpers
         internal static HashSet<string> BlockDevicesFromStdOutput(string stdOutput)
         {
             HashSet<string> devices = new HashSet<string>();
-            foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in stdOutput.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 var device = line.Split(' ')[0];
                 devices.Add(device.Trim());

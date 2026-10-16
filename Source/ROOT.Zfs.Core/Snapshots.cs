@@ -24,7 +24,7 @@ namespace ROOT.Zfs.Core
             var response = pc.LoadResponse(true);
             var list = new List<Snapshot>();
 
-            foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(SnapshotHelper.FromString(line));
             }

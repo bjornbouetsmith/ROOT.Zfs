@@ -44,7 +44,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(Commands.ZfsCommands.GetVersion());
             var response = pc.LoadResponse(true);
 
-            return new VersionInfo { Lines = response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) };
+            return new VersionInfo { Lines = response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries) };
         }
 
         /// <inheritdoc />
@@ -58,7 +58,7 @@ namespace ROOT.Zfs.Core
             var pc = BuildCommand(Commands.Commands.ListDisks());
             var response = pc.LoadResponse(true);
 
-            foreach (var line in response.StdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 yield return DiskHelper.FromString(line, blockDevices);
             }

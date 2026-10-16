@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
@@ -14,7 +13,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
-        private IZPool GetZpool()
+        private ZPool GetZpool()
         {
             return new ZPool(_remoteProcessCall);
         }
@@ -64,7 +63,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         [TestMethod, TestCategory("FakeIntegration")]
         public void ZpoolStatusTest()
         {
-            IZfs zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = new Core.Zfs(_remoteProcessCall);
             var arg = new PoolStatusArgs { PoolName = "tank" };
             var status = zfs.Pool.Status(arg);
 
@@ -103,14 +102,14 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var pool = zp.Create(new PoolCreateArgs
             {
                 PoolName = "mytest",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new()
                     {
                         Type = VDevCreationType.Mirror,
-                        Devices = new[] { "/dev/sda", "/dev/sdb" }
+                        Devices = ["/dev/sda", "/dev/sdb"]
                     }
-                }
+                ]
             });
             Assert.IsNotNull(pool);
             zp.Destroy(new PoolDestroyArgs { PoolName = "mytest" });
@@ -185,7 +184,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
         public void IOStatTest()
         {
             var zp = GetZpool();
-            var args = new PoolIOStatsArgs { PoolName = "tank", Devices = new[]{"/dev/sda"} };
+            var args = new PoolIOStatsArgs { PoolName = "tank", Devices = ["/dev/sda"] };
             var stats = zp.IOStats(args);
             Console.WriteLine(stats.Dump(new JsonFormatter()));
             var commands = _remoteProcessCall.GetCommandsInvoked();
@@ -211,12 +210,12 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             zp.Create(new PoolCreateArgs
             {
                 PoolName = "mytest",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new DraigVDevCreationArgs
                     {
                         Type = VDevCreationType.DRaid1,
-                        Devices = new[] { "/dev/sda", "/dev/sdb","/dev/sdc", "/dev/sdd" },
+                        Devices = ["/dev/sda", "/dev/sdb","/dev/sdc", "/dev/sdd"],
                         DraidArgs = new DraidArgs
                         {
                             Spares=1,
@@ -224,7 +223,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
                             Children=4
                         }
                     }
-                }
+                ]
             });
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(2, commands.Count);
@@ -329,7 +328,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             {
                 PoolName = "tank",
                 Force = true,
-                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sda", "/dev/sdb" } } },
+                VDevs = [new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sda", "/dev/sdb"] }],
             };
 
 

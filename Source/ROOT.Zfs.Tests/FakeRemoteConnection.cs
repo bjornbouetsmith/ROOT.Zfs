@@ -10,7 +10,7 @@ namespace ROOT.Zfs.Tests
     {
         private readonly string _zfsVersion;
         private readonly IVersionResponse _responses;
-        private readonly List<string> _commandsInvoked = new ();
+        private readonly List<string> _commandsInvoked = [];
         public FakeRemoteConnection(string zfsVersion)
         {
             _zfsVersion = zfsVersion;

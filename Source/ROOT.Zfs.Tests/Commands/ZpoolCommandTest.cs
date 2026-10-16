@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualBasic.FileIO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments.Pool;
@@ -80,15 +79,15 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new PoolCreateArgs
             {
                 PoolName = "tank3",
-                VDevs = new[]
-                    {
-                        new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
-                        new VDevCreationArgs { Type = VDevCreationType.Cache, Devices = new[] { "/dev/sde" } },
-                        new VDevCreationArgs { Type = VDevCreationType.Log, Devices = new[] { "/dev/sdf" } },
-                    },
+                VDevs =
+                [
+                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sdc", "/dev/sdd"] },
+                        new VDevCreationArgs { Type = VDevCreationType.Cache, Devices = ["/dev/sde"] },
+                        new VDevCreationArgs { Type = VDevCreationType.Log, Devices = ["/dev/sdf"] }
+                ],
                 MountPoint = "/mnt/tank3",
-                PoolProperties = new[] { new PropertyValue { Property = "ashift", Value = "12" } },
-                FileSystemProperties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
+                PoolProperties = [new PropertyValue { Property = "ashift", Value = "12" }],
+                FileSystemProperties = [new PropertyValue { Property = "atime", Value = "off" }]
             };
             var command = ZpoolCommands.Create(args);
             Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
@@ -103,10 +102,10 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new PoolCreateArgs
             {
                 PoolName = nameNull ? null : "",
-                VDevs = new[]
-                {
-                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc", "/dev/sdd" } },
-                }
+                VDevs =
+                [
+                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sdc", "/dev/sdd"] }
+                ]
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Create(args));
@@ -119,10 +118,10 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new PoolCreateArgs
             {
                 PoolName = "tank2",
-                VDevs = new[]
-                {
-                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "/dev/sdc" } },
-                }
+                VDevs =
+                [
+                    new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sdc"] }
+                ]
             };
 
             var ex = Assert.ThrowsException<ArgumentException>(() => ZpoolCommands.Create(args));
@@ -344,7 +343,7 @@ namespace ROOT.Zfs.Tests.Commands
                 NewDevice = "/dev/sdc",
                 Force = true,
                 RestoreSequentially = true,
-                PropertyValues = new[] { new PropertyValue { Property = "ashift", Value = "12" } }
+                PropertyValues = [new PropertyValue { Property = "ashift", Value = "12" }]
             };
             var stringVer = args.ToString();
             if (!valid)
@@ -374,7 +373,7 @@ namespace ROOT.Zfs.Tests.Commands
                 NewDevice = "/dev/sdc",
                 Force = true,
                 RestoreSequentially = true,
-                PropertyValues = new[] { new PropertyValue { Property = "ashift", Value = "12" } }
+                PropertyValues = [new PropertyValue { Property = "ashift", Value = "12" }]
             };
             var stringVer = args.ToString();
 
@@ -400,7 +399,7 @@ namespace ROOT.Zfs.Tests.Commands
             var args = new PoolAddArgs
             {
                 PoolName = valid ? "tank" : null,
-                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { "disk1", "disk2" } } },
+                VDevs = [new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["disk1", "disk2"] }],
             };
             if (!valid)
             {

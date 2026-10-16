@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Commands;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
@@ -15,7 +14,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
-        private ISnapshots GetSnapshots()
+        private Snapshots GetSnapshots()
         {
             return new Snapshots(_remoteProcessCall);
         }
@@ -119,7 +118,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             var args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone" };
             sn.Clone(args);
 
-            args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone2", Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } } };
+            args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone2", Properties = [new PropertyValue { Property = "atime", Value = "off" }] };
             sn.Clone(args);
             var commands = _remoteProcessCall.GetCommandsInvoked();
             Assert.AreEqual(3, commands.Count);

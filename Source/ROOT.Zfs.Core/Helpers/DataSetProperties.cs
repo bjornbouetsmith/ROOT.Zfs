@@ -9,7 +9,7 @@ namespace ROOT.Zfs.Core.Helpers
         internal static IList<PropertyValue> FromStdOutput(string stdOutput)
         {
             var list = new List<PropertyValue>();
-            foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in stdOutput.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(PropertyValueHelper.FromString(line));
             }

@@ -28,7 +28,7 @@ namespace ROOT.Zfs.Core.Helpers
         public static IList<Dataset> ParseStdOut(string stdOut)
         {
             var list = new List<Dataset>();
-            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(ParseLine(line));
             }
@@ -46,7 +46,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <exception cref="ArgumentException">If the line is not in the correct format</exception>
         public static Dataset ParseLine(string line)
         {
-            var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = line.Split( Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
 
             if (parts.Length != 8)
             {

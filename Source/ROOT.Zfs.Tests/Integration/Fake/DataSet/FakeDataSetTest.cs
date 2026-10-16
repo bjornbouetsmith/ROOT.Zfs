@@ -61,7 +61,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             {
                 DatasetName = "tank/myds",
                 Type = DatasetTypes.Filesystem,
-                Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
+                Properties = [new PropertyValue { Property = "atime", Value = "off" }]
 
             };
             var dataset = ds.Create(args);
@@ -76,7 +76,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
             {
                 DatasetName = "tank/myds",
                 Type = DatasetTypes.Bookmark,
-                Properties = new[] { new PropertyValue { Property = "atime", Value = "off" } }
+                Properties = [new PropertyValue { Property = "atime", Value = "off" }]
 
             };
             Assert.ThrowsException<ArgumentException>(() => ds.Create(args));

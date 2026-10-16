@@ -17,7 +17,7 @@ namespace ROOT.Zfs.Core.Helpers
         public static IList<PoolInfo> ParseFromStdOut(string stdOut)
         {
             var list = new List<PoolInfo>();
-            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in stdOut.Split(Constants.LinebreakCharacters, System.StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(ParseLine(line));
             }
@@ -29,7 +29,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// </summary>
         public static PoolInfo ParseLine(string line)
         {
-            var parts = line.Split(new[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries);
+            var parts = line.Split(Constants.WhitespaceCharacters, System.StringSplitOptions.RemoveEmptyEntries);
             var name = parts[0];
             var size = parts[1];
             var alloc = parts[2];

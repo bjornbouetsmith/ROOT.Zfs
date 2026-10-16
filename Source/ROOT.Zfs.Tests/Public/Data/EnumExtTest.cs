@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -7,7 +6,7 @@ using ROOT.Zfs.Public.Data.Pools;
 namespace ROOT.Zfs.Tests.Public.Data
 {
     [TestClass]
-    public class EnumExt
+    public class EnumExtTest
     {
 
         /// <summary>
@@ -16,7 +15,7 @@ namespace ROOT.Zfs.Tests.Public.Data
         [TestMethod]
         public void ReflectionBasedTest()
         {
-            foreach (var type in Enum.GetValues(typeof(VDevCreationType)).OfType<VDevCreationType>())
+            foreach (var type in Enum.GetValues<VDevCreationType>())
             {
                 var s = type.AsString();
                 Console.WriteLine("{0}={1}", type, s);
