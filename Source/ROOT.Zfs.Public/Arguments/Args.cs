@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -22,8 +23,8 @@ namespace ROOT.Zfs.Public.Arguments
         /// </summary>
         protected const string AllowedCharsDefinitionWithAt = "[0-9]|[a-z]|[A-Z]|_|-|/|:|\\.|@";
 
-        private static readonly Regex AllowedChars = new (AllowedCharsDefinition, RegexOptions.Compiled);
-        private static readonly Regex AllowedCharsWithAt = new (AllowedCharsDefinitionWithAt, RegexOptions.Compiled);
+        private static readonly Regex AllowedChars = new(AllowedCharsDefinition, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
+        private static readonly Regex AllowedCharsWithAt = new(AllowedCharsDefinitionWithAt, RegexOptions.Compiled, TimeSpan.FromSeconds(10));
 
         /// <summary>
         /// Gets the command this argument is meant for
@@ -88,7 +89,7 @@ namespace ROOT.Zfs.Public.Arguments
             {
                 return AllowedCharsWithAt.Matches(value).Count == value.Length;
             }
-            
+
             return AllowedChars.Matches(value).Count == value.Length;
         }
 

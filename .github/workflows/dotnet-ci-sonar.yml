@@ -51,7 +51,7 @@ jobs:
 
     - name: Restore dependencies
       env:
-        GITHUB_TOKEN: ${{ secrets. }}  # Needed to get PR information, if any
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
       run: |
         dotnet nuget add source --username ${{ github.triggering_actor }} --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
         dotnet restore Source/ROOT.Zfs.sln
