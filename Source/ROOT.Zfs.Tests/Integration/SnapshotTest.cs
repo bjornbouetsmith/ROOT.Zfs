@@ -4,10 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Arguments.Snapshots;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration
 {
@@ -16,14 +14,14 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private ISnapshots GetSnapshots()
+        private Snapshots GetSnapshots()
         {
             var sn = new Snapshots(_remoteProcessCall);
             sn.RequiresSudo = TestHelpers.RequiresSudo;
             return sn;
         }
 
-        private IDatasets GetDatasets()
+        private Datasets GetDatasets()
         {
             var sn = new Datasets(_remoteProcessCall);
             sn.RequiresSudo = TestHelpers.RequiresSudo;
@@ -81,7 +79,7 @@ namespace ROOT.Zfs.Tests.Integration
             var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
             sn.Destroy(args);
 
-            snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
+            snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix))];
             Assert.AreEqual(0, snaps.Count);
         }
 

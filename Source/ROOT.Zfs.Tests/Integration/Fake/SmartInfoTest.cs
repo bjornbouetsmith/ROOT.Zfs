@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration.Fake
@@ -11,7 +10,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
-        private IZfs GetZfs()
+        private Core.Zfs GetZfs()
         {
             return new Core.Zfs(_remoteProcessCall);
         }
@@ -35,7 +34,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
             foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
             {
                 var info = zfs.GetSmartInfo(disk.Id);
-                if (info.DeviceId.EndsWith("5"))
+                if (info.DeviceId.EndsWith('5'))
                 {
                     // FAKE returns failed status
                     Assert.IsFalse(info.DataSection.Status == "PASSED");

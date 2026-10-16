@@ -20,16 +20,21 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
         [TestMethod]
         public void ValidateTest(string poolName, bool addValidVdev, bool addInvalidDev, bool expectValid)
         {
-            IList<VDevCreationArgs> vdevs = addValidVdev ? new List<VDevCreationArgs>
+            IList<VDevCreationArgs> vdevs = addValidVdev ?
+            [
+
+                new()
+                {
+                    Type = VDevCreationType.Mirror,
+                    Devices = ["a", "b"]
+                }
+            ]
+            : addInvalidDev ? new List<VDevCreationArgs>
             {
                 new() {
                     Type = VDevCreationType.Mirror,
-                    Devices = new []{ "a", "b" } }
-            } : addInvalidDev ? new List<VDevCreationArgs>
-            {
-                new() {
-                    Type = VDevCreationType.Mirror,
-                    Devices = new []{ "a"} }
+                    Devices = ["a"]
+                }
             } : null;
             var args = new PoolAddArgs { PoolName = poolName, VDevs = vdevs };
 
@@ -51,7 +56,8 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 {
                     new() {
                         Type = VDevCreationType.Mirror,
-                        Devices = new []{ "a", "b" } }
+                        Devices = ["a", "b"]
+                    }
                 }
             };
 
@@ -73,7 +79,8 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                 {
                     new() {
                         Type = VDevCreationType.Mirror,
-                        Devices = new []{ "a", "b" } }
+                        Devices = ["a", "b"]
+                    }
                 },
                 PropertyValues = props
             };

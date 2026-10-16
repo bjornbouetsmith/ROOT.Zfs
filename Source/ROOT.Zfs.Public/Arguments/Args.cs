@@ -87,10 +87,10 @@ namespace ROOT.Zfs.Public.Arguments
 
             if (allowAtSign)
             {
-                return AllowedCharsWithAt.Matches(value).Count == value.Length;
+                return AllowedCharsWithAt.Count(value) == value.Length;
             }
 
-            return AllowedChars.Matches(value).Count == value.Length;
+            return AllowedChars.Count(value) == value.Length;
         }
 
         /// <summary>

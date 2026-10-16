@@ -21,7 +21,7 @@ namespace ROOT.Zfs.Core.Helpers
         public static IOStats ParseStdOut(string poolName, string stdOut)
         {
             var stats = new IOStats();
-            var lines = stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            var lines = stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries);
             int index = 0;
             var root = ParseLine(lines[index], index++);
             stats.Pool = poolName;
@@ -72,7 +72,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <exception cref="FormatException"></exception>
         internal static IOStat ParseLine(string line, int index)
         {
-            var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = line.Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
             var ioStat = new IOStat();
             if (parts.Length == 7)
             {

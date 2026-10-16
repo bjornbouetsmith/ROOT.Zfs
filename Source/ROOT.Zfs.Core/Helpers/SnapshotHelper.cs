@@ -15,7 +15,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <returns></returns>
         internal static Snapshot FromString(string line)
         {
-            var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = line.Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length != 8)
             {
                 throw new FormatException($"{line} could not be parsed, expected 8 parts, got: {parts.Length} - requires an output of  type,creation,name,used,refer,avail,mountpoint,origin to be used for snapshot list");

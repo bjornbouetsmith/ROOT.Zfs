@@ -73,7 +73,7 @@ namespace ROOT.Zfs.Core.Helpers
             startIndex += separator.Length;
             var upgradeable = stdOut[startIndex..];
             UpgradeablePool pool = null;
-            foreach (var line in upgradeable.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in upgradeable.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (line[0] == ' ')
                 {

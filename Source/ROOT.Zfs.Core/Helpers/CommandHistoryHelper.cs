@@ -16,7 +16,7 @@ namespace ROOT.Zfs.Core.Helpers
         /// <param name="afterDate">Require that history be after the given date</param>
         internal static IEnumerable<CommandHistory> FromStdOut(string stdOut, int skipLines = 0, DateTime afterDate = default)
         {
-            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Skip(1 + skipLines))
+            foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Skip(1 + skipLines))
             {
                 var dateEnd = line.IndexOf(' ');
 

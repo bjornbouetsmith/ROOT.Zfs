@@ -18,7 +18,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private IZPool GetZpool()
+        private ZPool GetZpool()
         {
             var zp = new ZPool(_remoteProcessCall);
             zp.RequiresSudo = TestHelpers.RequiresSudo;
@@ -106,7 +106,7 @@ namespace ROOT.Zfs.Tests.Integration
         [TestMethod, TestCategory("Integration")]
         public void ZpoolStatusTest()
         {
-            IZfs zfs = new Core.Zfs(_remoteProcessCall);
+            var zfs = new Core.Zfs(_remoteProcessCall);
             using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
             var arg = new PoolStatusArgs { PoolName = testPool.Name };
             var status = zfs.Pool.Status(arg);
@@ -161,14 +161,14 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 PoolName = name,
                 MountPoint = "none",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new()
                     {
                         Type = VDevCreationType.Mirror,
-                        Devices = new[] { disk1, disk2 }
+                        Devices = [disk1, disk2]
                     }
-                }
+                ]
             };
 
             var status = pool.CreatePool(args);
@@ -202,8 +202,8 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 PoolName = name,
                 MountPoint = "none",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new()
                     {
                         Type = type,
@@ -212,11 +212,11 @@ namespace ROOT.Zfs.Tests.Integration
                     new()
                     {
                         Type = VDevCreationType.Spare,
-                        Devices = new[] { disk3 }
+                        Devices = [disk3]
                     }
 
 
-                }
+                ]
             };
 
             var status = pool.CreatePool(args);
@@ -251,8 +251,8 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 PoolName = name,
                 MountPoint = "none",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new DraigVDevCreationArgs()
                     {
                         Type = type,
@@ -264,7 +264,7 @@ namespace ROOT.Zfs.Tests.Integration
                             Children=3+draid
                         }
                     }
-                }
+                ]
             };
 
             var status = pool.CreatePool(args);
@@ -343,7 +343,7 @@ namespace ROOT.Zfs.Tests.Integration
         {
             using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
             var zp = GetZpool();
-            var args = new PoolIOStatsArgs { PoolName = pool.Name, Devices = new[] { pool.Disks[0] } };
+            var args = new PoolIOStatsArgs { PoolName = pool.Name, Devices = [pool.Disks[0]] };
             var stats = zp.IOStats(args);
 
             Console.WriteLine(stats.Dump(new JsonFormatter()));
@@ -444,7 +444,7 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 PoolName = pool.Name,
                 Force = true,
-                VDevs = new[] { new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = new[] { disk1, disk2 } } },
+                VDevs = [new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = [disk1, disk2] }],
             };
 
 
@@ -470,19 +470,19 @@ namespace ROOT.Zfs.Tests.Integration
             {
                 PoolName = name,
                 MountPoint = "none",
-                VDevs = new VDevCreationArgs[]
-                {
+                VDevs =
+                [
                     new()
                     {
                         Type = VDevCreationType.Mirror,
-                        Devices = new[] { disk1, disk2 },
+                        Devices = [disk1, disk2],
                     },
                     new()
                     {
                         Type = VDevCreationType.Mirror,
-                        Devices = new[] { disk3, disk4 }
+                        Devices = [disk3, disk4]
                     }
-                }
+                ]
             };
 
             var status = pool.CreatePool(args);

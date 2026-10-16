@@ -37,7 +37,7 @@ namespace ROOT.Zfs.Core.Helpers
             var result = new List<PoolVersionInfo>();
             PoolVersionInfo info = null;
 
-            foreach (var line in fullStdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in fullStdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (line.StartsWith(' '))
                 {

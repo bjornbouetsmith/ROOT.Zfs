@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Properties;
 
@@ -15,7 +13,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake
     {
         private readonly FakeRemoteConnection _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
-        private IProperties GetProperties()
+        private Properties GetProperties()
         {
             return new Properties(_remoteProcessCall);
         }

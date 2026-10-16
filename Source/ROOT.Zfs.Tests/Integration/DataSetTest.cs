@@ -5,7 +5,6 @@ using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
@@ -16,7 +15,7 @@ namespace ROOT.Zfs.Tests.Integration
     {
         private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
-        private IDatasets GetDataSets()
+        private Datasets GetDataSets()
         {
             var ds = new Datasets(_remoteProcessCall);
             ds.RequiresSudo = TestHelpers.RequiresSudo;
@@ -141,7 +140,7 @@ namespace ROOT.Zfs.Tests.Integration
                 var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
                 var response = dsHelper.Destroy(destroyArgs);
                 Assert.AreEqual(flags, response.Flags);
-                var lines = response.DryRun.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
+                var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
                 Assert.AreEqual(4, lines.Count);
                 Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild"));
                 Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1"));

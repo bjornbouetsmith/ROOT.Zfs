@@ -13,7 +13,7 @@ namespace ROOT.Zfs.Core.Helpers
         {
             bool startParsing = false;
             var list = new List<Property>();
-            foreach (var line in stdOutput.Split(new[] { '\r', '\n' }, StringSplitOptions.None)) // Do not remove blank lines, since it will ruin the logic below
+            foreach (var line in stdOutput.Split(Constants.LinebreakCharacters, StringSplitOptions.None)) // Do not remove blank lines, since it will ruin the logic below
             {
                 // Skip blank lines
                 if (line.Trim().Length == 0)

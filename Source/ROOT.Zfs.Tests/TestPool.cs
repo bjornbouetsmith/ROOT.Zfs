@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -27,12 +26,12 @@ namespace ROOT.Zfs.Tests
             CreateBaseDirectory();
         }
 
-        public List<string> Disks { get; } = new List<string>();
+        public List<string> Disks { get; } = [];
 
         public PoolStatus CreatePool(PoolCreateArgs args)
         {
             _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
-            IZPool zp = new ZPool(_remoteProcessCall);
+            var zp = new ZPool(_remoteProcessCall);
             zp.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
             return zp.Create(args);
         }
@@ -128,14 +127,14 @@ namespace ROOT.Zfs.Tests
                 {
                     PoolName = name,
                     MountPoint = "none",
-                    VDevs = new VDevCreationArgs[]
-                    {
+                    VDevs =
+                    [
                         new()
                         {
                             Type = VDevCreationType.Mirror,
-                            Devices = new[] { disk1, disk2 }
+                            Devices = [disk1, disk2]
                         }
-                    }
+                    ]
                 };
 
                 var status = pool.CreatePool(args);

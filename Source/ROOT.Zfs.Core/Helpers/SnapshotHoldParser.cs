@@ -17,9 +17,9 @@ namespace ROOT.Zfs.Core.Helpers
         internal static IList<SnapshotHold> ParseStdOut(string stdOut)
         {
             var list = new List<SnapshotHold>();
-            foreach (var line in stdOut.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
             {
-                var parts = line.Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = line.Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
                 var snapshot = parts[0];
                 var tag = parts[1];
                 var hold = new SnapshotHold { Snapshot = snapshot, Tag = tag };
