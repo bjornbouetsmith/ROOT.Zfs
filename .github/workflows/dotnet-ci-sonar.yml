@@ -82,7 +82,7 @@ jobs:
       with:
         name: coverage-reports
         path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover*.xml
-        archive: false
+        archive: true
     - name: Analyze with sonarcloud
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
