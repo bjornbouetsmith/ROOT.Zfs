@@ -15,15 +15,16 @@
     <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="altcover" Version="8.5.841" />
-    <PackageReference Include="coverlet.msbuild" Version="3.2.0">
+    <PackageReference Include="altcover" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="coverlet.msbuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
-    <PackageReference Include="ROOT.Shared.Utils.Serialization" Version="1.1.11" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="ROOT.Shared.Utils.Serialization" />
   </ItemGroup>
 
   <ItemGroup>

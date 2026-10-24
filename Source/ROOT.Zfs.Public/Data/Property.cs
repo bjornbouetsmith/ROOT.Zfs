@@ -1,29 +1,28 @@
-﻿namespace ROOT.Zfs.Public.Data
+﻿namespace ROOT.Zfs.Public.Data;
+
+/// <summary>
+/// Represents a property on either a dataset or pool that can be set to a value.
+/// Properties that are readonly will not be represented by this type
+/// </summary>
+public class Property
 {
     /// <summary>
-    /// Represents a property on either a dataset or pool that can be set to a value.
-    /// Properties that are readonly will not be represented by this type
+    /// Creates a new instance of the property class with the given property name and range of valid values
     /// </summary>
-    public class Property
+    public Property(string name, params string[] validValues)
     {
-        /// <summary>
-        /// Creates a new instance of the property class with the given property name and range of valid values
-        /// </summary>
-        public Property(string name, params string[] validValues)
-        {
-            PropertyName = name;
-            ValidValues = validValues;
-        }
-
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        public string PropertyName { get; set; }
-        
-        /// <summary>
-        /// Expected valid values.
-        /// This should not be taken verbatim, but interpreted by a human.
-        /// </summary>
-        public string[] ValidValues { get; }
+        PropertyName = name;
+        ValidValues = validValues;
     }
+
+    /// <summary>
+    /// The name of the property
+    /// </summary>
+    public string PropertyName { get; set; }
+        
+    /// <summary>
+    /// Expected valid values.
+    /// This should not be taken verbatim, but interpreted by a human.
+    /// </summary>
+    public string[] ValidValues { get; }
 }

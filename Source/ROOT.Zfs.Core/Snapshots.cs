@@ -8,117 +8,119 @@ using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Core
+namespace ROOT.Zfs.Core;
+
+internal sealed class Snapshots : ZfsBase, ISnapshots
 {
-    internal class Snapshots : ZfsBase, ISnapshots
+    private readonly ISnapshotCommands _commands;
+
+    public Snapshots(IProcessCall remoteConnection, ISnapshotCommands commands) : base(remoteConnection)
     {
-        public Snapshots(IProcessCall remoteConnection) : base(remoteConnection)
+        _commands = commands;
+    }
+
+    /// <inheritdoc />
+    public IList<Snapshot> List(SnapshotListArgs args)
+    {
+        var pc = BuildCommand(_commands.ListSnapshots(args));
+
+        var response = pc.LoadResponse(true);
+        var list = new List<Snapshot>();
+
+        foreach (var line in response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
         {
+            list.Add(SnapshotHelper.FromString(line));
         }
+        return list;
+    }
 
-        /// <inheritdoc />
-        public IList<Snapshot> List(SnapshotListArgs args)
+    /// <inheritdoc />
+    public void Destroy(SnapshotDestroyArgs args)
+    {
+        if (args.IsExactName)
         {
-            var pc = BuildCommand(SnapshotCommands.ListSnapshots(args));
+            var pc = BuildCommand(_commands.DestroySnapshot(args));
 
-            var response = pc.LoadResponse(true);
-            var list = new List<Snapshot>();
+            pc.LoadResponse(true);
 
-            foreach (var line in response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
-            {
-                list.Add(SnapshotHelper.FromString(line));
-            }
-            return list;
         }
-
-        /// <inheritdoc />
-        public void Destroy(SnapshotDestroyArgs args)
+        else
         {
-            if (args.IsExactName)
+            var listArg = new SnapshotListArgs { Root = args.Dataset };
+            // Find all snapshots that begins with snapName and delete them one by one
+            foreach (var snapshot in List(listArg).Where(sn => SnapshotMatches(args.Dataset, sn.SnapshotName, args.Snapshot)))
             {
-                var pc = BuildCommand(SnapshotCommands.DestroySnapshot(args));
-
-                pc.LoadResponse(true);
-
-            }
-            else
-            {
-                var listArg = new SnapshotListArgs { Root = args.Dataset };
-                // Find all snapshots that begins with snapName and delete them one by one
-                foreach (var snapshot in List(listArg).Where(sn => SnapshotMatches(args.Dataset, sn.SnapshotName, args.Snapshot)))
-                {
-                    var subArgs = new SnapshotDestroyArgs { Dataset = args.Dataset, Snapshot = snapshot.SnapshotName, IsExactName = true };
-                    Destroy(subArgs);
-                }
+                var subArgs = new SnapshotDestroyArgs { Dataset = args.Dataset, Snapshot = snapshot.SnapshotName, IsExactName = true };
+                Destroy(subArgs);
             }
         }
+    }
 
-        /// <summary>
-        /// Snapshot name matching - will only match the pattern with a starts with, i.e. the raw snapshot name needs to begin with the raw pattern
-        /// </summary>
-        internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
+    /// <summary>
+    /// Snapshot name matching - will only match the pattern with a starts with, i.e. the raw snapshot name needs to begin with the raw pattern
+    /// </summary>
+    internal static bool SnapshotMatches(string datasetOrVolume, string snapshotName, string pattern)
+    {
+        datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
+        pattern = DatasetHelper.Decode(pattern);
+        var trimmedName = pattern;
+        var realName = snapshotName;
+        var decodedSnapshot = DatasetHelper.Decode(snapshotName);
+        if (decodedSnapshot.Contains('@'))
         {
-            datasetOrVolume = DatasetHelper.Decode(datasetOrVolume);
-            pattern = DatasetHelper.Decode(pattern);
-            var trimmedName = pattern;
-            var realName = snapshotName;
-            var decodedSnapshot = DatasetHelper.Decode(snapshotName);
-            if (decodedSnapshot.Contains('@'))
+            realName = decodedSnapshot[(decodedSnapshot.IndexOf('@') + 1)..];
+            if (!decodedSnapshot.StartsWith(datasetOrVolume))
             {
-                realName = decodedSnapshot[(decodedSnapshot.IndexOf('@') + 1)..];
-                if (!decodedSnapshot.StartsWith(datasetOrVolume))
-                {
-                    // Wrong dataset
-                    return false;
-                }
+                // Wrong dataset
+                return false;
             }
+        }
 
-            if (pattern.Contains('@'))
-            {
-                var skipPatternLen = pattern.IndexOf('@') + 1;
-                trimmedName = pattern[skipPatternLen..];
-            }
+        if (pattern.Contains('@'))
+        {
+            var skipPatternLen = pattern.IndexOf('@') + 1;
+            trimmedName = pattern[skipPatternLen..];
+        }
 
            
 
-            return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
-        }
+        return realName.StartsWith(trimmedName, StringComparison.OrdinalIgnoreCase);
+    }
 
-        /// <inheritdoc />
-        public void Create(SnapshotCreateArgs args)
-        {
-            var pc = BuildCommand(SnapshotCommands.CreateSnapshot(args));
+    /// <inheritdoc />
+    public void Create(SnapshotCreateArgs args)
+    {
+        var pc = BuildCommand(_commands.CreateSnapshot(args));
 
-            pc.LoadResponse(true);
-        }
+        pc.LoadResponse(true);
+    }
 
-        /// <inheritdoc />
-        public void Clone(SnapshotCloneArgs args)
-        {
-            var pc = BuildCommand(SnapshotCommands.Clone(args));
-            pc.LoadResponse(true);
-        }
+    /// <inheritdoc />
+    public void Clone(SnapshotCloneArgs args)
+    {
+        var pc = BuildCommand(_commands.Clone(args));
+        pc.LoadResponse(true);
+    }
 
-        /// <inheritdoc />
-        public void Hold(SnapshotHoldArgs args)
-        {
-            var command = BuildCommand(SnapshotCommands.Hold(args));
-            command.LoadResponse(true);
-        }
+    /// <inheritdoc />
+    public void Hold(SnapshotHoldArgs args)
+    {
+        var command = BuildCommand(_commands.Hold(args));
+        command.LoadResponse(true);
+    }
 
-        /// <inheritdoc />
-        public IList<SnapshotHold> Holds(SnapshotHoldsArgs args)
-        {
-            var command = BuildCommand(SnapshotCommands.Holds(args));
-            var response = command.LoadResponse(true);
-            return SnapshotHoldParser.ParseStdOut(response.StdOut);
-        }
+    /// <inheritdoc />
+    public IList<SnapshotHold> Holds(SnapshotHoldsArgs args)
+    {
+        var command = BuildCommand(_commands.Holds(args));
+        var response = command.LoadResponse(true);
+        return SnapshotHoldParser.ParseStdOut(response.StdOut);
+    }
 
-        /// <inheritdoc />
-        public void Release(SnapshotReleaseArgs args)
-        {
-            var command = BuildCommand(SnapshotCommands.Release(args));
-            command.LoadResponse(true);
-        }
+    /// <inheritdoc />
+    public void Release(SnapshotReleaseArgs args)
+    {
+        var command = BuildCommand(_commands.Release(args));
+        command.LoadResponse(true);
     }
 }

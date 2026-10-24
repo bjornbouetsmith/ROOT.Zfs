@@ -35,8 +35,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="ROOT.Shared.Utils.OS" Version="1.1.11" />
-    <PackageReference Include="ROOT.Shared.Utils.Serialization" Version="1.1.11" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="ROOT.Shared.Utils.OS" />
+    <PackageReference Include="ROOT.Shared.Utils.Serialization" />
   </ItemGroup>
   
   <ItemGroup>

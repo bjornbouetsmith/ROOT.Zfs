@@ -2,63 +2,62 @@
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Public.Arguments.Pool
+namespace ROOT.Zfs.Public.Arguments.Pool;
+
+/// <summary>
+/// Arguments for specifying a vdev when creating a pool
+/// </summary>
+public class VDevCreationArgs
 {
     /// <summary>
-    /// Arguments for specifying a vdev when creating a pool
+    /// The type of vdev to create
     /// </summary>
-    public class VDevCreationArgs
+    public VDevCreationType Type { get; set; }
+
+    /// <summary>
+    /// The list of devices that should be part of this vdev
+    /// </summary>
+    public IList<string> Devices { get; set; }
+
+    /// <summary>
+    /// Converts this instance into what is required for zpool create
+    /// </summary>
+    public override string ToString()
     {
-        /// <summary>
-        /// The type of vdev to create
-        /// </summary>
-        public VDevCreationType Type { get; set; }
+        return $"{Type.AsString()} {string.Join(' ', Devices)}";
+    }
 
-        /// <summary>
-        /// The list of devices that should be part of this vdev
-        /// </summary>
-        public IList<string> Devices { get; set; }
-
-        /// <summary>
-        /// Converts this instance into what is required for zpool create
-        /// </summary>
-        public override string ToString()
+    /// <summary>
+    /// Validates that the vdev arguments are correct and will not cause runtime errors when passed onto to zpool
+    /// </summary>
+    /// <param name="errors">The error messages if any</param>
+    /// <returns>true if valid;false otherwise</returns>
+    public virtual bool Validate(out IList<string> errors)
+    {
+        errors = null;
+        if ((Devices?.Count ?? 0) == 0)
         {
-            return $"{Type.AsString()} {string.Join(' ', Devices)}";
+            errors = new List<string>
+            {
+                "Please provide the proper amount of minimum devices"
+            };
+            return false;
         }
 
-        /// <summary>
-        /// Validates that the vdev arguments are correct and will not cause runtime errors when passed onto to zpool
-        /// </summary>
-        /// <param name="errors">The error messages if any</param>
-        /// <returns>true if valid;false otherwise</returns>
-        public virtual bool Validate(out IList<string> errors)
+        if (Type == VDevCreationType.Mirror
+            && Devices.Count < 2)
         {
-            errors = null;
-            if ((Devices?.Count ?? 0) == 0)
+            errors = new List<string>
             {
-                errors = new List<string>
-                {
-                    "Please provide the proper amount of minimum devices"
-                };
-                return false;
-            }
-
-            if (Type == VDevCreationType.Mirror
-                && Devices.Count < 2)
-            {
-                errors = new List<string>
-                {
-                    "Please provide at least two devices when creating a mirror"
-                };
-            }
-
-            foreach (var device in Devices)
-            {
-                Args.ValidateString(device,false,ref errors);
-            }
-
-            return errors == null;
+                "Please provide at least two devices when creating a mirror"
+            };
         }
+
+        foreach (var device in Devices)
+        {
+            Args.ValidateString(device,false,ref errors);
+        }
+
+        return errors == null;
     }
 }

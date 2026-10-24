@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Github/">
+    <File Path="../.github/workflows/create-release.yml" />
+    <File Path="../.github/workflows/dotnet-ci-build.yml" />
+    <File Path="../.github/workflows/dotnet-ci-integration.yml" />
+    <File Path="../.github/workflows/dotnet-ci-sonar.yml" />
+    <File Path="../README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../global.json" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="ROOT.Zfs.Core/ROOT.Zfs.Core.csproj" />
+  <Project Path="ROOT.Zfs.Public/ROOT.Zfs.Public.csproj" />
+  <Project Path="ROOT.Zfs.Tests/ROOT.Zfs.Tests.csproj" />
+</Solution>

@@ -1,12 +1,16 @@
 ﻿using ROOT.Shared.Utils.OS;
 
-namespace ROOT.Zfs.Core.Commands
+namespace ROOT.Zfs.Core.Commands;
+
+internal sealed class ZfsCommands : CommandBuilderBase, IZfsCommands
 {
-    internal class ZfsCommands : Commands
+    public ZfsCommands(IZfsBinaries binaries) : base(binaries)
     {
-        public static ProcessCall GetVersion()
-        {
-            return new ProcessCall(WhichZfs, "--version");
-        }
+    }
+
+    /// <inheritdoc />
+    public IProcessCall GetVersion()
+    {
+        return new ProcessCall(Binaries.Zfs, "--version");
     }
 }

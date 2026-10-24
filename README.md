@@ -25,16 +25,33 @@ This is something that could be fixed in future versions.
 
 ~~~c#
 
+using Microsoft.Extensions.DependencyInjection;
+using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Core;
+using ROOT.Zfs.Core.Commands;
+using ROOT.Zfs.Public;
+using ROOT.Zfs.Public.Arguments.Pool;
+using ROOT.Zfs.Public.Data.Pools;
+
 // First decide if you are connecting to localhost or another machine
 // null indicates that you are running on the same machine where the zfs pool is located
 // Otherwise you would do: new SSHProcessCall("username","hostname",true);
 SSHProcessCall connection = null;
 
-// Create instance of zfs class
-var zfs = new Core.Zfs(null);
+// Register the ZFS services. Use configureBinaries if the binaries are not in their default locations.
+var services = new ServiceCollection();
+services.AddZfs(connection, binaries => binaries.Smartctl = "/usr/sbin/smartctl");
+
+var provider = services.BuildServiceProvider();
+
+// Resolve the injected binary configuration and detect the binary locations using `which`.
+var binaries = provider.GetRequiredService<IZfsBinaries>();
+binaries.Initialize();
+
+var zfs = provider.GetRequiredService<IZfs>();
 
 // Get status of the pool tank
-var status = zfs.Pool.GetStatus("tank");
+var status = zfs.Pool.Status(new PoolStatusArgs { PoolName = "tank" });
 
 if (status.State == State.Online)
 {

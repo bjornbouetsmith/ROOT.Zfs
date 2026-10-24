@@ -5,12 +5,12 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Tests.Helpers
+namespace ROOT.Zfs.Tests.Helpers;
+
+[TestClass]
+public class ZpoolStatusParserTest
 {
-    [TestClass]
-    public class ZpoolStatusParserTest
-    {
-        private const string OkPool = @"  pool: tank
+    private const string OkPool = @"  pool: tank
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
 config:
@@ -25,7 +25,7 @@ config:
 	    /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi8-part1  ONLINE       0     0     0
 errors: No known data errors";
 
-        private const string TruncatedResponse = @"  pool: tank
+    private const string TruncatedResponse = @"  pool: tank
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
 config:
@@ -37,7 +37,7 @@ config:
 	    /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1  ONLINE       0     0     0
 
 err";
-        private const string BadPool1 = @"  pool: tank
+    private const string BadPool1 = @"  pool: tank
  state: DEGRADED
 status: One or more devices could not be used because the label is missing or
         invalid.  Sufficient replicas exist for the pool to continue
@@ -54,7 +54,7 @@ config:
 
 errors: No known data errors";
 
-        private const string PoolWithSpare = @"  pool: TestP768e8f58-4091-4c3a-91c6-35c65c7336a1
+    private const string PoolWithSpare = @"  pool: TestP768e8f58-4091-4c3a-91c6-35c65c7336a1
  state: ONLINE
 config:
 
@@ -66,63 +66,62 @@ config:
 	spares
 	  /tmp/7750f053-1937-4d0a-a104-29ead1847366    AVAIL";
 
-        [TestMethod]
-        public void ParseOKStatus()
-        {
+    [TestMethod]
+    public void ParseOKStatus()
+    {
 
-            var status = ZPoolStatusParser.Parse(OkPool);
-            Assert.IsNotNull(status);
-            Assert.AreEqual("tank", status.Pool.PoolName);
-            Assert.AreEqual(State.Online, status.State);
-            Console.WriteLine(status.Dump(new JsonFormatter()));
+        var status = ZPoolStatusParser.Parse(OkPool);
+        Assert.IsNotNull(status);
+        Assert.AreEqual("tank", status.Pool.PoolName);
+        Assert.AreEqual(State.Online, status.State);
+        Console.WriteLine(status.Dump(new JsonFormatter()));
 
-        }
+    }
 
-        // Code expect that first line of zpool status contains the name of the pool. 
-        // This tests that we get the expected exception if thats not the case
-        [TestMethod]
-        public void UnknownNewPrefix()
-        {
-            var stdOut = "New Data not expected" + Environment.NewLine + OkPool;
-            var ex = Assert.ThrowsException<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
-            Console.WriteLine(ex);
-        }
+    // Code expect that first line of zpool status contains the name of the pool. 
+    // This tests that we get the expected exception if thats not the case
+    [TestMethod]
+    public void UnknownNewPrefix()
+    {
+        var stdOut = "New Data not expected" + Environment.NewLine + OkPool;
+        var ex = Assert.ThrowsExactly<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
+        Console.WriteLine(ex);
+    }
 
-        [TestMethod]
-        public void PoolNotFoundShouldReturnInNull()
-        {
-            var status = ZPoolStatusParser.Parse("cannot open 'unbabunga': no such pool");
-            Assert.IsNull(status);
-        }
+    [TestMethod]
+    public void PoolNotFoundShouldReturnInNull()
+    {
+        var status = ZPoolStatusParser.Parse("cannot open 'unbabunga': no such pool");
+        Assert.IsNull(status);
+    }
 
-        [TestMethod]
-        public void ParseTruncatedStatus()
-        {
-            Assert.ThrowsException<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
-        }
+    [TestMethod]
+    public void ParseTruncatedStatus()
+    {
+        Assert.ThrowsExactly<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
+    }
 
-        [TestMethod]
-        public void ParseBadStatus1Status()
-        {
+    [TestMethod]
+    public void ParseBadStatus1Status()
+    {
 
-            var status = ZPoolStatusParser.Parse(BadPool1);
-            Assert.IsNotNull(status);
-            Assert.AreEqual("tank", status.Pool.PoolName);
-            Assert.AreEqual(State.Degraded, status.State);
-            Console.WriteLine(status.Dump(new JsonFormatter()));
+        var status = ZPoolStatusParser.Parse(BadPool1);
+        Assert.IsNotNull(status);
+        Assert.AreEqual("tank", status.Pool.PoolName);
+        Assert.AreEqual(State.Degraded, status.State);
+        Console.WriteLine(status.Dump(new JsonFormatter()));
 
-        }
+    }
 
-        [TestMethod]
-        public void ParsePoolStatusWithSpares()
-        {
-            var status = ZPoolStatusParser.Parse(PoolWithSpare);
-            Assert.IsNotNull(status);
-            var spares = status.Pool.VDevs.First(d => d.VDevName == "spares");
-            Assert.AreEqual(State.Available, spares.State);
-            var spare = spares.Devices.First();
-            Assert.AreEqual(State.Available, spare.State);
-            Console.WriteLine(status.Dump(new JsonFormatter()));
-        }
+    [TestMethod]
+    public void ParsePoolStatusWithSpares()
+    {
+        var status = ZPoolStatusParser.Parse(PoolWithSpare);
+        Assert.IsNotNull(status);
+        var spares = status.Pool.VDevs.First(d => d.VDevName == "spares");
+        Assert.AreEqual(State.Available, spares.State);
+        var spare = spares.Devices.First();
+        Assert.AreEqual(State.Available, spare.State);
+        Console.WriteLine(status.Dump(new JsonFormatter()));
     }
 }

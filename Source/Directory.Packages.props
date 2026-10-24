@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="altcover" Version="9.0.145" />
+    <PackageVersion Include="coverlet.msbuild" Version="10.1.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="4.5.1" />
+    <PackageVersion Include="MSTest.TestFramework" Version="4.5.1" />
+    <PackageVersion Include="ROOT.Shared.Utils.OS" Version="1.1.13" />
+    <PackageVersion Include="ROOT.Shared.Utils.Serialization" Version="1.1.13" />
+  </ItemGroup>
+</Project>

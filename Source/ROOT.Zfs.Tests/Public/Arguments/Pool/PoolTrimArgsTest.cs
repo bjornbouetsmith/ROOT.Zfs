@@ -2,49 +2,48 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Public.Arguments.Pool;
 
-namespace ROOT.Zfs.Tests.Public.Arguments.Pool
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
+
+[TestClass]
+public class PoolTrimArgsTest
 {
-    [TestClass]
-    public class PoolTrimArgsTest
+    [DataRow("tank", true)]
+    [DataRow("", false)]
+    [DataRow(null, false)]
+    [DataRow("  ", false)]
+    [TestMethod]
+    public void ValidateShouldValidateCorrectly(string poolName, bool expectValid)
     {
-        [DataRow("tank", true)]
-        [DataRow("", false)]
-        [DataRow(null, false)]
-        [DataRow("  ", false)]
-        [TestMethod]
-        public void ValidateShouldValidateCorrectly(string poolName, bool expectValid)
+        var args = new PoolTrimArgs { PoolName = poolName };
+
+        var valid = args.Validate(out var errors);
+        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.AreEqual(expectValid, valid);
+
+    }
+
+    [DataRow("tank",null,false,"0B",default,"trim tank")] // only pool
+    [DataRow("tank", "/dev/sda", false, "0B", default, "trim tank /dev/sda")] // with device
+    [DataRow("tank", "/dev/sda", true, "0B", default, "trim -d tank /dev/sda")] // secure
+    [DataRow("tank", "/dev/sda", false, "0B", TrimAction.None, "trim tank /dev/sda")] // none
+    [DataRow("tank", "/dev/sda", false, "0B", TrimAction.Suspend, "trim -s tank /dev/sda")] // suspend
+    [DataRow("tank", "/dev/sda", false, "0B", TrimAction.Cancel, "trim -c tank /dev/sda")] // cancel
+    [DataRow("tank", "/dev/sda", false, "512M", default, "trim -r 512M tank /dev/sda")] // with rate
+    [DataRow("tank", "/dev/sda", true, "512G", TrimAction.None, "trim -d -r 512G tank /dev/sda")] // with rate and secure
+    [TestMethod]
+    public void ToStringTest(string poolName, string deviceName, bool secure, string trimRate, TrimAction trimAction, string expectedCommand)
+    {
+        var args = new PoolTrimArgs
         {
-            var args = new PoolTrimArgs { PoolName = poolName };
+            PoolName = poolName,
+            DeviceName = deviceName,
+            Secure = secure,
+            TrimRate = trimRate,
+            Action = trimAction
+        };
 
-            var valid = args.Validate(out var errors);
-            Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-            Assert.AreEqual(expectValid, valid);
-
-        }
-
-        [DataRow("tank",null,false,"0B",default,"trim tank")] // only pool
-        [DataRow("tank", "/dev/sda", false, "0B", default, "trim tank /dev/sda")] // with device
-        [DataRow("tank", "/dev/sda", true, "0B", default, "trim -d tank /dev/sda")] // secure
-        [DataRow("tank", "/dev/sda", false, "0B", TrimAction.None, "trim tank /dev/sda")] // none
-        [DataRow("tank", "/dev/sda", false, "0B", TrimAction.Suspend, "trim -s tank /dev/sda")] // suspend
-        [DataRow("tank", "/dev/sda", false, "0B", TrimAction.Cancel, "trim -c tank /dev/sda")] // cancel
-        [DataRow("tank", "/dev/sda", false, "512M", default, "trim -r 512M tank /dev/sda")] // with rate
-        [DataRow("tank", "/dev/sda", true, "512G", TrimAction.None, "trim -d -r 512G tank /dev/sda")] // with rate and secure
-        [TestMethod]
-        public void ToStringTest(string poolName, string deviceName, bool secure, string trimRate, TrimAction trimAction, string expectedCommand)
-        {
-            var args = new PoolTrimArgs
-            {
-                PoolName = poolName,
-                DeviceName = deviceName,
-                Secure = secure,
-                TrimRate = trimRate,
-                Action = trimAction
-            };
-
-            var stringVer = args.ToString();
-            Console.WriteLine(stringVer);
-            Assert.AreEqual(expectedCommand, stringVer);
-        }
+        var stringVer = args.ToString();
+        Console.WriteLine(stringVer);
+        Assert.AreEqual(expectedCommand, stringVer);
     }
 }

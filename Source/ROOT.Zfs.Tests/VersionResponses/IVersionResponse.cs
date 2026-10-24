@@ -1,7 +1,6 @@
-﻿namespace ROOT.Zfs.Tests.VersionResponses
+﻿namespace ROOT.Zfs.Tests.VersionResponses;
+
+internal interface IVersionResponse
 {
-    internal interface IVersionResponse
-    {
-        (string StdOut, string StdError) LoadResponse(string commandLine);
-    }
+    (string StdOut, string StdError) LoadResponse(string commandLine);
 }

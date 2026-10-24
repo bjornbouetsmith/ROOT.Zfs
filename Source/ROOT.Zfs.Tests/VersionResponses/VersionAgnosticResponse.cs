@@ -1,156 +1,156 @@
 ﻿using System;
 using System.Linq;
 
-namespace ROOT.Zfs.Tests.VersionResponses
+namespace ROOT.Zfs.Tests.VersionResponses;
+
+internal class VersionAgnosticResponse : IVersionResponse
 {
-    internal class VersionAgnosticResponse : IVersionResponse
+    private readonly string _version;
+
+    public VersionAgnosticResponse(string version)
     {
-        private readonly string _version;
-
-        public VersionAgnosticResponse(string version)
+        _version = version;
+    }
+    public virtual (string StdOut, string StdError) LoadResponse(string commandLine)
+    {
+        switch (commandLine)
         {
-            _version = version;
+            case "/sbin/zfs --version":
+                return (GetVersion(), null);
+            case "/bin/lsblk --include 8 --include 259 -p|grep disk":
+                return (LoadBlockDevices(), null);
+            case "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
+                return (LoadDisks(), null);
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem":
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume":
+                return (LoadFileSystems(""), null);
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank":
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank":
+            case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank":
+                return (LoadFileSystems("tank"), null);
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds":
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds":
+            case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank/myds":
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin tank/myds":
+                return (LoadFileSystems("tank/myds"), null);
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem ungabunga":
+            case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume ungabunga":
+            case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem ungabunga":
+                return (null, "cannot open 'ungabunga': dataset does not exist");
+            case "/sbin/zfs get -H":
+                return (null, GetAvailableProperties());
+            case "/sbin/zfs get all tank/myds -H":
+                return (GetAllProperties(), null);
+            case "/sbin/zfs set atime=off tank/myds":
+            case "/sbin/zfs set atime=on tank/myds":
+                return (null, null);
+            case "/sbin/zfs get atime tank/myds -H":
+                return ("tank/myd	satime	off	local", null);
+            case "/sbin/zfs inherit -rS atime tank/myds":
+                return (null, null);
+            case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t snapshot tank/myds":
+                return (GetSnapshots(), null);
+            case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
+            case "/sbin/zfs snap tank/myds@20220922211347000-1":
+            case "/sbin/zfs snap tank/myds@20220922211347000-2":
+            case "/sbin/zfs snap tank/myds@20220922211347000-3":
+            case "/sbin/zfs snap tank/myds@12345":
+                return (null, null);
+            case "/sbin/zfs destroy tank/myds@RemoteCreateSnapshot20220922091347":
+            case "/sbin/zfs destroy tank/myds@20220922211347000-1":
+            case "/sbin/zfs destroy tank/myds@20220922211347000-2":
+            case "/sbin/zfs destroy tank/myds@20220922211347000-3":
+            case "/sbin/zfs destroy -r tank/myds":
+                return (null, null);
+            case "/sbin/zpool status -vP tank":
+                return (GetTankPoolStatus(), null);
+            case "/sbin/zpool status -vP mytest":
+                return (GetMyTestPoolStatus(), null);
+            case "/sbin/zpool create mytest mirror /dev/sda /dev/sdb":
+                return (null, null);
+            case "/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd":
+                return (null, null);
+            case "/sbin/zpool destroy -f mytest":
+                return (null, null);
+            case "/sbin/zpool history -l tank":
+                return (GetTankHistory(), null);
+            case "/sbin/zpool list -PHp":
+                return (GetAllPoolInfos(""), null);
+            case "/sbin/zpool list -PHp tank2":
+                return (GetAllPoolInfos("tank2"), null);
+            case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
+                return (GetSmartInfoSCSI5(), null);
+            case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
+                return (GetSmartInfoSCSI6(), null);
+            case "/sbin/zpool get -H":
+                return (null, GetAvailablePoolProperties());
+            case "/sbin/zfs create -o atime=off tank/myds":
+                return (null, null);
+            case "/bin/which zfs":
+                return ("/sbin/zfs", null);
+            case "/bin/which zpool":
+                return ("/sbin/zpool", null);
+            case "/bin/which zdb":
+                return ("/sbin/zdb", null);
+            case "/bin/which ls":
+                return ("/bin/ls", null);
+            case "/bin/which lsblk":
+                return ("/bin/lsblk", null);
+            case "/bin/which smartctl":
+                return (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)");
+            case "/sbin/zpool iostat -LlpPvH tank /dev/sda":
+                return (GetIOStats(), null);
+            case "/sbin/zpool offline tank /dev/sda":
+                return (null, null);
+            case "/sbin/zpool online tank /dev/sda":
+                return (null, null);
+            case "/sbin/zpool clear tank /dev/sda":
+                return (null, null);
+            case "/sbin/zpool resilver tank":
+                return (null, null);
+            case "/sbin/zfs promote tank/myds":
+                return (null, null);
+            case "/sbin/zfs mount tank/myds":
+                return (null, null);
+            case "/sbin/zfs unmount tank/myds":
+                return (null, null);
+            case "/sbin/zfs hold mytag tank/myds@12345":
+                return (null, null);
+            case "/sbin/zfs holds -H tank/myds@12345":
+                return ("tank/myds@12345  mytag  Wed Oct 26 09:20 2022", null);
+            case "/sbin/zfs release mytag tank/myds@12345":
+                return (null, null);
+            case "/sbin/zpool scrub tank":
+                return (null, null);
+            case "/sbin/zpool trim tank":
+                return (null, null);
+            case "/sbin/zpool upgrade tank":
+                return (null, null);
+            case "/sbin/zpool upgrade":
+                return (GetUpgradeablePools(), null);
+            case "/sbin/zdb":
+                return (GetZdbOutput(), null);
+            case "/sbin/zpool detach tank /dev/sdb":
+                return (null, null);
+            case "/sbin/zpool attach tank /dev/sdb /dev/sdc":
+                return (null, null);
+            case "/sbin/zpool replace tank /dev/sdb /dev/sdc":
+                return (null, null);
+            case "/sbin/zpool add -f tank mirror /dev/sda /dev/sdb":
+                return (null, null);
+            case "/sbin/zpool remove tank mirror-1":
+                return (null, null);
+            case "/sbin/zfs clone -p tank/myds@12345 tank/myds/mysnap_clone":
+            case "/sbin/zfs clone -p -o atime=off tank/myds@12345 tank/myds/mysnap_clone2":
+                return (null, null);
+            default:
+                throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
         }
-        public virtual (string StdOut, string StdError) LoadResponse(string commandLine)
-        {
-            switch (commandLine)
-            {
-                case "/sbin/zfs --version":
-                    return (GetVersion(), null);
-                case "/bin/lsblk --include 8 --include 259 -p|grep disk":
-                    return (LoadBlockDevices(), null);
-                case "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'":
-                    return (LoadDisks(), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume":
-                    return (LoadFileSystems(""), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank":
-                    return (LoadFileSystems("tank"), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank/myds":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin tank/myds":
-                    return (LoadFileSystems("tank/myds"), null);
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem ungabunga":
-                case "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume ungabunga":
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem ungabunga":
-                    return (null, "cannot open 'ungabunga': dataset does not exist");
-                case "/sbin/zfs get -H":
-                    return (null, GetAvailableProperties());
-                case "/sbin/zfs get all tank/myds -H":
-                    return (GetAllProperties(), null);
-                case "/sbin/zfs set atime=off tank/myds":
-                case "/sbin/zfs set atime=on tank/myds":
-                    return (null, null);
-                case "/sbin/zfs get atime tank/myds -H":
-                    return ("tank/myd	satime	off	local", null);
-                case "/sbin/zfs inherit -rS atime tank/myds":
-                    return (null, null);
-                case "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t snapshot tank/myds":
-                    return (GetSnapshots(), null);
-                case "/sbin/zfs snap tank/myds@RemoteCreateSnapshot20220922091347":
-                case "/sbin/zfs snap tank/myds@20220922211347000-1":
-                case "/sbin/zfs snap tank/myds@20220922211347000-2":
-                case "/sbin/zfs snap tank/myds@20220922211347000-3":
-                case "/sbin/zfs snap tank/myds@12345":
-                    return (null, null);
-                case "/sbin/zfs destroy tank/myds@RemoteCreateSnapshot20220922091347":
-                case "/sbin/zfs destroy tank/myds@20220922211347000-1":
-                case "/sbin/zfs destroy tank/myds@20220922211347000-2":
-                case "/sbin/zfs destroy tank/myds@20220922211347000-3":
-                case "/sbin/zfs destroy -r tank/myds":
-                    return (null, null);
-                case "/sbin/zpool status -vP tank":
-                    return (GetTankPoolStatus(), null);
-                case "/sbin/zpool status -vP mytest":
-                    return (GetMyTestPoolStatus(), null);
-                case "/sbin/zpool create mytest mirror /dev/sda /dev/sdb":
-                    return (null, null);
-                case "/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd":
-                    return (null, null);
-                case "/sbin/zpool destroy -f mytest":
-                    return (null, null);
-                case "/sbin/zpool history -l tank":
-                    return (GetTankHistory(), null);
-                case "/sbin/zpool list -PHp":
-                    return (GetAllPoolInfos(""), null);
-                case "/sbin/zpool list -PHp tank2":
-                    return (GetAllPoolInfos("tank2"), null);
-                case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5":
-                    return (GetSmartInfoSCSI5(), null);
-                case "/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6":
-                    return (GetSmartInfoSCSI6(), null);
-                case "/sbin/zpool get -H":
-                    return (null, GetAvailablePoolProperties());
-                case "/sbin/zfs create -o atime=off tank/myds":
-                    return (null, null);
-                case "/bin/which zfs":
-                    return (Core.Commands.Commands.WhichZfs, null);
-                case "/bin/which zpool":
-                    return (Core.Commands.Commands.WhichZpool, null);
-                case "/bin/which zdb":
-                    return (Core.Commands.Commands.WhichZdb, null);
-                case "/bin/which ls":
-                    return (Core.Commands.Commands.WhichLs, null);
-                case "/bin/which lsblk":
-                    return (Core.Commands.Commands.WhichLsblk, null);
-                case "/bin/which smartctl":
-                    return (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)");
-                case "/sbin/zpool iostat -LlpPvH tank /dev/sda":
-                    return (GetIOStats(), null);
-                case "/sbin/zpool offline tank /dev/sda":
-                    return (null, null);
-                case "/sbin/zpool online tank /dev/sda":
-                    return (null, null);
-                case "/sbin/zpool clear tank /dev/sda":
-                    return (null, null);
-                case "/sbin/zpool resilver tank":
-                    return (null, null);
-                case "/sbin/zfs promote tank/myds":
-                    return (null, null);
-                case "/sbin/zfs mount tank/myds":
-                    return (null, null);
-                case "/sbin/zfs unmount tank/myds":
-                    return (null, null);
-                case "/sbin/zfs hold mytag tank/myds@12345":
-                    return (null, null);
-                case "/sbin/zfs holds -H tank/myds@12345":
-                    return ("tank/myds@12345  mytag  Wed Oct 26 09:20 2022", null);
-                case "/sbin/zfs release mytag tank/myds@12345":
-                    return (null, null);
-                case "/sbin/zpool scrub tank":
-                    return (null, null);
-                case "/sbin/zpool trim tank":
-                    return (null, null);
-                case "/sbin/zpool upgrade tank":
-                    return (null, null);
-                case "/sbin/zpool upgrade":
-                    return (GetUpgradeablePools(), null);
-                case "/sbin/zdb":
-                    return (GetZdbOutput(), null);
-                case "/sbin/zpool detach tank /dev/sdb":
-                    return (null, null);
-                case "/sbin/zpool attach tank /dev/sdb /dev/sdc":
-                    return (null, null);
-                case "/sbin/zpool replace tank /dev/sdb /dev/sdc":
-                    return (null, null);
-                case "/sbin/zpool add -f tank mirror /dev/sda /dev/sdb":
-                    return (null, null);
-                case "/sbin/zpool remove tank mirror-1":
-                    return (null, null);
-                case "/sbin/zfs clone -p tank/myds@12345 tank/myds/mysnap_clone":
-                case "/sbin/zfs clone -p -o atime=off tank/myds@12345 tank/myds/mysnap_clone2":
-                    return (null, null);
-                default:
-                    throw new NotImplementedException($"Missing FAKE implementation of {commandLine}");
-            }
-        }
+    }
 
-        private static string GetZdbOutput()
-        {
-           return @"tank:
+    private static string GetZdbOutput()
+    {
+        return @"tank:
     version: 5000
     name: 'backup'
     state: 0
@@ -273,11 +273,11 @@ tank2:
         com.delphix:hole_birth
         com.delphix:embedded_data
 ";
-        }
+    }
 
-        private static string GetUpgradeablePools()
-        {
-                return @"This system supports ZFS pool feature flags.
+    private static string GetUpgradeablePools()
+    {
+        return @"This system supports ZFS pool feature flags.
 
 All pools are formatted using feature flags.
 
@@ -295,16 +295,16 @@ backup
       edonr
       draid
 ";
-        }
+    }
 
-        private static string GetIOStats()
-        {
-            return "/dev/sda       0       0       1       17      47969   195641  2202421 669642  727243  176755  723335  95931   693500  514367  10005303        4934782";
-        }
+    private static string GetIOStats()
+    {
+        return "/dev/sda       0       0       1       17      47969   195641  2202421 669642  727243  176755  723335  95931   693500  514367  10005303        4934782";
+    }
 
-        private static string GetAvailablePoolProperties()
-        {
-            return @"usage:
+    private static string GetAvailablePoolProperties()
+    {
+        return @"usage:
         get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
 
 the following properties are supported:
@@ -344,11 +344,11 @@ the following properties are supported:
 The feature@ properties must be appended with a feature name.
 See zpool-features(7).
 ";
-        }
+    }
 
-        private static string GetSmartInfoSCSI6()
-        {
-            return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+    private static string GetSmartInfoSCSI6()
+    {
+        return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
 Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
 
 === START OF INFORMATION SECTION ===
@@ -554,11 +554,11 @@ SMART Selective self-test log data structure revision number 1
 Selective self - test flags(0x0):
   After scanning selected spans, do NOT read-scan remainder of disk.
 If Selective self - test is pending on power - up, resume after 0 minute delay.";
-        }
+    }
 
-        private static string GetSmartInfoSCSI5()
-        {
-            return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
+    private static string GetSmartInfoSCSI5()
+    {
+        return @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
 Copyright (C) 2002-20, Bruce Allen, Christian Franke, www.smartmontools.org
 
 === START OF INFORMATION SECTION ===
@@ -666,35 +666,35 @@ SMART Selective self-test log data structure revision number 1
 Selective self-test flags (0x0):
   After scanning selected spans, do NOT read-scan remainder of disk.
 If Selective self-test is pending on power-up, resume after 0 minute delay.";
-        }
+    }
 
-        private static string GetAllPoolInfos(string filter)
-        {
-            var lines = @"tank    16642998272     3232256 16639766016     -       -       1.3       2.5       1.13    ONLINE  -
+    private static string GetAllPoolInfos(string filter)
+    {
+        var lines = @"tank    16642998272     3232256 16639766016     -       -       1.3       2.5       1.13    ONLINE  -
 tank2   16642998272     107520  16642890752     -       -       7.30       6.50       1.43    ONLINE  -";
 
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                var filtered = lines.Split(Core.Helpers.Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Where(l => l.StartsWith(filter));
-                return string.Join("\r\n", filtered);
-            }
-
-            return lines;
+        if (!string.IsNullOrWhiteSpace(filter))
+        {
+            var filtered = lines.Split(Core.Helpers.Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Where(l => l.StartsWith(filter));
+            return string.Join("\r\n", filtered);
         }
 
-        private static string GetTankHistory()
-        {
-            return @"2022-09-20.21:30:14 zpool create tank mirror /dev/disk/by-id/ata-QEMU_HARDDISK_QM00015 /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017 [user 0 (root) on zfsdev.root.dom:linux]
+        return lines;
+    }
+
+    private static string GetTankHistory()
+    {
+        return @"2022-09-20.21:30:14 zpool create tank mirror /dev/disk/by-id/ata-QEMU_HARDDISK_QM00015 /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017 [user 0 (root) on zfsdev.root.dom:linux]
 2022-09-20.21:30:45 zpool import -c /etc/zfs/zpool.cache -aN [user 0 (root) on zfsdev.root.dom:linux]
 2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-1 [user 0 (root) on zfsdev.root.dom:linux]
 2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-2 [user 0 (root) on zfsdev.root.dom:linux]
 2022-10-03.17:43:33 zfs destroy tank/myds@20221003154325139-3 [user 0 (root) on zfsdev.root.dom:linux]
 2022-10-03.18:04:00 zfs set atime=off tank/myds [user 0 (root) on zfsdev.root.dom:linux]";
-        }
+    }
 
-        private static string GetTankPoolStatus()
-        {
-            return @"  pool: tank
+    private static string GetTankPoolStatus()
+    {
+        return @"  pool: tank
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
 config:
@@ -706,11 +706,11 @@ config:
             /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1  ONLINE       0     0     0
 
 errors: No known data errors";
-        }
+    }
 
-        private static string GetMyTestPoolStatus()
-        {
-            return @"  pool: mytest
+    private static string GetMyTestPoolStatus()
+    {
+        return @"  pool: mytest
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
 config:
@@ -722,22 +722,22 @@ config:
             /dev/sdb                                                    ONLINE       0     0     0
 
 errors: No known data errors";
-        }
+    }
 
-        private static string GetSnapshots()
-        {
-            return @"snapshot        1664097229      tank/myds@20220925111346        0       24576   -       -   -
+    private static string GetSnapshots()
+    {
+        return @"snapshot        1664097229      tank/myds@20220925111346        0       24576   -       -   -
 snapshot        1664115215      tank/myds@20220925161329        15360   25600   -       -   -
 snapshot        1664121611      tank/myds@20220925180007        14336   25600   -       -   -
 snapshot        1664718665      tank/myds@20221002155059        13312   25600   -       -   -
 snapshot        1664718665      tank/myds@20220922211347000-1        13312   25600   -       -   -
 snapshot        1664718665      tank/myds@20220922211347000-2        13312   25600   -       -   -
 snapshot        1664718665      tank/myds@20220922211347000-3        13312   25600   -       -   -";
-        }
+    }
 
-        private static string GetAllProperties()
-        {
-            return @"tank/myds	type	filesystem	-
+    private static string GetAllProperties()
+    {
+        return @"tank/myds	type	filesystem	-
 tank/myds	creation	Wed Sep 21 18:23 2022	-
 tank/myds	used	314K	-
 tank/myds	available	14.0G	-
@@ -810,11 +810,11 @@ tank/myds	keyformat	none	default
 tank/myds	pbkdf2iters	0	default
 tank/myds	special_small_blocks	0	default
 ";
-        }
+    }
 
-        private static string GetAvailableProperties()
-        {
-            return @"missing property argument
+    private static string GetAvailableProperties()
+    {
+        return @"missing property argument
 usage:
         get [-rHp] [-d max] [-o ""all"" | field[,...]]
             [-t type[,...]] [-s source[,...]]
@@ -931,12 +931,12 @@ a user|group|project specifier of one of these forms:
     POSIX id        (eg: ""126829"")
     SMB name@domain (eg: ""matt@sun"")
     SMB SID         (eg: ""S-1-234-567-89"")";
-        }
+    }
 
-        private static string LoadFileSystems(string contains)
-        {
+    private static string LoadFileSystems(string contains)
+    {
 
-            var content = @"filesystem      1663702213      tank    1111025664      33792   15011878912     /tank     -
+        var content = @"filesystem      1663702213      tank    1111025664      33792   15011878912     /tank     -
 filesystem      1664632596      tank/45dfe1b7-5e45-496c-b887-dcc9eded8201       24576   24576   15011878912     /tank/45dfe1b7-5e45-496c-b887-dcc9eded8201     -
 filesystem      1663777408      tank/myds       292864  25600   15011878912     /tank/myds     -
 filesystem      1664209129      tank/myds/ROOT  75776   25600   15011878912     /tank/myds/ROOT     -
@@ -946,31 +946,30 @@ filesystem      1663946563      tank/myds34     24576   24576   524263424       
 filesystem      1663956157      tank/myds37     24576   24576   15011878912     /tank/myds37     -
 filesystem      1663946343      tank/myds44     24576   24576   15011878912     /tank/myds44     -
 filesystem      1663781153      tank/mytestds2  24576   24576   1073717248      /tank/mytestds2     -";
-            return string.Join("\r\n", content.Split('\r', '\n').Where(l => l.Contains(contains)));
-        }
+        return string.Join("\r\n", content.Split('\r', '\n').Where(l => l.Contains(contains)));
+    }
 
-        private string GetVersion()
-        {
-            return $@"zfs-{_version}
+    private string GetVersion()
+    {
+        return $@"zfs-{_version}
 zfs-kmod-{_version}";
-        }
+    }
 
-        private static string LoadBlockDevices()
-        {
-            return @"/dev/sda      8:0    0   16G  0 disk
+    private static string LoadBlockDevices()
+    {
+        return @"/dev/sda      8:0    0   16G  0 disk
 /dev/sdb      8:16   0   16G  0 disk
 ";
-        }
+    }
 
-        private static string LoadDisks()
-        {
-            return @"scsi-0QEMU_QEMU_HARDDISK_drive-scsi5 ../../sdb
+    private static string LoadDisks()
+    {
+        return @"scsi-0QEMU_QEMU_HARDDISK_drive-scsi5 ../../sdb
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1 ../../sdb1
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part9 ../../sdb9
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi6 ../../sda
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi6-part1 ../../sda1
 scsi-0QEMU_QEMU_HARDDISK_drive-scsi6-part9 ../../sda9
 ";
-        }
     }
 }

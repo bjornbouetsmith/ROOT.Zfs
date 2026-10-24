@@ -2,14 +2,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Zfs.Core.Helpers;
 
-namespace ROOT.Zfs.Tests.Helpers
-{
-    [TestClass]
-    public class PropertiesParserTest
-    {
-        #region responses
+namespace ROOT.Zfs.Tests.Helpers;
 
-        private const string InvalidZPoolResponse = @"usage:
+[TestClass]
+public class PropertiesParserTest
+{
+    #region responses
+
+    private const string InvalidZPoolResponse = @"usage:
         get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
 
 the following properties are supported:
@@ -19,7 +19,7 @@ the following properties are supported:
         altroot               YES
         ashift                YES   <ashift, 9-16, or 0=default>";
 
-        private const string zpoolResponse = @"usage:
+    private const string zpoolResponse = @"usage:
         get [-Hp] [-o ""all"" | field[,...]] <""all"" | property[,...]> <pool> ...
 
 the following properties are supported:
@@ -60,7 +60,7 @@ The feature@ properties must be appended with a feature name.
 See zpool-features(7).
 ";
 
-        private const string zfsResponse = @"usage:
+    private const string zfsResponse = @"usage:
         get [-rHp] [-d max] [-o ""all"" | field[,...]]
             [-t type[,...]] [-s source[,...]]
             <""all"" | property[,...]> [filesystem|volume|snapshot|bookmark] ...
@@ -177,37 +177,36 @@ a user|group|project specifier of one of these forms:
     SMB name@domain (eg: ""matt@sun"")
     SMB SID         (eg: ""S-1-234-567-89"")
 ";
-        #endregion
+    #endregion
 
-        [TestMethod]
-        public void ParseZfsTestShouldParseWithoutErrors()
-        {
-            var properties = PropertiesParser.FromStdOutput(zfsResponse, 4);
-            Assert.IsNotNull(properties);
-            Assert.IsNotNull(properties);
-            // We only list editable, those where EDITABLE=YES
-            Assert.AreEqual(53, properties.Count);
-            Assert.AreEqual("aclinherit", properties.First().PropertyName);
-            Assert.AreEqual("projectobjquota@...", properties.Last().PropertyName);
-        }
-        [TestMethod]
-        public void ParseZpoolTestShouldParseWithoutErrors()
-        {
-            var properties = PropertiesParser.FromStdOutput(zpoolResponse, 3);
-            Assert.IsNotNull(properties);
-            // We only list editable, those where EDITABLE=YES
-            Assert.AreEqual(16, properties.Count);
-            Assert.AreEqual("altroot", properties.First().PropertyName);
-            Assert.AreEqual("feature@...", properties.Last().PropertyName);
-        }
+    [TestMethod]
+    public void ParseZfsTestShouldParseWithoutErrors()
+    {
+        var properties = PropertiesParser.FromStdOutput(zfsResponse, 4);
+        Assert.IsNotNull(properties);
+        Assert.IsNotNull(properties);
+        // We only list editable, those where EDITABLE=YES
+        Assert.AreEqual(53, properties.Count);
+        Assert.AreEqual("aclinherit", properties.First().PropertyName);
+        Assert.AreEqual("projectobjquota@...", properties.Last().PropertyName);
+    }
+    [TestMethod]
+    public void ParseZpoolTestShouldParseWithoutErrors()
+    {
+        var properties = PropertiesParser.FromStdOutput(zpoolResponse, 3);
+        Assert.IsNotNull(properties);
+        // We only list editable, those where EDITABLE=YES
+        Assert.AreEqual(16, properties.Count);
+        Assert.AreEqual("altroot", properties.First().PropertyName);
+        Assert.AreEqual("feature@...", properties.Last().PropertyName);
+    }
 
-        [TestMethod]
-        public void InvalidResponseShouldBeSkipped()
-        {
-            var properties = PropertiesParser.FromStdOutput(InvalidZPoolResponse, 3);
-            Assert.IsNotNull(properties);
-            Assert.AreEqual(1, properties.Count);
-            Assert.AreEqual("ashift",properties.First().PropertyName);
-        }
+    [TestMethod]
+    public void InvalidResponseShouldBeSkipped()
+    {
+        var properties = PropertiesParser.FromStdOutput(InvalidZPoolResponse, 3);
+        Assert.IsNotNull(properties);
+        Assert.AreEqual(1, properties.Count);
+        Assert.AreEqual("ashift",properties.First().PropertyName);
     }
 }

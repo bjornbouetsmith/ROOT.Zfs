@@ -8,160 +8,159 @@ using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
-namespace ROOT.Zfs.Tests.Integration
+namespace ROOT.Zfs.Tests.Integration;
+
+[TestClass]
+public class DataSetTest
 {
-    [TestClass]
-    public class DataSetTest
+    private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+
+    private Datasets GetDataSets()
     {
-        private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
+        var ds = ZfsTestFactory.CreateDatasets(_remoteProcessCall);
+        ds.RequiresSudo = TestHelpers.RequiresSudo;
+        return ds;
+    }
 
-        private Datasets GetDataSets()
+    [TestMethod, TestCategory("Integration")]
+    public void GetDataSetList()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+
+        var ds = GetDataSets();
+        var dataSets = ds.List(new DatasetListArgs());
+        Assert.IsNotNull(dataSets);
+        foreach (var set in dataSets)
         {
-            var ds = new Datasets(_remoteProcessCall);
-            ds.RequiresSudo = TestHelpers.RequiresSudo;
-            return ds;
+            Console.WriteLine(set.Dump(new JsonFormatter()));
         }
+    }
 
-        [TestMethod, TestCategory("Integration")]
-        public void GetDataSetList()
+    [TestMethod, TestCategory("Integration")]
+    public void ListDataSetTest()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        var ds = GetDataSets();
+        var args = new DatasetListArgs { Root = pool.Name };
+        var dataset = ds.List(args).FirstOrDefault();
+        Assert.IsNotNull(dataset);
+        Assert.AreEqual(pool.Name, dataset.DatasetName);
+    }
+
+    [TestMethod, TestCategory("Integration")]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void CreateDataSetTest(bool addProperties)
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        var ds = GetDataSets();
+        var dataSetName = Guid.NewGuid().ToString();
+        string fullName = null;
+        try
         {
-            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-
-            var ds = GetDataSets();
-            var dataSets = ds.List(new DatasetListArgs());
-            Assert.IsNotNull(dataSets);
-            foreach (var set in dataSets)
+            var props = new[]
             {
-                Console.WriteLine(set.Dump(new JsonFormatter()));
+                new PropertyValue { Property = "quota", Value = "1G" },
+                new PropertyValue { Property = "compression", Value = "gzip" }
+            };
+
+            var dataSets = ds.List(new DatasetListArgs()).ToList();
+            var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
+            Assert.IsNotNull(parent);
+            Console.WriteLine(parent.Dump(new JsonFormatter()));
+            fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
+            var args = new DatasetCreationArgs
+            {
+                DatasetName = fullName,
+                Type = DatasetTypes.Filesystem,
+                Properties = addProperties ? props : null
+            };
+            var dataSet = ds.Create(args);
+            Assert.IsNotNull(dataSet);
+            Console.WriteLine(dataSet.Dump(new JsonFormatter()));
+        }
+        finally
+        {
+            // Check to prevent issues in case dataset creation failed
+            if (fullName != null)
+            {
+                var args = new DatasetDestroyArgs { Dataset = fullName };
+                ds.Destroy(args);
             }
         }
+    }
 
-        [TestMethod, TestCategory("Integration")]
-        public void ListDataSetTest()
-        {
-            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var ds = GetDataSets();
-            var args = new DatasetListArgs { Root = pool.Name };
-            var dataset = ds.List(args).FirstOrDefault();
-            Assert.IsNotNull(dataset);
-            Assert.AreEqual(pool.Name, dataset.DatasetName);
-        }
+    [TestMethod, TestCategory("Integration")]
+    public void ListDataSetShouldReturnDataSet()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        var ds = GetDataSets();
+        var args = new DatasetListArgs { Root = pool.Name };
+        var root = ds.List(args).FirstOrDefault();
 
-        [TestMethod, TestCategory("Integration")]
-        [DataRow(true)]
-        [DataRow(false)]
-        public void CreateDataSetTest(bool addProperties)
+        Assert.IsNotNull(root);
+        Console.WriteLine(root.Dump(new JsonFormatter()));
+    }
+
+    [TestMethod, TestCategory("Integration")]
+    public void GetNonExistingDataSetShouldThrowException()
+    {
+        var ds = GetDataSets();
+        Assert.ThrowsExactly<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
+    }
+
+    [TestMethod, TestCategory("Integration")]
+    public void DestroyRecursiveDryRunTest()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        var dsHelper = GetDataSets();
+        var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+        var root = $"{pool.Name}/myds/{rootId}";
+        var child1 = $"{pool.Name}/myds/{rootId}/child1";
+        var child2 = $"{pool.Name}/myds/{rootId}/child2";
+        var granchild1 = $"{pool.Name}/myds/{rootId}/child1/granchild";
+        var datasets = new[] { root, child1, child2, granchild1 };
+
+        try
         {
-            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var ds = GetDataSets();
-            var dataSetName = Guid.NewGuid().ToString();
-            string fullName = null;
-            try
+
+            foreach (var ds in datasets)
             {
-                var props = new[]
-                    {
-                        new PropertyValue { Property = "quota", Value = "1G" },
-                        new PropertyValue { Property = "compression", Value = "gzip" }
-                    };
-
-                var dataSets = ds.List(new DatasetListArgs()).ToList();
-                var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
-                Assert.IsNotNull(parent);
-                Console.WriteLine(parent.Dump(new JsonFormatter()));
-                fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
                 var args = new DatasetCreationArgs
                 {
-                    DatasetName = fullName,
+                    DatasetName = ds,
                     Type = DatasetTypes.Filesystem,
-                    Properties = addProperties ? props : null
+                    CreateParents = true,
+
                 };
-                var dataSet = ds.Create(args);
-                Assert.IsNotNull(dataSet);
-                Console.WriteLine(dataSet.Dump(new JsonFormatter()));
+                dsHelper.Create(args);
             }
-            finally
-            {
-                // Check to prevent issues in case dataset creation failed
-                if (fullName != null)
-                {
-                    var args = new DatasetDestroyArgs { Dataset = fullName };
-                    ds.Destroy(args);
-                }
-            }
+
+            var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
+            var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
+            var response = dsHelper.Destroy(destroyArgs);
+            Assert.AreEqual(flags, response.Flags);
+            var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
+            Assert.AreEqual(4, lines.Count);
+            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild"));
+            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1"));
+            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child2"));
+            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}"));
+
+            Console.WriteLine(response.DryRun);
         }
-
-        [TestMethod, TestCategory("Integration")]
-        public void ListDataSetShouldReturnDataSet()
+        finally
         {
-            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var ds = GetDataSets();
-            var args = new DatasetListArgs { Root = pool.Name };
-            var root = ds.List(args).FirstOrDefault();
-
-            Assert.IsNotNull(root);
-            Console.WriteLine(root.Dump(new JsonFormatter()));
-        }
-
-        [TestMethod, TestCategory("Integration")]
-        public void GetNonExistingDataSetShouldThrowException()
-        {
-            var ds = GetDataSets();
-            Assert.ThrowsException<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
-        }
-
-        [TestMethod, TestCategory("Integration")]
-        public void DestroyRecursiveDryRunTest()
-        {
-            using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
-            var dsHelper = GetDataSets();
-            var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-            var root = $"{pool.Name}/myds/{rootId}";
-            var child1 = $"{pool.Name}/myds/{rootId}/child1";
-            var child2 = $"{pool.Name}/myds/{rootId}/child2";
-            var granchild1 = $"{pool.Name}/myds/{rootId}/child1/granchild";
-            var datasets = new[] { root, child1, child2, granchild1 };
-
             try
             {
-
-                foreach (var ds in datasets)
-                {
-                    var args = new DatasetCreationArgs
-                    {
-                        DatasetName = ds,
-                        Type = DatasetTypes.Filesystem,
-                        CreateParents = true,
-
-                    };
-                    dsHelper.Create(args);
-                }
-
-                var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
-                var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
-                var response = dsHelper.Destroy(destroyArgs);
-                Assert.AreEqual(flags, response.Flags);
-                var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
-                Assert.AreEqual(4, lines.Count);
-                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild"));
-                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1"));
-                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child2"));
-                Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}"));
-
-                Console.WriteLine(response.DryRun);
+                var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = DatasetDestroyFlags.Recursive };
+                dsHelper.Destroy(destroyArgs);
             }
-            finally
+            catch
             {
-                try
-                {
-                    var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = DatasetDestroyFlags.Recursive };
-                    dsHelper.Destroy(destroyArgs);
-                }
-                catch
-                {
-                    //We dont care if cleaning up fails
-                }
+                //We dont care if cleaning up fails
             }
-
         }
+
     }
 }

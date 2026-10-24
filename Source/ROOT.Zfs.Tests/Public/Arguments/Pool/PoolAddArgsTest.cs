@@ -6,21 +6,21 @@ using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Tests.Public.Arguments.Pool
+namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
+
+[TestClass]
+public class PoolAddArgsTest
 {
-    [TestClass]
-    public class PoolAddArgsTest
+    [DataRow("tank", true, false, true)]
+    [DataRow("tank", false, true, false)]
+    [DataRow("tank", false, false, false)]
+    [DataRow(null, true, false, false)]
+    [DataRow("", true, false, false)]
+    [DataRow(" ", true, false, false)]
+    [TestMethod]
+    public void ValidateTest(string poolName, bool addValidVdev, bool addInvalidDev, bool expectValid)
     {
-        [DataRow("tank", true, false, true)]
-        [DataRow("tank", false, true, false)]
-        [DataRow("tank", false, false, false)]
-        [DataRow(null, true, false, false)]
-        [DataRow("", true, false, false)]
-        [DataRow(" ", true, false, false)]
-        [TestMethod]
-        public void ValidateTest(string poolName, bool addValidVdev, bool addInvalidDev, bool expectValid)
-        {
-            IList<VDevCreationArgs> vdevs = addValidVdev ?
+        IList<VDevCreationArgs> vdevs = addValidVdev ?
             [
 
                 new()
@@ -36,69 +36,68 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool
                     Devices = ["a"]
                 }
             } : null;
-            var args = new PoolAddArgs { PoolName = poolName, VDevs = vdevs };
+        var args = new PoolAddArgs { PoolName = poolName, VDevs = vdevs };
 
-            var valid = args.Validate(out var errors);
-            Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-            Assert.AreEqual(expectValid, valid);
-        }
+        var valid = args.Validate(out var errors);
+        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.AreEqual(expectValid, valid);
+    }
 
-        [DataRow("tank", true, "add -f tank mirror a b")]
-        [DataRow("tank", false, "add tank mirror a b")]
-        [TestMethod]
-        public void BuildArgsTestSimple(string pool, bool force, string expected)
+    [DataRow("tank", true, "add -f tank mirror a b")]
+    [DataRow("tank", false, "add tank mirror a b")]
+    [TestMethod]
+    public void BuildArgsTestSimple(string pool, bool force, string expected)
+    {
+        var args = new PoolAddArgs
         {
-            var args = new PoolAddArgs
+            PoolName = pool,
+            Force = force,
+            VDevs = new List<VDevCreationArgs>
             {
-                PoolName = pool,
-                Force = force,
-                VDevs = new List<VDevCreationArgs>
-                {
-                    new() {
-                        Type = VDevCreationType.Mirror,
-                        Devices = ["a", "b"]
-                    }
+                new() {
+                    Type = VDevCreationType.Mirror,
+                    Devices = ["a", "b"]
                 }
-            };
+            }
+        };
 
-            Assert.AreEqual(expected, args.ToString());
+        Assert.AreEqual(expected, args.ToString());
 
-        }
+    }
 
-        [DataRow("tank", "ashift=12", "add tank -o ashift=12 mirror a b")]
-        [DataRow("tank", "ashift=12,atime=off", "add tank -o ashift=12 mirror a b")]
-        [DataRow("tank", "atime=off", "add tank mirror a b")]
-        [TestMethod]
-        public void BuildArgsTestWithProperties(string pool, string properties, string expected)
+    [DataRow("tank", "ashift=12", "add tank -o ashift=12 mirror a b")]
+    [DataRow("tank", "ashift=12,atime=off", "add tank -o ashift=12 mirror a b")]
+    [DataRow("tank", "atime=off", "add tank mirror a b")]
+    [TestMethod]
+    public void BuildArgsTestWithProperties(string pool, string properties, string expected)
+    {
+        var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
+        var args = new PoolAddArgs
         {
-            var props = properties?.Split(',').Select(p => p.Split('=')).Select(a => new PropertyValue { Property = a[0], Value = a[1] }).ToArray();
-            var args = new PoolAddArgs
+            PoolName = pool,
+            VDevs = new List<VDevCreationArgs>
             {
-                PoolName = pool,
-                VDevs = new List<VDevCreationArgs>
-                {
-                    new() {
-                        Type = VDevCreationType.Mirror,
-                        Devices = ["a", "b"]
-                    }
-                },
-                PropertyValues = props
-            };
+                new() {
+                    Type = VDevCreationType.Mirror,
+                    Devices = ["a", "b"]
+                }
+            },
+            PropertyValues = props
+        };
 
-            Assert.AreEqual(expected, args.ToString());
-        }
+        Assert.AreEqual(expected, args.ToString());
+    }
 
-        [TestMethod]
-        public void MissingVDevsShouldThrowArgumentExceptionOnToString()
+    [TestMethod]
+    public void MissingVDevsShouldThrowArgumentExceptionOnToString()
+    {
+        var args = new PoolAddArgs
         {
-            var args = new PoolAddArgs
-            {
-                PoolName = "tank"
-            };
+            PoolName = "tank"
+        };
 
-            var ex = Assert.ThrowsException<ArgumentException>(() => args.ToString());
-            Assert.AreEqual("Missing Vdevs", ex.Message);
+        var ex = Assert.ThrowsExactly<ArgumentException>(() => args.ToString());
+        Assert.AreEqual("Missing Vdevs", ex.Message);
 
-        }
     }
 }

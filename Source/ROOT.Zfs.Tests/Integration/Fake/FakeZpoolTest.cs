@@ -6,354 +6,353 @@ using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
-namespace ROOT.Zfs.Tests.Integration.Fake
+namespace ROOT.Zfs.Tests.Integration.Fake;
+
+[TestClass]
+public class FakeZpoolTest
 {
-    [TestClass]
-    public class FakeZpoolTest
+    readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
+
+    private ZPool GetZpool()
     {
-        readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
+        return ZfsTestFactory.CreateZpool(_remoteProcessCall);
+    }
 
-        private ZPool GetZpool()
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetHistoryTestWithSkip()
+    {
+        var zp = GetZpool();
+        var args = new PoolHistoryArgs { PoolName = "tank" };
+        var lines = zp.History(args).ToList().Count;
+
+        args = new PoolHistoryArgs { PoolName = "tank", SkipLines = lines - 2 };
+        var history = zp.History(args).ToList();
+        Assert.IsNotNull(history);
+        Console.WriteLine(history.Dump(new JsonFormatter()));
+        Assert.AreEqual(2, history.Count);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetHistory()
+    {
+        var zp = GetZpool();
+        var args = new PoolHistoryArgs { PoolName = "tank" };
+        var history = zp.History(args);
+        Assert.IsNotNull(history);
+        Console.WriteLine(history.Dump(new JsonFormatter()));
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetHistoryAfterDate()
+    {
+        var zp = GetZpool();
+        var args = new PoolHistoryArgs { PoolName = "tank" };
+        var last10AtMost = zp.History(args).TakeLast(10).ToList();
+
+        // This is safe, since zfs always have at last pool creation as a history event
+        var history = last10AtMost.First();
+        args = new PoolHistoryArgs { PoolName = "tank", AfterDate = history.Time };
+        var afterDate = zp.History(args).ToList();
+
+        if (last10AtMost.Count > 1)
         {
-            return new ZPool(_remoteProcessCall);
+            Assert.IsTrue(afterDate.Count < last10AtMost.Count);
+        }
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void ZpoolStatusTest()
+    {
+        var zfs = ZfsTestFactory.CreateZfs(_remoteProcessCall);
+        var arg = new PoolStatusArgs { PoolName = "tank" };
+        var status = zfs.Pool.Status(arg);
+
+        Assert.IsNotNull(status);
+
+        if (status.State == State.Online)
+        {
+            return;
         }
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetHistoryTestWithSkip()
+        var pool = status.Pool;
+        foreach (var vdev in pool.VDevs)
         {
-            var zp = GetZpool();
-            var args = new PoolHistoryArgs { PoolName = "tank" };
-            var lines = zp.History(args).ToList().Count;
-
-            args = new PoolHistoryArgs { PoolName = "tank", SkipLines = lines - 2 };
-            var history = zp.History(args).ToList();
-            Assert.IsNotNull(history);
-            Console.WriteLine(history.Dump(new JsonFormatter()));
-            Assert.AreEqual(2, history.Count);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetHistory()
-        {
-            var zp = GetZpool();
-            var args = new PoolHistoryArgs { PoolName = "tank" };
-            var history = zp.History(args);
-            Assert.IsNotNull(history);
-            Console.WriteLine(history.Dump(new JsonFormatter()));
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetHistoryAfterDate()
-        {
-            var zp = GetZpool();
-            var args = new PoolHistoryArgs { PoolName = "tank" };
-            var last10AtMost = zp.History(args).TakeLast(10).ToList();
-
-            // This is safe, since zfs always have at last pool creation as a history event
-            var history = last10AtMost.First();
-            args = new PoolHistoryArgs { PoolName = "tank", AfterDate = history.Time };
-            var afterDate = zp.History(args).ToList();
-
-            if (last10AtMost.Count > 1)
+            if (vdev.State == State.Online)
             {
-                Assert.IsTrue(afterDate.Count < last10AtMost.Count);
+                continue;
             }
-        }
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void ZpoolStatusTest()
-        {
-            var zfs = new Core.Zfs(_remoteProcessCall);
-            var arg = new PoolStatusArgs { PoolName = "tank" };
-            var status = zfs.Pool.Status(arg);
-
-            Assert.IsNotNull(status);
-
-            if (status.State == State.Online)
+            Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
+            foreach (var device in vdev.Devices)
             {
-                return;
-            }
-
-            var pool = status.Pool;
-            foreach (var vdev in pool.VDevs)
-            {
-                if (vdev.State == State.Online)
+                if (device.State == State.Online)
                 {
                     continue;
                 }
 
-                Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
-                foreach (var device in vdev.Devices)
-                {
-                    if (device.State == State.Online)
-                    {
-                        continue;
-                    }
-
-                    Console.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
-                }
+                Console.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
             }
         }
+    }
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void DestroyPoolTest()
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void DestroyPoolTest()
+    {
+        var zp = GetZpool();
+        var pool = zp.Create(new PoolCreateArgs
         {
-            var zp = GetZpool();
-            var pool = zp.Create(new PoolCreateArgs
-            {
-                PoolName = "mytest",
-                VDevs =
-                [
-                    new()
+            PoolName = "mytest",
+            VDevs =
+            [
+                new()
+                {
+                    Type = VDevCreationType.Mirror,
+                    Devices = ["/dev/sda", "/dev/sdb"]
+                }
+            ]
+        });
+        Assert.IsNotNull(pool);
+        zp.Destroy(new PoolDestroyArgs { PoolName = "mytest" });
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetPoolInfosTest()
+    {
+        var zp = GetZpool();
+
+        var infos = zp.List();
+        Assert.AreEqual(2, infos.Count);
+
+    }
+
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetPoolInfoTest()
+    {
+        var zp = GetZpool();
+
+        var info = zp.List(new PoolListArgs { PoolName = "tank2" });
+        Assert.IsNotNull(info);
+        Assert.AreEqual(5000, info.Version);
+        Assert.AreEqual("tank2", info.PoolName);
+        Assert.AreEqual("15.5G", info.Size.ToString());
+        Assert.AreEqual("105K", info.Allocated.ToString());
+        Assert.AreEqual("15.5G", info.Free.ToString());
+        Assert.AreEqual("7.30%", info.Fragmentation.ToString());
+        Assert.AreEqual("6.50%", info.CapacityUsed.ToString());
+        Assert.AreEqual("1.43x", info.DedupRatio.ToString());
+        Assert.AreEqual(State.Online, info.State);
+        Console.WriteLine(info.Dump(new JsonFormatter()));
+
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void OfflineTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolOfflineArgs { PoolName = "tank", Device = "/dev/sda" };
+        zp.Offline(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.IsTrue(commands.Contains("/sbin/zpool offline tank /dev/sda"));
+    }
+
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void OnlineTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolOnlineArgs { PoolName = "tank", Device = "/dev/sda" };
+        zp.Online(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.IsTrue(commands.Contains("/sbin/zpool online tank /dev/sda"));
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void ClearTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolClearArgs { PoolName = "tank", Device = "/dev/sda" };
+        zp.Clear(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void IOStatTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolIOStatsArgs { PoolName = "tank", Devices = ["/dev/sda"] };
+        var stats = zp.IOStats(args);
+        Console.WriteLine(stats.Dump(new JsonFormatter()));
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda"));
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void ResilverTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolResilverArgs { PoolName = "tank" };
+        zp.Resilver(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void CreateDraidTest()
+    {
+        var zp = GetZpool();
+        zp.Create(new PoolCreateArgs
+        {
+            PoolName = "mytest",
+            VDevs =
+            [
+                new DraigVDevCreationArgs
+                {
+                    Type = VDevCreationType.DRaid1,
+                    Devices = ["/dev/sda", "/dev/sdb","/dev/sdc", "/dev/sdd"],
+                    DraidArgs = new DraidArgs
                     {
-                        Type = VDevCreationType.Mirror,
-                        Devices = ["/dev/sda", "/dev/sdb"]
+                        Spares=1,
+                        DataDevices=2,
+                        Children=4
                     }
-                ]
-            });
-            Assert.IsNotNull(pool);
-            zp.Destroy(new PoolDestroyArgs { PoolName = "mytest" });
-        }
+                }
+            ]
+        });
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(2, commands.Count);
+        Assert.AreEqual("/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd", commands[0]);
+        Assert.AreEqual("/sbin/zpool status -vP mytest", commands[1]);
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetPoolInfosTest()
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void ScrubTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolScrubArgs { PoolName = "tank" };
+        zp.Scrub(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool scrub tank", commands[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void TrimTest()
+    {
+        var zp = GetZpool();
+        zp.Trim(new PoolTrimArgs { PoolName = "tank" });
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool trim tank", commands[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void UpgradeTest()
+    {
+        var zp = GetZpool();
+        zp.Upgrade(new PoolUpgradeArgs { PoolName = "tank" });
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool upgrade tank", commands[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void GetUpgradeablePoolsTest()
+    {
+        var zp = GetZpool();
+        var pools = zp.GetUpgradeablePools();
+        Assert.AreEqual(1, pools.Count);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void DetachTest()
+    {
+        var zp = GetZpool();
+        var args = new PoolDetachArgs { PoolName = "tank", Device = "/dev/sdb" };
+        zp.Detach(args);
+
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool detach tank /dev/sdb", commands[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void AttachNewDeviceToPool()
+    {
+        var zp = GetZpool();
+
+        var args = new PoolAttachArgs
         {
-            var zp = GetZpool();
+            PoolName = "tank",
+            OldDevice = "/dev/sdb",
+            NewDevice = "/dev/sdc"
+        };
 
-            var infos = zp.List();
-            Assert.AreEqual(2, infos.Count);
+        zp.Attach(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool attach tank /dev/sdb /dev/sdc", commands[0]);
+    }
 
-        }
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void ReplaceNewDeviceToPool()
+    {
+        var zp = GetZpool();
 
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetPoolInfoTest()
+        var args = new PoolReplaceArgs
         {
-            var zp = GetZpool();
+            PoolName = "tank",
+            OldDevice = "/dev/sdb",
+            NewDevice = "/dev/sdc",
+        };
 
-            var info = zp.List(new PoolListArgs { PoolName = "tank2" });
-            Assert.IsNotNull(info);
-            Assert.AreEqual(5000, info.Version);
-            Assert.AreEqual("tank2", info.PoolName);
-            Assert.AreEqual("15.5G", info.Size.ToString());
-            Assert.AreEqual("105K", info.Allocated.ToString());
-            Assert.AreEqual("15.5G", info.Free.ToString());
-            Assert.AreEqual("7.30%", info.Fragmentation.ToString());
-            Assert.AreEqual("6.50%", info.CapacityUsed.ToString());
-            Assert.AreEqual("1.43x", info.DedupRatio.ToString());
-            Assert.AreEqual(State.Online, info.State);
-            Console.WriteLine(info.Dump(new JsonFormatter()));
+        zp.Replace(args);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool replace tank /dev/sdb /dev/sdc", commands[0]);
+    }
 
-        }
+    [TestMethod, TestCategory("FakeIntegration")]
+    public void AddExtraMirrorToMirrorPool()
+    {
+        var zp = GetZpool();
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void OfflineTest()
+        var args = new PoolAddArgs
         {
-            var zp = GetZpool();
-            var args = new PoolOfflineArgs { PoolName = "tank", Device = "/dev/sda" };
-            zp.Offline(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool offline tank /dev/sda"));
-        }
+            PoolName = "tank",
+            Force = true,
+            VDevs = [new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sda", "/dev/sdb"] }],
+        };
 
 
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void OnlineTest()
+        zp.Add(args);
+
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
+    }
+
+    [TestMethod]
+    public void ZpoolRemoveTest()
+    {
+        var zp = GetZpool();
+        var removeArgs = new PoolRemoveArgs
         {
-            var zp = GetZpool();
-            var args = new PoolOnlineArgs { PoolName = "tank", Device = "/dev/sda" };
-            zp.Online(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool online tank /dev/sda"));
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void ClearTest()
-        {
-            var zp = GetZpool();
-            var args = new PoolClearArgs { PoolName = "tank", Device = "/dev/sda" };
-            zp.Clear(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void IOStatTest()
-        {
-            var zp = GetZpool();
-            var args = new PoolIOStatsArgs { PoolName = "tank", Devices = ["/dev/sda"] };
-            var stats = zp.IOStats(args);
-            Console.WriteLine(stats.Dump(new JsonFormatter()));
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda"));
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void ResilverTest()
-        {
-            var zp = GetZpool();
-            var args = new PoolResilverArgs { PoolName = "tank" };
-            zp.Resilver(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void CreateDraidTest()
-        {
-            var zp = GetZpool();
-            zp.Create(new PoolCreateArgs
-            {
-                PoolName = "mytest",
-                VDevs =
-                [
-                    new DraigVDevCreationArgs
-                    {
-                        Type = VDevCreationType.DRaid1,
-                        Devices = ["/dev/sda", "/dev/sdb","/dev/sdc", "/dev/sdd"],
-                        DraidArgs = new DraidArgs
-                        {
-                            Spares=1,
-                            DataDevices=2,
-                            Children=4
-                        }
-                    }
-                ]
-            });
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(2, commands.Count);
-            Assert.AreEqual("/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd", commands[0]);
-            Assert.AreEqual("/sbin/zpool status -vP mytest", commands[1]);
-
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void ScrubTest()
-        {
-            var zp = GetZpool();
-            var args = new PoolScrubArgs { PoolName = "tank" };
-            zp.Scrub(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool scrub tank", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void TrimTest()
-        {
-            var zp = GetZpool();
-            zp.Trim(new PoolTrimArgs { PoolName = "tank" });
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool trim tank", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void UpgradeTest()
-        {
-            var zp = GetZpool();
-            zp.Upgrade(new PoolUpgradeArgs { PoolName = "tank" });
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool upgrade tank", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void GetUpgradeablePoolsTest()
-        {
-            var zp = GetZpool();
-            var pools = zp.GetUpgradeablePools();
-            Assert.AreEqual(1, pools.Count);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void DetachTest()
-        {
-            var zp = GetZpool();
-            var args = new PoolDetachArgs { PoolName = "tank", Device = "/dev/sdb" };
-            zp.Detach(args);
-
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool detach tank /dev/sdb", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void AttachNewDeviceToPool()
-        {
-            var zp = GetZpool();
-
-            var args = new PoolAttachArgs
-            {
-                PoolName = "tank",
-                OldDevice = "/dev/sdb",
-                NewDevice = "/dev/sdc"
-            };
-
-            zp.Attach(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool attach tank /dev/sdb /dev/sdc", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void ReplaceNewDeviceToPool()
-        {
-            var zp = GetZpool();
-
-            var args = new PoolReplaceArgs
-            {
-                PoolName = "tank",
-                OldDevice = "/dev/sdb",
-                NewDevice = "/dev/sdc",
-            };
-
-            zp.Replace(args);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool replace tank /dev/sdb /dev/sdc", commands[0]);
-        }
-
-        [TestMethod, TestCategory("FakeIntegration")]
-        public void AddExtraMirrorToMirrorPool()
-        {
-            var zp = GetZpool();
-
-            var args = new PoolAddArgs
-            {
-                PoolName = "tank",
-                Force = true,
-                VDevs = [new VDevCreationArgs { Type = VDevCreationType.Mirror, Devices = ["/dev/sda", "/dev/sdb"] }],
-            };
+            PoolName = "tank",
+            VDev = "mirror-1"
+        };
 
 
-            zp.Add(args);
-
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
-        }
-
-        [TestMethod]
-        public void ZpoolRemoveTest()
-        {
-            var zp = GetZpool();
-            var removeArgs = new PoolRemoveArgs
-            {
-                PoolName = "tank",
-                VDev = "mirror-1"
-            };
-
-
-            zp.Remove(removeArgs);
-            var commands = _remoteProcessCall.GetCommandsInvoked();
-            Assert.AreEqual(1, commands.Count);
-            Assert.AreEqual("/sbin/zpool remove tank mirror-1", commands[0]);
-        }
+        zp.Remove(removeArgs);
+        var commands = _remoteProcessCall.GetCommandsInvoked();
+        Assert.AreEqual(1, commands.Count);
+        Assert.AreEqual("/sbin/zpool remove tank mirror-1", commands[0]);
     }
 }

@@ -1,13 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ROOT.Zfs.Tests.Integration.Fake.DataSet
+namespace ROOT.Zfs.Tests.Integration.Fake.DataSet;
+
+[TestClass]
+public class FakeDataSetTestV2_1_5_2 : FakeDataSetTest
 {
-    [TestClass]
-    public class FakeDataSetTestV2_1_5_2 : FakeDataSetTest
+    internal override FakeRemoteConnection CreateProcessCall()
     {
-        internal override FakeRemoteConnection CreateProcessCall()
-        {
-            return new FakeRemoteConnection("2.1.5-2");
-        }
+        return new FakeRemoteConnection("2.1.5-2");
     }
 }
