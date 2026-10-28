@@ -1,0 +1,64 @@
+# Takes current version and builds/test and then release nuget to the selected places
+
+name: Release nuget
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      publish_nuget:
+        type: boolean  
+        description: 'Publish nuget package'
+        default: true
+        required: true
+      publish_nuget_org:
+        type: boolean  
+        description: 'Publish nuget package to nuget.org'
+        default: false
+        required: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Grants the GITHUB_TOKEN permission to publish packages
+      id-token: write
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Validate user
+      if: ${{ github.triggering_actor != 'bjornbouetsmith' }}
+      run: exit 1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: 10.0.x
+    - name: Restore dependencies
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet nuget add source --username ${{ github.triggering_actor }} --password $GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
+        dotnet restore Source/ROOT.Shared.Utils.slnx
+    - name: Build
+      run: dotnet build Source/ROOT.Shared.Utils.slnx --no-restore --configuration Release
+    - name: Test
+      run: dotnet test Source/**/*.Tests.csproj --no-build --verbosity normal --configuration Release
+    - name: publish nuget to github repository
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: false
+      run: dotnet nuget push Source/**/*.nupkg  --api-key $GITHUB_TOKEN --skip-duplicate --source "github"
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: bjornbouetsmith
+    - name: publish nuget to nuget.org repository
+      if: ${{ inputs.publish_nuget_org }}
+      run: dotnet nuget push Source/**/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}}  --skip-duplicate --source https://api.nuget.org/v3/index.json
+

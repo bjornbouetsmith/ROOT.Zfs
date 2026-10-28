@@ -1,10 +1,14 @@
 <Solution>
   <Folder Name="/Github/">
-    <File Path="../.github/workflows/create-release.yml" />
     <File Path="../.github/workflows/dotnet-ci-build.yml" />
     <File Path="../.github/workflows/dotnet-ci-integration.yml" />
     <File Path="../.github/workflows/dotnet-ci-sonar.yml" />
+    <File Path="../.github/workflows/increment-version.yml" />
+    <File Path="../.github/workflows/release-nuget.yml" />
     <File Path="../README.md" />
+  </Folder>
+  <Folder Name="/Scripts/">
+    <File Path="../Scripts/bump-version.sh" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../global.json" />
