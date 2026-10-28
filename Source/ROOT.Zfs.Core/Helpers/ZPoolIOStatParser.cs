@@ -58,7 +58,7 @@ internal static class ZPoolIOStatParser
             }
             else // This should not happen, but if it does, we want a format exception, not any other exception
             {
-                throw ExceptionHelper.FormatException(index, line);
+                throw ExceptionHelper.FormatException(index, line,-1);
             }
         }
 
@@ -79,7 +79,7 @@ internal static class ZPoolIOStatParser
             // simple
             ParseSimple(ioStat, parts);
         }
-        else if (parts.Length == 17)
+        else if (parts.Length is 17 or 18) // 2.2.2 adds extra unsupported column
         {
             // with latency stats
             ParseSimple(ioStat, parts);
@@ -87,7 +87,7 @@ internal static class ZPoolIOStatParser
         }
         else
         {
-            throw ExceptionHelper.FormatException(index, line);
+            throw ExceptionHelper.FormatException(index, line, parts.Length);
         }
 
         return ioStat;

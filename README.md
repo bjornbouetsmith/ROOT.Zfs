@@ -12,8 +12,12 @@ ZFS .NET library which interfaces with the zfs/zpool binaries to manipulate and 
 
 Tested against ZoL 
 * version 2.1.5-2 on Rocky Linux 8.5
-* version 2.1.4 on Ubuntu 22.04
 * version 0.86 on Ubuntu 20.04 
+* version 2.1.4 on Ubuntu 22.04
+* version 2.1.5-1 on Ubuntu 22.04
+* version 2.2.2-0 on Ubuntu 24.04
+* version 2.4.1-1 on Ubuntu 26.04
+
 
 Will most likely work against different versions, but some of the commands will fail against ZFS on different platforms, since the supporting commands used to load disk/partition information are different - or because the commands are simply not available in that version of zfs.
 
