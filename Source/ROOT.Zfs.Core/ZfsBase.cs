@@ -35,13 +35,15 @@ public abstract class ZfsBase : IBasicZfs
         // First use any remote connection
         IProcessCall command = _remoteConnection;
 
+        current.RequiresSudo = RequiresSudo;
+
         // pipe into previous call if any
         command = ProcessCallExtensions.Pipe(command, current);
 
 
         Trace.WriteLine($"Built command:{command.FullCommandLine}");
         command.Timeout = CommandTimeout;
-        command.RequiresSudo = RequiresSudo;
+        //command.RequiresSudo = RequiresSudo;
         return command;
     }
 }

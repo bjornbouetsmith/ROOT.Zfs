@@ -105,11 +105,11 @@ public class ZpoolTest
     [TestMethod, TestCategory("Integration")]
     public void ZpoolStatusTest()
     {
-        var zfs = ZfsTestFactory.CreateZfs(_remoteProcessCall);
-        zfs.RequiresSudo = TestHelpers.RequiresSudo;
         using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
+
+        var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = testPool.Name };
-        var status = zfs.Pool.Status(arg);
+        var status = zp.Status(arg);
 
         Assert.IsNotNull(status);
 
