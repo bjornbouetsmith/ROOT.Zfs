@@ -1,23 +1,22 @@
-﻿namespace ROOT.Zfs.Public.Arguments.Pool
+﻿namespace ROOT.Zfs.Public.Arguments.Pool;
+
+/// <summary>
+/// Extra arguments only for draid
+/// </summary>
+public class DraidArgs
 {
     /// <summary>
-    /// Extra arguments only for draid
+    /// Number of data devices
     /// </summary>
-    public class DraidArgs
-    {
-        /// <summary>
-        /// Number of data devices
-        /// </summary>
-        public int DataDevices { get; set; }
+    public int DataDevices { get; set; }
         
-        /// <summary>
-        /// Number of children
-        /// </summary>
-        public int Children { get; set; }
+    /// <summary>
+    /// Number of children
+    /// </summary>
+    public int Children { get; set; }
 
-        /// <summary>
-        /// Number of spares
-        /// </summary>
-        public int Spares { get; set; }
-    }
+    /// <summary>
+    /// Number of spares
+    /// </summary>
+    public int Spares { get; set; }
 }

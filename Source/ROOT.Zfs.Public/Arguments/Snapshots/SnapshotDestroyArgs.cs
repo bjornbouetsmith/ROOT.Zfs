@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Text;
 
-namespace ROOT.Zfs.Public.Arguments.Snapshots
+namespace ROOT.Zfs.Public.Arguments.Snapshots;
+
+/// <summary>
+/// Contains arguments and validation for zfs destroy
+/// </summary>
+public class SnapshotDestroyArgs : SnapshotArgs
 {
-    /// <summary>
-    /// Contains arguments and validation for zfs destroy
-    /// </summary>
-    public class SnapshotDestroyArgs : SnapshotArgs
+    /// <inheritdoc />
+    public SnapshotDestroyArgs() : base("destroy")
     {
-        /// <inheritdoc />
-        public SnapshotDestroyArgs() : base("destroy")
-        {
-        }
+    }
 
-        /// <summary>
-        /// Whether or not the Snapshotname should be interpreted verbatim or as a prefix
-        /// </summary>
-        public bool IsExactName { get; set; }
+    /// <summary>
+    /// Whether or not the Snapshotname should be interpreted verbatim or as a prefix
+    /// </summary>
+    public bool IsExactName { get; set; }
 
-        /// <inheritdoc />
-        protected override string BuildArgs(string command)
-        {
-            var args = new StringBuilder();
-            args.Append(command);
+    /// <inheritdoc />
+    protected override string BuildArgs(string command)
+    {
+        var args = new StringBuilder();
+        args.Append(command);
 
-            var dataset = Decode(Dataset);
-            var rawSnapName = GetRawSnapshotName();
+        var dataset = Decode(Dataset);
+        var rawSnapName = GetRawSnapshotName();
 
-            args.Append($" {dataset}@{rawSnapName}");
+        args.Append($" {dataset}@{rawSnapName}");
 
-            return args.ToString();
-        }
+        return args.ToString();
     }
 }

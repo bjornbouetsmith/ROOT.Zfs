@@ -6,10 +6,6 @@
   <PropertyGroup Condition="'$(ReleaseNotes)' != ''">
     <RNotes>$(ReleaseNotes)</RNotes>
   </PropertyGroup>
-
-  <!--<PropertyGroup>
-    <Version>1.1.3</Version>
-  </PropertyGroup>-->
   
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,25 +14,14 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
-    <NoWarn>1701;1702;NU1803</NoWarn>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
-    <NoWarn>1701;1702;NU1803</NoWarn>
-  </PropertyGroup>
-  
   <ItemGroup>
     <InternalsVisibleTo Include="ROOT.Zfs.Tests" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="ROOT.Shared.Utils.OS" Version="1.1.11" />
-    <PackageReference Include="ROOT.Shared.Utils.Serialization" Version="1.1.11" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="ROOT.Shared.Utils.OS" />
+    <PackageReference Include="ROOT.Shared.Utils.Serialization" />
   </ItemGroup>
   
   <ItemGroup>

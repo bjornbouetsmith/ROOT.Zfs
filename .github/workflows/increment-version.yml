@@ -1,0 +1,189 @@
+# Creates a release version pull request and tags the merged release.
+#
+# workflow_dispatch:
+#   - increments the selected semantic-version part in Source/Directory.Build.props
+#   - builds and tests the change on a release branch
+#   - pushes the branch and opens a PR titled "Creating release v<version>"
+#
+# push to main:
+#   - after the release PR is merged, creates the tag v<version> for the
+#     version that was merged if it does not already exist
+#
+# Notes:
+#   - The repository must allow GitHub Actions to create pull requests and
+#     grant read/write workflow permissions.
+#   - Events triggered with GITHUB_TOKEN do not start other workflows. Set a
+#     RELEASE_TOKEN secret (a PAT with contents and pull-requests write access)
+#     to make CI run on the release PR or to bypass the GITHUB_TOKEN
+#     restrictions above.
+
+name: Increment Version and Tag Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_part:
+        description: 'Semantic version part to increment'
+        type: choice
+        options:
+          - Patch
+          - Minor
+          - Major
+        default: Patch
+        required: true
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: increment-version
+  cancel-in-progress: false
+
+jobs:
+  prepare-release:
+    name: Bump version, build, test and open PR
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+      PROPS_FILE: Source/Directory.Build.props
+    steps:
+    - name: Check out main
+      uses: actions/checkout@v6
+      with:
+        ref: main
+        token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Determine release version
+      id: version
+      env:
+        VERSION_PART: ${{ inputs.version_part }}
+      run: |
+        set -euo pipefail
+        part="$(echo "$VERSION_PART" | tr '[:upper:]' '[:lower:]')"
+        new_version="$(bash Scripts/bump-version.sh --dry-run "$part" "$PROPS_FILE")"
+        branch="release/v$new_version"
+
+        if git ls-remote --exit-code --tags origin "refs/tags/v$new_version" >/dev/null 2>&1; then
+          echo "error: tag v$new_version already exists" >&2
+          exit 1
+        fi
+        if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+          echo "error: branch $branch already exists on origin; delete it or use another version part" >&2
+          exit 1
+        fi
+
+        echo "new_version=$new_version" >> "$GITHUB_OUTPUT"
+        echo "branch=$branch" >> "$GITHUB_OUTPUT"
+        echo "Preparing release v$new_version on $branch"
+
+    - name: Create release branch and bump version
+      env:
+        VERSION_PART: ${{ inputs.version_part }}
+        BRANCH: ${{ steps.version.outputs.branch }}
+      run: |
+        set -euo pipefail
+        part="$(echo "$VERSION_PART" | tr '[:upper:]' '[:lower:]')"
+        git switch -c "$BRANCH"
+        bash Scripts/bump-version.sh "$part" "$PROPS_FILE" >/dev/null
+        git diff -- "$PROPS_FILE"
+
+    - name: Restore dependencies
+      run: dotnet restore Source/ROOT.Zfs.slnx
+
+    - name: Build
+      run: dotnet build Source/ROOT.Zfs.slnx --no-restore --configuration Release
+
+    - name: Test
+      run: dotnet test Source/ROOT.Zfs.slnx --no-build --configuration Release --verbosity normal
+
+    - name: Commit and push release branch
+      env:
+        BRANCH: ${{ steps.version.outputs.branch }}
+        NEW_VERSION: ${{ steps.version.outputs.new_version }}
+      run: |
+        set -euo pipefail
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add "$PROPS_FILE"
+        git commit -m "Increment version to v$NEW_VERSION"
+        git push --set-upstream origin "$BRANCH"
+
+    - name: Open release pull request
+      env:
+        BRANCH: ${{ steps.version.outputs.branch }}
+        NEW_VERSION: ${{ steps.version.outputs.new_version }}
+        VERSION_PART: ${{ inputs.version_part }}
+      run: |
+        set -euo pipefail
+        body="$(cat <<EOF
+        This PR increments the version in \`Source/Directory.Build.props\`.
+
+        - Version part: **$VERSION_PART**
+        - New version: **v$NEW_VERSION**
+        - Build and tests passed on the release branch.
+
+        Once merged, the workflow creates the tag \`v$NEW_VERSION\` on \`main\`.
+        EOF
+        )"
+        gh pr create \
+          --base main \
+          --head "$BRANCH" \
+          --title "Creating release v$NEW_VERSION" \
+          --body "$body"
+
+  tag-release:
+    name: Tag merged release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Check out main
+      uses: actions/checkout@v6
+      with:
+        ref: main
+        fetch-depth: 0
+        token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+    - name: Create version tag
+      run: |
+        set -euo pipefail
+        version_count="$(grep -o '<Version>' Source/Directory.Build.props | wc -l || true)"
+        if [[ "$version_count" -ne 1 ]]; then
+          echo "error: expected exactly one <Version> element in Source/Directory.Build.props, found $version_count" >&2
+          exit 1
+        fi
+
+        version="$(sed -nE 's:.*<Version>([0-9]+\.[0-9]+\.[0-9]+)</Version>.*:\1:p' Source/Directory.Build.props)"
+        if [[ -z "$version" ]]; then
+          echo "error: could not read the version from Source/Directory.Build.props" >&2
+          exit 1
+        fi
+
+        tag="v$version"
+        if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+          echo "Tag $tag already exists; nothing to do."
+          exit 0
+        fi
+
+        # Tag the commit that introduced the version rather than whatever is
+        # currently at the tip of main.
+        release_commit="$(git log -1 --format=%H -- Source/Directory.Build.props)"
+        if [[ -z "$release_commit" ]]; then
+          echo "error: could not find the commit that changed Source/Directory.Build.props" >&2
+          exit 1
+        fi
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git tag -a "$tag" "$release_commit" -m "Release $tag"
+        git push origin "$tag"
+        echo "Created and pushed tag $tag on $release_commit"

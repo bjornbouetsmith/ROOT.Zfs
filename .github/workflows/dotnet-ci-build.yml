@@ -39,11 +39,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        dotnet nuget add source --username ${{ github.triggering_actor }} --password $GITHUB_TOKEN  --store-password-in-clear-text --name github "https://nuget.pkg.github.com/bjornbouetsmith/index.json"
-        dotnet restore Source/ROOT.Zfs.sln
+        dotnet restore Source/ROOT.Zfs.slnx
 
     - name: Build
-      run: dotnet build Source/ROOT.Zfs.sln --no-restore
+      run: dotnet build Source/ROOT.Zfs.slnx --no-restore
     - name: Test
       run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 

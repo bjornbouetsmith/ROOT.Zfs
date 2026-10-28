@@ -30,6 +30,7 @@ The codebase is organized into primary projects under `Source`:
     - `Properties` (`IProperties`)
     - `Pool` (`IZPool`)
   - Provides system-level helper methods like fetching ZFS version info, disk listings via `lsblk`, and SMART hardware information.
+  - Binary location detection and initialization are handled by the injected `ZfsBinaries` instance rather than by `Zfs`.
 
 - **`ZPool`**
   - Implements `IZPool`.
@@ -51,13 +52,18 @@ The codebase is organized into primary projects under `Source`:
 
 ### Command Builders (`ROOT.Zfs.Core.Commands`)
 
-- **`Commands`**: Helper creating standard CLI process calls or `ProcessBootstrap` configurations.
-- **`ZpoolCommands`**: Generates `zpool` executable CLI arguments for pool actions (e.g., `zpool status`, `zpool create`, `zpool iostat`).
-- **`ZfsCommands`**: Base helper for ZFS dataset and property CLI invocation.
-- **`DataSetCommands`**: Builds arguments for `zfs create`, `zfs destroy`, `zfs list`, `zfs mount`, and `zfs unmount`.
-- **`SnapshotCommands`**: Builds arguments for `zfs snapshot`, `zfs rollback`, `zfs clone`, `zfs hold`, and `zfs release`.
-- **`PropertyCommands`**: Builds arguments for `zfs get`, `zfs set`, and `zfs inherit`.
-- **`ZdbCommands`**: Generates `zdb` command arguments for inspecting ZFS pool structures directly.
+- **`CommandBuilderBase`**: Non-static base class that holds the injected `IZfsBinaries` instance and shared validation helpers.
+- **`IZfsBinaries` / `ZfsBinaries`**: Per-`Zfs`-instance binary locations (zfs, zpool, zdb, ls, lsblk, which, smartctl). Replaces the old static `Commands.Which*` properties. `ZfsBinaries.Initialize()` resolves each location through `which` and sets `Initialized`; it is the only component that detects binary locations.
+- **`ISystemCommands` / `SystemCommands`**: `which`, disk listing, block-device listing, and SMART commands.
+- **`IZpoolCommands` / `ZpoolCommands`**: Generates `zpool` executable CLI arguments for pool actions (e.g., `zpool status`, `zpool create`, `zpool iostat`).
+- **`IZfsCommands` / `ZfsCommands`**: Generates `zfs --version`.
+- **`IDatasetCommands` / `DataSetCommands`**: Builds arguments for `zfs list`, `zfs create`, `zfs destroy`, `zfs mount`, `zfs unmount`, and `zfs promote`.
+- **`ISnapshotCommands` / `SnapshotCommands`**: Builds arguments for `zfs snapshot`, `zfs clone`, `zfs destroy`, `zfs hold`, `zfs holds`, and `zfs release`. Depends on `IDatasetCommands` for snapshot listing.
+- **`IPropertyCommands` / `PropertyCommands`**: Builds arguments for `zfs get`, `zfs set`, and `zfs inherit`.
+- **`IZdbCommands` / `ZdbCommands`**: Generates `zdb` command arguments for inspecting ZFS pool structures directly.
+- **`ZfsServiceCollectionExtensions.AddZfs`**: Microsoft.Extensions.DependencyInjection registration for all command builders, `IZfsBinaries`, and `IZfs`.
+
+All command builders receive their dependencies through constructors. `Zfs` receives `IZfsBinaries`, `IZfsCommands`, `ISystemCommands`, and the manager interfaces (`IDatasets`, `IProperties`, `ISnapshots`, `IZPool`) through its constructor; it does not create them itself. The remaining command builders are injected into those managers. Binary initialization is exposed by `IZfsBinaries`/`ZfsBinaries` (`Initialize()` and `Initialized`), not by `IZfs`.
 
 ---
 
@@ -131,7 +137,7 @@ Classes under `ROOT.Zfs.Public.Arguments` wrap inputs required for ZFS CLI invoc
                                v
 +-------------------------------------------------------------+
 |                          Zfs                                |
-|   (Uses Commands, Parsers, & RemoteConnection execution)   |
+|  (Uses injected I*Commands, Parsers, & RemoteConnection)   |
 +----+-------------------+-------------------+----------------+
      |                   |                   |                |
      v                   v                   v                v

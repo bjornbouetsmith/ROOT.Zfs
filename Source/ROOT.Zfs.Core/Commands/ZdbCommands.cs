@@ -1,15 +1,18 @@
 ﻿using ROOT.Shared.Utils.OS;
 
-namespace ROOT.Zfs.Core.Commands
+namespace ROOT.Zfs.Core.Commands;
+
+internal sealed class ZdbCommands : CommandBuilderBase, IZdbCommands
 {
-    internal class ZdbCommands : Commands
+    public ZdbCommands(IZfsBinaries binaries) : base(binaries)
     {
-        /// <summary>
-        /// Returns a command that will output from zdb
-        /// </summary>
-        public static IProcessCall GetRawZdbOutput()
-        {
-            return new ProcessCall(WhichZdb);
-        }
+    }
+
+    /// <summary>
+    /// Returns a command that will output from zdb
+    /// </summary>
+    public IProcessCall GetRawZdbOutput()
+    {
+        return new ProcessCall(Binaries.Zdb);
     }
 }

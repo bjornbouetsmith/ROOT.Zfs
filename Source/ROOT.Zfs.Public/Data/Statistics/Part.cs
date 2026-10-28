@@ -2,44 +2,43 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace ROOT.Zfs.Public.Data.Statistics
+namespace ROOT.Zfs.Public.Data.Statistics;
+
+/// <summary>
+/// Represents a percentage
+/// </summary>
+public struct Part
 {
     /// <summary>
-    /// Represents a percentage
+    /// The underluing floating point value of the percentage
     /// </summary>
-    public struct Part
+    public double Value { get; set; }
+
+    /// <summary>
+    /// Default ctor for serialization purposes
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public Part()
     {
-        /// <summary>
-        /// The underluing floating point value of the percentage
-        /// </summary>
-        public double Value { get; set; }
+        Value = 0;
+    }
 
-        /// <summary>
-        /// Default ctor for serialization purposes
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        public Part()
+    /// <summary>
+    /// Creates a <see cref="Part"/> based on the string representation of a percentage.
+    /// If the passed value cannot be parsed into a valid floating point, the value gets set to 0
+    /// </summary>
+    public Part(string percentage)
+    {
+        if (!double.TryParse(percentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
         {
-            Value = 0;
+            Trace.TraceWarning($"Could not parse '{percentage}' into a double");
         }
+        Value = value;
+    }
 
-        /// <summary>
-        /// Creates a <see cref="Part"/> based on the string representation of a percentage.
-        /// If the passed value cannot be parsed into a valid floating point, the value gets set to 0
-        /// </summary>
-        public Part(string percentage)
-        {
-            if (!double.TryParse(percentage, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
-            {
-                Trace.TraceWarning($"Could not parse '{percentage}' into a double");
-            }
-            Value = value;
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0:N2}%", Value);
-        }
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0:N2}%", Value);
     }
 }

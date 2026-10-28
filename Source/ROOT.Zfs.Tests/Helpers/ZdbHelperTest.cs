@@ -3,12 +3,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
 
-namespace ROOT.Zfs.Tests.Helpers
+namespace ROOT.Zfs.Tests.Helpers;
+
+[TestClass]
+public class ZdbHelperTest
 {
-    [TestClass]
-    public class ZdbHelperTest
-    {
-        private const string OutputTwoPools = @"backup:
+    private const string OutputTwoPools = @"backup:
     version: 5000
     name: 'backup'
     state: 0
@@ -132,39 +132,38 @@ tank3:
         com.delphix:embedded_data
 ";
 
-        [TestMethod]
-        public void ShouldParseVersionsCorrectlyForMultiplePools()
-        {
-            var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
-            Console.WriteLine(versions.Dump(new JsonFormatter()));
-            Assert.AreEqual(2, versions.Count);
-            var info = versions[0];
-            Assert.AreEqual("backup", info.PoolName);
-            Assert.AreEqual(5000, info.Version);
-            info = versions[1];
+    [TestMethod]
+    public void ShouldParseVersionsCorrectlyForMultiplePools()
+    {
+        var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
+        Console.WriteLine(versions.Dump(new JsonFormatter()));
+        Assert.AreEqual(2, versions.Count);
+        var info = versions[0];
+        Assert.AreEqual("backup", info.PoolName);
+        Assert.AreEqual(5000, info.Version);
+        info = versions[1];
 
-            Assert.AreEqual("tank3", info.PoolName);
-            Assert.AreEqual(5000, info.Version);
-        }
+        Assert.AreEqual("tank3", info.PoolName);
+        Assert.AreEqual(5000, info.Version);
+    }
 
-        [TestMethod]
-        public void TruncatedOutputShouldthrow()
-        {
-            Assert.ThrowsException<FormatException>(() => ZdbHelper.ParsePoolVersions("   version:5000"));
-        }
+    [TestMethod]
+    public void TruncatedOutputShouldthrow()
+    {
+        Assert.ThrowsExactly<FormatException>(() => ZdbHelper.ParsePoolVersions("   version:5000"));
+    }
 
-        [TestMethod]
-        public void UnknownVersionOutputShouldNotThrow()
-        {
-            var versions= ZdbHelper.ParsePoolVersions(@"backup:
+    [TestMethod]
+    public void UnknownVersionOutputShouldNotThrow()
+    {
+        var versions= ZdbHelper.ParsePoolVersions(@"backup:
     version: v5000
     name: 'backup'");
 
-            Assert.AreEqual(1, versions.Count);
-            var info = versions[0];
-            Assert.AreEqual("backup", info.PoolName);
-            Assert.AreEqual(0, info.Version);
-        }
-
+        Assert.AreEqual(1, versions.Count);
+        var info = versions[0];
+        Assert.AreEqual("backup", info.PoolName);
+        Assert.AreEqual(0, info.Version);
     }
+
 }
