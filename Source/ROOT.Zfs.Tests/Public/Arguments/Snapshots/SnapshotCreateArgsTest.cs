@@ -45,7 +45,7 @@ public class SnapshotCreateArgsTest
         else
         {
             var suffix = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHH");
-            Assert.IsTrue(stringVer.StartsWith(expected + suffix));
+            Assert.StartsWith(expected + suffix, stringVer);
         }
 
         Console.WriteLine(stringVer);

@@ -32,7 +32,7 @@ tank    3813930958848   128800165888    3685130792960   -       -       9       
 
         var list = ZPoolInfoParser.ParseFromStdOut(stdOut);
 
-        Assert.AreEqual(2, list.Count);
+        Assert.HasCount(2, list);
         Assert.AreEqual("rpool", list[0].PoolName);
         Assert.AreEqual("tank", list[1].PoolName);
     }

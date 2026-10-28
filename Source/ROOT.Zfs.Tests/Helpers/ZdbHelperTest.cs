@@ -137,7 +137,7 @@ tank3:
     {
         var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
         Console.WriteLine(versions.Dump(new JsonFormatter()));
-        Assert.AreEqual(2, versions.Count);
+        Assert.HasCount(2, versions);
         var info = versions[0];
         Assert.AreEqual("backup", info.PoolName);
         Assert.AreEqual(5000, info.Version);
@@ -160,7 +160,7 @@ tank3:
     version: v5000
     name: 'backup'");
 
-        Assert.AreEqual(1, versions.Count);
+        Assert.HasCount(1, versions);
         var info = versions[0];
         Assert.AreEqual("backup", info.PoolName);
         Assert.AreEqual(0, info.Version);

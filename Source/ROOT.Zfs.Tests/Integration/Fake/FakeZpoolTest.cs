@@ -29,7 +29,7 @@ public class FakeZpoolTest
         var history = zp.History(args).ToList();
         Assert.IsNotNull(history);
         Console.WriteLine(history.Dump(new JsonFormatter()));
-        Assert.AreEqual(2, history.Count);
+        Assert.HasCount(2, history);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -56,7 +56,7 @@ public class FakeZpoolTest
 
         if (last10AtMost.Count > 1)
         {
-            Assert.IsTrue(afterDate.Count < last10AtMost.Count);
+            Assert.IsLessThan(last10AtMost.Count, afterDate.Count);
         }
     }
 
@@ -121,7 +121,7 @@ public class FakeZpoolTest
         var zp = GetZpool();
 
         var infos = zp.List();
-        Assert.AreEqual(2, infos.Count);
+        Assert.HasCount(2, infos);
 
     }
 
@@ -153,8 +153,8 @@ public class FakeZpoolTest
         var args = new PoolOfflineArgs { PoolName = "tank", Device = "/dev/sda" };
         zp.Offline(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
-        Assert.IsTrue(commands.Contains("/sbin/zpool offline tank /dev/sda"));
+        Assert.HasCount(1, commands);
+        Assert.Contains("/sbin/zpool offline tank /dev/sda", commands);
     }
 
 
@@ -165,8 +165,8 @@ public class FakeZpoolTest
         var args = new PoolOnlineArgs { PoolName = "tank", Device = "/dev/sda" };
         zp.Online(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
-        Assert.IsTrue(commands.Contains("/sbin/zpool online tank /dev/sda"));
+        Assert.HasCount(1, commands);
+        Assert.Contains("/sbin/zpool online tank /dev/sda", commands);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -176,8 +176,8 @@ public class FakeZpoolTest
         var args = new PoolClearArgs { PoolName = "tank", Device = "/dev/sda" };
         zp.Clear(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
-        Assert.IsTrue(commands.Contains("/sbin/zpool clear tank /dev/sda"));
+        Assert.HasCount(1, commands);
+        Assert.Contains("/sbin/zpool clear tank /dev/sda", commands);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -188,8 +188,8 @@ public class FakeZpoolTest
         var stats = zp.IOStats(args);
         Console.WriteLine(stats.Dump(new JsonFormatter()));
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
-        Assert.IsTrue(commands.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda"));
+        Assert.HasCount(1, commands);
+        Assert.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda", commands);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -199,8 +199,8 @@ public class FakeZpoolTest
         var args = new PoolResilverArgs { PoolName = "tank" };
         zp.Resilver(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
-        Assert.IsTrue(commands.Contains("/sbin/zpool resilver tank"));
+        Assert.HasCount(1, commands);
+        Assert.Contains("/sbin/zpool resilver tank", commands);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -226,7 +226,7 @@ public class FakeZpoolTest
             ]
         });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(2, commands.Count);
+        Assert.HasCount(2, commands);
         Assert.AreEqual("/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd", commands[0]);
         Assert.AreEqual("/sbin/zpool status -vP mytest", commands[1]);
 
@@ -239,7 +239,7 @@ public class FakeZpoolTest
         var args = new PoolScrubArgs { PoolName = "tank" };
         zp.Scrub(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool scrub tank", commands[0]);
     }
 
@@ -249,7 +249,7 @@ public class FakeZpoolTest
         var zp = GetZpool();
         zp.Trim(new PoolTrimArgs { PoolName = "tank" });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool trim tank", commands[0]);
     }
 
@@ -259,7 +259,7 @@ public class FakeZpoolTest
         var zp = GetZpool();
         zp.Upgrade(new PoolUpgradeArgs { PoolName = "tank" });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool upgrade tank", commands[0]);
     }
 
@@ -268,7 +268,7 @@ public class FakeZpoolTest
     {
         var zp = GetZpool();
         var pools = zp.GetUpgradeablePools();
-        Assert.AreEqual(1, pools.Count);
+        Assert.HasCount(1, pools);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -279,7 +279,7 @@ public class FakeZpoolTest
         zp.Detach(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool detach tank /dev/sdb", commands[0]);
     }
 
@@ -297,7 +297,7 @@ public class FakeZpoolTest
 
         zp.Attach(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool attach tank /dev/sdb /dev/sdc", commands[0]);
     }
 
@@ -315,7 +315,7 @@ public class FakeZpoolTest
 
         zp.Replace(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool replace tank /dev/sdb /dev/sdc", commands[0]);
     }
 
@@ -335,7 +335,7 @@ public class FakeZpoolTest
         zp.Add(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
     }
 
@@ -352,7 +352,7 @@ public class FakeZpoolTest
 
         zp.Remove(removeArgs);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count);
+        Assert.HasCount(1, commands);
         Assert.AreEqual("/sbin/zpool remove tank mirror-1", commands[0]);
     }
 }

@@ -17,7 +17,7 @@ public class SnapshotHelperTest
     public void BadInputTest1()
     {
         var ex = Assert.ThrowsExactly<FormatException>(() => SnapshotHelper.FromString(JunkLine));
-        Assert.IsTrue(ex.Message.Contains("expected 8 parts"));
+        Assert.Contains("expected 8 parts", ex.Message);
 
     }
 

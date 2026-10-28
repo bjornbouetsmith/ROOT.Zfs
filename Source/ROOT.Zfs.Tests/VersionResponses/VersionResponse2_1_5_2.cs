@@ -6,13 +6,6 @@ internal class VersionResponse2_1_5_2 : VersionAgnosticResponse
     {
 
     }
-    public override (string StdOut, string StdError) LoadResponse(string commandLine)
-    {
-        switch (commandLine)
-        {
-            default:
-                return base.LoadResponse(commandLine);
-        }
-    }
+    public override (string StdOut, string StdError) LoadResponse(string commandLine) => base.LoadResponse(commandLine);
 
 }

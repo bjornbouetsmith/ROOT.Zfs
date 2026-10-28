@@ -17,9 +17,9 @@ public class DiskHelperTest
 /dev/nvme0n1             259:0    0 232.9G  0 disk
 ";
         var disks = DiskHelper.BlockDevicesFromStdOutput(lines);
-        Assert.IsTrue(disks.Contains("/dev/sdc"));
-        Assert.IsTrue(disks.Contains("/dev/hda"));
-        Assert.IsTrue(disks.Contains("/dev/nvme0n1"));
+        Assert.Contains("/dev/sdc", disks);
+        Assert.Contains("/dev/hda", disks);
+        Assert.Contains("/dev/nvme0n1", disks);
     }
 
     [TestMethod]

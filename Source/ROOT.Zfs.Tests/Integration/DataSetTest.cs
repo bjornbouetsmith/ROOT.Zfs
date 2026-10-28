@@ -141,11 +141,11 @@ public class DataSetTest
             var response = dsHelper.Destroy(destroyArgs);
             Assert.AreEqual(flags, response.Flags);
             var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
-            Assert.AreEqual(4, lines.Count);
-            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild"));
-            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child1"));
-            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}/child2"));
-            Assert.IsTrue(lines.Contains($"destroy {pool.Name}/myds/{rootId}"));
+            Assert.HasCount(4, lines);
+            Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild", lines);
+            Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child1", lines);
+            Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child2", lines);
+            Assert.Contains($"destroy {pool.Name}/myds/{rootId}", lines);
 
             Console.WriteLine(response.DryRun);
         }

@@ -11,7 +11,7 @@ public class ExceptionHelperTest
     {
         var ex = ExceptionHelper.FormatException(5, "some-bad-content");
         Assert.IsNotNull(ex);
-        StringAssert.Contains(ex.Message, "index:5");
-        StringAssert.Contains(ex.Message, "some-bad-content");
+        Assert.Contains("index:5", ex.Message);
+        Assert.Contains("some-bad-content", ex.Message);
     }
 }

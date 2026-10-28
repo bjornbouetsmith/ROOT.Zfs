@@ -21,7 +21,7 @@ public class FakeZfsTest
         var zfs = GetZfs();
         var info = zfs.GetVersionInfo();
         Assert.IsNotNull(info);
-        Assert.IsTrue(info.Lines.Length != 0);
+        Assert.IsNotEmpty(info.Lines);
         foreach (var line in info.Lines)
         {
             Console.WriteLine(line);
@@ -34,7 +34,7 @@ public class FakeZfsTest
         var zfs = GetZfs();
         var disks = zfs.ListDisks().ToList();
         Assert.IsNotNull(disks);
-        Assert.IsTrue(disks.Any());
+        Assert.IsNotEmpty(disks);
         Console.WriteLine(disks.Dump(new JsonFormatter()));
     }
 

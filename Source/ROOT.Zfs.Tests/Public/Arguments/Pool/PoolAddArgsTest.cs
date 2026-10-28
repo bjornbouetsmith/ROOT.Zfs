@@ -52,13 +52,13 @@ public class PoolAddArgsTest
         {
             PoolName = pool,
             Force = force,
-            VDevs = new List<VDevCreationArgs>
-            {
+            VDevs =
+            [
                 new() {
                     Type = VDevCreationType.Mirror,
                     Devices = ["a", "b"]
                 }
-            }
+            ]
         };
 
         Assert.AreEqual(expected, args.ToString());
@@ -75,13 +75,13 @@ public class PoolAddArgsTest
         var args = new PoolAddArgs
         {
             PoolName = pool,
-            VDevs = new List<VDevCreationArgs>
-            {
+            VDevs =
+            [
                 new() {
                     Type = VDevCreationType.Mirror,
                     Devices = ["a", "b"]
                 }
-            },
+            ],
             PropertyValues = props
         };
 

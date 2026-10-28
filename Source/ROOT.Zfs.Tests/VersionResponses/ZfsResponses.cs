@@ -8,7 +8,7 @@ namespace ROOT.Zfs.Tests.VersionResponses;
 /// </summary>
 internal static class ZfsResponses
 {
-    private static readonly Dictionary<string, IVersionResponse> _zfsVersions = new Dictionary<string, IVersionResponse>
+    private static readonly Dictionary<string, IVersionResponse> _zfsVersions = new()
     {
         {"2.1.5-2",new VersionResponse2_1_5_2()}
     };
