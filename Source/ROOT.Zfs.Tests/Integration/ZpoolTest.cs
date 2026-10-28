@@ -42,7 +42,7 @@ public class ZpoolTest
         var history = zp.History(args).ToList();
         Assert.IsNotNull(history);
         Console.WriteLine(history.Dump(new JsonFormatter()));
-        Assert.AreEqual(2, history.Count);
+        Assert.HasCount(2, history);
     }
 
 
@@ -79,7 +79,7 @@ public class ZpoolTest
 
         if (last10AtMost.Count > 1)
         {
-            Assert.IsTrue(afterDate.Count < last10AtMost.Count);
+            Assert.IsLessThan(last10AtMost.Count, afterDate.Count);
         }
 
     }
@@ -361,13 +361,13 @@ public class ZpoolTest
         Console.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.IsNotNull(stats);
         // pool
-        Assert.AreEqual(1, stats.Stats.Count);
+        Assert.HasCount(1, stats.Stats);
         var poolStat = stats.Stats[0];
         //vdev
-        Assert.AreEqual(1, poolStat.ChildStats.Count);
+        Assert.HasCount(1, poolStat.ChildStats);
         var vdev = poolStat.ChildStats[0];
         // actual devices
-        Assert.AreEqual(2, vdev.ChildStats.Count);
+        Assert.HasCount(2, vdev.ChildStats);
     }
 
     //Turn a two way mirror into a three way mirror
@@ -392,7 +392,7 @@ public class ZpoolTest
         var status = zp.Status(arg);
         Console.WriteLine(status.Dump(new JsonFormatter()));
 
-        Assert.AreEqual(3, status.Pool.VDevs[0].Devices.Count);
+        Assert.HasCount(3, status.Pool.VDevs[0].Devices);
     }
 
     [TestMethod, TestCategory("Integration")]
@@ -436,7 +436,7 @@ public class ZpoolTest
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.AreEqual(1, status.Pool.VDevs.Count);
+        Assert.HasCount(1, status.Pool.VDevs);
         var disk1 = pool.AddDisk();
         var disk2 = pool.AddDisk();
 
@@ -452,7 +452,7 @@ public class ZpoolTest
 
         status = zp.Status(arg);
         Console.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.AreEqual(2, status.Pool.VDevs.Count);
+        Assert.HasCount(2, status.Pool.VDevs);
     }
 
     [TestMethod, TestCategory("Integration")]
@@ -560,7 +560,7 @@ public class ZpoolTest
 
         var infos = zp.List();
         Console.WriteLine(infos.Dump(new JsonFormatter()));
-        Assert.IsTrue(infos.Count > 0, "No pools found, this is a bug");
+        Assert.IsNotEmpty(infos, "No pools found, this is a bug");
 
     }
 }

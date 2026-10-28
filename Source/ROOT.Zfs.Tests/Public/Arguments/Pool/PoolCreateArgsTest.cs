@@ -17,9 +17,9 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.IsFalse(valid);
 
-        Assert.AreEqual(2, errors.Count);
-        Assert.IsTrue(errors.Any(e => e.Contains("Name cannot be empty")));
-        Assert.IsTrue(errors.Any(e => e.Contains("Please provide vdevs")));
+        Assert.HasCount(2, errors);
+        Assert.Contains(e => e.Contains("Name cannot be empty"), errors);
+        Assert.Contains(e => e.Contains("Please provide vdevs"), errors);
     }
 
     [TestMethod]
@@ -29,14 +29,14 @@ public class PoolCreateArgsTest
 
         var valid = args.Validate(out var errors);
         Assert.IsFalse(valid);
-        Assert.AreEqual(1, errors.Count);
-        Assert.IsTrue(errors[0].Contains("Please provide vdevs"));
+        Assert.HasCount(1, errors);
+        Assert.Contains("Please provide vdevs", errors[0]);
 
         args.VDevs = Array.Empty<VDevCreationArgs>();
         valid = args.Validate(out errors);
         Assert.IsFalse(valid);
-        Assert.AreEqual(1, errors.Count);
-        Assert.IsTrue(errors[0].Contains("Please provide vdevs"));
+        Assert.HasCount(1, errors);
+        Assert.Contains("Please provide vdevs", errors[0]);
     }
 
     [TestMethod]
@@ -56,8 +56,8 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.IsFalse(valid);
         Console.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.AreEqual(1, errors.Count);
-        Assert.IsTrue(errors[0].Contains("Please provide the proper amount of minimum"));
+        Assert.HasCount(1, errors);
+        Assert.Contains("Please provide the proper amount of minimum", errors[0]);
     }
 
 
@@ -79,8 +79,8 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.IsFalse(valid);
         Console.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.AreEqual(1, errors.Count);
-        Assert.IsTrue(errors[0].Contains("Please provide at least two devices"));
+        Assert.HasCount(1, errors);
+        Assert.Contains("Please provide at least two devices", errors[0]);
 
     }
 }

@@ -42,7 +42,7 @@ public class SnapshotCommandsTest
             else
             {
                 var expectedPrefix = $"/sbin/zfs snap {dataset}@{DateTime.UtcNow.ToLocalTime():yyyyMMddHHmm}";
-                Assert.IsTrue(command.FullCommandLine.StartsWith(expectedPrefix));
+                Assert.StartsWith(expectedPrefix, command.FullCommandLine);
             }
         }
 

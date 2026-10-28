@@ -70,7 +70,7 @@ public class PropertiesTest
     {
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
-        Assert.IsTrue(props.Count > 0);
+        Assert.IsNotEmpty(props);
         Console.WriteLine(props.Dump(new JsonFormatter()));
     }
 

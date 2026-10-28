@@ -22,7 +22,7 @@ public class SmartInfoTest
         var infos = zfs.GetSmartInfos().ToList();
 
         Assert.IsNotNull(infos);
-        Assert.AreEqual(2, infos.Count);
+        Assert.HasCount(2, infos);
     }
 
     [TestMethod]
@@ -37,11 +37,11 @@ public class SmartInfoTest
             if (info.DeviceId.EndsWith('5'))
             {
                 // FAKE returns failed status
-                Assert.IsFalse(info.DataSection.Status == "PASSED");
+                Assert.AreNotEqual("PASSED", info.DataSection.Status);
             }
             else
             {
-                Assert.IsTrue(info.DataSection.Status == "PASSED");
+                Assert.AreEqual("PASSED", info.DataSection.Status);
             }
         }
     }

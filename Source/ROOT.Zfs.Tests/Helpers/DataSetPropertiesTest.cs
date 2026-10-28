@@ -12,7 +12,7 @@ public class DataSetPropertiesTest
         var stdOut = "tank\taclmode\tdiscard\tdefault\ntank\taclinherit\tdiscard\tdefault";
         var props = DatasetProperties.FromStdOutput(stdOut);
 
-        Assert.AreEqual(2, props.Count);
+        Assert.HasCount(2, props);
             
         Assert.AreEqual("aclmode", props[0].Property);
         Assert.AreEqual("discard", props[0].Value);
@@ -27,6 +27,6 @@ public class DataSetPropertiesTest
     public void FromStdOutputEmptyTest()
     {
         var props = DatasetProperties.FromStdOutput(string.Empty);
-        Assert.AreEqual(0, props.Count);
+        Assert.IsEmpty(props);
     }
 }

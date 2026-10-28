@@ -13,7 +13,7 @@ public class SnapshotHoldParserTest
     public void BadDateFormatShouldNotCauseParsingErrrors(string line, string snapshot, string tag)
     {
         var holds = SnapshotHoldParser.ParseStdOut(line);
-        Assert.AreEqual(1, holds.Count);
+        Assert.HasCount(1, holds);
         Assert.AreEqual(snapshot, holds[0].Snapshot);
         Assert.AreEqual(tag, holds[0].Tag);
         Assert.AreEqual(default, holds[0].HoldTime);
@@ -25,7 +25,7 @@ public class SnapshotHoldParserTest
     {
         var expectedDate = DateTime.ParseExact(dateString, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
         var holds = SnapshotHoldParser.ParseStdOut(line);
-        Assert.AreEqual(1, holds.Count);
+        Assert.HasCount(1, holds);
         Assert.AreEqual(snapshot, holds[0].Snapshot);
         Assert.AreEqual(tag, holds[0].Tag);
         Assert.AreEqual(expectedDate, holds[0].HoldTime);

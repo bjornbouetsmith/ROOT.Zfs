@@ -17,7 +17,7 @@ All pools are formatted using feature flags.
 Every feature flags pool has all supported and requested features enabled.
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.AreEqual(0, pools.Count);
+        Assert.IsEmpty(pools);
     }
 
     [TestMethod]
@@ -42,11 +42,11 @@ backup
       draid
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.AreEqual(1, pools.Count);
+        Assert.HasCount(1, pools);
         var pool = pools[0];
         Assert.AreEqual("backup", pool.PoolName);
 
-        Assert.AreEqual(2, pool.MissingFeatures.Count);
+        Assert.HasCount(2, pool.MissingFeatures);
         Assert.AreEqual("edonr", pool.MissingFeatures[0]);
         Assert.AreEqual("draid", pool.MissingFeatures[1]);
 
@@ -78,18 +78,18 @@ tank3
       device_removal
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.AreEqual(2, pools.Count);
+        Assert.HasCount(2, pools);
         var pool = pools[0];
         Assert.AreEqual("backup", pool.PoolName);
 
-        Assert.AreEqual(2, pool.MissingFeatures.Count);
+        Assert.HasCount(2, pool.MissingFeatures);
         Assert.AreEqual("edonr", pool.MissingFeatures[0]);
         Assert.AreEqual("draid", pool.MissingFeatures[1]);
 
         pool = pools[1];
         Assert.AreEqual("tank3", pool.PoolName);
 
-        Assert.AreEqual(3, pool.MissingFeatures.Count);
+        Assert.HasCount(3, pool.MissingFeatures);
         Assert.AreEqual("encryption", pool.MissingFeatures[0]);
         Assert.AreEqual("project_quota", pool.MissingFeatures[1]);
         Assert.AreEqual("device_removal", pool.MissingFeatures[2]);

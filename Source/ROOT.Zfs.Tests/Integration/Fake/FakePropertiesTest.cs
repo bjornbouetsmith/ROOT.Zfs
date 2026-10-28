@@ -11,7 +11,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 [TestClass]
 public class FakePropertiesTest
 {
-    private readonly FakeRemoteConnection _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
+    private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private Properties GetProperties()
     {
@@ -39,7 +39,7 @@ public class FakePropertiesTest
         pr.Set(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(2, commands.Count); // Set+Get
+        Assert.HasCount(2, commands); // Set+Get
 
         Assert.AreEqual("/sbin/zfs set atime=off tank/myds", commands[0]);
         Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[1]);
@@ -57,7 +57,7 @@ public class FakePropertiesTest
             
         Assert.AreEqual("off", val.Value);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.AreEqual(1, commands.Count); // Get
+        Assert.HasCount(1, commands); // Get
             
         Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[0]);
     }
@@ -67,7 +67,7 @@ public class FakePropertiesTest
     {
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
-        Assert.IsTrue(props.Count > 0);
+        Assert.IsNotEmpty(props);
         Console.WriteLine(props.Dump(new JsonFormatter()));
     }
 
@@ -76,7 +76,7 @@ public class FakePropertiesTest
     {
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Pool).ToList();
-        Assert.IsTrue(props.Count > 0);
+        Assert.IsNotEmpty(props);
         Console.WriteLine(props.Dump(new JsonFormatter()));
     }
 
@@ -103,7 +103,7 @@ public class FakePropertiesTest
 
         Console.WriteLine(commands.Dump(new JsonFormatter()));
         // Get, set & get, inherit
-        Assert.AreEqual(4, commands.Count);
+        Assert.HasCount(4, commands);
 
     }
 }

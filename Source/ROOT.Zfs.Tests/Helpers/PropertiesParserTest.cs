@@ -186,7 +186,7 @@ a user|group|project specifier of one of these forms:
         Assert.IsNotNull(properties);
         Assert.IsNotNull(properties);
         // We only list editable, those where EDITABLE=YES
-        Assert.AreEqual(53, properties.Count);
+        Assert.HasCount(53, properties);
         Assert.AreEqual("aclinherit", properties.First().PropertyName);
         Assert.AreEqual("projectobjquota@...", properties.Last().PropertyName);
     }
@@ -196,7 +196,7 @@ a user|group|project specifier of one of these forms:
         var properties = PropertiesParser.FromStdOutput(zpoolResponse, 3);
         Assert.IsNotNull(properties);
         // We only list editable, those where EDITABLE=YES
-        Assert.AreEqual(16, properties.Count);
+        Assert.HasCount(16, properties);
         Assert.AreEqual("altroot", properties.First().PropertyName);
         Assert.AreEqual("feature@...", properties.Last().PropertyName);
     }
@@ -206,7 +206,7 @@ a user|group|project specifier of one of these forms:
     {
         var properties = PropertiesParser.FromStdOutput(InvalidZPoolResponse, 3);
         Assert.IsNotNull(properties);
-        Assert.AreEqual(1, properties.Count);
+        Assert.HasCount(1, properties);
         Assert.AreEqual("ashift",properties.First().PropertyName);
     }
 }

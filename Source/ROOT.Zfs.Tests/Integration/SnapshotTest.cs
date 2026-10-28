@@ -75,12 +75,12 @@ public class SnapshotTest
 
         var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
 
-        Assert.AreEqual(3, snaps.Count);
+        Assert.HasCount(3, snaps);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
         sn.Destroy(args);
 
         snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix))];
-        Assert.AreEqual(0, snaps.Count);
+        Assert.IsEmpty(snaps);
     }
 
     [TestMethod, TestCategory("Integration")]
