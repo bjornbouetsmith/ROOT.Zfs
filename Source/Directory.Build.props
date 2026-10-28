@@ -16,7 +16,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <WarningsNotAsErrors>CS1591;NU1803</WarningsNotAsErrors>
+    <WarningsNotAsErrors>CS1591;NU1803;NU1507</WarningsNotAsErrors>
     <NoWarn>1701;1702;NU1803</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
