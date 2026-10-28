@@ -58,7 +58,7 @@ internal static class ZPoolIOStatParser
             }
             else // This should not happen, but if it does, we want a format exception, not any other exception
             {
-                throw ExceptionHelper.FormatException(index, line);
+                throw ExceptionHelper.FormatException(index, line,-1);
             }
         }
 
@@ -87,7 +87,7 @@ internal static class ZPoolIOStatParser
         }
         else
         {
-            throw ExceptionHelper.FormatException(index, line);
+            throw ExceptionHelper.FormatException(index, line, parts.Length);
         }
 
         return ioStat;

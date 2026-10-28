@@ -43,6 +43,7 @@ internal static class ZPoolStatusParser
             return null;
         }
         int currentIndex = 0;
+        int partsFound = -1;
         try
         {
             var poolStatus = new PoolStatus();
@@ -50,9 +51,10 @@ internal static class ZPoolStatusParser
 
             var poolLine = lines[currentIndex++];
             var poolParts = poolLine.Split(':');
+            partsFound  = poolParts.Length;
             if (poolParts.Length != 2 || !poolParts[0].Trim().Equals("pool", StringComparison.OrdinalIgnoreCase))
             {
-                throw ExceptionHelper.FormatException(currentIndex, input);
+                throw ExceptionHelper.FormatException(currentIndex, input, partsFound);
             }
 
             poolStatus.Pool = new Pool();
@@ -64,7 +66,7 @@ internal static class ZPoolStatusParser
         }
         catch
         {
-            throw ExceptionHelper.FormatException(currentIndex, input);
+            throw ExceptionHelper.FormatException(currentIndex, input, partsFound);
         }
     }
 
