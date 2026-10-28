@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
-using ROOT.Zfs.Public;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data.Pools;
@@ -107,6 +106,7 @@ public class ZpoolTest
     public void ZpoolStatusTest()
     {
         var zfs = ZfsTestFactory.CreateZfs(_remoteProcessCall);
+        zfs.RequiresSudo = TestHelpers.RequiresSudo;
         using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
         var arg = new PoolStatusArgs { PoolName = testPool.Name };
         var status = zfs.Pool.Status(arg);

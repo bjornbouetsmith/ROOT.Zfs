@@ -79,7 +79,7 @@ internal static class ZPoolIOStatParser
             // simple
             ParseSimple(ioStat, parts);
         }
-        else if (parts.Length == 17)
+        else if (parts.Length is 17 or 18) // 2.2.2 adds extra unsupported column
         {
             // with latency stats
             ParseSimple(ioStat, parts);

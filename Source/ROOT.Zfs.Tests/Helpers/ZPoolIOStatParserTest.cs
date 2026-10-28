@@ -148,4 +148,14 @@ mirror-3        44236693504     909246046208    0       17      33483   261768  
             }
         }
     }
+
+    [TestMethod]
+    public void IOStatTestSpecificDevice_Ubuntu_24_04_zfs2_2_2()
+    {
+        var stdOut = "/tmp/zfs-pool/37255c4a-7fe1-4d86-9283-d088a6298ce4\t0\t0\t10\t320\t84594\t6016803\t49152\t295440\t49152\t125786\t1536\t938\t-\t236532\t-\t-\t-";
+        var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
+        Assert.IsNotNull(stats);
+        Console.WriteLine(stats.Dump(new JsonFormatter()));
+        
+    }
 }
