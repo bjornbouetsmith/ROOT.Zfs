@@ -39,7 +39,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        dotnet nuget update source --username ${{ github.triggering_actor }} --password $GITHUB_TOKEN --store-password-in-clear-text --name github-bjornbouetsmith
+        dotnet nuget update source github-bjornbouetsmith --username bjornbouetsmith --password $GITHUB_TOKEN --store-password-in-clear-text
         dotnet restore Source/ROOT.Zfs.slnx
 
     - name: Build
