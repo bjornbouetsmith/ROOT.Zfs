@@ -1,19 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>ROOT.Zfs.Tests</AssemblyName>
-  </PropertyGroup>
-  <PropertyGroup>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <NoWarn>1701;1702;NU1803</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
-  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="altcover" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
@@ -30,5 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ROOT.Zfs.Core\ROOT.Zfs.Core.csproj" />
   </ItemGroup>
-
 </Project>
