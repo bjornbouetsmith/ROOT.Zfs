@@ -1,0 +1,223 @@
+name: ci-build
+run-name: .NET CI Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '.github/**'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '.github/**'
+  schedule:
+    - cron: "30 7 * * 1"
+
+jobs:
+  build-and-test:
+    name: Build, unit tests and SonarCloud
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4.1.5
+      with:
+          ref: ${{ github.head_ref || github.ref }}
+
+    - name: Set CI Build status to pending
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build is pending!","context":"continuous-integration/build"}'
+
+    - name: Set SonarCloud quality gate status to pending
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The quality gate is pending!","context":"continuous-integration/sonarcloud"}'
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Set up JDK 17 for SonarCloud
+      uses: actions/setup-java@v5
+      with:
+        java-version: '17'
+        distribution: 'oracle'
+
+    - name: Install SonarCloud scanner
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+
+    - name: Restore dependencies
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet restore Source/ROOT.Zfs.slnx
+
+    - name: Prepare SonarCloud analysis
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=Source/ROOT.Zfs.Tests/coverage.opencover*.xml /d:sonar.qualitygate.wait=true
+
+    - name: Build solution
+      run: dotnet build Source/ROOT.Zfs.slnx --no-restore
+
+    - name: Run unit tests with coverage
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="/home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+
+    - name: Set CI Build status to success
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build succeeded!","context":"continuous-integration/build"}'
+
+    - name: Set CI Build status to failure
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: failure()
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build failed!","context":"continuous-integration/build"}'
+
+    - name: Upload unit test coverage report
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-reports
+        path: /home/runner/work/ROOT.Zfs/ROOT.Zfs/Source/ROOT.Zfs.Tests/coverage.opencover*.xml
+        archive: true
+
+    - name: Analyze with SonarCloud
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+
+    - name: Set SonarCloud quality gate status to success
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The quality gate succeeded!","context":"continuous-integration/sonarcloud"}'
+
+    - name: Set SonarCloud quality gate status to failure
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: failure()
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"The quality gate failed!","context":"continuous-integration/sonarcloud"}'
+
+  integration-test:
+    name: Integration tests on Ubuntu ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [22.04, 24.04, 26.04]
+    runs-on: ubuntu-${{ matrix.os }}
+
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4.1.5
+      with:
+          ref: ${{ github.head_ref || github.ref }}
+
+    - name: Set Integration tests status to pending
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests is pending!","context":"continuous-integration/integration"}'
+
+    - name: Install ZFS and smartmontools
+      run: |
+        sudo apt-get update
+        sudo apt install -y smartmontools
+        sudo apt install -y zfsutils-linux
+        which zfs
+        which zpool
+        which smartctl
+        which ls
+        which lsblk
+        sudo zpool status
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4.0.0
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet restore Source/ROOT.Zfs.slnx
+
+    - name: Build solution
+      run: dotnet build Source/ROOT.Zfs.slnx --no-restore --configuration Debug
+
+    - name: Run integration tests
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --verbosity normal --filter "TestCategory=Integration"
+
+    - name: Set Integration tests status to success
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"success","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests succeeded!","context":"continuous-integration/integration"}'
+
+    - name: Set Integration tests status to failure
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: failure()
+      run: |
+        curl \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+         ${{ github.api_url }}/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+        -d '{"state":"failure","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"Integration tests failed!","context":"continuous-integration/integration"}'
+
+    - name: Clean up test pool
+      if: always()
+# Cleans up potential left over from tests failing
+      run: sudo rm -rf /tmp/zfs-pool
+      continue-on-error: true
