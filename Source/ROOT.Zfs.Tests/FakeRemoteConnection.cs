@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Tests.VersionResponses;
 
@@ -30,6 +32,16 @@ internal class FakeRemoteConnection : IProcessCall
     public ProcessCallResult LoadResponse(bool throwOnFailure, Stream inputStream, params string[] arguments)
     {
         return GetResponse(throwOnFailure);
+    }
+
+    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(GetResponse(throwOnFailure));
+    }
+
+    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, Stream inputStream, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(GetResponse(throwOnFailure));
     }
 
     private ProcessCallResult GetResponse(bool throwOnFailure)
