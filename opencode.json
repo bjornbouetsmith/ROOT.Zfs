@@ -1,0 +1,6 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "https://raw.githubusercontent.com/bjornbouetsmith/AgentSkills/main/AGENTS.md"
+  ]
+}
