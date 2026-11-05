@@ -48,7 +48,7 @@ internal class FakeRemoteConnection : IProcessCall
     /// Setting this to true exercises the continuation path of callers awaiting the command.
     /// Defaults to true, which is the most common case. Set to false to simulate a command that completes synchronously.
     /// </summary>
-    public bool CompleteAsyncResponses { get; set; } = true;
+    public bool CompleteAsyncResponses { get; set; }
 
     public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
     {
