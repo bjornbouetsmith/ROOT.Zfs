@@ -21,7 +21,7 @@ jobs:
 
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
           ref: ${{ github.head_ref || github.ref }}
 
@@ -37,7 +37,7 @@ jobs:
         -d '{"state":"pending","target_url":"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}","description":"CI Build is pending!","context":"continuous-integration/build"}'
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
         cache: true
@@ -63,7 +63,7 @@ jobs:
       run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Upload unit test coverage report
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: coverage-unit
         path: coverage/coverage.opencover-unit.xml
@@ -102,7 +102,7 @@ jobs:
 
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
           ref: ${{ github.head_ref || github.ref }}
 
@@ -130,7 +130,7 @@ jobs:
         sudo zpool status
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
         cache: true
@@ -187,7 +187,7 @@ jobs:
 
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
           ref: ${{ github.head_ref || github.ref }}
 
@@ -215,7 +215,7 @@ jobs:
         sudo zpool status
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
         cache: true
@@ -241,7 +241,7 @@ jobs:
       run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "TestCategory=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Upload integration test coverage report
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: coverage-integration
         path: coverage/coverage.opencover-integration.xml
@@ -303,19 +303,19 @@ jobs:
         exit 1
 
     - name: Checkout sources
-      uses: actions/checkout@v4.1.5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
           ref: ${{ github.head_ref || github.ref }}
 
     - name: Download coverage reports
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
       with:
         pattern: coverage-*
         merge-multiple: true
         path: coverage
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
         cache: true
@@ -326,7 +326,7 @@ jobs:
           Source/**/*.csproj
 
     - name: Set up JDK 17 for SonarCloud
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
       with:
         java-version: '17'
         distribution: 'oracle'

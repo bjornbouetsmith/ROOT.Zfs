@@ -28,14 +28,14 @@ jobs:
       packages: write # Grants the GITHUB_TOKEN permission to publish packages
       id-token: write
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Validate user
       if: ${{ github.triggering_actor != 'bjornbouetsmith' }}
       run: exit 1
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: 10.0.x
     - name: Restore dependencies
@@ -54,7 +54,7 @@ jobs:
       if: false
       run: dotnet nuget push Source/**/*.nupkg  --api-key $GITHUB_TOKEN --skip-duplicate --source "github"
     - name: NuGet login (OIDC → temp API key)
-      uses: NuGet/login@v1
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
       id: login
       with:
         user: bjornbouetsmith
