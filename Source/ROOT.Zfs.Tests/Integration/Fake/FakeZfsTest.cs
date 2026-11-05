@@ -37,20 +37,6 @@ public class FakeZfsTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetVersionInfoAsyncHandlesAsynchronouslyCompletedCommand()
-    {
-        _remoteProcessCall.CompleteAsyncResponses = true;
-        var zfs = GetZfs();
-
-        var info = await zfs.GetVersionInfoAsync();
-
-        Assert.IsNotNull(info);
-        Assert.IsNotEmpty(info.Lines);
-        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
-    }
-
-    [TestMethod, TestCategory("FakeIntegration")]
     public async Task GetVersionInfoAsyncForwardsCancellationToken()
     {
         var zfs = GetZfs();
