@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -67,10 +69,12 @@ public sealed class Zfs : ZfsBase, IZfs
     internal IZfsBinaries Binaries => _binaries;
 
     /// <inheritdoc />
-    public VersionInfo GetVersionInfo()
+    public async Task<VersionInfo> GetVersionInfoAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zfsCommands.GetVersion());
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return new VersionInfo { Lines = response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries) };
     }

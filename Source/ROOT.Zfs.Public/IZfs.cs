@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Smart;
 
@@ -33,7 +35,9 @@ public interface IZfs : IBasicZfs
     /// <summary>
     /// Gets information about zfs version from the underlying OS.
     /// </summary>
-    VersionInfo GetVersionInfo();
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the version information.</returns>
+    Task<VersionInfo> GetVersionInfoAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Lists the disks in the system

@@ -13,6 +13,10 @@ internal class FakeRemoteConnection : IProcessCall
     private readonly string _zfsVersion;
     private readonly IVersionResponse _responses;
     private readonly List<string> _commandsInvoked = [];
+    private readonly List<CancellationToken> _asyncCancellationTokens = [];
+    private int _syncLoadResponseCalls;
+    private int _asyncLoadResponseCalls;
+
     public FakeRemoteConnection(string zfsVersion)
     {
         _zfsVersion = zfsVersion;
@@ -24,24 +28,65 @@ internal class FakeRemoteConnection : IProcessCall
         return _commandsInvoked;
     }
 
+    /// <summary>
+    /// Gets the number of synchronous command executions.
+    /// </summary>
+    public int SyncLoadResponseCalls => _syncLoadResponseCalls;
+
+    /// <summary>
+    /// Gets the number of asynchronous command executions.
+    /// </summary>
+    public int AsyncLoadResponseCalls => _asyncLoadResponseCalls;
+
+    /// <summary>
+    /// Gets the cancellation tokens passed to asynchronous command executions.
+    /// </summary>
+    public IReadOnlyList<CancellationToken> AsyncCancellationTokens => _asyncCancellationTokens;
+
+    /// <summary>
+    /// Gets or sets whether async command responses should complete asynchronously.
+    /// Setting this to true exercises the continuation path of callers awaiting the command.
+    /// Defaults to true, which is the most common case. Set to false to simulate a command that completes synchronously.
+    /// </summary>
+    public bool CompleteAsyncResponses { get; set; }
+
     public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
     {
+        _syncLoadResponseCalls++;
         return GetResponse(throwOnFailure);
     }
 
     public ProcessCallResult LoadResponse(bool throwOnFailure, Stream inputStream, params string[] arguments)
     {
+        _syncLoadResponseCalls++;
         return GetResponse(throwOnFailure);
     }
 
-    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    public async Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(GetResponse(throwOnFailure));
+        cancellationToken.ThrowIfCancellationRequested();
+        _asyncLoadResponseCalls++;
+        _asyncCancellationTokens.Add(cancellationToken);
+        
+        if (CompleteAsyncResponses)
+        {
+            await Task.Yield();
+        }
+
+        return GetResponse(throwOnFailure);
     }
 
-    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, Stream inputStream, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    public async Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, Stream inputStream, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(GetResponse(throwOnFailure));
+        cancellationToken.ThrowIfCancellationRequested();
+        _asyncLoadResponseCalls++;
+        _asyncCancellationTokens.Add(cancellationToken);
+        if (CompleteAsyncResponses)
+        {
+            await Task.Yield();
+        }
+
+        return GetResponse(throwOnFailure);
     }
 
     private ProcessCallResult GetResponse(bool throwOnFailure)

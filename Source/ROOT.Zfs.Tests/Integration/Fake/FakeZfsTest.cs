@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.Serialization;
 
@@ -16,16 +18,62 @@ public class FakeZfsTest
     }
 
     [TestMethod,TestCategory("FakeIntegration")]
-    public void GetVersionInfo()
+    public async Task GetVersionInfoAsyncTest()
     {
         var zfs = GetZfs();
-        var info = zfs.GetVersionInfo();
+        var info = await zfs.GetVersionInfoAsync();
+
         Assert.IsNotNull(info);
         Assert.IsNotEmpty(info.Lines);
+        Assert.IsTrue(info.Lines.Any(line => line.Contains("zfs-2.1.5-2", StringComparison.Ordinal)));
+        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/sbin/zfs --version");
+        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+
         foreach (var line in info.Lines)
         {
             Console.WriteLine(line);
         }
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetVersionInfoAsyncHandlesAsynchronouslyCompletedCommand()
+    {
+        _remoteProcessCall.CompleteAsyncResponses = true;
+        var zfs = GetZfs();
+
+        var info = await zfs.GetVersionInfoAsync();
+
+        Assert.IsNotNull(info);
+        Assert.IsNotEmpty(info.Lines);
+        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetVersionInfoAsyncForwardsCancellationToken()
+    {
+        var zfs = GetZfs();
+        using var cancellationTokenSource = new CancellationTokenSource();
+
+        await zfs.GetVersionInfoAsync(cancellationTokenSource.Token);
+
+        Assert.AreEqual(1, _remoteProcessCall.AsyncCancellationTokens.Count);
+        Assert.AreEqual(cancellationTokenSource.Token, _remoteProcessCall.AsyncCancellationTokens[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetVersionInfoAsyncWithCancelledTokenDoesNotRunCommand()
+    {
+        var zfs = GetZfs();
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => zfs.GetVersionInfoAsync(cancellationTokenSource.Token));
+
+        Assert.IsEmpty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.AreEqual(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
         
     [TestMethod, TestCategory("FakeIntegration")]
