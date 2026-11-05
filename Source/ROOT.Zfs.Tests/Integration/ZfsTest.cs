@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 
 namespace ROOT.Zfs.Tests.Integration;
@@ -6,6 +9,7 @@ namespace ROOT.Zfs.Tests.Integration;
 [TestClass]
 public class ZfsTest
 {
+    public TestContext TestContext { get; set; }
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private Core.Zfs GetZfs()
@@ -22,5 +26,23 @@ public class ZfsTest
         zfs.Binaries.RequiresSudo = TestHelpers.RequiresSudo;
         zfs.Binaries.Initialize();
         Assert.IsTrue(zfs.Binaries.Initialized);
+    }
+
+    [TestMethod, TestCategory("Integration")]
+    public async Task GetVersionInfoAsyncTest()
+    {
+        var zfs = GetZfs();
+
+        var info = await zfs.GetVersionInfoAsync(TestContext.CancellationToken);
+
+        Assert.IsNotNull(info);
+        Assert.IsNotEmpty(info.Lines);
+        Assert.IsTrue(info.Lines.Any(line => line.StartsWith("zfs-", StringComparison.Ordinal)),
+            $"Expected a zfs version line, but got: {string.Join(", ", info.Lines)}");
+
+        foreach (var line in info.Lines)
+        {
+            TestContext.WriteLine(line);
+        }
     }
 }
