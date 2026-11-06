@@ -49,7 +49,9 @@ public interface IZfs : IBasicZfs
     /// <summary>
     /// Gets smart info for all devices of type disk in the system
     /// </summary>
-    IEnumerable<SmartInfo> GetSmartInfos();
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of the smart information for all disks in the system.</returns>
+    Task<IReadOnlyList<SmartInfo>> GetSmartInfosAsync(CancellationToken cancellationToken = default);
         
     /// <summary>
     /// Gets smart info for the device

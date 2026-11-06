@@ -94,13 +94,16 @@ public sealed class Zfs : ZfsBase, IZfs
     }
 
     /// <inheritdoc />
-    public IEnumerable<SmartInfo> GetSmartInfos()
+    public async Task<IReadOnlyList<SmartInfo>> GetSmartInfosAsync(CancellationToken cancellationToken = default)
     {
-        List<SmartInfo> smartInfos = new List<SmartInfo>();
-        foreach (var id in ListDisks().Where(d => d.Type == DeviceType.Disk).Select(disk => disk.Id))
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var smartInfos = new List<SmartInfo>();
+        var disks = await ListDisksAsync(cancellationToken).ConfigureAwait(false);
+        foreach (var id in disks.Where(d => d.Type == DeviceType.Disk).Select(disk => disk.Id))
         {
             var command = BuildCommand(_systemCommands.GetSmartInfo(id));
-            var response = command.LoadResponse(true);
+            var response = await command.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
             var info = SmartInfoParser.ParseStdOut(id, response.StdOut);
             smartInfos.Add(info);
         }
@@ -114,18 +117,6 @@ public sealed class Zfs : ZfsBase, IZfs
         var command = BuildCommand(_systemCommands.GetSmartInfo(name));
         var response = command.LoadResponse(true);
         return SmartInfoParser.ParseStdOut(name, response.StdOut);
-    }
-
-    // Kept while GetSmartInfos is still synchronous. Remove when it is converted in #41.
-    private List<DiskInfo> ListDisks()
-    {
-        var disksCommand = BuildCommand(_systemCommands.ListBlockDevices());
-        var disksResponse = disksCommand.LoadResponse(true);
-
-        var pc = BuildCommand(_systemCommands.ListDisks());
-        var response = pc.LoadResponse(true);
-
-        return ParseDisks(disksResponse.StdOut, response.StdOut);
     }
 
     private static List<DiskInfo> ParseDisks(string blockDeviceOutput, string disksOutput)
