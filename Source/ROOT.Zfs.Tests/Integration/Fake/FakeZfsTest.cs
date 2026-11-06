@@ -29,7 +29,8 @@ public class FakeZfsTest
         Assert.IsNotNull(info);
         Assert.IsNotEmpty(info.Lines);
         Assert.IsTrue(info.Lines.Any(line => line.Contains("zfs-2.1.5-2", StringComparison.Ordinal)));
-        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/sbin/zfs --version");
+        var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
+        Assert.Contains("/sbin/zfs --version", commandsInvoked);
         Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
 
@@ -75,8 +76,8 @@ public class FakeZfsTest
         Assert.HasCount(6, disks);
         Assert.AreEqual(2, disks.Count(d => d.Type == DeviceType.Disk));
         Assert.AreEqual(4, disks.Count(d => d.Type == DeviceType.Partition));
-        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/lsblk --include 8 --include 259 -p | /bin/grep disk");
-        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'");
+        Assert.Contains("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", _remoteProcessCall.GetCommandsInvoked());
+        Assert.Contains("/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'", _remoteProcessCall.GetCommandsInvoked());
         Assert.AreEqual(2, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
 
