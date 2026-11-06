@@ -45,4 +45,20 @@ public class ZfsTest
             TestContext.WriteLine(line);
         }
     }
+
+    [TestMethod, TestCategory("Integration")]
+    public async Task ListDisksAsyncTest()
+    {
+        var zfs = GetZfs();
+
+        var disks = (await zfs.ListDisksAsync(TestContext.CancellationToken)).ToList();
+
+        Assert.IsNotNull(disks);
+        Assert.IsNotEmpty(disks);
+
+        foreach (var disk in disks)
+        {
+            TestContext.WriteLine($"{disk.Id}: {disk.Type}");
+        }
+    }
 }

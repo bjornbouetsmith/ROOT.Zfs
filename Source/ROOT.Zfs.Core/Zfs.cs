@@ -80,20 +80,17 @@ public sealed class Zfs : ZfsBase, IZfs
     }
 
     /// <inheritdoc />
-    public IEnumerable<DiskInfo> ListDisks()
+    public async Task<IReadOnlyList<DiskInfo>> ListDisksAsync(CancellationToken cancellationToken = default)
     {
-        var disksCommand = BuildCommand(_systemCommands.ListBlockDevices());
-        var disksReponse = disksCommand.LoadResponse(true);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var blockDevices = DiskHelper.BlockDevicesFromStdOutput(disksReponse.StdOut);
+        var disksCommand = BuildCommand(_systemCommands.ListBlockDevices());
+        var disksResponse = await disksCommand.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var pc = BuildCommand(_systemCommands.ListDisks());
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        foreach (var line in response.StdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
-        {
-            yield return DiskHelper.FromString(line, blockDevices);
-        }
+        return ParseDisks(disksResponse.StdOut, response.StdOut);
     }
 
     /// <inheritdoc />
@@ -117,5 +114,27 @@ public sealed class Zfs : ZfsBase, IZfs
         var command = BuildCommand(_systemCommands.GetSmartInfo(name));
         var response = command.LoadResponse(true);
         return SmartInfoParser.ParseStdOut(name, response.StdOut);
+    }
+
+    // Kept while GetSmartInfos is still synchronous. Remove when it is converted in #41.
+    private IReadOnlyList<DiskInfo> ListDisks()
+    {
+        var disksCommand = BuildCommand(_systemCommands.ListBlockDevices());
+        var disksResponse = disksCommand.LoadResponse(true);
+
+        var pc = BuildCommand(_systemCommands.ListDisks());
+        var response = pc.LoadResponse(true);
+
+        return ParseDisks(disksResponse.StdOut, response.StdOut);
+    }
+
+    private static IReadOnlyList<DiskInfo> ParseDisks(string blockDeviceOutput, string disksOutput)
+    {
+        var blockDevices = DiskHelper.BlockDevicesFromStdOutput(blockDeviceOutput);
+
+        return disksOutput
+            .Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => DiskHelper.FromString(line, blockDevices))
+            .ToList();
     }
 }

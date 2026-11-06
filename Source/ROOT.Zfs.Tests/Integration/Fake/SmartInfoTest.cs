@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Data;
@@ -26,10 +27,10 @@ public class SmartInfoTest
     }
 
     [TestMethod]
-    public void GetSmartInfoTest()
+    public async Task GetSmartInfoTest()
     {
         var zfs = GetZfs();
-        var disks = zfs.ListDisks();
+        var disks = await zfs.ListDisksAsync();
 
         foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
         {
