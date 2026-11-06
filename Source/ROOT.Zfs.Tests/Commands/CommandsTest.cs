@@ -78,7 +78,7 @@ public class CommandsTest
     public void ListBlockDevicesTest()
     {
         var command = _systemCommands.ListBlockDevices();
-        Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p|grep disk", command.FullCommandLine);
+        Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", command.FullCommandLine);
     }
 
     [TestMethod]

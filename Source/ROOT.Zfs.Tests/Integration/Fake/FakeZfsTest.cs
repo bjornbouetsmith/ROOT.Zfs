@@ -75,7 +75,7 @@ public class FakeZfsTest
         Assert.HasCount(6, disks);
         Assert.AreEqual(2, disks.Count(d => d.Type == DeviceType.Disk));
         Assert.AreEqual(4, disks.Count(d => d.Type == DeviceType.Partition));
-        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/lsblk --include 8 --include 259 -p|grep disk");
+        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/lsblk --include 8 --include 259 -p | /bin/grep disk");
         CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'");
         Assert.AreEqual(2, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);

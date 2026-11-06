@@ -39,6 +39,9 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
     public string Smartctl { get; set; } = "/sbin/smartctl";
 
     /// <inheritdoc />
+    public string Grep { get; set; } = "/bin/grep";
+
+    /// <inheritdoc />
     public void Initialize()
     {
         Zfs = GetBinaryLocation("zfs", Zfs);
@@ -46,6 +49,7 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
         Zdb = GetBinaryLocation("zdb", Zdb);
         Ls = GetBinaryLocation("ls", Ls);
         Lsblk = GetBinaryLocation("lsblk", Lsblk);
+        Grep = GetBinaryLocation("grep", Grep);
         Smartctl = GetBinaryLocation("smartctl", Smartctl);
         Initialized = true;
     }
