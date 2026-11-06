@@ -20,8 +20,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfosAsyncTest()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfosAsyncTest(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         var infos = await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
 
@@ -34,8 +36,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfosAsyncReturnsMaterializedList()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfosAsyncReturnsMaterializedList(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
 
         var infos = await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
@@ -47,8 +51,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfosAsyncForwardsCancellationToken()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfosAsyncForwardsCancellationToken(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
 
         await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
@@ -61,8 +67,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfosAsyncWithCancelledTokenDoesNotRunCommand()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfosAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
@@ -75,8 +83,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfosAsyncPropagatesCommandFailure()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfosAsyncPropagatesCommandFailure(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         _remoteProcessCall.StdError = "command failed";
         var zfs = GetZfs();
 
@@ -87,8 +97,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfoAsyncTest()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfoAsyncTest(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
 
@@ -114,8 +126,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfoAsyncForwardsCancellationToken()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfoAsyncForwardsCancellationToken(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         const string deviceId = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6";
 
@@ -126,8 +140,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfoAsyncWithCancelledTokenDoesNotRunCommand()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfoAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
@@ -140,8 +156,10 @@ public class SmartInfoTest
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
-    public async Task GetSmartInfoAsyncPropagatesCommandFailure()
+    [DataRow(true), DataRow(false)]
+    public async Task GetSmartInfoAsyncPropagatesCommandFailure(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         _remoteProcessCall.StdError = "smartctl failed";
         var zfs = GetZfs();
 
