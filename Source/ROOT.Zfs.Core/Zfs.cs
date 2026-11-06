@@ -117,7 +117,7 @@ public sealed class Zfs : ZfsBase, IZfs
     }
 
     // Kept while GetSmartInfos is still synchronous. Remove when it is converted in #41.
-    private IReadOnlyList<DiskInfo> ListDisks()
+    private List<DiskInfo> ListDisks()
     {
         var disksCommand = BuildCommand(_systemCommands.ListBlockDevices());
         var disksResponse = disksCommand.LoadResponse(true);
