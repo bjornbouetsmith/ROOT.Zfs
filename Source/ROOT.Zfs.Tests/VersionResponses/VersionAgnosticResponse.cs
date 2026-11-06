@@ -16,8 +16,8 @@ internal class VersionAgnosticResponse : IVersionResponse
         return commandLine switch
         {
             "/sbin/zfs --version" => (GetVersion(), null),
-            "/bin/lsblk --include 8 --include 259 -p|grep disk" => (LoadBlockDevices(), null),
-            "/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'" => (LoadDisks(), null),
+            "/bin/lsblk --include 8 --include 259 -p | /bin/grep disk" => (LoadBlockDevices(), null),
+            "/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'" => (LoadDisks(), null),
             "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem" or "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume" => (LoadFileSystems(""), null),
             "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank" or "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank" or "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank" => (LoadFileSystems("tank"), null),
             "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds" or "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds" or "/sbin/zfs list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem tank/myds" or "/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin tank/myds" => (LoadFileSystems("tank/myds"), null),
@@ -47,6 +47,8 @@ internal class VersionAgnosticResponse : IVersionResponse
             "/bin/which zdb" => ("/sbin/zdb", null),
             "/bin/which ls" => ("/bin/ls", null),
             "/bin/which lsblk" => ("/bin/lsblk", null),
+            "/bin/which awk" => ("/bin/awk", null),
+            "/bin/which grep" => ("/bin/grep", null),
             "/bin/which smartctl" => (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)"),
             "/sbin/zpool iostat -LlpPvH tank /dev/sda" => (GetIOStats(), null),
             "/sbin/zpool offline tank /dev/sda" => (null, null),

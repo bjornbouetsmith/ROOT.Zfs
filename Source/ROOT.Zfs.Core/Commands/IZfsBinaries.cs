@@ -34,6 +34,11 @@ public interface IZfsBinaries : IBasicZfs
     string Lsblk { get; set; }
 
     /// <summary>
+    /// Path to the awk binary. Defaults to <c>/bin/awk</c>.
+    /// </summary>
+    string Awk { get; set; }
+
+    /// <summary>
     /// Path to the which binary. Defaults to <c>/bin/which</c>.
     /// </summary>
     string Which { get; set; }
@@ -42,6 +47,11 @@ public interface IZfsBinaries : IBasicZfs
     /// Path to the smartctl binary. Defaults to <c>/sbin/smartctl</c>.
     /// </summary>
     string Smartctl { get; set; }
+
+    /// <summary>
+    /// Path to grep binary. Defaults to /bin/grep
+    /// </summary>
+    string Grep { get; set; }
 
     /// <summary>
     /// Initializes the binary locations to enable auto detection of where the required binaries are located.

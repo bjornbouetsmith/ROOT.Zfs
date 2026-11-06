@@ -42,7 +42,9 @@ public interface IZfs : IBasicZfs
     /// <summary>
     /// Lists the disks in the system
     /// </summary>
-    IEnumerable<DiskInfo> ListDisks();
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the disks and partitions in the system.</returns>
+    Task<IReadOnlyList<DiskInfo>> ListDisksAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets smart info for all devices of type disk in the system

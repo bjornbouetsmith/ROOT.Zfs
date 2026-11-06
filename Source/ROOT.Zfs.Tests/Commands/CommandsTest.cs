@@ -78,14 +78,14 @@ public class CommandsTest
     public void ListBlockDevicesTest()
     {
         var command = _systemCommands.ListBlockDevices();
-        Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p|grep disk", command.FullCommandLine);
+        Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", command.FullCommandLine);
     }
 
     [TestMethod]
     public void ListDisksTest()
     {
         var command = _systemCommands.ListDisks();
-        Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
+        Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
     }
 
 
