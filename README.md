@@ -88,9 +88,9 @@ More examples on the [wiki](https://github.com/bjornbouetsmith/ROOT.Zfs/wiki/Exa
 Obviously this software requires ZFS to be installed on the target server.
 Besides ZFS - some methods also invokes the following binaries:
 
-`smartctl`, `lsblk`, `ls`
+`smartctl`, `lsblk`, `ls`, `grep`, `awk`
 
-`smartctl` is usually found in the package called `smartmontools` the two others should be available in the base installation of the OS.
+`smartctl` is usually found in the package called `smartmontools`; the others should be available in the base installation of the OS.
 
 
 

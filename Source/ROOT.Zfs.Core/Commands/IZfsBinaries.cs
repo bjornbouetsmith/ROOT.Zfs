@@ -34,6 +34,11 @@ public interface IZfsBinaries : IBasicZfs
     string Lsblk { get; set; }
 
     /// <summary>
+    /// Path to the awk binary. Defaults to <c>/bin/awk</c>.
+    /// </summary>
+    string Awk { get; set; }
+
+    /// <summary>
     /// Path to the which binary. Defaults to <c>/bin/which</c>.
     /// </summary>
     string Which { get; set; }

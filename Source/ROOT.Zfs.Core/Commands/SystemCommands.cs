@@ -20,7 +20,7 @@ internal sealed class SystemCommands : CommandBuilderBase, ISystemCommands
     /// <inheritdoc />
     public IProcessCall ListDisks()
     {
-        return new ProcessCall(Binaries.Ls, "-l /dev/disk/by-id/ | awk -F ' ' '{print $9,$11}'");
+        return new ProcessCall(Binaries.Ls, "-l /dev/disk/by-id/") | new ProcessCall(Binaries.Awk, "-F ' ' '{print $9,$11}'");
     }
 
     /// <inheritdoc />

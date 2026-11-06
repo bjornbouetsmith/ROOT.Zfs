@@ -33,6 +33,9 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
     public string Lsblk { get; set; } = "/bin/lsblk";
 
     /// <inheritdoc />
+    public string Awk { get; set; } = "/bin/awk";
+
+    /// <inheritdoc />
     public string Which { get; set; } = "/bin/which";
 
     /// <inheritdoc />
@@ -49,6 +52,7 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
         Zdb = GetBinaryLocation("zdb", Zdb);
         Ls = GetBinaryLocation("ls", Ls);
         Lsblk = GetBinaryLocation("lsblk", Lsblk);
+        Awk = GetBinaryLocation("awk", Awk);
         Grep = GetBinaryLocation("grep", Grep);
         Smartctl = GetBinaryLocation("smartctl", Smartctl);
         Initialized = true;

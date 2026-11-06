@@ -21,8 +21,10 @@ public class FakeZfsBinariesTest
         Assert.AreEqual("/sbin/zdb", binaries.Zdb);
         Assert.AreEqual("/bin/ls", binaries.Ls);
         Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
+        Assert.AreEqual("/bin/awk", binaries.Awk);
         Assert.AreEqual("/bin/which", binaries.Which);
         Assert.AreEqual("/sbin/smartctl", binaries.Smartctl);
+        Assert.AreEqual("/bin/grep", binaries.Grep);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -36,13 +38,14 @@ public class FakeZfsBinariesTest
         Assert.IsTrue(binaries.Initialized);
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
 
-        Assert.HasCount(7, commandsInvoked);
+        Assert.HasCount(8, commandsInvoked);
         var asHashSet = commandsInvoked.ToHashSet();
         Assert.Contains("/bin/which zfs", asHashSet);
         Assert.Contains("/bin/which zpool", asHashSet);
         Assert.Contains("/bin/which zdb", asHashSet);
         Assert.Contains("/bin/which ls", asHashSet);
         Assert.Contains("/bin/which lsblk", asHashSet);
+        Assert.Contains("/bin/which awk", asHashSet);
         Assert.Contains("/bin/which smartctl", asHashSet);
         Assert.Contains("/bin/which grep", asHashSet);
 
@@ -51,6 +54,7 @@ public class FakeZfsBinariesTest
         Assert.AreEqual("/sbin/zdb", binaries.Zdb);
         Assert.AreEqual("/bin/ls", binaries.Ls);
         Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
+        Assert.AreEqual("/bin/awk", binaries.Awk);
 
         // our fake cannot find smartctl, so assert that it does not get overridden
         Assert.AreEqual("/sbin/smartctl", binaries.Smartctl);
@@ -74,9 +78,10 @@ public class FakeZfsBinariesTest
         Assert.AreEqual("/sbin/zdb", binaries.Zdb);
         Assert.AreEqual("/bin/ls", binaries.Ls);
         Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
+        Assert.AreEqual("/bin/awk", binaries.Awk);
         Assert.AreEqual("/bin/grep", binaries.Grep);
         Assert.AreEqual("/custom/smartctl", binaries.Smartctl);
-        Assert.HasCount(7, _remoteProcessCall.GetCommandsInvoked());
+        Assert.HasCount(8, _remoteProcessCall.GetCommandsInvoked());
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -96,11 +101,12 @@ public class FakeZfsBinariesTest
         Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Zdb);
         Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Ls);
         Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Lsblk);
+        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Awk);
         Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Smartctl);
         Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Grep);
 
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
-        Assert.HasCount(7, commandsInvoked);
+        Assert.HasCount(8, commandsInvoked);
         Assert.IsTrue(commandsInvoked.All(command => command.StartsWith("/usr/bin/which ", StringComparison.Ordinal)));
     }
 }
