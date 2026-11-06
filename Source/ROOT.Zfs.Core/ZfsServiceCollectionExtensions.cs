@@ -22,10 +22,7 @@ public static class ZfsServiceCollectionExtensions
         IProcessCall remoteConnection = null,
         Action<IZfsBinaries> configureBinaries = null)
     {
-        if (services == null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddProcessCall(remoteConnection);
 

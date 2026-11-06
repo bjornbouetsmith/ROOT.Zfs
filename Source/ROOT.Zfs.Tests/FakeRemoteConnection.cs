@@ -12,6 +12,8 @@ internal class FakeRemoteConnection : IProcessCall
 {
     private readonly string _zfsVersion;
     private readonly IVersionResponse _responses;
+    private readonly Dictionary<string, (string StdOut, string StdError)> _commandResponses = [];
+    private readonly Dictionary<string, Exception> _commandExceptions = [];
     private readonly List<string> _commandsInvoked = [];
     private readonly List<CancellationToken> _asyncCancellationTokens = [];
     private int _syncLoadResponseCalls;
@@ -49,6 +51,17 @@ internal class FakeRemoteConnection : IProcessCall
     /// Defaults to false to keep existing tests synchronous unless they explicitly opt in.
     /// </summary>
     public bool CompleteAsyncResponses { get; set; }
+
+    /// <summary>
+    /// Gets command-specific responses keyed by the full command line.
+    /// Responses registered here take precedence over the version response and the global <see cref="StdOutput"/> / <see cref="StdError"/> overrides.
+    /// </summary>
+    public Dictionary<string, (string StdOut, string StdError)> CommandResponses => _commandResponses;
+
+    /// <summary>
+    /// Gets exceptions keyed by the full command line. A matching command throws the configured exception instead of returning a response.
+    /// </summary>
+    public Dictionary<string, Exception> CommandExceptions => _commandExceptions;
 
     public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
     {
@@ -93,21 +106,34 @@ internal class FakeRemoteConnection : IProcessCall
     private ProcessCallResult GetResponse(bool throwOnFailure)
     {
         _commandsInvoked.Add(FullCommandLine);
-        (string StdOut, string StdError) fakes = (null, null);
-        if (StdError == null 
-            && StdOutput == null)
+        if (_commandExceptions.TryGetValue(FullCommandLine, out var commandException))
         {
-            fakes = _responses.LoadResponse(FullCommandLine);
+            throw commandException;
         }
 
-        var stdOut = (StdOutput ?? fakes.StdOut);
-        var stdError = (StdError ?? fakes.StdError);
+        (string StdOut, string StdError) response;
+        if (_commandResponses.TryGetValue(FullCommandLine, out var commandResponse))
+        {
+            response = commandResponse;
+        }
+        else
+        {
+            (string StdOut, string StdError) fakes = (null, null);
+            if (StdError == null 
+                && StdOutput == null)
+            {
+                fakes = _responses.LoadResponse(FullCommandLine);
+            }
+
+            response = (StdOutput ?? fakes.StdOut, StdError ?? fakes.StdError);
+        }
+
         var result =  new ProcessCallResult
         {
             CommandLine = FullCommandLine,
-            ExitCode = stdError != null ? 1 : 0,
-            StdError = stdError,
-            StdOut = stdOut
+            ExitCode = response.StdError != null ? 1 : 0,
+            StdError = response.StdError,
+            StdOut = response.StdOut
         };
 
         if (throwOnFailure && !result.Success)

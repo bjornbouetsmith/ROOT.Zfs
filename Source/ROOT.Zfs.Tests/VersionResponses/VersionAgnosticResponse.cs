@@ -49,7 +49,16 @@ internal class VersionAgnosticResponse : IVersionResponse
             "/bin/which lsblk" => ("/bin/lsblk", null),
             "/bin/which awk" => ("/bin/awk", null),
             "/bin/which grep" => ("/bin/grep", null),
+            "/bin/which systemd-detect-virt" => ("/usr/bin/systemd-detect-virt", null),
+            "/bin/which virt-what" => ("/usr/sbin/virt-what", null),
+            "/bin/which hostnamectl" => ("/usr/bin/hostnamectl", null),
+            "/bin/which cat" => ("/bin/cat", null),
             "/bin/which smartctl" => (null, "which: no smartctl in (/sbin:/bin:/usr/sbin:/usr/bin)"),
+            "/usr/bin/systemd-detect-virt --vm" => ("none", null),
+            "/usr/sbin/virt-what" => ("", null),
+            "/usr/bin/hostnamectl status" => (GetHostnamectlStatus(), null),
+            "/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name" => (GetDmiInfo(), null),
+            "/bin/cat /proc/cpuinfo" => (GetCpuInfo(), null),
             "/sbin/zpool iostat -LlpPvH tank /dev/sda" => (GetIOStats(), null),
             "/sbin/zpool offline tank /dev/sda" => (null, null),
             "/sbin/zpool online tank /dev/sda" => (null, null),
@@ -859,6 +868,33 @@ a user|group|project specifier of one of these forms:
     POSIX id        (eg: ""126829"")
     SMB name@domain (eg: ""matt@sun"")
     SMB SID         (eg: ""S-1-234-567-89"")";
+    }
+
+    private static string GetHostnamectlStatus()
+    {
+        return @" Static hostname: zfsdev
+       Icon name: computer-desktop
+         Chassis: desktop
+      Machine ID: 11111111111111111111111111111111
+         Boot ID: 22222222222222222222222222222222
+Operating System: Rocky Linux 8.5
+          Kernel: Linux 5.15.35-1-pve
+    Architecture: x86-64";
+    }
+
+    private static string GetDmiInfo()
+    {
+        return @"Dell Inc.
+PowerEdge R740";
+    }
+
+    private static string GetCpuInfo()
+    {
+        return @"processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 85
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc";
     }
 
     private static string LoadFileSystems(string contains)

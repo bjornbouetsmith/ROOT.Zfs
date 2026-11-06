@@ -10,12 +10,14 @@ namespace ROOT.Zfs.Tests.Commands;
 public class CommandsTest
 {
     private readonly SystemCommands _systemCommands;
+    private readonly VirtualizationCommands _virtualizationCommands;
     private readonly DatasetCommands _datasetCommands;
 
     public CommandsTest()
     {
         var binaries = new ZfsBinaries();
         _systemCommands = new SystemCommands(binaries);
+        _virtualizationCommands = new VirtualizationCommands(binaries);
         _datasetCommands = new DatasetCommands(binaries);
     }
 
@@ -88,6 +90,40 @@ public class CommandsTest
         Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
     }
 
+    [TestMethod]
+    public void DetectVirtualizationTest()
+    {
+        var command = _virtualizationCommands.DetectVirtualization();
+        Assert.AreEqual("/usr/bin/systemd-detect-virt --vm", command.FullCommandLine);
+    }
+
+    [TestMethod]
+    public void DetectVirtualizationWithVirtWhatTest()
+    {
+        var command = _virtualizationCommands.DetectVirtualizationWithVirtWhat();
+        Assert.AreEqual("/usr/sbin/virt-what", command.FullCommandLine);
+    }
+
+    [TestMethod]
+    public void GetHostnamectlStatusTest()
+    {
+        var command = _virtualizationCommands.GetHostnamectlStatus();
+        Assert.AreEqual("/usr/bin/hostnamectl status", command.FullCommandLine);
+    }
+
+    [TestMethod]
+    public void GetDmiInfoTest()
+    {
+        var command = _virtualizationCommands.GetDmiInfo();
+        Assert.AreEqual("/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name", command.FullCommandLine);
+    }
+
+    [TestMethod]
+    public void GetCpuInfoTest()
+    {
+        var command = _virtualizationCommands.GetCpuInfo();
+        Assert.AreEqual("/bin/cat /proc/cpuinfo", command.FullCommandLine);
+    }
 
     [DataRow("tank", false)]
     [DataRow("tank && rm -rf /", true)]
