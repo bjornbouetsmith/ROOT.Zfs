@@ -9,6 +9,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 [TestClass]
 public class SmartInfoTest
 {
+    public TestContext TestContext { get; set; }
     readonly IProcessCall _remoteProcessCall = new FakeRemoteConnection("2.1.5-2");
 
     private Core.Zfs GetZfs()
@@ -30,7 +31,7 @@ public class SmartInfoTest
     public async Task GetSmartInfoTest()
     {
         var zfs = GetZfs();
-        var disks = await zfs.ListDisksAsync();
+        var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
 
         foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
         {

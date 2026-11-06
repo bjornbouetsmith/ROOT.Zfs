@@ -12,6 +12,7 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 [TestClass]
 public class FakeZfsTest
 {
+    public TestContext TestContext { get; set; }
     readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
     private Core.Zfs GetZfs()
@@ -23,12 +24,12 @@ public class FakeZfsTest
     public async Task GetVersionInfoAsyncTest()
     {
         var zfs = GetZfs();
-        var info = await zfs.GetVersionInfoAsync();
+        var info = await zfs.GetVersionInfoAsync(TestContext.CancellationToken);
 
         Assert.IsNotNull(info);
         Assert.IsNotEmpty(info.Lines);
         Assert.IsTrue(info.Lines.Any(line => line.Contains("zfs-2.1.5-2", StringComparison.Ordinal)));
-        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/sbin/zfs --version");
+        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/sbin/zfs --version");
         Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
 
@@ -42,12 +43,11 @@ public class FakeZfsTest
     public async Task GetVersionInfoAsyncForwardsCancellationToken()
     {
         var zfs = GetZfs();
-        using var cancellationTokenSource = new CancellationTokenSource();
 
-        await zfs.GetVersionInfoAsync(cancellationTokenSource.Token);
+        await zfs.GetVersionInfoAsync(TestContext.CancellationToken);
 
         Assert.AreEqual(1, _remoteProcessCall.AsyncCancellationTokens.Count);
-        Assert.AreEqual(cancellationTokenSource.Token, _remoteProcessCall.AsyncCancellationTokens[0]);
+        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -69,14 +69,14 @@ public class FakeZfsTest
     {
         var zfs = GetZfs();
 
-        var disks = (await zfs.ListDisksAsync()).ToList();
+        var disks = (await zfs.ListDisksAsync(TestContext.CancellationToken)).ToList();
 
         Assert.IsNotNull(disks);
         Assert.HasCount(6, disks);
         Assert.AreEqual(2, disks.Count(d => d.Type == DeviceType.Disk));
         Assert.AreEqual(4, disks.Count(d => d.Type == DeviceType.Partition));
-        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/lsblk --include 8 --include 259 -p | /bin/grep disk");
-        CollectionAssert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'");
+        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/lsblk --include 8 --include 259 -p | /bin/grep disk");
+        Assert.Contains(_remoteProcessCall.GetCommandsInvoked(), "/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'");
         Assert.AreEqual(2, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
 
@@ -88,7 +88,7 @@ public class FakeZfsTest
     {
         var zfs = GetZfs();
 
-        var disks = await zfs.ListDisksAsync();
+        var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
 
         // Both commands must have completed before the returned enumerable is enumerated.
         Assert.HasCount(2, _remoteProcessCall.GetCommandsInvoked());
@@ -100,13 +100,12 @@ public class FakeZfsTest
     public async Task ListDisksAsyncForwardsCancellationToken()
     {
         var zfs = GetZfs();
-        using var cancellationTokenSource = new CancellationTokenSource();
 
-        await zfs.ListDisksAsync(cancellationTokenSource.Token);
+        await zfs.ListDisksAsync(TestContext.CancellationToken);
 
         Assert.HasCount(2, _remoteProcessCall.AsyncCancellationTokens);
-        Assert.AreEqual(cancellationTokenSource.Token, _remoteProcessCall.AsyncCancellationTokens[0]);
-        Assert.AreEqual(cancellationTokenSource.Token, _remoteProcessCall.AsyncCancellationTokens[1]);
+        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
     }
 
     [TestMethod, TestCategory("FakeIntegration")]
@@ -129,7 +128,7 @@ public class FakeZfsTest
         _remoteProcessCall.StdError = "lsblk failed";
         var zfs = GetZfs();
 
-        await Assert.ThrowsExactlyAsync<ProcessCallException>(() => zfs.ListDisksAsync());
+        await Assert.ThrowsExactlyAsync<ProcessCallException>(() => zfs.ListDisksAsync(TestContext.CancellationToken));
 
         Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);

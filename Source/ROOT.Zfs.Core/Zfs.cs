@@ -128,7 +128,7 @@ public sealed class Zfs : ZfsBase, IZfs
         return ParseDisks(disksResponse.StdOut, response.StdOut);
     }
 
-    private static IReadOnlyList<DiskInfo> ParseDisks(string blockDeviceOutput, string disksOutput)
+    private static List<DiskInfo> ParseDisks(string blockDeviceOutput, string disksOutput)
     {
         var blockDevices = DiskHelper.BlockDevicesFromStdOutput(blockDeviceOutput);
 
