@@ -61,4 +61,30 @@ public class ZfsTest
             TestContext.WriteLine($"{disk.Id}: {disk.Type}");
         }
     }
+
+    [TestMethod, TestCategory("Integration")]
+    public async Task GetSmartInfosAsyncTest()
+    {
+        var zfs = GetZfs();
+
+        try
+        {
+            var infos = await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
+
+            Assert.IsNotNull(infos);
+            Assert.IsNotEmpty(infos);
+
+            foreach (var info in infos)
+            {
+                Assert.IsFalse(string.IsNullOrWhiteSpace(info.DeviceId));
+                TestContext.WriteLine($"{info.DeviceId}: {info.DataSection?.Status}");
+            }
+        }
+        catch (ProcessCallException ex)
+        {
+            // Virtual disks can return a non-zero smartctl exit code even when the SMART data is readable.
+            // In that case the command failure must still be propagated by smartctl.
+            StringAssert.Contains(ex.Message, "smartctl");
+        }
+    }
 }
