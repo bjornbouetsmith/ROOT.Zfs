@@ -26,7 +26,7 @@ internal sealed class SystemCommands : CommandBuilderBase, ISystemCommands
     /// <inheritdoc />
     public IProcessCall ListBlockDevices()
     {
-        return new ProcessCall(Binaries.Lsblk, "--include 8 --include 259 -p|grep disk");
+        return new ProcessCall(Binaries.Lsblk, "--include 8 --include 259 -p | grep disk");
     }
 
     /// <inheritdoc />
