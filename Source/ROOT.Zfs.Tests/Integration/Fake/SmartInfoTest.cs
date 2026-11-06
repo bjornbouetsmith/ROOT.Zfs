@@ -86,15 +86,17 @@ public class SmartInfoTest
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
-    [TestMethod]
-    public async Task GetSmartInfoTest()
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetSmartInfoAsyncTest()
     {
         var zfs = GetZfs();
         var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
 
         foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
         {
-            var info = zfs.GetSmartInfo(disk.Id);
+            var info = await zfs.GetSmartInfoAsync(disk.Id, TestContext.CancellationToken);
+            Assert.AreEqual(disk.Id, info.DeviceId);
+            Assert.Contains($"/sbin/smartctl -x {disk.Id}", _remoteProcessCall.GetCommandsInvoked());
             if (info.DeviceId.EndsWith('5'))
             {
                 // FAKE returns failed status
@@ -105,5 +107,47 @@ public class SmartInfoTest
                 Assert.AreEqual("PASSED", info.DataSection.Status);
             }
         }
+
+        // Two calls for ListDisksAsync and one smartctl call per disk.
+        Assert.AreEqual(4, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetSmartInfoAsyncForwardsCancellationToken()
+    {
+        var zfs = GetZfs();
+        const string deviceId = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6";
+
+        await zfs.GetSmartInfoAsync(deviceId, TestContext.CancellationToken);
+
+        Assert.HasCount(1, _remoteProcessCall.AsyncCancellationTokens);
+        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetSmartInfoAsyncWithCancelledTokenDoesNotRunCommand()
+    {
+        var zfs = GetZfs();
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => zfs.GetSmartInfoAsync("/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", cancellationTokenSource.Token));
+
+        Assert.IsEmpty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.AreEqual(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+    }
+
+    [TestMethod, TestCategory("FakeIntegration")]
+    public async Task GetSmartInfoAsyncPropagatesCommandFailure()
+    {
+        _remoteProcessCall.StdError = "smartctl failed";
+        var zfs = GetZfs();
+
+        await Assert.ThrowsExactlyAsync<ProcessCallException>(() => zfs.GetSmartInfoAsync("/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", TestContext.CancellationToken));
+
+        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 }

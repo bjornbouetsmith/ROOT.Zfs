@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ROOT.Shared.Utils.OS;
+using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration;
 
@@ -78,5 +78,20 @@ public class ZfsTest
             Assert.IsFalse(string.IsNullOrWhiteSpace(info.DeviceId));
             TestContext.WriteLine($"{info.DeviceId}: {info.DataSection?.Status}");
         }
+    }
+
+    [TestMethod, TestCategory("Integration"), Ignore("Fails on systems with virtual disks because smartctl returns a non-zero exit code")]
+    public async Task GetSmartInfoAsyncTest()
+    {
+        var zfs = GetZfs();
+        var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
+        var disk = disks.First(d => d.Type == DeviceType.Disk);
+
+        var info = await zfs.GetSmartInfoAsync(disk.Id, TestContext.CancellationToken);
+
+        Assert.IsNotNull(info);
+        Assert.AreEqual(disk.Id, info.DeviceId);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(info.DataSection?.Status));
+        TestContext.WriteLine($"{info.DeviceId}: {info.DataSection?.Status}");
     }
 }
