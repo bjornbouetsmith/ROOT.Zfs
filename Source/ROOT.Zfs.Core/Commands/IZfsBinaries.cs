@@ -54,6 +54,26 @@ public interface IZfsBinaries : IBasicZfs
     string Grep { get; set; }
 
     /// <summary>
+    /// Path to the systemd-detect-virt binary. Defaults to <c>/usr/bin/systemd-detect-virt</c>.
+    /// </summary>
+    string SystemdDetectVirt { get; set; }
+
+    /// <summary>
+    /// Path to the virt-what binary. Defaults to <c>/usr/sbin/virt-what</c>.
+    /// </summary>
+    string VirtWhat { get; set; }
+
+    /// <summary>
+    /// Path to the hostnamectl binary. Defaults to <c>/usr/bin/hostnamectl</c>.
+    /// </summary>
+    string Hostnamectl { get; set; }
+
+    /// <summary>
+    /// Path to the cat binary. Defaults to <c>/bin/cat</c>.
+    /// </summary>
+    string Cat { get; set; }
+
+    /// <summary>
     /// Initializes the binary locations to enable auto detection of where the required binaries are located.
     /// Utilizes the command `which` - if that is not installed this will fail.
     /// Initializing is optional, but if not done the default location of the binaries needed for this library to work is not autodetected

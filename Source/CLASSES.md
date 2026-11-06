@@ -53,8 +53,9 @@ The codebase is organized into primary projects under `Source`:
 ### Command Builders (`ROOT.Zfs.Core.Commands`)
 
 - **`CommandBuilderBase`**: Non-static base class that holds the injected `IZfsBinaries` instance and shared validation helpers.
-- **`IZfsBinaries` / `ZfsBinaries`**: Per-`Zfs`-instance binary locations (zfs, zpool, zdb, ls, lsblk, which, smartctl). Replaces the old static `Commands.Which*` properties. `ZfsBinaries.Initialize()` resolves each location through `which` and sets `Initialized`; it is the only component that detects binary locations.
+- **`IZfsBinaries` / `ZfsBinaries`**: Per-`Zfs`-instance binary locations (zfs, zpool, zdb, ls, lsblk, which, smartctl, systemd-detect-virt, virt-what, hostnamectl, cat). Replaces the old static `Commands.Which*` properties. `ZfsBinaries.Initialize()` resolves each location through `which` and sets `Initialized`; it is the only component that detects binary locations.
 - **`ISystemCommands` / `SystemCommands`**: `which`, disk listing, block-device listing, and SMART commands.
+- **`IVirtualizationCommands` / `VirtualizationCommands`**: Internal command builders for virtual machine detection probes (`systemd-detect-virt`, `virt-what`, `hostnamectl`, DMI data, and `/proc/cpuinfo`).
 - **`IZpoolCommands` / `ZpoolCommands`**: Generates `zpool` executable CLI arguments for pool actions (e.g., `zpool status`, `zpool create`, `zpool iostat`).
 - **`IZfsCommands` / `ZfsCommands`**: Generates `zfs --version`.
 - **`IDatasetCommands` / `DataSetCommands`**: Builds arguments for `zfs list`, `zfs create`, `zfs destroy`, `zfs mount`, `zfs unmount`, and `zfs promote`.
@@ -76,6 +77,8 @@ All command builders receive their dependencies through constructors. `Zfs` rece
 - **`SnapshotHelper` & `SnapshotHoldParser`**: Formats arguments and parses `zfs list -t snapshot` and `zfs holds` command outputs.
 - **`DataSetHelper` & `DataSetProperties`**: Converts `zfs list` raw output lines into `DataSet` model instances.
 - **`SmartInfoParser`**: Parses output from `smartctl` into `SmartInfo` DTOs containing drive health data.
+- **`VirtualizationHelper`**: Interprets the output of the virtualization probes, including `systemd-detect-virt`, `virt-what`, `hostnamectl`, DMI vendor data, and the CPU hypervisor flag.
+- **`VirtualMachineDetector`**: Internal helper that runs the virtualization probes through an injected remote connection and combines their results into a single `IsVirtualMachineAsync` check. It is intentionally not part of the public API.
 - **`DiskHelper`**: Parses `lsblk` JSON or text outputs into structured `DiskInfo` items.
 - **`StateParser`**: Translates string status values into `State` enums.
 - **`CommandHistoryHelper`**: Parses `zpool history` logs into `CommandHistory` objects.

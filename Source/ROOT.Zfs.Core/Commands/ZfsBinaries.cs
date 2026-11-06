@@ -45,6 +45,18 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
     public string Grep { get; set; } = "/bin/grep";
 
     /// <inheritdoc />
+    public string SystemdDetectVirt { get; set; } = "/usr/bin/systemd-detect-virt";
+
+    /// <inheritdoc />
+    public string VirtWhat { get; set; } = "/usr/sbin/virt-what";
+
+    /// <inheritdoc />
+    public string Hostnamectl { get; set; } = "/usr/bin/hostnamectl";
+
+    /// <inheritdoc />
+    public string Cat { get; set; } = "/bin/cat";
+
+    /// <inheritdoc />
     public void Initialize()
     {
         Zfs = GetBinaryLocation("zfs", Zfs);
@@ -54,6 +66,10 @@ public sealed class ZfsBinaries : ZfsBase, IZfsBinaries
         Lsblk = GetBinaryLocation("lsblk", Lsblk);
         Awk = GetBinaryLocation("awk", Awk);
         Grep = GetBinaryLocation("grep", Grep);
+        SystemdDetectVirt = GetBinaryLocation("systemd-detect-virt", SystemdDetectVirt);
+        VirtWhat = GetBinaryLocation("virt-what", VirtWhat);
+        Hostnamectl = GetBinaryLocation("hostnamectl", Hostnamectl);
+        Cat = GetBinaryLocation("cat", Cat);
         Smartctl = GetBinaryLocation("smartctl", Smartctl);
         Initialized = true;
     }

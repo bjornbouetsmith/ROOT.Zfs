@@ -92,6 +92,8 @@ Besides ZFS - some methods also invokes the following binaries:
 
 `smartctl` is usually found in the package called `smartmontools`; the others should be available in the base installation of the OS.
 
+Virtual machine detection is handled by the internal `VirtualMachineDetector` helper (it is not part of the public API). It uses `systemd-detect-virt` when available and falls back to `virt-what`, `hostnamectl`, DMI data under `/sys/class/dmi/id`, and the CPU hypervisor flag in `/proc/cpuinfo`. The optional detection tools do not need to be installed on every target system.
+
 
 
 ## Help needed
