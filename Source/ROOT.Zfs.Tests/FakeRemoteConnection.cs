@@ -43,6 +43,13 @@ internal class FakeRemoteConnection : IProcessCall
     /// </summary>
     public IReadOnlyList<CancellationToken> AsyncCancellationTokens => _asyncCancellationTokens;
 
+    /// <summary>
+    /// Gets or sets whether async command responses should complete asynchronously.
+    /// Setting this to true forces callers through their async continuation instead of completing synchronously.
+    /// Defaults to false to keep existing tests synchronous unless they explicitly opt in.
+    /// </summary>
+    public bool CompleteAsyncResponses { get; set; }
+
     public ProcessCallResult LoadResponse(bool throwOnFailure, params string[] arguments)
     {
         _syncLoadResponseCalls++;
@@ -55,22 +62,32 @@ internal class FakeRemoteConnection : IProcessCall
         return GetResponse(throwOnFailure);
     }
 
-    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    public async Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         _asyncLoadResponseCalls++;
         _asyncCancellationTokens.Add(cancellationToken);
 
-        return Task.FromResult(GetResponse(throwOnFailure));
+        if (CompleteAsyncResponses)
+        {
+            await Task.Yield();
+        }
+
+        return GetResponse(throwOnFailure);
     }
 
-    public Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, Stream inputStream, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
+    public async Task<ProcessCallResult> LoadResponseAsync(bool throwOnFailure, Stream inputStream, ProcessCallArguments arguments = default, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         _asyncLoadResponseCalls++;
         _asyncCancellationTokens.Add(cancellationToken);
-    
-        return Task.FromResult(GetResponse(throwOnFailure));
+
+        if (CompleteAsyncResponses)
+        {
+            await Task.Yield();
+        }
+
+        return GetResponse(throwOnFailure);
     }
 
     private ProcessCallResult GetResponse(bool throwOnFailure)

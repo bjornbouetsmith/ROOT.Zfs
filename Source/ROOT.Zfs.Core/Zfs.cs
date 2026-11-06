@@ -112,10 +112,12 @@ public sealed class Zfs : ZfsBase, IZfs
     }
 
     /// <inheritdoc />
-    public SmartInfo GetSmartInfo(string name)
+    public async Task<SmartInfo> GetSmartInfoAsync(string name, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var command = BuildCommand(_systemCommands.GetSmartInfo(name));
-        var response = command.LoadResponse(true);
+        var response = await command.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         return SmartInfoParser.ParseStdOut(name, response.StdOut);
     }
 

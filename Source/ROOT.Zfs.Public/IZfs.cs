@@ -57,5 +57,7 @@ public interface IZfs : IBasicZfs
     /// Gets smart info for the device
     /// </summary>
     /// <param name="name">The full id or name of the device</param>
-    SmartInfo GetSmartInfo(string name);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the smart information for the device.</returns>
+    Task<SmartInfo> GetSmartInfoAsync(string name, CancellationToken cancellationToken = default);
 }
