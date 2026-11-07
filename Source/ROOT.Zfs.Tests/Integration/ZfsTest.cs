@@ -63,7 +63,7 @@ public class ZfsTest
         }
     }
 
-    [TestMethod, TestCategory("Integration"),Ignore("Fails on systems with virtual disks because smartctl returns a non-zero exit code")]
+    [TestMethod, TestCategory("Integration")]
     public async Task GetSmartInfosAsyncTest()
     {
         var zfs = GetZfs();
@@ -80,7 +80,7 @@ public class ZfsTest
         }
     }
 
-    [TestMethod, TestCategory("Integration"), Ignore("Fails on systems with virtual disks because smartctl returns a non-zero exit code")]
+    [TestMethod, TestCategory("Integration")]
     public async Task GetSmartInfoAsyncTest()
     {
         var zfs = GetZfs();
