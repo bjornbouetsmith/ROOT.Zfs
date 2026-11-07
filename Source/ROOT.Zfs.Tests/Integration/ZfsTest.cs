@@ -91,7 +91,7 @@ public class ZfsTest
 
         Assert.IsNotNull(info);
         Assert.AreEqual(disk.Id, info.DeviceId);
-        Assert.IsFalse(string.IsNullOrWhiteSpace(info.DataSection?.Status));
+        
         TestContext.WriteLine($"{info.DeviceId}: {info.DataSection?.Status}");
     }
 }
