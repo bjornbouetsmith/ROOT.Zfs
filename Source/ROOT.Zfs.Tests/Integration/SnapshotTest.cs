@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
@@ -9,7 +9,6 @@ using ROOT.Zfs.Public.Arguments.Snapshots;
 
 namespace ROOT.Zfs.Tests.Integration;
 
-[TestClass]
 public class SnapshotTest
 {
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
@@ -28,14 +27,15 @@ public class SnapshotTest
         return sn;
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void RemoteSnapshotTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
         var sn = GetSnapshots();
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name });
         var snapshots = sn.List(new SnapshotListArgs { Root = pool.Name });
-        Assert.IsNotNull(snapshots);
+        Assert.NotNull(snapshots);
         foreach (var snap in snapshots)
         {
             Console.WriteLine(snap.CreationDate.AsString());
@@ -44,7 +44,8 @@ public class SnapshotTest
         }
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void RemoteCreateAndDestroySnapshot()
     {
         var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
@@ -57,13 +58,14 @@ public class SnapshotTest
 
         var wasCreated = snaps.FirstOrDefault(snap => snap.SnapshotName.EndsWith(snapName));
 
-        Assert.IsNotNull(wasCreated);
+        Assert.NotNull(wasCreated);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = snapName, IsExactName = true };
         sn.Destroy(args);
 
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void CreateAndDeleteByPatternTest()
     {
         var sn = GetSnapshots();
@@ -75,15 +77,16 @@ public class SnapshotTest
 
         var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
 
-        Assert.HasCount(3, snaps);
+        Assert.Equal(3, snaps.Count());
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
         sn.Destroy(args);
 
         snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix))];
-        Assert.IsEmpty(snaps);
+        Assert.Empty(snaps);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void CloneSnapshotTest()
     {
         var sn = GetSnapshots();
@@ -97,7 +100,7 @@ public class SnapshotTest
         var getds = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
         var datasets = ds.List(getds);
         var myClone = datasets.FirstOrDefault(d => d.DatasetName == $"{pool.Name}/mysnap_clone");
-        Assert.IsNotNull(myClone);
-        Assert.IsTrue(myClone.IsClone);
+        Assert.NotNull(myClone);
+        Assert.True(myClone.IsClone);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
@@ -7,38 +7,37 @@ using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Commands;
 
-[TestClass]
 public class ZpoolCommandTest
 {
     private readonly ZpoolCommands _commands = new(new ZfsBinaries());
 
-    [TestMethod]
+    [Fact]
     public void GetHistoryCommandTest()
     {
         var args = new PoolHistoryArgs { PoolName = "tank" };
         var command = _commands.History(args);
 
-        Assert.AreEqual("/sbin/zpool history -l tank", command.FullCommandLine);
+        Assert.Equal("/sbin/zpool history -l tank", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void GetHistoryCommandTestNotValid()
     {
         var args = new PoolHistoryArgs();
-        Assert.ThrowsExactly<ArgumentException>(() => _commands.History(args));
+        Assert.Throws<ArgumentException>(() => _commands.History(args));
 
     }
 
-    [DataRow("", true)]
-    [DataRow("tank", false)]
-    [DataRow("tank && rm -rf /", true)]
-    [TestMethod]
+    [InlineData("", true)]
+    [InlineData("tank", false)]
+    [InlineData("tank && rm -rf /", true)]
+    [Theory]
     public void GetStatusCommandTest(string pool, bool expectException)
     {
         var arg = new PoolStatusArgs { PoolName = pool };
         if (expectException)
         {
-            var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.GetStatus(arg));
+            var ex = Assert.Throws<ArgumentException>(() => _commands.GetStatus(arg));
             Console.WriteLine(ex);
         }
         else
@@ -46,36 +45,36 @@ public class ZpoolCommandTest
 
             var command = _commands.GetStatus(arg);
 
-            Assert.AreEqual("/sbin/zpool status -vP tank", command.FullCommandLine);
+            Assert.Equal("/sbin/zpool status -vP tank", command.FullCommandLine);
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void GetAllPoolInfosCommand()
     {
         var command = _commands.GetAllPoolInfos();
 
-        Assert.AreEqual("/sbin/zpool list -PHp", command.FullCommandLine);
+        Assert.Equal("/sbin/zpool list -PHp", command.FullCommandLine);
     }
 
-    [DataRow("tank", false)]
-    [DataRow("tank/myds", true)]
-    [TestMethod]
+    [InlineData("tank", false)]
+    [InlineData("tank/myds", true)]
+    [Theory]
     public void GetPoolInfoCommand(string name, bool expectException)
     {
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.GetPoolInfo(new PoolListArgs { PoolName = name }));
+            Assert.Throws<ArgumentException>(() => _commands.GetPoolInfo(new PoolListArgs { PoolName = name }));
         }
         else
         {
             var command = _commands.GetPoolInfo(new PoolListArgs { PoolName = name });
 
-            Assert.AreEqual("/sbin/zpool list -PHp tank", command.FullCommandLine);
+            Assert.Equal("/sbin/zpool list -PHp tank", command.FullCommandLine);
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void CreateMirrorPoolTest()
     {
         var args = new PoolCreateArgs
@@ -92,13 +91,13 @@ public class ZpoolCommandTest
             FileSystemProperties = [new PropertyValue { Property = "atime", Value = "off" }]
         };
         var command = _commands.Create(args);
-        Assert.AreEqual("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
+        Assert.Equal("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
         Console.WriteLine(command.FullCommandLine);
     }
 
-    [TestMethod]
-    [DataRow(true)]
-    [DataRow(false)]
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
     public void CreateWithEmptyNameShouldThrowArgumentException(bool nameNull)
     {
         var args = new PoolCreateArgs
@@ -110,11 +109,11 @@ public class ZpoolCommandTest
             ]
         };
 
-        var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.Create(args));
-        Assert.AreEqual("PoolName cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
+        var ex = Assert.Throws<ArgumentException>(() => _commands.Create(args));
+        Assert.Equal("PoolName cannot be empty (Parameter 'PoolCreateArgs args')", ex.Message);
     }
 
-    [TestMethod]
+    [Fact]
     public void CreateMirrorNeedsAtLeastTwoDevices()
     {
         var args = new PoolCreateArgs
@@ -126,56 +125,56 @@ public class ZpoolCommandTest
             ]
         };
 
-        var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.Create(args));
-        Assert.AreEqual("Please provide at least two devices when creating a mirror (Parameter 'PoolCreateArgs args')", ex.Message);
+        var ex = Assert.Throws<ArgumentException>(() => _commands.Create(args));
+        Assert.Equal("Please provide at least two devices when creating a mirror (Parameter 'PoolCreateArgs args')", ex.Message);
     }
 
-    [TestMethod]
-    [DataRow("tank", "mirror-0", "/sbin/zpool clear tank mirror-0", false)]
-    [DataRow("tank", "sda", "/sbin/zpool clear tank sda", false)]
-    [DataRow("tank", "", "/sbin/zpool clear tank", false)]
-    [DataRow("tank", null, "/sbin/zpool clear tank", false)]
-    [DataRow("tank", "rm -rf /tank", null, true)]
-    [DataRow("tank", "rm /tank", null, true)]
-    [DataRow("tank", "rm%20-rf%20/tank", null, true)]
+    [Theory]
+    [InlineData("tank", "mirror-0", "/sbin/zpool clear tank mirror-0", false)]
+    [InlineData("tank", "sda", "/sbin/zpool clear tank sda", false)]
+    [InlineData("tank", "", "/sbin/zpool clear tank", false)]
+    [InlineData("tank", null, "/sbin/zpool clear tank", false)]
+    [InlineData("tank", "rm -rf /tank", null, true)]
+    [InlineData("tank", "rm /tank", null, true)]
+    [InlineData("tank", "rm%20-rf%20/tank", null, true)]
     public void ClearPoolTest(string pool, string device, string expectedCommand, bool expectException)
     {
         var args = new PoolClearArgs { PoolName = pool, Device = device };
 
         if (expectException)
         {
-            var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.Clear(args));
+            var ex = Assert.Throws<ArgumentException>(() => _commands.Clear(args));
             Console.WriteLine(ex);
         }
         else
         {
             var command = _commands.Clear(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
 
-    [TestMethod]
-    [DataRow("tank", "", null, true)]
-    [DataRow("tank", "sda", "/sbin/zpool online tank sda", false)]
+    [Theory]
+    [InlineData("tank", "", null, true)]
+    [InlineData("tank", "sda", "/sbin/zpool online tank sda", false)]
     public void OnlinePoolDeviceTest(string pool, string device, string expectedCommand, bool expectException)
     {
         var args = new PoolOnlineArgs { PoolName = pool, Device = device };
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Online(args));
+            Assert.Throws<ArgumentException>(() => _commands.Online(args));
         }
         else
         {
             var command = _commands.Online(args);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
 
-    [DataRow("tank", null, null, true)]
-    [DataRow(null, "sda", null, true)]
-    [DataRow("tank", "sda", "/sbin/zpool offline tank sda", false)]
-    [TestMethod]
+    [InlineData("tank", null, null, true)]
+    [InlineData(null, "sda", null, true)]
+    [InlineData("tank", "sda", "/sbin/zpool offline tank sda", false)]
+    [Theory]
     public void OfflinePoolDeviceTest(string pool, string device, string expectedCommand, bool expectException)
     {
         var args = new PoolOfflineArgs
@@ -185,84 +184,84 @@ public class ZpoolCommandTest
         };
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Offline(args));
+            Assert.Throws<ArgumentException>(() => _commands.Offline(args));
         }
         else
         {
 
             var command = _commands.Offline(args);
 
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
 
-    [TestMethod]
-    [DataRow("tank", null, "/sbin/zpool iostat -LlpPvH tank", false)] // only pool
-    [DataRow("tank", "", "/sbin/zpool iostat -LlpPvH tank", false)] //only pool 
-    [DataRow("tank", "/dev/sda", "/sbin/zpool iostat -LlpPvH tank /dev/sda", false)] //single device
-    [DataRow("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb", false)] //multiple devices
-    [DataRow("tank", "rm -rf /tank", null, true)] //multiple devices
+    [Theory]
+    [InlineData("tank", null, "/sbin/zpool iostat -LlpPvH tank", false)] // only pool
+    [InlineData("tank", "", "/sbin/zpool iostat -LlpPvH tank", false)] //only pool
+    [InlineData("tank", "/dev/sda", "/sbin/zpool iostat -LlpPvH tank /dev/sda", false)] //single device
+    [InlineData("tank", "/dev/sda,/dev/sdb", "/sbin/zpool iostat -LlpPvH tank /dev/sda /dev/sdb", false)] //multiple devices
+    [InlineData("tank", "rm -rf /tank", null, true)] //multiple devices
     public void IoStatTest(string pool, string deviceList, string expectedCommand, bool expectException)
     {
         var args = new PoolIOStatsArgs { PoolName = pool, Devices = deviceList?.Split(',') };
         if (expectException)
         {
-            var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.IoStats(args));
+            var ex = Assert.Throws<ArgumentException>(() => _commands.IoStats(args));
             Console.WriteLine(ex);
         }
         else
         {
 
             var command = _commands.IoStats(args);
-            Assert.AreEqual(expectedCommand, command.FullCommandLine);
+            Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
 
-    [DataRow("tank", "/sbin/zpool resilver tank", false)]
-    [DataRow("", null, true)]
-    [TestMethod]
+    [InlineData("tank", "/sbin/zpool resilver tank", false)]
+    [InlineData("", null, true)]
+    [Theory]
     public void ResilverCommandTest(string pool, string expected, bool expectException)
     {
         var args = new PoolResilverArgs { PoolName = pool };
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Resilver(args));
+            Assert.Throws<ArgumentException>(() => _commands.Resilver(args));
         }
         else
         {
             var command = _commands.Resilver(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 
-    [DataRow("tank", ScrubOption.None, "/sbin/zpool scrub tank")]
-    [DataRow("tank", ScrubOption.Stop, "/sbin/zpool scrub -s tank")]
-    [DataRow("tank", ScrubOption.Pause, "/sbin/zpool scrub -p tank")]
-    [DataRow(null, ScrubOption.None, null, true)]
-    [DataRow("", ScrubOption.None, null, true)]
-    [DataRow("  ", ScrubOption.None, null, true)]
-    [TestMethod]
+    [InlineData("tank", ScrubOption.None, "/sbin/zpool scrub tank")]
+    [InlineData("tank", ScrubOption.Stop, "/sbin/zpool scrub -s tank")]
+    [InlineData("tank", ScrubOption.Pause, "/sbin/zpool scrub -p tank")]
+    [InlineData(null, ScrubOption.None, null, true)]
+    [InlineData("", ScrubOption.None, null, true)]
+    [InlineData("  ", ScrubOption.None, null, true)]
+    [Theory]
     public void ScrubTest(string pool, ScrubOption option, string expected, bool expectException = false)
     {
         var args = new PoolScrubArgs { PoolName = pool, Options = option };
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Scrub(args));
+            Assert.Throws<ArgumentException>(() => _commands.Scrub(args));
         }
         else
         {
             var command = _commands.Scrub(args);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 
-    [DataRow("tank", null, "/sbin/zpool trim tank")]
-    [DataRow("tank", "/dev/sda", "/sbin/zpool trim tank /dev/sda")]
-    [DataRow("", "/dev/sda", null, true)]
-    [DataRow(null, "/dev/sda", null, true)]
-    [DataRow(" ", "/dev/sda", null, true)]
-    [TestMethod]
+    [InlineData("tank", null, "/sbin/zpool trim tank")]
+    [InlineData("tank", "/dev/sda", "/sbin/zpool trim tank /dev/sda")]
+    [InlineData("", "/dev/sda", null, true)]
+    [InlineData(null, "/dev/sda", null, true)]
+    [InlineData(" ", "/dev/sda", null, true)]
+    [Theory]
     public void TrimTest(string pool, string device, string expected, bool expectException = false)
     {
         var args = new PoolTrimArgs
@@ -273,69 +272,69 @@ public class ZpoolCommandTest
 
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Trim(args));
+            Assert.Throws<ArgumentException>(() => _commands.Trim(args));
         }
         else
         {
             var command = _commands.Trim(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void GetUpgradeablePoolsTest()
     {
         var command = _commands.GetUpgradeablePools();
-        Assert.AreEqual("/sbin/zpool upgrade", command.FullCommandLine);
+        Assert.Equal("/sbin/zpool upgrade", command.FullCommandLine);
     }
 
-    [DataRow("tank", false, "/sbin/zpool upgrade tank")]
-    [DataRow("tank", true, "/sbin/zpool upgrade -a")]
-    [DataRow("", true, "/sbin/zpool upgrade -a")]
-    [DataRow(null, true, "/sbin/zpool upgrade -a")]
-    [DataRow(" ", true, "/sbin/zpool upgrade -a")]
-    [DataRow(null, false, null, true)]
-    [DataRow("", false, null, true)]
-    [DataRow(" ", false, null, true)]
-    [TestMethod]
+    [InlineData("tank", false, "/sbin/zpool upgrade tank")]
+    [InlineData("tank", true, "/sbin/zpool upgrade -a")]
+    [InlineData("", true, "/sbin/zpool upgrade -a")]
+    [InlineData(null, true, "/sbin/zpool upgrade -a")]
+    [InlineData(" ", true, "/sbin/zpool upgrade -a")]
+    [InlineData(null, false, null, true)]
+    [InlineData("", false, null, true)]
+    [InlineData(" ", false, null, true)]
+    [Theory]
     public void UpgradePoolTest(string poolName, bool all, string expected, bool expectException = false)
     {
         var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Upgrade(args));
+            Assert.Throws<ArgumentException>(() => _commands.Upgrade(args));
         }
         else
         {
             var command = _commands.Upgrade(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 
-    [DataRow("tank", "/dev/sdc", "/sbin/zpool detach tank /dev/sdc", false)]
-    [DataRow("tank", "", null, true)]
-    [DataRow("", "/dev/sdc", null, true)]
-    [TestMethod]
+    [InlineData("tank", "/dev/sdc", "/sbin/zpool detach tank /dev/sdc", false)]
+    [InlineData("tank", "", null, true)]
+    [InlineData("", "/dev/sdc", null, true)]
+    [Theory]
     public void DetachTest(string pool, string device, string expected, bool expectException)
     {
         var args = new PoolDetachArgs { PoolName = pool, Device = device };
 
         if (expectException)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Detach(args));
+            Assert.Throws<ArgumentException>(() => _commands.Detach(args));
         }
         else
         {
             var command = _commands.Detach(args);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 
-    [DataRow(true)]
-    [DataRow(false)]
-    [TestMethod]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
     public void AttachTest(bool valid)
     {
         var args = new PoolAttachArgs
@@ -350,7 +349,7 @@ public class ZpoolCommandTest
         var stringVer = args.ToString();
         if (!valid)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Attach(args));
+            Assert.Throws<ArgumentException>(() => _commands.Attach(args));
         }
         else
         {
@@ -358,14 +357,14 @@ public class ZpoolCommandTest
             var command = _commands.Attach(args);
             Console.WriteLine(command.FullCommandLine);
 
-            Assert.AreEqual(stringVer, command.Arguments);
-            Assert.AreEqual($"/sbin/zpool {stringVer}", command.FullCommandLine);
+            Assert.Equal(stringVer, command.Arguments);
+            Assert.Equal($"/sbin/zpool {stringVer}", command.FullCommandLine);
         }
     }
 
-    [DataRow(true)]
-    [DataRow(false)]
-    [TestMethod]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
     public void ReplaceTest(bool valid)
     {
         var args = new PoolReplaceArgs
@@ -381,21 +380,21 @@ public class ZpoolCommandTest
 
         if (!valid)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Replace(args));
+            Assert.Throws<ArgumentException>(() => _commands.Replace(args));
         }
         else
         {
             var command = _commands.Replace(args);
             Console.WriteLine(command.FullCommandLine);
 
-            Assert.AreEqual(stringVer, command.Arguments);
-            Assert.AreEqual($"/sbin/zpool {stringVer}", command.FullCommandLine);
+            Assert.Equal(stringVer, command.Arguments);
+            Assert.Equal($"/sbin/zpool {stringVer}", command.FullCommandLine);
         }
     }
 
-    [DataRow(true)]
-    [DataRow(false)]
-    [TestMethod]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
     public void AddTest(bool valid)
     {
         var args = new PoolAddArgs
@@ -405,19 +404,19 @@ public class ZpoolCommandTest
         };
         if (!valid)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Add(args));
+            Assert.Throws<ArgumentException>(() => _commands.Add(args));
         }
         else
         {
             var command = _commands.Add(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zpool add tank mirror disk1 disk2", command.FullCommandLine);
+            Assert.Equal("/sbin/zpool add tank mirror disk1 disk2", command.FullCommandLine);
         }
     }
 
-    [DataRow(true)]
-    [DataRow(false)]
-    [TestMethod]
+    [InlineData(true)]
+    [InlineData(false)]
+    [Theory]
     public void RemoveTest(bool valid)
     {
         var args = new PoolRemoveArgs
@@ -427,34 +426,34 @@ public class ZpoolCommandTest
         };
         if (!valid)
         {
-            Assert.ThrowsExactly<ArgumentException>(() => _commands.Remove(args));
+            Assert.Throws<ArgumentException>(() => _commands.Remove(args));
         }
         else
         {
             var command = _commands.Remove(args);
             Console.WriteLine(command.FullCommandLine);
-            Assert.AreEqual("/sbin/zpool remove tank mirror-0", command.FullCommandLine);
+            Assert.Equal("/sbin/zpool remove tank mirror-0", command.FullCommandLine);
         }
     }
-    [DataRow("tank", "/sbin/zpool destroy -f tank", false)]
-    [DataRow("tank%5ftest", "/sbin/zpool destroy -f tank_test", false)]
-    [DataRow("tank/myds", null, true)]
-    [DataRow("tank%2fmyds", null, true)]
-    [DataRow("", null, true)]
-    [TestMethod]
+    [InlineData("tank", "/sbin/zpool destroy -f tank", false)]
+    [InlineData("tank%5ftest", "/sbin/zpool destroy -f tank_test", false)]
+    [InlineData("tank/myds", null, true)]
+    [InlineData("tank%2fmyds", null, true)]
+    [InlineData("", null, true)]
+    [Theory]
     public void DestroyTest(string name, string expected, bool expectException)
     {
         var args = new PoolDestroyArgs { PoolName = name };
 
         if (expectException)
         {
-            var ex = Assert.ThrowsExactly<ArgumentException>(() => _commands.Destroy(args));
+            var ex = Assert.Throws<ArgumentException>(() => _commands.Destroy(args));
             Console.WriteLine(ex);
         }
         else
         {
             var command = _commands.Destroy(args);
-            Assert.AreEqual(expected, command.FullCommandLine);
+            Assert.Equal(expected, command.FullCommandLine);
         }
     }
 }

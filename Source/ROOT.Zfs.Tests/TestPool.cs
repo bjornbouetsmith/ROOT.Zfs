@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments.Pool;
@@ -138,7 +138,7 @@ internal class TestPool : IDisposable
             };
 
             var status = pool.CreatePool(args);
-            Assert.AreEqual(State.Online, status.State);
+            Assert.Equal(State.Online, status.State);
             return pool;
         }
         catch(Exception ex)

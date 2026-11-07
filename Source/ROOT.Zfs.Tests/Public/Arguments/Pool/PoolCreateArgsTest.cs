@@ -1,45 +1,44 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolCreateArgsTest
 {
-    [TestMethod]
+    [Fact]
     public void NameShouldBeSet()
     {
         var args = new PoolCreateArgs();
 
         var valid = args.Validate(out var errors);
-        Assert.IsFalse(valid);
+        Assert.False(valid);
 
-        Assert.HasCount(2, errors);
-        Assert.Contains(e => e.Contains("Name cannot be empty"), errors);
-        Assert.Contains(e => e.Contains("Please provide vdevs"), errors);
+        Assert.Equal(2, errors.Count());
+        Assert.Contains(errors, e => e.Contains("Name cannot be empty"));
+        Assert.Contains(errors, e => e.Contains("Please provide vdevs"));
     }
 
-    [TestMethod]
+    [Fact]
     public void VDevsMustBeSpecified()
     {
         var args = new PoolCreateArgs { PoolName = "tank" };
 
         var valid = args.Validate(out var errors);
-        Assert.IsFalse(valid);
-        Assert.HasCount(1, errors);
+        Assert.False(valid);
+        Assert.Single(errors);
         Assert.Contains("Please provide vdevs", errors[0]);
 
         args.VDevs = Array.Empty<VDevCreationArgs>();
         valid = args.Validate(out errors);
-        Assert.IsFalse(valid);
-        Assert.HasCount(1, errors);
+        Assert.False(valid);
+        Assert.Single(errors);
         Assert.Contains("Please provide vdevs", errors[0]);
     }
 
-    [TestMethod]
+    [Fact]
     public void AnyTypeOfVdevShouldRequireAtLeastOneDevice()
     {
         var args = new PoolCreateArgs
@@ -54,14 +53,14 @@ public class PoolCreateArgsTest
             ]
         };
         var valid = args.Validate(out var errors);
-        Assert.IsFalse(valid);
+        Assert.False(valid);
         Console.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.HasCount(1, errors);
+        Assert.Single(errors);
         Assert.Contains("Please provide the proper amount of minimum", errors[0]);
     }
 
 
-    [TestMethod]
+    [Fact]
     public void MirrorShouldRequireAtLeastTwoDevices()
     {
         var args = new PoolCreateArgs
@@ -77,9 +76,9 @@ public class PoolCreateArgsTest
             ]
         };
         var valid = args.Validate(out var errors);
-        Assert.IsFalse(valid);
+        Assert.False(valid);
         Console.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.HasCount(1, errors);
+        Assert.Single(errors);
         Assert.Contains("Please provide at least two devices", errors[0]);
 
     }

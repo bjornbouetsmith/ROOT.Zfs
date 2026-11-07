@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolHistoryArgsTest
 {
-    [DataRow("tank",true)]
-    [DataRow(null, false)]
-    [DataRow("", false)]
-    [DataRow(" ", false)]
-    [TestMethod]
+    [InlineData("tank",true)]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData(" ", false)]
+    [Theory]
     public void ValidateTest(string poolName, bool expectedValid)
     {
         var args = new PoolHistoryArgs { PoolName = poolName };
@@ -19,16 +18,16 @@ public class PoolHistoryArgsTest
         var valid = args.Validate(out var errors);
 
         Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow("tank","history -l tank")]
-    [TestMethod]
+    [InlineData("tank","history -l tank")]
+    [Theory]
     public void ToStringTest(string poolName, string expected)
     {
         var args = new PoolHistoryArgs { PoolName = poolName };
         var stringVer = args.ToString();
 
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

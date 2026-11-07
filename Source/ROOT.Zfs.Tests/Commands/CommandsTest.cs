@@ -1,12 +1,11 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Commands;
 
-[TestClass]
 public class CommandsTest
 {
     private readonly SystemCommands _systemCommands;
@@ -21,125 +20,125 @@ public class CommandsTest
         _datasetCommands = new DatasetCommands(binaries);
     }
 
-    [DataRow(DatasetTypes.None, "", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
-    [DataRow(DatasetTypes.None, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
-    [DataRow(DatasetTypes.None, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")]
-    [DataRow(DatasetTypes.None, "tank%2Fmyds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")] //test url encoded
+    [InlineData(DatasetTypes.None, "", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
+    [InlineData(DatasetTypes.None, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume")]
+    [InlineData(DatasetTypes.None, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")]
+    [InlineData(DatasetTypes.None, "tank%2Fmyds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume tank/myds")] //test url encoded
 
-    [DataRow(DatasetTypes.Snapshot, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot tank/myds")]
-    [DataRow(DatasetTypes.Snapshot, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot")]
+    [InlineData(DatasetTypes.Snapshot, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot tank/myds")]
+    [InlineData(DatasetTypes.Snapshot, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t snapshot")]
 
-    [DataRow(DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark tank/myds")]
-    [DataRow(DatasetTypes.Bookmark, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark")]
+    [InlineData(DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark tank/myds")]
+    [InlineData(DatasetTypes.Bookmark, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark")]
 
-    [DataRow(DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume tank/myds")]
-    [DataRow(DatasetTypes.Volume, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume")]
+    [InlineData(DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume tank/myds")]
+    [InlineData(DatasetTypes.Volume, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t volume")]
 
-    [DataRow(DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds")]
-    [DataRow(DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem")]
-    [TestMethod]
+    [InlineData(DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds")]
+    [InlineData(DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem")]
+    [Theory]
     public void ListCommandTest(DatasetTypes types, string root, string expectedCommand)
     {
         var args = new DatasetListArgs { DatasetTypes = types, Root = root };
         var command = _datasetCommands.List(args);
-        Assert.AreEqual(expectedCommand, command.Arguments);
+        Assert.Equal(expectedCommand, command.Arguments);
     }
 
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot tank/myds")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot,volume tank/myds")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark,filesystem,snapshot,volume tank/myds")]
-    [TestMethod]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot tank/myds")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot,volume tank/myds")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t bookmark,filesystem,snapshot,volume tank/myds")]
+    [Theory]
     public void ListCommandCombinationsTest(DatasetTypes types, string root, string expectedCommand)
     {
         var args = new DatasetListArgs { DatasetTypes = types, Root = root };
         var command = _datasetCommands.List(args);
-        Assert.AreEqual(expectedCommand, command.Arguments);
+        Assert.Equal(expectedCommand, command.Arguments);
     }
 
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot tank/myds")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot,volume tank/myds")]
-    [DataRow(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t bookmark,filesystem,snapshot,volume tank/myds")]
-    [TestMethod]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot tank/myds")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem, null, "list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,snapshot")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t filesystem,snapshot,volume tank/myds")]
+    [InlineData(DatasetTypes.Snapshot | DatasetTypes.Filesystem | DatasetTypes.Volume | DatasetTypes.Bookmark, "tank/myds", "list -Hpr -o type,creation,name,used,refer,avail,mountpoint,origin -d 99 -t bookmark,filesystem,snapshot,volume tank/myds")]
+    [Theory]
     public void ListWithChildrenTest(DatasetTypes types, string root, string expectedCommand)
     {
         var args = new DatasetListArgs { DatasetTypes = types, Root = root, IncludeChildren = true };
         var command = _datasetCommands.List(args);
-        Assert.AreEqual(expectedCommand, command.Arguments);
+        Assert.Equal(expectedCommand, command.Arguments);
     }
 
-    [TestMethod]
+    [Fact]
     public void WhichCommandTest()
     {
         var command = _systemCommands.Which("smartctl");
-        Assert.AreEqual("/bin/which smartctl", command.FullCommandLine);
+        Assert.Equal("/bin/which smartctl", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void ListBlockDevicesTest()
     {
         var command = _systemCommands.ListBlockDevices();
-        Assert.AreEqual("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", command.FullCommandLine);
+        Assert.Equal("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void ListDisksTest()
     {
         var command = _systemCommands.ListDisks();
-        Assert.AreEqual("/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
+        Assert.Equal("/bin/ls -l /dev/disk/by-id/ | /bin/awk -F ' ' '{print $9,$11}'", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void DetectVirtualizationTest()
     {
         var command = _virtualizationCommands.DetectVirtualization();
-        Assert.AreEqual("/usr/bin/systemd-detect-virt --vm", command.FullCommandLine);
+        Assert.Equal("/usr/bin/systemd-detect-virt --vm", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void DetectVirtualizationWithVirtWhatTest()
     {
         var command = _virtualizationCommands.DetectVirtualizationWithVirtWhat();
-        Assert.AreEqual("/usr/sbin/virt-what", command.FullCommandLine);
+        Assert.Equal("/usr/sbin/virt-what", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void GetHostnamectlStatusTest()
     {
         var command = _virtualizationCommands.GetHostnamectlStatus();
-        Assert.AreEqual("/usr/bin/hostnamectl status", command.FullCommandLine);
+        Assert.Equal("/usr/bin/hostnamectl status", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void GetDmiInfoTest()
     {
         var command = _virtualizationCommands.GetDmiInfo();
-        Assert.AreEqual("/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name", command.FullCommandLine);
+        Assert.Equal("/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name", command.FullCommandLine);
     }
 
-    [TestMethod]
+    [Fact]
     public void GetCpuInfoTest()
     {
         var command = _virtualizationCommands.GetCpuInfo();
-        Assert.AreEqual("/bin/cat /proc/cpuinfo", command.FullCommandLine);
+        Assert.Equal("/bin/cat /proc/cpuinfo", command.FullCommandLine);
     }
 
-    [DataRow("tank", false)]
-    [DataRow("tank && rm -rf /", true)]
-    [TestMethod]
+    [InlineData("tank", false)]
+    [InlineData("tank && rm -rf /", true)]
+    [Theory]
     public void DataSetListTest(string root, bool expectException)
     {
         var args = new DatasetListArgs { Root = root };
         if (expectException)
         {
-            var ex = Assert.ThrowsExactly<ArgumentException>(() => _datasetCommands.List(args));
+            var ex = Assert.Throws<ArgumentException>(() => _datasetCommands.List(args));
             Console.WriteLine(ex);
         }
         else
         {
             var command = _datasetCommands.List(args);
-            Assert.IsNotNull(command.FullCommandLine);
+            Assert.NotNull(command.FullCommandLine);
         }
     }
 }

@@ -4,12 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="altcover" Version="9.0.145" />
-    <PackageVersion Include="coverlet.msbuild" Version="10.1.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="4.5.2" />
-    <PackageVersion Include="MSTest.TestFramework" Version="4.5.2" />
     <PackageVersion Include="ROOT.Shared.Utils.OS" Version="1.2.0" />
     <PackageVersion Include="ROOT.Shared.Utils.Serialization" Version="1.2.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+    <PackageVersion Include="xunit.v3.mtp-off" Version="4.0.2" />
   </ItemGroup>
 </Project>

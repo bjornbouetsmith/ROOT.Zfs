@@ -60,7 +60,7 @@ jobs:
       run: mkdir -p coverage
 
     - name: Run unit tests with coverage
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "TestCategory!=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category!=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Upload unit test coverage report
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -150,7 +150,7 @@ jobs:
       run: dotnet build Source/ROOT.Zfs.slnx --no-restore --configuration Debug
 
     - name: Run integration tests
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "TestCategory=Integration"
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category=Integration"
 
     - name: Set Integration tests status to success
       env:
@@ -238,7 +238,7 @@ jobs:
       run: mkdir -p coverage
 
     - name: Run integration tests with coverage
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "TestCategory=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
 
     - name: Upload integration test coverage report
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

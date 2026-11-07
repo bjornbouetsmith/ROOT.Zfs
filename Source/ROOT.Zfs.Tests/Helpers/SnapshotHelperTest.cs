@@ -1,11 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class SnapshotHelperTest
 {
     private const string SnapshotList = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600   -       -   -";
@@ -13,43 +12,43 @@ public class SnapshotHelperTest
     private const string JunkLine = @"snapshot        1664116031      tank/myds@20220925162707        14336   25600";
     private const string JunkLine2 = @"snapshot        2022-05-05      tank/myds@20220925162707        40G   80G   -       -   -";
 
-    [TestMethod]
+    [Fact]
     public void BadInputTest1()
     {
-        var ex = Assert.ThrowsExactly<FormatException>(() => SnapshotHelper.FromString(JunkLine));
+        var ex = Assert.Throws<FormatException>(() => SnapshotHelper.FromString(JunkLine));
         Assert.Contains("expected 8 parts", ex.Message);
 
     }
 
-    [TestMethod]
+    [Fact]
     public void BadInputTest2()
     {
         var snapshot = SnapshotHelper.FromString(JunkLine2);
-        Assert.AreEqual(default, snapshot.CreationDate);
+        Assert.Equal(default, snapshot.CreationDate);
     }
 
-    [TestMethod]
+    [Fact]
     public void GoodInput()
     {
         var snapshot = SnapshotHelper.FromString(SnapshotList);
-        Assert.AreEqual("tank/myds", snapshot.Dataset);
-        Assert.AreEqual("20220925162707", snapshot.SnapshotName);
-        Assert.AreEqual(14336UL, snapshot.Size.Bytes);
-        Assert.AreEqual(new DateTime(2022, 09, 25, 14, 27, 11, DateTimeKind.Utc), snapshot.CreationDate);
+        Assert.Equal("tank/myds", snapshot.Dataset);
+        Assert.Equal("20220925162707", snapshot.SnapshotName);
+        Assert.Equal(14336UL, snapshot.Size.Bytes);
+        Assert.Equal(new DateTime(2022, 09, 25, 14, 27, 11, DateTimeKind.Utc), snapshot.CreationDate);
     }
 
-    [TestMethod]
-    [DataRow("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
-    [DataRow("tank/mydsnameisverylong", "testing123", "testing123", true)] // Exact match 
-    [DataRow("tank/myds", "tank/myds@testing123", "testing", true)] // partial match
-    [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@testing123", true)] // ExactMatch
-    [DataRow("tank/myds", "tank/myds@testing123", "tank/myds@tes", true)] // partial match
-    [DataRow("tank/myds", "tank/myds@testing123", "esting123", false)] // we only match on beginning
-    [DataRow("tank2/myds", "tank/myds@testing123", "testing123", false)] //wrong dataset
-    [DataRow("tank%2Fmyds", "tank/myds@testing123", "testing123", true)] //right dataset, url encoded
+    [Theory]
+    [InlineData("tank/myds", "tank/myds@testing123", "testing123", true)] // Exact match except for dataset prefix
+    [InlineData("tank/mydsnameisverylong", "testing123", "testing123", true)] // Exact match
+    [InlineData("tank/myds", "tank/myds@testing123", "testing", true)] // partial match
+    [InlineData("tank/myds", "tank/myds@testing123", "tank/myds@testing123", true)] // ExactMatch
+    [InlineData("tank/myds", "tank/myds@testing123", "tank/myds@tes", true)] // partial match
+    [InlineData("tank/myds", "tank/myds@testing123", "esting123", false)] // we only match on beginning
+    [InlineData("tank2/myds", "tank/myds@testing123", "testing123", false)] //wrong dataset
+    [InlineData("tank%2Fmyds", "tank/myds@testing123", "testing123", true)] //right dataset, url encoded
     public void SnapshotMatchingTest(string dataset, string snapshotName, string pattern, bool expectMatch)
     {
         var isMatch = Snapshots.SnapshotMatches(dataset, snapshotName, pattern);
-        Assert.AreEqual(expectMatch, isMatch);
+        Assert.Equal(expectMatch, isMatch);
     }
 }

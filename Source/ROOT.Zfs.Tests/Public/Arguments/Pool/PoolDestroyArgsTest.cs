@@ -1,20 +1,19 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolDestroyArgsTest
 {
-    [DataRow("tank", "destroy -f tank")]
-    [DataRow("tank%5ftest", "destroy -f tank_test")]
-    [TestMethod]
+    [InlineData("tank", "destroy -f tank")]
+    [InlineData("tank%5ftest", "destroy -f tank_test")]
+    [Theory]
     public void ToStringTest(string pool, string expected)
     {
         var args = new PoolDestroyArgs { PoolName = pool };
 
         var stringVer = args.ToString();
 
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

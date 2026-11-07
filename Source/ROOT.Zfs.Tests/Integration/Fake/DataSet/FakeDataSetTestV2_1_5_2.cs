@@ -1,8 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace ROOT.Zfs.Tests.Integration.Fake.DataSet;
 
-[TestClass]
 public class FakeDataSetTestV2_1_5_2 : FakeDataSetTest
 {
     internal override FakeRemoteConnection CreateProcessCall()

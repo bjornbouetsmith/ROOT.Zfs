@@ -1,68 +1,67 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class VirtualizationHelperTest
 {
-    [DataRow("kvm", true)]
-    [DataRow("KVM\r\n", true)]
-    [DataRow("none", false)]
-    [DataRow("NONE", false)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [TestMethod]
+    [InlineData("kvm", true)]
+    [InlineData("KVM\r\n", true)]
+    [InlineData("none", false)]
+    [InlineData("NONE", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [Theory]
     public void IsVirtualMachineTest(string stdOut, bool expected)
     {
-        Assert.AreEqual(expected, VirtualizationHelper.IsVirtualMachine(stdOut));
+        Assert.Equal(expected, VirtualizationHelper.IsVirtualMachine(stdOut));
     }
 
-    [DataRow("kvm", true)]
-    [DataRow("vmware\n", true)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [TestMethod]
+    [InlineData("kvm", true)]
+    [InlineData("vmware\n", true)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [Theory]
     public void IsVirtualizedByVirtWhatTest(string stdOut, bool expected)
     {
-        Assert.AreEqual(expected, VirtualizationHelper.IsVirtualizedByVirtWhat(stdOut));
+        Assert.Equal(expected, VirtualizationHelper.IsVirtualizedByVirtWhat(stdOut));
     }
 
-    [DataRow(" Static hostname: test\n Virtualization: kvm\n", true)]
-    [DataRow("Virtualization: none", false)]
-    [DataRow(" Static hostname: test\n         Chassis: desktop\n", false)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [TestMethod]
+    [InlineData(" Static hostname: test\n Virtualization: kvm\n", true)]
+    [InlineData("Virtualization: none", false)]
+    [InlineData(" Static hostname: test\n         Chassis: desktop\n", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [Theory]
     public void HasVirtualizationEntryTest(string stdOut, bool expected)
     {
-        Assert.AreEqual(expected, VirtualizationHelper.HasVirtualizationEntry(stdOut));
+        Assert.Equal(expected, VirtualizationHelper.HasVirtualizationEntry(stdOut));
     }
 
-    [DataRow("QEMU\nStandard PC (Q35 + ICH9, 2009)", true)]
-    [DataRow("VMware, Inc.\nVMware Virtual Platform", true)]
-    [DataRow("Microsoft Corporation\nVirtual Machine", true)]
-    [DataRow("Xen\nHVM domU", true)]
-    [DataRow("Dell Inc.\nPowerEdge R740", false)]
-    [DataRow("Microsoft Corporation\nSurface Laptop 4", false)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [TestMethod]
+    [InlineData("QEMU\nStandard PC (Q35 + ICH9, 2009)", true)]
+    [InlineData("VMware, Inc.\nVMware Virtual Platform", true)]
+    [InlineData("Microsoft Corporation\nVirtual Machine", true)]
+    [InlineData("Xen\nHVM domU", true)]
+    [InlineData("Dell Inc.\nPowerEdge R740", false)]
+    [InlineData("Microsoft Corporation\nSurface Laptop 4", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [Theory]
     public void IsVirtualVendorTest(string stdOut, bool expected)
     {
-        Assert.AreEqual(expected, VirtualizationHelper.IsVirtualVendor(stdOut));
+        Assert.Equal(expected, VirtualizationHelper.IsVirtualVendor(stdOut));
     }
 
-    [DataRow("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr hypervisor\n", true)]
-    [DataRow("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr\n", false)]
-    [DataRow("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr\nflags\t\t: hypervisor\n", true)]
-    [DataRow("processor\t: 0\nflags\n", false)]
-    [DataRow("processor\t: 0\n", false)]
-    [DataRow("", false)]
-    [DataRow(null, false)]
-    [TestMethod]
+    [InlineData("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr hypervisor\n", true)]
+    [InlineData("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr\n", false)]
+    [InlineData("processor\t: 0\nflags\t\t: fpu vme de pse tsc msr\nflags\t\t: hypervisor\n", true)]
+    [InlineData("processor\t: 0\nflags\n", false)]
+    [InlineData("processor\t: 0\n", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [Theory]
     public void HasHypervisorFlagTest(string stdOut, bool expected)
     {
-        Assert.AreEqual(expected, VirtualizationHelper.HasHypervisorFlag(stdOut));
+        Assert.Equal(expected, VirtualizationHelper.HasHypervisorFlag(stdOut));
     }
 }

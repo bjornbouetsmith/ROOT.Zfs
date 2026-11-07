@@ -1,24 +1,23 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolRemoveArgsTest
 {
-    [DataRow("tank", "mirror-0", false, true)]
-    [DataRow("tank", "mirror-0", true, true)]
-    [DataRow("tank", null, true, true)]
-    [DataRow("tank", "", true, true)]
-    [DataRow("tank", " ", true, true)]
-    [DataRow("tank", null, false, false)]
-    [DataRow("tank", "", false, false)]
-    [DataRow("tank", " ", false, false)]
-    [DataRow(null, "mirror-0", false, false)]
-    [DataRow("", "mirror-0", false, false)]
-    [DataRow(" ", "mirror-0", false, false)]
-    [TestMethod]
+    [InlineData("tank", "mirror-0", false, true)]
+    [InlineData("tank", "mirror-0", true, true)]
+    [InlineData("tank", null, true, true)]
+    [InlineData("tank", "", true, true)]
+    [InlineData("tank", " ", true, true)]
+    [InlineData("tank", null, false, false)]
+    [InlineData("tank", "", false, false)]
+    [InlineData("tank", " ", false, false)]
+    [InlineData(null, "mirror-0", false, false)]
+    [InlineData("", "mirror-0", false, false)]
+    [InlineData(" ", "mirror-0", false, false)]
+    [Theory]
     public void ValidateTest(string poolName, string vdevOrDevice, bool cancel, bool expectedValid)
     {
         var args = new PoolRemoveArgs
@@ -30,15 +29,15 @@ public class PoolRemoveArgsTest
 
         var valid = args.Validate(out var errors);
         Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow("tank", "mirror-0", false, "remove tank mirror-0")]
-    [DataRow("tank", "mirror-0", true, "remove -s tank")]
-    [DataRow("tank", null, true, "remove -s tank")]
-    [DataRow("tank", "", true, "remove -s tank")]
-    [DataRow("tank", " ", true, "remove -s tank")]
-    [TestMethod]
+    [InlineData("tank", "mirror-0", false, "remove tank mirror-0")]
+    [InlineData("tank", "mirror-0", true, "remove -s tank")]
+    [InlineData("tank", null, true, "remove -s tank")]
+    [InlineData("tank", "", true, "remove -s tank")]
+    [InlineData("tank", " ", true, "remove -s tank")]
+    [Theory]
     public void ToStringTest(string poolName, string vdevOrDevice, bool cancel, string expected)
     {
         var args = new PoolRemoveArgs
@@ -48,6 +47,6 @@ public class PoolRemoveArgsTest
             Cancel = cancel,
         };
 
-        Assert.AreEqual(expected, args.ToString());
+        Assert.Equal(expected, args.ToString());
     }
 }

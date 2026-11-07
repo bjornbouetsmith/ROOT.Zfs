@@ -1,46 +1,45 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolClearArgsTest
 {
-    [DataRow("tank", "sda", true)]
-    [DataRow("tank", "/dev/sda", true)]
-    [DataRow("tank", "%2fdev%2fsda", true)]
-    [DataRow("tank", null, true)]
-    [DataRow("tank", "", true)]
-    [DataRow("tank", " ", true)]
-    [DataRow("tank", "/dev/sda@123", false)]
-    [DataRow(null, "/dev/sda", false)]
-    [DataRow("", "/dev/sda", false)]
-    [DataRow(" ", "/dev/sda", false)]
-    [DataRow("tank/myds@snap", "/dev/sda", false)]
-    [DataRow("tank", "/dev/sda && rm -rf /", false)]
-    [TestMethod]
+    [InlineData("tank", "sda", true)]
+    [InlineData("tank", "/dev/sda", true)]
+    [InlineData("tank", "%2fdev%2fsda", true)]
+    [InlineData("tank", null, true)]
+    [InlineData("tank", "", true)]
+    [InlineData("tank", " ", true)]
+    [InlineData("tank", "/dev/sda@123", false)]
+    [InlineData(null, "/dev/sda", false)]
+    [InlineData("", "/dev/sda", false)]
+    [InlineData(" ", "/dev/sda", false)]
+    [InlineData("tank/myds@snap", "/dev/sda", false)]
+    [InlineData("tank", "/dev/sda && rm -rf /", false)]
+    [Theory]
     public void ValidateTest(string pool, string device, bool expectValid)
     {
         var args = new PoolClearArgs { PoolName = pool, Device = device };
         var valid = args.Validate(out var errors);
         Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectValid, valid);
+        Assert.Equal(expectValid, valid);
     }
 
-    [DataRow("tank", "sda", "clear tank sda")]
-    [DataRow("tank", "/dev/sda", "clear tank /dev/sda")]
-    [DataRow("tank", "%2fdev%2fsda", "clear tank /dev/sda")]
-    [DataRow("tank.2", "%2fdev%2fsda", "clear tank.2 /dev/sda")]
-    [DataRow("tank", null, "clear tank")]
-    [DataRow("tank", "", "clear tank")]
-    [DataRow("tank", " ", "clear tank")]
-    [TestMethod]
+    [InlineData("tank", "sda", "clear tank sda")]
+    [InlineData("tank", "/dev/sda", "clear tank /dev/sda")]
+    [InlineData("tank", "%2fdev%2fsda", "clear tank /dev/sda")]
+    [InlineData("tank.2", "%2fdev%2fsda", "clear tank.2 /dev/sda")]
+    [InlineData("tank", null, "clear tank")]
+    [InlineData("tank", "", "clear tank")]
+    [InlineData("tank", " ", "clear tank")]
+    [Theory]
     public void ToStringTest(string pool, string device, string expected)
     {
         var args = new PoolClearArgs { PoolName = pool, Device = device };
 
         var stringVer = args.ToString();
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

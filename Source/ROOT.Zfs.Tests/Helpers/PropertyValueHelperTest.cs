@@ -1,33 +1,32 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class PropertyValueHelperTest
 {
-    [TestMethod]
+    [Fact]
     public void ValidFormatShouldParse()
     {
         var value = PropertyValueHelper.FromString("tank	atime	on	default");
         Console.WriteLine(value.Dump(new JsonFormatter()));
-        Assert.AreEqual("on", value.Value);
-        Assert.AreEqual("atime", value.Property); 
-        Assert.AreEqual("default", value.Source);
-        Assert.AreEqual("tank", value.Name);
+        Assert.Equal("on", value.Value);
+        Assert.Equal("atime", value.Property);
+        Assert.Equal("default", value.Source);
+        Assert.Equal("tank", value.Name);
     }
 
-    [TestMethod]
+    [Fact]
     public void InvalidFormatShouldThrow()
     {
-        Assert.ThrowsExactly<FormatException>(() => PropertyValueHelper.FromString("tank	atime	on"));
+        Assert.Throws<FormatException>(() => PropertyValueHelper.FromString("tank	atime	on"));
     }
 
-    [TestMethod]
+    [Fact]
     public void InvalidFormatShouldThrowTabsReplacedWithSpaces()
     {
-        Assert.ThrowsExactly<FormatException>(() => PropertyValueHelper.FromString("tank    atime   on      default"));
+        Assert.Throws<FormatException>(() => PropertyValueHelper.FromString("tank    atime   on      default"));
     }
 }
