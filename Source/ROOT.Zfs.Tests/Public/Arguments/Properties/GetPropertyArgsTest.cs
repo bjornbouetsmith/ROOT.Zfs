@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Properties;
 
 public class GetPropertyArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public GetPropertyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData(PropertyTarget.Pool, null, null, true)]
     [InlineData(PropertyTarget.Pool, "ashift", null, true)]
     [InlineData(PropertyTarget.Pool, "ashift", "tank", true)]
@@ -28,7 +35,7 @@ public class GetPropertyArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
 
         Assert.Equal(expectedValid, valid);
     }
@@ -51,7 +58,7 @@ public class GetPropertyArgsTest
             Target = target,
         };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

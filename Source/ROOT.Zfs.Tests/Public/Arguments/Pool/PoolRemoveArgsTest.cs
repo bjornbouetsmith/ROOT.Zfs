@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolRemoveArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolRemoveArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", "mirror-0", false, true)]
     [InlineData("tank", "mirror-0", true, true)]
     [InlineData("tank", null, true, true)]
@@ -28,7 +35,7 @@ public class PoolRemoveArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

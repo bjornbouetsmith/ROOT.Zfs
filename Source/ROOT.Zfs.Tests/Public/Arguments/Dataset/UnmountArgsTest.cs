@@ -6,6 +6,12 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class UnmountArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public UnmountArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [InlineData("tank/myds", true, false)]
     [InlineData("tank/myds", false, true)]
@@ -25,7 +31,7 @@ public class UnmountArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>())); ;
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>())); ;
         Assert.Equal(expectedValid, valid);
     }
 
@@ -47,7 +53,7 @@ public class UnmountArgsTest
         };
 
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expectedString, stringVer);
     }
 }

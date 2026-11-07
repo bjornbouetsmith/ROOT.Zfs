@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Snapshots;
 
 public class SnapshotCloneArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SnapshotCloneArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank/myds", "mysnap", "tank2/mysnap_clone", null, true)]
     [InlineData("tank/myds", "tank/myds@mysnap", "tank2/mysnap_clone", null, true)]
     [InlineData("tank/myds", "mysnap", "tank2/mysnap_clone", "atime=off", true)]
@@ -22,7 +29,7 @@ public class SnapshotCloneArgsTest
         var args = new SnapshotCloneArgs { Dataset = dataset, Snapshot = snapshot, TargetDataset = target, Properties = props };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -37,7 +44,7 @@ public class SnapshotCloneArgsTest
         var args = new SnapshotCloneArgs { Dataset = dataset, Snapshot = snapshot, TargetDataset = target, Properties = props };
 
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

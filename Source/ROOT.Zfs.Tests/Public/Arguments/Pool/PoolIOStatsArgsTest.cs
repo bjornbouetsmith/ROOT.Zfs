@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolIOStatsArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolIOStatsArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", null, true)] // only pool
     [InlineData("tank", "", true)] //only pool
     [InlineData("tank", "/dev/sda", true)] //single device
@@ -22,7 +29,7 @@ public class PoolIOStatsArgsTest
     {
         var args = new PoolIOStatsArgs { PoolName = pool, Devices = devices?.Split(',') };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 

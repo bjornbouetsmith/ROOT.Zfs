@@ -10,6 +10,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolAddArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolAddArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", true, false, true)]
     [InlineData("tank", false, true, false)]
     [InlineData("tank", false, false, false)]
@@ -38,7 +45,7 @@ public class PoolAddArgsTest
         var args = new PoolAddArgs { PoolName = poolName, VDevs = vdevs };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 

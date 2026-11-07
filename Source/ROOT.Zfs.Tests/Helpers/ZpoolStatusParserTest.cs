@@ -9,6 +9,13 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class ZpoolStatusParserTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZpoolStatusParserTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private const string OkPool = @"  pool: tank
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
@@ -73,7 +80,7 @@ config:
         Assert.NotNull(status);
         Assert.Equal("tank", status.Pool.PoolName);
         Assert.Equal(State.Online, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
 
     }
 
@@ -84,7 +91,7 @@ config:
     {
         var stdOut = "New Data not expected" + Environment.NewLine + OkPool;
         var ex = Assert.Throws<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
-        Console.WriteLine(ex);
+        _output.WriteLine(ex.ToString());
     }
 
     [Fact]
@@ -108,7 +115,7 @@ config:
         Assert.NotNull(status);
         Assert.Equal("tank", status.Pool.PoolName);
         Assert.Equal(State.Degraded, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
 
     }
 
@@ -121,6 +128,6 @@ config:
         Assert.Equal(State.Available, spares.State);
         var spare = spares.Devices.First();
         Assert.Equal(State.Available, spare.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 }

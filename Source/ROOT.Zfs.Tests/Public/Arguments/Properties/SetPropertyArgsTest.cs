@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Properties;
 
 public class SetPropertyArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SetPropertyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData(PropertyTarget.Pool, "autotrim", "on", "tank", true)]
     [InlineData(PropertyTarget.Pool, "mycustom:trim:schedule", "1D", "tank", true)]
     [InlineData(PropertyTarget.Pool, "userobjquota@bbs", "1G", "tank", true)]
@@ -29,7 +36,7 @@ public class SetPropertyArgsTest
     {
         var args = new SetPropertyArgs { PropertyTarget = propertyTarget, Property = property, Value = value, Target = target };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -40,7 +47,7 @@ public class SetPropertyArgsTest
     {
         var args = new SetPropertyArgs { PropertyTarget = propertyTarget, Property = property, Value = value, Target = target };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

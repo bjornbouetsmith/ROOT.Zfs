@@ -8,6 +8,12 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class DataSetHelperTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DataSetHelperTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [Theory]
     [InlineData("tank", "myds", "tank/myds")]
@@ -25,7 +31,7 @@ public class DataSetHelperTest
         var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata   -";
 
         var dataset = DatasetHelper.ParseLine(stdOut);
-        Console.WriteLine(dataset.Dump(new JsonFormatter()));
+        _output.WriteLine(dataset.Dump(new JsonFormatter()));
         Assert.Equal("tank/kubedata", dataset.DatasetName);
         Assert.Equal("675.3M", dataset.Used.ToString());
         Assert.Equal("378.3M", dataset.Available.ToString());
@@ -40,7 +46,7 @@ public class DataSetHelperTest
         var stdOut = @"filesystem      1652262393      tank/kubedata   708100096       396648448       3566981726208   /tank/kubedata   tank/kubedata@1234";
 
         var dataset = DatasetHelper.ParseLine(stdOut);
-        Console.WriteLine(dataset.Dump(new JsonFormatter()));
+        _output.WriteLine(dataset.Dump(new JsonFormatter()));
         Assert.Equal("tank/kubedata", dataset.DatasetName);
         Assert.Equal("675.3M", dataset.Used.ToString());
         Assert.Equal("378.3M", dataset.Available.ToString());

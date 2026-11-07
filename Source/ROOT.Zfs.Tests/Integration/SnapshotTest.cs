@@ -11,6 +11,13 @@ namespace ROOT.Zfs.Tests.Integration;
 
 public class SnapshotTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SnapshotTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private Snapshots GetSnapshots()
@@ -31,16 +38,16 @@ public class SnapshotTest
     [Trait("Category", "Integration")]
     public void RemoteSnapshotTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var sn = GetSnapshots();
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name });
         var snapshots = sn.List(new SnapshotListArgs { Root = pool.Name });
         Assert.NotNull(snapshots);
         foreach (var snap in snapshots)
         {
-            Console.WriteLine(snap.CreationDate.AsString());
-            Console.WriteLine(snap.SnapshotName);
-            Console.WriteLine(snap.Size.ToString());
+            _output.WriteLine(snap.CreationDate.AsString());
+            _output.WriteLine(snap.SnapshotName);
+            _output.WriteLine(snap.Size.ToString());
         }
     }
 
@@ -49,7 +56,7 @@ public class SnapshotTest
     public void RemoteCreateAndDestroySnapshot()
     {
         var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var sn = GetSnapshots();
 
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = snapName });
@@ -69,7 +76,7 @@ public class SnapshotTest
     public void CreateAndDeleteByPatternTest()
     {
         var sn = GetSnapshots();
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" });
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
@@ -91,7 +98,7 @@ public class SnapshotTest
     {
         var sn = GetSnapshots();
         var ds = GetDatasets();
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
 
         var args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone" };

@@ -8,12 +8,15 @@ namespace ROOT.Zfs.Tests.Commands;
 
 public class CommandsTest
 {
+    private readonly ITestOutputHelper _output;
+
     private readonly SystemCommands _systemCommands;
     private readonly VirtualizationCommands _virtualizationCommands;
     private readonly DatasetCommands _datasetCommands;
 
-    public CommandsTest()
+    public CommandsTest(ITestOutputHelper output)
     {
+        _output = output;
         var binaries = new ZfsBinaries();
         _systemCommands = new SystemCommands(binaries);
         _virtualizationCommands = new VirtualizationCommands(binaries);
@@ -133,7 +136,7 @@ public class CommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _datasetCommands.List(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {

@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Snapshots;
 
 public class SnapshotHoldsArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SnapshotHoldsArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank/myds", "snap123", true)]
     [InlineData("tank%2fmyds", "snap123", true)]
     [InlineData("tank/myds", null, false)]
@@ -18,7 +25,7 @@ public class SnapshotHoldsArgsTest
         var args = new SnapshotHoldsArgs { Dataset = dataset, Snapshot = snapshot };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -31,7 +38,7 @@ public class SnapshotHoldsArgsTest
     {
         var args = new SnapshotHoldsArgs { Dataset = dataset, Snapshot = snapshot, Recursive = recursive };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

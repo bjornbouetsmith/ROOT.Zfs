@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolResilverArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolResilverArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", true)]
     [InlineData("tank%2etest", true)]
     [InlineData("tank%2fmyds", false)]
@@ -15,7 +22,7 @@ public class PoolResilverArgsTest
     {
         var args = new PoolResilverArgs { PoolName = pool };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

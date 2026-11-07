@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolArgTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolArgTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class NameTest : PoolNameArgs
     {
         public NameTest() : base(string.Empty)
@@ -37,7 +44,7 @@ public class PoolArgTest
 
         var valid = poolArg.Validate(out var errors);
 
-        Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 }

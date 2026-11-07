@@ -9,6 +9,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class DatasetCreationArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DatasetCreationArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Theory]
     [InlineData("2M", "100G", false)]
     [InlineData("1.5K", "100G", false)]
@@ -30,9 +37,9 @@ public class DatasetCreationArgsTest
             }
         };
 
-        Console.WriteLine(args.Dump(new JsonFormatter()));
+        _output.WriteLine(args.Dump(new JsonFormatter()));
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -55,9 +62,9 @@ public class DatasetCreationArgsTest
             DatasetName = name,
             Type = type,
         };
-        Console.WriteLine(args.Dump(new JsonFormatter()));
+        _output.WriteLine(args.Dump(new JsonFormatter()));
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

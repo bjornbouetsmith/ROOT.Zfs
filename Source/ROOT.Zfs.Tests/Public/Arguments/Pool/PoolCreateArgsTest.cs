@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolCreateArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolCreateArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Fact]
     public void NameShouldBeSet()
     {
@@ -54,7 +61,7 @@ public class PoolCreateArgsTest
         };
         var valid = args.Validate(out var errors);
         Assert.False(valid);
-        Console.WriteLine(string.Join(Environment.NewLine, errors));
+        _output.WriteLine(string.Join(Environment.NewLine, errors));
         Assert.Single(errors);
         Assert.Contains("Please provide the proper amount of minimum", errors[0]);
     }
@@ -77,7 +84,7 @@ public class PoolCreateArgsTest
         };
         var valid = args.Validate(out var errors);
         Assert.False(valid);
-        Console.WriteLine(string.Join(Environment.NewLine, errors));
+        _output.WriteLine(string.Join(Environment.NewLine, errors));
         Assert.Single(errors);
         Assert.Contains("Please provide at least two devices", errors[0]);
 

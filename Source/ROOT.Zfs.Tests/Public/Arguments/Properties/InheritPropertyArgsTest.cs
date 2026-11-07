@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Properties;
 
 public class InheritPropertyArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public InheritPropertyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData(PropertyTarget.Dataset, "atime", "tank", true)]
     [InlineData(PropertyTarget.Dataset, "atime", null, false)]
     [InlineData(PropertyTarget.Dataset, "atime", "", false)]
@@ -25,7 +32,7 @@ public class InheritPropertyArgsTest
         var args = new InheritPropertyArgs { PropertyTarget = propertyTarget, Property = property, Target = target };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 
@@ -35,7 +42,7 @@ public class InheritPropertyArgsTest
     {
         var args = new InheritPropertyArgs { PropertyTarget = propertyTarget, Property = property, Target = target };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

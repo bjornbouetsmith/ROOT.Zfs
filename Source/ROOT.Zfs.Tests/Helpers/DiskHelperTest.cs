@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class DiskHelperTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DiskHelperTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Fact]
     public void BlockDeviceTest()
     {
@@ -29,7 +36,7 @@ public class DiskHelperTest
     {
         var disks = new HashSet<string> { disk };
         var info = DiskHelper.FromString(line, disks);
-        Console.WriteLine(info.Type);
+        _output.WriteLine(info.Type.ToString());
         Assert.Equal(expectedType, info.Type);
     }
 
@@ -41,7 +48,7 @@ public class DiskHelperTest
     {
         var disks = new HashSet<string>();
         var info = DiskHelper.FromString(line, disks);
-        Console.WriteLine(info.Id);
+        _output.WriteLine(info.Id);
         Assert.Equal(expectedId, info.Id);
     }
     [Theory]
@@ -52,7 +59,7 @@ public class DiskHelperTest
     {
         var disks = new HashSet<string>();
         var info = DiskHelper.FromString(line, disks);
-        Console.WriteLine(info.DeviceName);
+        _output.WriteLine(info.DeviceName);
         Assert.Equal(expectedDeviceName, info.DeviceName);
     }
 
@@ -63,9 +70,9 @@ public class DiskHelperTest
     {
         var disks = new HashSet<string>();
         var info = DiskHelper.FromString(line, disks);
-        Console.WriteLine(info.DeviceName);
+        _output.WriteLine(info.DeviceName);
         Assert.Equal(expectedDeviceName, info.DeviceName);
-        Console.WriteLine(info.Id);
+        _output.WriteLine(info.Id);
         Assert.Equal(expectedId, info.Id);
     }
 

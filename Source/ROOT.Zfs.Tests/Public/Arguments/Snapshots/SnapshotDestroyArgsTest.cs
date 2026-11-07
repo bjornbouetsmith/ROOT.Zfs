@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Snapshots;
 
 public class SnapshotDestroyArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SnapshotDestroyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank/myds", "snap123", true)]
     [InlineData("tank/myds", "tank/myds@snap123", true)]
     [InlineData("tank%2fmyds", "tank%2fmyds%40snap123", true)]
@@ -17,7 +24,7 @@ public class SnapshotDestroyArgsTest
         var args = new SnapshotDestroyArgs { Dataset = dataset, Snapshot = snapshot };
         var valid = args.Validate(out var errors);
 
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 

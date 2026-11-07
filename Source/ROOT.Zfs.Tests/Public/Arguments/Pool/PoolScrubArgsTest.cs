@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolScrubArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolScrubArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", true)]
     [InlineData(null, false)]
     [InlineData("", false)]
@@ -17,7 +24,7 @@ public class PoolScrubArgsTest
     {
         var args = new PoolScrubArgs { PoolName = pool };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

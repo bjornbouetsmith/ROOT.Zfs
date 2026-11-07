@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Commands;
 
 public class PropertyCommandsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PropertyCommandsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly PropertyCommands _commands = new(new ZfsBinaries());
 
     [Fact]
@@ -39,7 +46,7 @@ public class PropertyCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Get(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -86,7 +93,7 @@ public class PropertyCommandsTest
         {
 
             var command = _commands.Set(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }

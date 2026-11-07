@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments;
 
 public class ArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class TestArg : Args
     {
         public TestArg() : base(string.Empty)
@@ -67,7 +74,7 @@ public class ArgsTest
     {
         var arg = new TestArg { Value = value, AllowEmpty = allowEmpty };
         var valid = arg.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

@@ -13,6 +13,13 @@ namespace ROOT.Zfs.Tests.Integration;
 
 public class PropertiesTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PropertiesTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private Properties GetProperties()
@@ -26,14 +33,14 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public void ListAllProperties()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name };
         var props = pr.Get(args);
         Assert.NotNull(props);
         foreach (var prop in props)
         {
-            Console.WriteLine(prop.Dump(new JsonFormatter()));
+            _output.WriteLine(prop.Dump(new JsonFormatter()));
         }
     }
 
@@ -41,20 +48,20 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public void SetDataSetProperty()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = "off" };
         var newVal = pr.Set(args);
             
         Assert.Equal("off", newVal.Value);
-        Console.WriteLine(newVal.Dump(new JsonFormatter()));
+        _output.WriteLine(newVal.Dump(new JsonFormatter()));
     }
 
     [Fact]
     [Trait("Category", "Integration")]
     public void GetDataSetProperty()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime"};
         var val = pr.Get(getArgs).First();
@@ -64,7 +71,7 @@ public class PropertiesTest
         var newVal = pr.Set(setArgs);
         Assert.Equal(newPropVal, newVal.Value);
 
-        Console.WriteLine(newVal.Dump(new JsonFormatter()));
+        _output.WriteLine(newVal.Dump(new JsonFormatter()));
     }
 
     [Fact]
@@ -74,14 +81,14 @@ public class PropertiesTest
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
         Assert.NotEmpty(props);
-        Console.WriteLine(props.Dump(new JsonFormatter()));
+        _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
     [Fact]
     [Trait("Category", "Integration")]
     public void ResetPropertyTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var dsHelper = ZfsTestFactory.CreateDatasets(_remoteProcessCall);
         dsHelper.RequiresSudo = pr.RequiresSudo;

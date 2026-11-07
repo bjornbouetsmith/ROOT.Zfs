@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class ZdbHelperTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZdbHelperTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private const string OutputTwoPools = @"backup:
     version: 5000
     name: 'backup'
@@ -136,7 +143,7 @@ tank3:
     public void ShouldParseVersionsCorrectlyForMultiplePools()
     {
         var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
-        Console.WriteLine(versions.Dump(new JsonFormatter()));
+        _output.WriteLine(versions.Dump(new JsonFormatter()));
         Assert.Equal(2, versions.Count());
         var info = versions[0];
         Assert.Equal("backup", info.PoolName);

@@ -7,6 +7,12 @@ namespace ROOT.Zfs.Tests.Public.Data;
 
 public class EnumExtTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public EnumExtTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     /// <summary>
     /// Test to ensure that all all <see cref="VDevCreationType"/> are handled properly
@@ -17,7 +23,7 @@ public class EnumExtTest
         foreach (var type in Enum.GetValues<VDevCreationType>())
         {
             var s = type.AsString();
-            Console.WriteLine("{0}={1}", type, s);
+            _output.WriteLine("{0}={1}", type, s);
             Assert.NotNull(s);
         }
     }
@@ -49,7 +55,7 @@ public class EnumExtTest
         VDevCreationType type = (VDevCreationType)(int)-999;
 
         var ex = Assert.Throws<NotSupportedException>(() => type.AsString());
-        Console.WriteLine(ex.Message);
+        _output.WriteLine(ex.Message);
     }
 
     [InlineData(DatasetTypes.None, "filesystem,volume")]

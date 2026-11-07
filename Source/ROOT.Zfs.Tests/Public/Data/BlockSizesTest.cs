@@ -8,11 +8,18 @@ namespace ROOT.Zfs.Tests.Public.Data;
 
 public class BlockSizesTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public BlockSizesTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Fact]
     public void TooSmallBlockSizeShouldNotBeValid()
     {
         var valid = BlockSizes.IsValid(511UL, out var errorMessage);
-        Console.WriteLine(errorMessage);
+        _output.WriteLine(errorMessage);
         Assert.False(valid);
         Assert.NotNull(errorMessage);
     }
@@ -21,7 +28,7 @@ public class BlockSizesTest
     public void TooBigBlockSizeShouldNotBeValid()
     {
         var valid = BlockSizes.IsValid("2M", out var errorMessage);
-        Console.WriteLine(errorMessage);
+        _output.WriteLine(errorMessage);
         Assert.False(valid);
         Assert.NotNull(errorMessage);
     }

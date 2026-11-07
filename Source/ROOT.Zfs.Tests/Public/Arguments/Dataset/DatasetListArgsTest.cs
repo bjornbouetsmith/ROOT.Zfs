@@ -7,6 +7,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class DatasetListArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DatasetListArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank && rm -rf /", false)]
     [InlineData("tank;rm -rf /", false)]
     [InlineData("tank/myds", true)]
@@ -16,7 +23,7 @@ public class DatasetListArgsTest
     {
         var args = new DatasetListArgs { Root = root };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 

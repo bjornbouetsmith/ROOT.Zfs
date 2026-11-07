@@ -8,6 +8,12 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class MountArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public MountArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [Theory]
     [InlineData("tank/myds", true, false)]
@@ -23,7 +29,7 @@ public class MountArgsTest
         var args = new MountArgs { Filesystem = dataset, MountAllFileSystems = mountAll };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
 
     }
@@ -52,7 +58,7 @@ public class MountArgsTest
         };
 
         var stringVersion = args.ToString();
-        Console.WriteLine(stringVersion);
+        _output.WriteLine(stringVersion);
         Assert.Equal(expectedString, stringVersion);
 
     }

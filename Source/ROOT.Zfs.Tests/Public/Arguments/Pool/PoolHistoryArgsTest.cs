@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolHistoryArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolHistoryArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank",true)]
     [InlineData(null, false)]
     [InlineData("", false)]
@@ -17,7 +24,7 @@ public class PoolHistoryArgsTest
 
         var valid = args.Validate(out var errors);
 
-        Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

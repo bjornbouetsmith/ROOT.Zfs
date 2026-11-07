@@ -9,6 +9,13 @@ namespace ROOT.Zfs.Tests.Commands;
 
 public class ZpoolCommandTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZpoolCommandTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly ZpoolCommands _commands = new(new ZfsBinaries());
 
     [Fact]
@@ -38,7 +45,7 @@ public class ZpoolCommandTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.GetStatus(arg));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -92,7 +99,7 @@ public class ZpoolCommandTest
         };
         var command = _commands.Create(args);
         Assert.Equal("/sbin/zpool create tank3 -m /mnt/tank3 -o ashift=12 -O atime=off mirror /dev/sdc /dev/sdd cache /dev/sde log /dev/sdf", command.FullCommandLine);
-        Console.WriteLine(command.FullCommandLine);
+        _output.WriteLine(command.FullCommandLine);
     }
 
     [Theory]
@@ -144,12 +151,12 @@ public class ZpoolCommandTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Clear(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
             var command = _commands.Clear(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
@@ -207,7 +214,7 @@ public class ZpoolCommandTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.IoStats(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -230,7 +237,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Resilver(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }
@@ -277,7 +284,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Trim(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }
@@ -308,7 +315,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Upgrade(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }
@@ -355,7 +362,7 @@ public class ZpoolCommandTest
         {
 
             var command = _commands.Attach(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
 
             Assert.Equal(stringVer, command.Arguments);
             Assert.Equal($"/sbin/zpool {stringVer}", command.FullCommandLine);
@@ -385,7 +392,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Replace(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
 
             Assert.Equal(stringVer, command.Arguments);
             Assert.Equal($"/sbin/zpool {stringVer}", command.FullCommandLine);
@@ -409,7 +416,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Add(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal("/sbin/zpool add tank mirror disk1 disk2", command.FullCommandLine);
         }
     }
@@ -431,7 +438,7 @@ public class ZpoolCommandTest
         else
         {
             var command = _commands.Remove(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal("/sbin/zpool remove tank mirror-0", command.FullCommandLine);
         }
     }
@@ -448,7 +455,7 @@ public class ZpoolCommandTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Destroy(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {

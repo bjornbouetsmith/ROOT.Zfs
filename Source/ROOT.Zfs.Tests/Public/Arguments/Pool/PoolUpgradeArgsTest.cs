@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolUpgradeArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolUpgradeArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", false, true)]
     [InlineData("tank", true, true)]
     [InlineData("", true, true)]
@@ -19,7 +26,7 @@ public class PoolUpgradeArgsTest
     {
         var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

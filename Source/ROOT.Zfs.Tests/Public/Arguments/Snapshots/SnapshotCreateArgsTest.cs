@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Snapshots;
 
 public class SnapshotCreateArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SnapshotCreateArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank/myds",null,true)]
     [InlineData("tank/myds", "", true)]
     [InlineData("tank/myds", " ", true)]
@@ -22,7 +29,7 @@ public class SnapshotCreateArgsTest
         var args = new SnapshotCreateArgs { Dataset = dataset, Snapshot = snapshot };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -47,6 +54,6 @@ public class SnapshotCreateArgsTest
             Assert.StartsWith(expected + suffix, stringVer);
         }
 
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
     }
 }

@@ -6,6 +6,12 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolOfflineArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolOfflineArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [InlineData(null, "disk", false)]
     [InlineData("", "disk", false)]
@@ -24,7 +30,7 @@ public class PoolOfflineArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 

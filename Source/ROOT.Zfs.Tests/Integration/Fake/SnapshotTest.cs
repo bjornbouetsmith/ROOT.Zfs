@@ -11,6 +11,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 
 public class FakeSnapshotTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public FakeSnapshotTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private Snapshots GetSnapshots()
@@ -28,9 +35,9 @@ public class FakeSnapshotTest
         Assert.NotNull(snapshots);
         foreach (var snap in snapshots)
         {
-            Console.WriteLine(snap.CreationDate.AsString());
-            Console.WriteLine(snap.SnapshotName);
-            Console.WriteLine(snap.Size.ToString());
+            _output.WriteLine(snap.CreationDate.AsString());
+            _output.WriteLine(snap.SnapshotName);
+            _output.WriteLine(snap.Size.ToString());
         }
     }
 

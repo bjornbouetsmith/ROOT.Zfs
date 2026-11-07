@@ -9,10 +9,13 @@ namespace ROOT.Zfs.Tests.Commands;
 
 public class SnapshotCommandsTest
 {
+    private readonly ITestOutputHelper _output;
+
     private readonly SnapshotCommands _commands;
 
-    public SnapshotCommandsTest()
+    public SnapshotCommandsTest(ITestOutputHelper output)
     {
+        _output = output;
         var binaries = new ZfsBinaries();
         _commands = new SnapshotCommands(binaries, new DatasetCommands(binaries));
     }
@@ -28,12 +31,12 @@ public class SnapshotCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.CreateSnapshot(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
             var command = _commands.CreateSnapshot(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             if (!string.IsNullOrWhiteSpace(snapshot))
             {
                 Assert.Equal(expectedCommand, command.FullCommandLine);
@@ -57,7 +60,7 @@ public class SnapshotCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.ListSnapshots(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -76,7 +79,7 @@ public class SnapshotCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.DestroySnapshot(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -97,7 +100,7 @@ public class SnapshotCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Clone(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
@@ -125,7 +128,7 @@ public class SnapshotCommandsTest
         else
         {
             var command = _commands.Hold(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }
@@ -147,7 +150,7 @@ public class SnapshotCommandsTest
         else
         {
             var command = _commands.Holds(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }
@@ -168,7 +171,7 @@ public class SnapshotCommandsTest
         else
         {
             var command = _commands.Release(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expected, command.FullCommandLine);
         }
     }

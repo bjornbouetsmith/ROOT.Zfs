@@ -7,11 +7,18 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class PropertyValueHelperTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PropertyValueHelperTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [Fact]
     public void ValidFormatShouldParse()
     {
         var value = PropertyValueHelper.FromString("tank	atime	on	default");
-        Console.WriteLine(value.Dump(new JsonFormatter()));
+        _output.WriteLine(value.Dump(new JsonFormatter()));
         Assert.Equal("on", value.Value);
         Assert.Equal("atime", value.Property);
         Assert.Equal("default", value.Source);

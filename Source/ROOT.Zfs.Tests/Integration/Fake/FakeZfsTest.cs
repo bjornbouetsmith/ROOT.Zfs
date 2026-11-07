@@ -11,6 +11,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 
 public class FakeZfsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public FakeZfsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     readonly FakeRemoteConnection _remoteProcessCall = new ("2.1.5-2");
 
     private Core.Zfs GetZfs()
@@ -35,7 +42,7 @@ public class FakeZfsTest
 
         foreach (var line in info.Lines)
         {
-            Console.WriteLine(line);
+            _output.WriteLine(line);
         }
     }
 
@@ -83,7 +90,7 @@ public class FakeZfsTest
         Assert.Equal(2, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
 
-        Console.WriteLine(disks.Dump(new JsonFormatter()));
+        _output.WriteLine(disks.Dump(new JsonFormatter()));
     }
 
     [Fact]

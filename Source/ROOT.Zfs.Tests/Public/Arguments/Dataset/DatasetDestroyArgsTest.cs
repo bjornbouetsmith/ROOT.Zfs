@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class DatasetDestroyArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DatasetDestroyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData(DatasetDestroyFlags.None, "destroy tank/myds")]
     [InlineData(DatasetDestroyFlags.Recursive, "destroy -r tank/myds")]
     [InlineData(DatasetDestroyFlags.RecursiveClones, "destroy -R tank/myds")]
@@ -34,7 +41,7 @@ public class DatasetDestroyArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 }

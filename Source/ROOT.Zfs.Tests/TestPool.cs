@@ -16,13 +16,15 @@ namespace ROOT.Zfs.Tests;
 internal class TestPool : IDisposable
 {
     private readonly IProcessCall _remoteProcessCall;
+    private readonly ITestOutputHelper _output;
     private PoolCreateArgs _args;
 
     public string Name => _args.PoolName;
 
-    public TestPool(IProcessCall remoteProcessCall)
+    public TestPool(IProcessCall remoteProcessCall, ITestOutputHelper output = null)
     {
         _remoteProcessCall = remoteProcessCall;
+        _output = output;
         CreateBaseDirectory();
     }
 
@@ -63,7 +65,7 @@ internal class TestPool : IDisposable
         var response = pc.LoadResponse(false);
         if (!response.Success)
         {
-            Console.WriteLine(response.StdError);
+            _output?.WriteLine(response.StdError);
             return false;
 
         }
@@ -88,7 +90,7 @@ internal class TestPool : IDisposable
 
         if (!response.Success)
         {
-            Console.WriteLine(response.StdError);
+            _output?.WriteLine(response.StdError);
             return false;
         }
 
@@ -99,23 +101,23 @@ internal class TestPool : IDisposable
     {
         if (!DestroyPool())
         {
-            Console.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
+            _output?.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
         }
 
         foreach (var disk in Disks)
         {
             if (!DeleteTestDisk(disk))
             {
-                Console.WriteLine("Failed to delete disk 1 :{0} - manual cleanup required", disk);
+                _output?.WriteLine("Failed to delete disk 1 :{0} - manual cleanup required", disk);
             }
         }
     }
     /// <summary>
     /// Creates a simple mirror pool for any testing where size/type does not really matter
     /// </summary>
-    public static TestPool CreateSimplePool(IProcessCall remoteProcessCall)
+    public static TestPool CreateSimplePool(IProcessCall remoteProcessCall, ITestOutputHelper output = null)
     {
-        var pool = new TestPool(remoteProcessCall);
+        var pool = new TestPool(remoteProcessCall, output);
         try
         {
             var disk1 = pool.AddDisk();

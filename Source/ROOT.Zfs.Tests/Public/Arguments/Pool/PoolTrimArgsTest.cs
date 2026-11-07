@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolTrimArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolTrimArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", true)]
     [InlineData("", false)]
     [InlineData(null, false)]
@@ -16,7 +23,7 @@ public class PoolTrimArgsTest
         var args = new PoolTrimArgs { PoolName = poolName };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
 
     }
@@ -42,7 +49,7 @@ public class PoolTrimArgsTest
         };
 
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expectedCommand, stringVer);
     }
 }

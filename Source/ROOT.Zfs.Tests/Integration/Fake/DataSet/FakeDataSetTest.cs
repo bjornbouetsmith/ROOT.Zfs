@@ -12,6 +12,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet;
 
 public abstract class FakeDataSetTest
 {
+    private readonly ITestOutputHelper _output;
+
+    protected FakeDataSetTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     internal abstract FakeRemoteConnection CreateProcessCall();
 
     internal IDatasets GetDatasets(FakeRemoteConnection remoteConnection = null)
@@ -28,7 +35,7 @@ public abstract class FakeDataSetTest
         Assert.NotNull(dataSets);
         foreach (var set in dataSets)
         {
-            Console.WriteLine(set.Dump(new JsonFormatter()));
+            _output.WriteLine(set.Dump(new JsonFormatter()));
         }
     }
 
@@ -45,7 +52,7 @@ public abstract class FakeDataSetTest
         Assert.NotNull(root);
         Assert.Equal("tank", root.DatasetName);
         Assert.Equal(DatasetTypes.Filesystem, root.Type);
-        Console.WriteLine(root.Dump(new JsonFormatter()));
+        _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
     [Fact]

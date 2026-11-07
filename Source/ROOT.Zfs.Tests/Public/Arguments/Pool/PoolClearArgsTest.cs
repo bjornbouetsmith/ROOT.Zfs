@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolClearArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolClearArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", "sda", true)]
     [InlineData("tank", "/dev/sda", true)]
     [InlineData("tank", "%2fdev%2fsda", true)]
@@ -23,7 +30,7 @@ public class PoolClearArgsTest
     {
         var args = new PoolClearArgs { PoolName = pool, Device = device };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectValid, valid);
     }
 

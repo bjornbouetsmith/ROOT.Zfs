@@ -10,6 +10,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 
 public class FakeZpoolTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public FakeZpoolTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private ZPool GetZpool()
@@ -28,7 +35,7 @@ public class FakeZpoolTest
         args = new PoolHistoryArgs { PoolName = "tank", SkipLines = lines - 2 };
         var history = zp.History(args).ToList();
         Assert.NotNull(history);
-        Console.WriteLine(history.Dump(new JsonFormatter()));
+        _output.WriteLine(history.Dump(new JsonFormatter()));
         Assert.Equal(2, history.Count());
     }
 
@@ -40,7 +47,7 @@ public class FakeZpoolTest
         var args = new PoolHistoryArgs { PoolName = "tank" };
         var history = zp.History(args);
         Assert.NotNull(history);
-        Console.WriteLine(history.Dump(new JsonFormatter()));
+        _output.WriteLine(history.Dump(new JsonFormatter()));
     }
 
     [Fact]
@@ -85,7 +92,7 @@ public class FakeZpoolTest
                 continue;
             }
 
-            Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
+            _output.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
             foreach (var device in vdev.Devices)
             {
                 if (device.State == State.Online)
@@ -93,7 +100,7 @@ public class FakeZpoolTest
                     continue;
                 }
 
-                Console.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
+                _output.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
             }
         }
     }
@@ -148,7 +155,7 @@ public class FakeZpoolTest
         Assert.Equal("6.50%", info.CapacityUsed.ToString());
         Assert.Equal("1.43x", info.DedupRatio.ToString());
         Assert.Equal(State.Online, info.State);
-        Console.WriteLine(info.Dump(new JsonFormatter()));
+        _output.WriteLine(info.Dump(new JsonFormatter()));
 
     }
 
@@ -196,7 +203,7 @@ public class FakeZpoolTest
         var zp = GetZpool();
         var args = new PoolIOStatsArgs { PoolName = "tank", Devices = ["/dev/sda"] };
         var stats = zp.IOStats(args);
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
         var commands = _remoteProcessCall.GetCommandsInvoked();
         Assert.Single(commands);
         Assert.Contains("/sbin/zpool iostat -LlpPvH tank /dev/sda", commands);

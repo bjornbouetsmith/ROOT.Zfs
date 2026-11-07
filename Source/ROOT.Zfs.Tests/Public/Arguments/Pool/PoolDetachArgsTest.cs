@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolDetachArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolDetachArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", "sda", true)]
     [InlineData("tank", null, false)]
     [InlineData("tank", "", false)]
@@ -20,7 +27,7 @@ public class PoolDetachArgsTest
         var args = new PoolDetachArgs { PoolName = poolName, Device = device };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 
@@ -31,7 +38,7 @@ public class PoolDetachArgsTest
     {
         var args = new PoolDetachArgs { PoolName = poolName, Device = device };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 }

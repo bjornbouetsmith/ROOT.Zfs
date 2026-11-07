@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Commands;
 
 public class DataSetCommandsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DataSetCommandsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly DatasetCommands _commands = new(new ZfsBinaries());
 
     [InlineData("tank/myds", DatasetDestroyFlags.None, "/sbin/zfs destroy tank/myds", false)]
@@ -24,12 +31,12 @@ public class DataSetCommandsTest
         if (throwException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Destroy(args));
-            Console.WriteLine(ex.Message);
+            _output.WriteLine(ex.Message);
         }
         else
         {
             var command = _commands.Destroy(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
@@ -44,13 +51,13 @@ public class DataSetCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Promote(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {
 
             var command = _commands.Promote(args);
-            Console.WriteLine(command.FullCommandLine);
+            _output.WriteLine(command.FullCommandLine);
             Assert.Equal(expectedCommand, command.FullCommandLine);
         }
     }
@@ -104,7 +111,7 @@ public class DataSetCommandsTest
         if (expectException)
         {
             var ex = Assert.Throws<ArgumentException>(() => _commands.Create(args));
-            Console.WriteLine(ex);
+            _output.WriteLine(ex.ToString());
         }
         else
         {

@@ -10,6 +10,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake;
 
 public class FakePropertiesTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public FakePropertiesTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private Properties GetProperties()
@@ -27,7 +34,7 @@ public class FakePropertiesTest
         Assert.NotNull(props);
         foreach (var prop in props)
         {
-            Console.WriteLine(prop.Dump(new JsonFormatter()));
+            _output.WriteLine(prop.Dump(new JsonFormatter()));
         }
     }
 
@@ -71,7 +78,7 @@ public class FakePropertiesTest
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
         Assert.NotEmpty(props);
-        Console.WriteLine(props.Dump(new JsonFormatter()));
+        _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
     [Fact]
@@ -81,7 +88,7 @@ public class FakePropertiesTest
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Pool).ToList();
         Assert.NotEmpty(props);
-        Console.WriteLine(props.Dump(new JsonFormatter()));
+        _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
     /// <summary>
@@ -106,7 +113,7 @@ public class FakePropertiesTest
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
 
-        Console.WriteLine(commands.Dump(new JsonFormatter()));
+        _output.WriteLine(commands.Dump(new JsonFormatter()));
         // Get, set & get, inherit
         Assert.Equal(4, commands.Count());
 

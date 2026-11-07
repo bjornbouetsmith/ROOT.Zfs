@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
 public class PoolAttachReplaceArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PoolAttachReplaceArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank", "/dev/sdb", "/dev/sdc", false, false, null, "attach tank /dev/sdb /dev/sdc")]
     [InlineData("tank", "/dev/sdb", null, false, false, null, "attach tank /dev/sdb")]
     [InlineData("tank", "/dev/sdb", "", false, false, null, "attach tank /dev/sdb")]
@@ -32,7 +39,7 @@ public class PoolAttachReplaceArgsTest
         };
 
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
+        _output.WriteLine(stringVer);
         Assert.Equal(expected, stringVer);
     }
 
@@ -66,7 +73,7 @@ public class PoolAttachReplaceArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
 
         Assert.Equal(expectedValid, valid);
     }
@@ -84,7 +91,7 @@ public class PoolAttachReplaceArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
 
         Assert.Equal(expectedValid, valid);
     }

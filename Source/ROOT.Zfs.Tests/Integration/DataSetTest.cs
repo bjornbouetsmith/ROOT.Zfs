@@ -12,6 +12,13 @@ namespace ROOT.Zfs.Tests.Integration;
 
 public class DataSetTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DataSetTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private Datasets GetDataSets()
@@ -25,14 +32,14 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public void GetDataSetList()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var ds = GetDataSets();
         var dataSets = ds.List(new DatasetListArgs());
         Assert.NotNull(dataSets);
         foreach (var set in dataSets)
         {
-            Console.WriteLine(set.Dump(new JsonFormatter()));
+            _output.WriteLine(set.Dump(new JsonFormatter()));
         }
     }
 
@@ -40,7 +47,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public void ListDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var dataset = ds.List(args).FirstOrDefault();
@@ -54,7 +61,7 @@ public class DataSetTest
     [InlineData(false)]
     public void CreateDataSetTest(bool addProperties)
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var dataSetName = Guid.NewGuid().ToString();
         string fullName = null;
@@ -69,7 +76,7 @@ public class DataSetTest
             var dataSets = ds.List(new DatasetListArgs()).ToList();
             var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
             Assert.NotNull(parent);
-            Console.WriteLine(parent.Dump(new JsonFormatter()));
+            _output.WriteLine(parent.Dump(new JsonFormatter()));
             fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
             var args = new DatasetCreationArgs
             {
@@ -79,7 +86,7 @@ public class DataSetTest
             };
             var dataSet = ds.Create(args);
             Assert.NotNull(dataSet);
-            Console.WriteLine(dataSet.Dump(new JsonFormatter()));
+            _output.WriteLine(dataSet.Dump(new JsonFormatter()));
         }
         finally
         {
@@ -96,13 +103,13 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public void ListDataSetShouldReturnDataSet()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var root = ds.List(args).FirstOrDefault();
 
         Assert.NotNull(root);
-        Console.WriteLine(root.Dump(new JsonFormatter()));
+        _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
     [Fact]
@@ -117,7 +124,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public void DestroyRecursiveDryRunTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var dsHelper = GetDataSets();
         var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
         var root = $"{pool.Name}/myds/{rootId}";
@@ -152,7 +159,7 @@ public class DataSetTest
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child2", lines);
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}", lines);
 
-            Console.WriteLine(response.DryRun);
+            _output.WriteLine(response.DryRun);
         }
         finally
         {

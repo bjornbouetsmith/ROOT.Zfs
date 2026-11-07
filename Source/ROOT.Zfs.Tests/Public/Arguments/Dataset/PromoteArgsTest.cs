@@ -6,6 +6,13 @@ namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
 public class PromoteArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public PromoteArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     [InlineData("tank/myds", "promote tank/myds")]
     [InlineData("tank%2fmyds", "promote tank/myds")]
     [Theory]
@@ -24,7 +31,7 @@ public class PromoteArgsTest
     {
         var args = new PromoteArgs { Name = dataset };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
         Assert.Equal(expectedValid, valid);
     }
 }

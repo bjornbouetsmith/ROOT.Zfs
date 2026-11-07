@@ -8,6 +8,13 @@ namespace ROOT.Zfs.Tests.Helpers;
 
 public class SmartInfoParserTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SmartInfoParserTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     #region Smart output
 
     private const string SmartInfo512WithoutSectorSize = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -570,7 +577,7 @@ SMART Attributes Data Structure revision number: 16
     public void ParseSingleAttribute(string rawLine, int expectedId, string expectedName, string expectedRawValue)
     {
         var attribute = SmartInfoParser.ParseAttributeLine(rawLine);
-        Console.WriteLine(attribute.Dump(new JsonFormatter()));
+        _output.WriteLine(attribute.Dump(new JsonFormatter()));
         Assert.Equal(expectedId, attribute.Id);
         Assert.Equal(expectedName, attribute.Name);
         Assert.Equal(expectedRawValue, attribute.RawValue);
@@ -607,7 +614,7 @@ General SMART Values:
 Offline data collection status:  (0x03) Offline data collection activity
                                         is in progress.";
         var section = SmartInfoParser.ParseSmartInfoSection(stdOut);
-        Console.WriteLine(section.Dump(new JsonFormatter()));
+        _output.WriteLine(section.Dump(new JsonFormatter()));
         var serial = section.Fields.FirstOrDefault(f => f.Name.Equals("Serial Number"));
         Assert.NotNull(serial);
         Assert.Equal("2020286AA686", serial.Value);
@@ -618,9 +625,9 @@ Offline data collection status:  (0x03) Offline data collection activity
     {
         // LBA's writtn: 1262090
         var info = SmartInfoParser.ParseStdOut("/dev/sda",SmartInfo512);
-        Console.WriteLine(info.BytesWritten);
+        _output.WriteLine(info.BytesWritten.ToString());
         Assert.Equal(1262090 * 512UL, info.BytesWritten.Bytes);
-        Console.WriteLine(info.BytesRead);
+        _output.WriteLine(info.BytesRead.ToString());
         Assert.Equal(1401957 * 512UL, info.BytesRead.Bytes);
 
     }
@@ -629,7 +636,7 @@ Offline data collection status:  (0x03) Offline data collection activity
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/sda", SmartInfo512_4096);
-        Console.WriteLine(info.BytesWritten);
+        _output.WriteLine(info.BytesWritten.ToString());
         Assert.Equal(21640090130*512UL, info.BytesWritten.Bytes);
     }
 
@@ -638,7 +645,7 @@ Offline data collection status:  (0x03) Offline data collection activity
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/nvme0", SamsungNVME);
-        Console.WriteLine(info.BytesWritten);
+        _output.WriteLine(info.BytesWritten.ToString());
         Assert.Equal(29908334UL * 512, info.BytesWritten.Bytes);
     }
 
@@ -724,7 +731,7 @@ SMART support is: Enabled
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/nvme0", NVMEWithoutDataUnits);
-        Console.WriteLine(info.BytesWritten);
+        _output.WriteLine(info.BytesWritten.ToString());
         Assert.Equal(0UL, info.BytesWritten.Bytes);
     }
 }
