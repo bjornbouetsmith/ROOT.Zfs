@@ -60,13 +60,13 @@ jobs:
       run: mkdir -p coverage
 
     - name: Run unit tests with coverage
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category!=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-unit.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter-not-trait Category=Integration --coverage --coverage-output-format cobertura --coverage-output "${{ github.workspace }}/coverage/coverage.cobertura-unit.xml" --coverage-settings "${{ github.workspace }}/Source/coverage.runsettings"
 
     - name: Upload unit test coverage report
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: coverage-unit
-        path: coverage/coverage.opencover-unit.xml
+        path: coverage/coverage.cobertura-unit.xml
         archive: true
 
     - name: Set CI Build status to success
@@ -150,7 +150,7 @@ jobs:
       run: dotnet build Source/ROOT.Zfs.slnx --no-restore --configuration Debug
 
     - name: Run integration tests
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category=Integration"
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter-trait Category=Integration
 
     - name: Set Integration tests status to success
       env:
@@ -238,13 +238,13 @@ jobs:
       run: mkdir -p coverage
 
     - name: Run integration tests with coverage
-      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter "Category=Integration" /p:AltCover=true /p:AltCoverReport="${{ github.workspace }}/coverage/coverage.opencover-integration.xml" /p:AltCoverAttributeFilter=ExcludeFromCodeCoverage /p:AltCoverVisibleBranches=true
+      run: dotnet test Source/**/*.Tests.csproj --configuration Debug --no-restore --verbosity normal --filter-trait Category=Integration --coverage --coverage-output-format cobertura --coverage-output "${{ github.workspace }}/coverage/coverage.cobertura-integration.xml" --coverage-settings "${{ github.workspace }}/Source/coverage.runsettings"
 
     - name: Upload integration test coverage report
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
         name: coverage-integration
-        path: coverage/coverage.opencover-integration.xml
+        path: coverage/coverage.cobertura-integration.xml
         archive: true
 
     - name: Set Integration tests status to success
@@ -345,7 +345,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="${{ github.workspace }}/coverage/coverage.opencover*.xml" /d:sonar.qualitygate.wait=true
+      run: dotnet-sonarscanner begin /k:"bjornbouetsmith_ROOT.Zfs" /o:"bjornbouetsmith" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.cobertura.reportsPaths="${{ github.workspace }}/coverage/coverage.cobertura*.xml" /d:sonar.qualitygate.wait=true
 
     - name: Build solution
       run: dotnet build Source/ROOT.Zfs.slnx --no-restore --configuration Debug

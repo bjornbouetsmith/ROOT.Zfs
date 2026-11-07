@@ -188,8 +188,8 @@ Add a dedicated test file, for example `Source/ROOT.Zfs.Tests/Async/AsyncApiTest
 
 6. **Build/CI**
    - `dotnet build Source/ROOT.Zfs.slnx`
-   - `dotnet test Source/**/*.Tests.csproj --filter "Category!=Integration"`
-   - CI integration filter: `Category=Integration`
+   - `dotnet test Source/**/*.Tests.csproj --filter-not-trait Category=Integration`
+   - CI integration filter: `--filter-trait Category=Integration`
 
 Because `TreatWarningsAsErrors` is enabled, forgotten awaits and `async` methods without `await` will fail the build.
 
