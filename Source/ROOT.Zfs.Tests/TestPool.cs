@@ -21,7 +21,7 @@ internal class TestPool : IDisposable
 
     public string Name => _args.PoolName;
 
-    public TestPool(IProcessCall remoteProcessCall, ITestOutputHelper output = null)
+    public TestPool(IProcessCall remoteProcessCall, ITestOutputHelper output)
     {
         _remoteProcessCall = remoteProcessCall;
         _output = output;
@@ -90,7 +90,7 @@ internal class TestPool : IDisposable
 
         if (!response.Success)
         {
-            _output?.WriteLine(response.StdError);
+            _output.WriteLine(response.StdError);
             return false;
         }
 
@@ -101,14 +101,14 @@ internal class TestPool : IDisposable
     {
         if (!DestroyPool())
         {
-            _output?.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
+            _output.WriteLine("Failed to destroy pool :{0} - manual cleanup required", _args.PoolName);
         }
 
         foreach (var disk in Disks)
         {
             if (!DeleteTestDisk(disk))
             {
-                _output?.WriteLine("Failed to delete disk 1 :{0} - manual cleanup required", disk);
+                _output.WriteLine("Failed to delete disk 1 :{0} - manual cleanup required", disk);
             }
         }
     }
