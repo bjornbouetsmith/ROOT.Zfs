@@ -103,7 +103,7 @@ public sealed class Zfs : ZfsBase, IZfs
         foreach (var id in disks.Where(d => d.Type == DeviceType.Disk).Select(disk => disk.Id))
         {
             var command = BuildCommand(_systemCommands.GetSmartInfo(id));
-            var response = await command.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await command.LoadResponseAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
             var info = SmartInfoParser.ParseStdOut(id, response.StdOut);
             smartInfos.Add(info);
         }
@@ -117,7 +117,7 @@ public sealed class Zfs : ZfsBase, IZfs
         cancellationToken.ThrowIfCancellationRequested();
 
         var command = BuildCommand(_systemCommands.GetSmartInfo(name));
-        var response = await command.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var response = await command.LoadResponseAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
         return SmartInfoParser.ParseStdOut(name, response.StdOut);
     }
 

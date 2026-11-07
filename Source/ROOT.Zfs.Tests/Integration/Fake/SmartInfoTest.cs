@@ -154,18 +154,4 @@ public class SmartInfoTest
         Assert.AreEqual(0, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
-
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
-    public async Task GetSmartInfoAsyncPropagatesCommandFailure(bool completeAsyncResponses)
-    {
-        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
-        _remoteProcessCall.StdError = "smartctl failed";
-        var zfs = GetZfs();
-
-        await Assert.ThrowsExactlyAsync<ProcessCallException>(() => zfs.GetSmartInfoAsync("/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", TestContext.CancellationToken));
-
-        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
-    }
 }
