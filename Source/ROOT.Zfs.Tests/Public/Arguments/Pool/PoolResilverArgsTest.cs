@@ -1,32 +1,38 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolResilverArgsTest
 {
-    [DataRow("tank", true)]
-    [DataRow("tank%2etest", true)]
-    [DataRow("tank%2fmyds", false)]
-    [DataRow("tank/myds", false)]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public PoolResilverArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData("tank", true)]
+    [InlineData("tank%2etest", true)]
+    [InlineData("tank%2fmyds", false)]
+    [InlineData("tank/myds", false)]
+    [Theory]
     public void ValidateTest(string pool, bool expectedValid)
     {
         var args = new PoolResilverArgs { PoolName = pool };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine,errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow("tank","resilver tank")]
-    [DataRow("tank%2etest", "resilver tank.test")]
-    [TestMethod]
+    [InlineData("tank","resilver tank")]
+    [InlineData("tank%2etest", "resilver tank.test")]
+    [Theory]
     public void ToStringTest(string pool, string expected)
     {
         var args = new PoolResilverArgs{PoolName=pool};
         var stringVer  = args.ToString();
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

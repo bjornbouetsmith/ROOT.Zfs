@@ -1,33 +1,32 @@
 ﻿using System;
 using System.Globalization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class SnapshotHoldParserTest
 {
-    [DataRow("tank/myds@20220925111346  mytag  Ons Oct 26 09:20 2022", "tank/myds@20220925111346","mytag")]
-    [TestMethod]
+    [InlineData("tank/myds@20220925111346  mytag  Ons Oct 26 09:20 2022", "tank/myds@20220925111346","mytag")]
+    [Theory]
     public void BadDateFormatShouldNotCauseParsingErrrors(string line, string snapshot, string tag)
     {
         var holds = SnapshotHoldParser.ParseStdOut(line);
-        Assert.HasCount(1, holds);
-        Assert.AreEqual(snapshot, holds[0].Snapshot);
-        Assert.AreEqual(tag, holds[0].Tag);
-        Assert.AreEqual(default, holds[0].HoldTime);
+        Assert.Single(holds);
+        Assert.Equal(snapshot, holds[0].Snapshot);
+        Assert.Equal(tag, holds[0].Tag);
+        Assert.Equal(default, holds[0].HoldTime);
     }
 
-    [DataRow("tank/myds@20220925111346  mytag  Wed Oct 26 09:20 2022", "tank/myds@20220925111346", "mytag","2022-10-26 09:20")]
-    [TestMethod]
+    [InlineData("tank/myds@20220925111346  mytag  Wed Oct 26 09:20 2022", "tank/myds@20220925111346", "mytag","2022-10-26 09:20")]
+    [Theory]
     public void ExpectedDateFormatShouldParseOk(string line, string snapshot, string tag, string dateString)
     {
         var expectedDate = DateTime.ParseExact(dateString, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
         var holds = SnapshotHoldParser.ParseStdOut(line);
-        Assert.HasCount(1, holds);
-        Assert.AreEqual(snapshot, holds[0].Snapshot);
-        Assert.AreEqual(tag, holds[0].Tag);
-        Assert.AreEqual(expectedDate, holds[0].HoldTime);
+        Assert.Single(holds);
+        Assert.Equal(snapshot, holds[0].Snapshot);
+        Assert.Equal(tag, holds[0].Tag);
+        Assert.Equal(expectedDate, holds[0].HoldTime);
     }
 }

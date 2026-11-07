@@ -1,35 +1,41 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
 using System;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolScrubArgsTest
 {
-    [DataRow("tank", true)]
-    [DataRow(null, false)]
-    [DataRow("", false)]
-    [DataRow(" ", false)]
-    [DataRow("rm -rf /tank", false)]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public PoolScrubArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData("tank", true)]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData(" ", false)]
+    [InlineData("rm -rf /tank", false)]
+    [Theory]
     public void ValidateTest(string pool, bool expectedValid)
     {
         var args = new PoolScrubArgs { PoolName = pool };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow("tank", ScrubOption.None, "scrub tank")]
-    [DataRow("tank", ScrubOption.Stop, "scrub -s tank")]
-    [DataRow("tank", ScrubOption.Pause, "scrub -p tank")]
-    [TestMethod]
+    [InlineData("tank", ScrubOption.None, "scrub tank")]
+    [InlineData("tank", ScrubOption.Stop, "scrub -s tank")]
+    [InlineData("tank", ScrubOption.Pause, "scrub -p tank")]
+    [Theory]
     public void ToStringTest(string pool, ScrubOption option, string expected)
     {
         var args = new PoolScrubArgs { PoolName = pool, Options = option };
         var stringVer = args.ToString();
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

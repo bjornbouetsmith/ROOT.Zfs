@@ -1,31 +1,37 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
-[TestClass]
 public class PromoteArgsTest
 {
-    [DataRow("tank/myds", "promote tank/myds")]
-    [DataRow("tank%2fmyds", "promote tank/myds")]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public PromoteArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData("tank/myds", "promote tank/myds")]
+    [InlineData("tank%2fmyds", "promote tank/myds")]
+    [Theory]
     public void ToStringTest(string dataset, string expected)
     {
         var args = new PromoteArgs { Name = dataset };
         var stringVer = args.ToString();
 
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 
-    [DataRow("tank/myds",true)]
-    [DataRow("tank/myds && rm -ff /", false)]
-    [TestMethod]
+    [InlineData("tank/myds",true)]
+    [InlineData("tank/myds && rm -ff /", false)]
+    [Theory]
     public void ValidateTest(string dataset, bool expectedValid)
     {
         var args = new PromoteArgs { Name = dataset };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 }

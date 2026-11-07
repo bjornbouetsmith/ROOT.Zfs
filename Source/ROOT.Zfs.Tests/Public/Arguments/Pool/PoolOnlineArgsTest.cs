@@ -1,20 +1,26 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolOnlineArgsTest
 {
-    [DataRow(null, "disk", false)]
-    [DataRow("", "disk", false)]
-    [DataRow(" ", "disk", false)]
-    [DataRow("tank", "disk", true)]
-    [DataRow("tank", null, false)]
-    [DataRow("tank", "", false)]
-    [DataRow("tank", " ", false)]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public PoolOnlineArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData(null, "disk", false)]
+    [InlineData("", "disk", false)]
+    [InlineData(" ", "disk", false)]
+    [InlineData("tank", "disk", true)]
+    [InlineData("tank", null, false)]
+    [InlineData("tank", "", false)]
+    [InlineData("tank", " ", false)]
+    [Theory]
     public void ValidateTest(string pool, string device, bool expectedValid)
     {
         var args = new PoolOnlineArgs
@@ -24,14 +30,14 @@ public class PoolOnlineArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 
 
-    [DataRow("tank", "sda", false, "online tank sda")]
-    [DataRow("tank", "sda", true, "online -e tank sda")]
-    [TestMethod]
+    [InlineData("tank", "sda", false, "online tank sda")]
+    [InlineData("tank", "sda", true, "online -e tank sda")]
+    [Theory]
     public void BuildArgsTest(string pool, string device, bool expandSpace, string expected)
     {
         var args = new PoolOnlineArgs
@@ -42,6 +48,6 @@ public class PoolOnlineArgsTest
         };
         var stringVer = args.ToString();
 
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

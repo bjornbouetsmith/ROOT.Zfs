@@ -1,39 +1,45 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolUpgradeArgsTest
 {
-    [DataRow("tank", false, true)]
-    [DataRow("tank", true, true)]
-    [DataRow("", true, true)]
-    [DataRow(null, true, true)]
-    [DataRow(" ", true, true)]
-    [DataRow(" ", false, false)]
-    [DataRow("", false, false)]
-    [DataRow(null, false, false)]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public PoolUpgradeArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData("tank", false, true)]
+    [InlineData("tank", true, true)]
+    [InlineData("", true, true)]
+    [InlineData(null, true, true)]
+    [InlineData(" ", true, true)]
+    [InlineData(" ", false, false)]
+    [InlineData("", false, false)]
+    [InlineData(null, false, false)]
+    [Theory]
     public void ValidTest(string poolName, bool all, bool expectedValid)
     {
         var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow("tank",true,"upgrade -a")]
-    [DataRow("tank", false, "upgrade tank")]
-    [DataRow(null, true, "upgrade -a")]
-    [DataRow("", true, "upgrade -a")]
-    [DataRow(" ", true, "upgrade -a")]
-    [TestMethod]
+    [InlineData("tank",true,"upgrade -a")]
+    [InlineData("tank", false, "upgrade tank")]
+    [InlineData(null, true, "upgrade -a")]
+    [InlineData("", true, "upgrade -a")]
+    [InlineData(" ", true, "upgrade -a")]
+    [Theory]
     public void ToStringTest(string poolName, bool all, string expected)
     {
         var args = new PoolUpgradeArgs { PoolName = poolName, AllPools = all };
         var stringVer = args.ToString();
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

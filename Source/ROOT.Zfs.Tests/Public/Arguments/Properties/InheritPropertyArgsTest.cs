@@ -1,42 +1,48 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Properties;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Properties;
 
-[TestClass]
 public class InheritPropertyArgsTest
 {
-    [DataRow(PropertyTarget.Dataset, "atime", "tank", true)]
-    [DataRow(PropertyTarget.Dataset, "atime", null, false)]
-    [DataRow(PropertyTarget.Dataset, "atime", "", false)]
-    [DataRow(PropertyTarget.Dataset, "atime", " ", false)]
+    private readonly ITestOutputHelper _output;
 
-    [DataRow(PropertyTarget.Dataset, null, "tank/myds", false)]
-    [DataRow(PropertyTarget.Dataset, "", "tank/myds", false)]
-    [DataRow(PropertyTarget.Dataset, " ", "tank/myds", false)]
+    public InheritPropertyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
-    [DataRow(PropertyTarget.Dataset, null, null, false)]
+    [InlineData(PropertyTarget.Dataset, "atime", "tank", true)]
+    [InlineData(PropertyTarget.Dataset, "atime", null, false)]
+    [InlineData(PropertyTarget.Dataset, "atime", "", false)]
+    [InlineData(PropertyTarget.Dataset, "atime", " ", false)]
 
-    [DataRow(PropertyTarget.Pool, "atime", "tank/myds", false)]
-    [TestMethod]
+    [InlineData(PropertyTarget.Dataset, null, "tank/myds", false)]
+    [InlineData(PropertyTarget.Dataset, "", "tank/myds", false)]
+    [InlineData(PropertyTarget.Dataset, " ", "tank/myds", false)]
+
+    [InlineData(PropertyTarget.Dataset, null, null, false)]
+
+    [InlineData(PropertyTarget.Pool, "atime", "tank/myds", false)]
+    [Theory]
     public void ValidateTest(PropertyTarget propertyTarget, string property, string target, bool expectValid)
     {
         var args = new InheritPropertyArgs { PropertyTarget = propertyTarget, Property = property, Target = target };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectValid, valid);
     }
 
-    [DataRow(PropertyTarget.Dataset, "atime", "tank", "inherit -rS atime tank")]
-    [TestMethod]
+    [InlineData(PropertyTarget.Dataset, "atime", "tank", "inherit -rS atime tank")]
+    [Theory]
     public void ToStringTest(PropertyTarget propertyTarget, string property, string target, string expected)
     {
         var args = new InheritPropertyArgs { PropertyTarget = propertyTarget, Property = property, Target = target };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
-        Assert.AreEqual(expected, stringVer);
+        _output.WriteLine(stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

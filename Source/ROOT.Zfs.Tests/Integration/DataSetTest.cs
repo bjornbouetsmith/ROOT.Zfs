@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
@@ -10,9 +10,15 @@ using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration;
 
-[TestClass]
 public class DataSetTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public DataSetTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private Datasets GetDataSets()
@@ -22,37 +28,40 @@ public class DataSetTest
         return ds;
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void GetDataSetList()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var ds = GetDataSets();
         var dataSets = ds.List(new DatasetListArgs());
-        Assert.IsNotNull(dataSets);
+        Assert.NotNull(dataSets);
         foreach (var set in dataSets)
         {
-            Console.WriteLine(set.Dump(new JsonFormatter()));
+            _output.WriteLine(set.Dump(new JsonFormatter()));
         }
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void ListDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var dataset = ds.List(args).FirstOrDefault();
-        Assert.IsNotNull(dataset);
-        Assert.AreEqual(pool.Name, dataset.DatasetName);
+        Assert.NotNull(dataset);
+        Assert.Equal(pool.Name, dataset.DatasetName);
     }
 
-    [TestMethod, TestCategory("Integration")]
-    [DataRow(true)]
-    [DataRow(false)]
+    [Theory]
+    [Trait("Category", "Integration")]
+    [InlineData(true)]
+    [InlineData(false)]
     public void CreateDataSetTest(bool addProperties)
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var dataSetName = Guid.NewGuid().ToString();
         string fullName = null;
@@ -66,8 +75,8 @@ public class DataSetTest
 
             var dataSets = ds.List(new DatasetListArgs()).ToList();
             var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
-            Assert.IsNotNull(parent);
-            Console.WriteLine(parent.Dump(new JsonFormatter()));
+            Assert.NotNull(parent);
+            _output.WriteLine(parent.Dump(new JsonFormatter()));
             fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
             var args = new DatasetCreationArgs
             {
@@ -76,8 +85,8 @@ public class DataSetTest
                 Properties = addProperties ? props : null
             };
             var dataSet = ds.Create(args);
-            Assert.IsNotNull(dataSet);
-            Console.WriteLine(dataSet.Dump(new JsonFormatter()));
+            Assert.NotNull(dataSet);
+            _output.WriteLine(dataSet.Dump(new JsonFormatter()));
         }
         finally
         {
@@ -90,29 +99,32 @@ public class DataSetTest
         }
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void ListDataSetShouldReturnDataSet()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var root = ds.List(args).FirstOrDefault();
 
-        Assert.IsNotNull(root);
-        Console.WriteLine(root.Dump(new JsonFormatter()));
+        Assert.NotNull(root);
+        _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void GetNonExistingDataSetShouldThrowException()
     {
         var ds = GetDataSets();
-        Assert.ThrowsExactly<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
+        Assert.Throws<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void DestroyRecursiveDryRunTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var dsHelper = GetDataSets();
         var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
         var root = $"{pool.Name}/myds/{rootId}";
@@ -139,15 +151,15 @@ public class DataSetTest
             var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
             var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
             var response = dsHelper.Destroy(destroyArgs);
-            Assert.AreEqual(flags, response.Flags);
+            Assert.Equal(flags, response.Flags);
             var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
-            Assert.HasCount(4, lines);
+            Assert.Equal(4, lines.Count());
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child1/granchild", lines);
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child1", lines);
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}/child2", lines);
             Assert.Contains($"destroy {pool.Name}/myds/{rootId}", lines);
 
-            Console.WriteLine(response.DryRun);
+            _output.WriteLine(response.DryRun);
         }
         finally
         {

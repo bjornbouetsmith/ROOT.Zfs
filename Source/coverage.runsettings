@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Coverage settings for Microsoft.Testing.Extensions.CodeCoverage (Microsoft.Testing.Platform).
+  The test assembly is included so the report covers the same set of assemblies as the
+  previous AltCover setup.
+-->
+<Configuration>
+  <IncludeTestAssembly>True</IncludeTestAssembly>
+</Configuration>

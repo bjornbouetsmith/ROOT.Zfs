@@ -1,13 +1,20 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
+using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class ZdbHelperTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZdbHelperTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private const string OutputTwoPools = @"backup:
     version: 5000
     name: 'backup'
@@ -132,38 +139,38 @@ tank3:
         com.delphix:embedded_data
 ";
 
-    [TestMethod]
+    [Fact]
     public void ShouldParseVersionsCorrectlyForMultiplePools()
     {
         var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
-        Console.WriteLine(versions.Dump(new JsonFormatter()));
-        Assert.HasCount(2, versions);
+        _output.WriteLine(versions.Dump(new JsonFormatter()));
+        Assert.Equal(2, versions.Count());
         var info = versions[0];
-        Assert.AreEqual("backup", info.PoolName);
-        Assert.AreEqual(5000, info.Version);
+        Assert.Equal("backup", info.PoolName);
+        Assert.Equal(5000, info.Version);
         info = versions[1];
 
-        Assert.AreEqual("tank3", info.PoolName);
-        Assert.AreEqual(5000, info.Version);
+        Assert.Equal("tank3", info.PoolName);
+        Assert.Equal(5000, info.Version);
     }
 
-    [TestMethod]
+    [Fact]
     public void TruncatedOutputShouldthrow()
     {
-        Assert.ThrowsExactly<FormatException>(() => ZdbHelper.ParsePoolVersions("   version:5000"));
+        Assert.Throws<FormatException>(() => ZdbHelper.ParsePoolVersions("   version:5000"));
     }
 
-    [TestMethod]
+    [Fact]
     public void UnknownVersionOutputShouldNotThrow()
     {
         var versions= ZdbHelper.ParsePoolVersions(@"backup:
     version: v5000
     name: 'backup'");
 
-        Assert.HasCount(1, versions);
+        Assert.Single(versions);
         var info = versions[0];
-        Assert.AreEqual("backup", info.PoolName);
-        Assert.AreEqual(0, info.Version);
+        Assert.Equal("backup", info.PoolName);
+        Assert.Equal(0, info.Version);
     }
 
 }

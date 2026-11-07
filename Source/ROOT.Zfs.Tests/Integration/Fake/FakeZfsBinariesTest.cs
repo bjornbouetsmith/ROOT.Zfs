@@ -1,48 +1,49 @@
 using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Commands;
 
 namespace ROOT.Zfs.Tests.Integration.Fake;
 
-[TestClass]
 public class FakeZfsBinariesTest
 {
     private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void DefaultsShouldBeExpectedAndNotInitialized()
     {
         var binaries = new ZfsBinaries();
 
-        Assert.IsFalse(binaries.Initialized);
-        Assert.AreEqual("/sbin/zfs", binaries.Zfs);
-        Assert.AreEqual("/sbin/zpool", binaries.Zpool);
-        Assert.AreEqual("/sbin/zdb", binaries.Zdb);
-        Assert.AreEqual("/bin/ls", binaries.Ls);
-        Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
-        Assert.AreEqual("/bin/awk", binaries.Awk);
-        Assert.AreEqual("/bin/which", binaries.Which);
-        Assert.AreEqual("/sbin/smartctl", binaries.Smartctl);
-        Assert.AreEqual("/bin/grep", binaries.Grep);
-        Assert.AreEqual("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
-        Assert.AreEqual("/usr/sbin/virt-what", binaries.VirtWhat);
-        Assert.AreEqual("/usr/bin/hostnamectl", binaries.Hostnamectl);
-        Assert.AreEqual("/bin/cat", binaries.Cat);
+        Assert.False(binaries.Initialized);
+        Assert.Equal("/sbin/zfs", binaries.Zfs);
+        Assert.Equal("/sbin/zpool", binaries.Zpool);
+        Assert.Equal("/sbin/zdb", binaries.Zdb);
+        Assert.Equal("/bin/ls", binaries.Ls);
+        Assert.Equal("/bin/lsblk", binaries.Lsblk);
+        Assert.Equal("/bin/awk", binaries.Awk);
+        Assert.Equal("/bin/which", binaries.Which);
+        Assert.Equal("/sbin/smartctl", binaries.Smartctl);
+        Assert.Equal("/bin/grep", binaries.Grep);
+        Assert.Equal("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
+        Assert.Equal("/usr/sbin/virt-what", binaries.VirtWhat);
+        Assert.Equal("/usr/bin/hostnamectl", binaries.Hostnamectl);
+        Assert.Equal("/bin/cat", binaries.Cat);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void InitializeTest()
     {
         var binaries = new ZfsBinaries(_remoteProcessCall);
-        Assert.IsFalse(binaries.Initialized);
+        Assert.False(binaries.Initialized);
 
         binaries.Initialize();
 
-        Assert.IsTrue(binaries.Initialized);
+        Assert.True(binaries.Initialized);
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
 
-        Assert.HasCount(12, commandsInvoked);
+        Assert.Equal(12, commandsInvoked.Count());
         var asHashSet = commandsInvoked.ToHashSet();
         Assert.Contains("/bin/which zfs", asHashSet);
         Assert.Contains("/bin/which zpool", asHashSet);
@@ -57,22 +58,23 @@ public class FakeZfsBinariesTest
         Assert.Contains("/bin/which hostnamectl", asHashSet);
         Assert.Contains("/bin/which cat", asHashSet);
 
-        Assert.AreEqual("/sbin/zfs", binaries.Zfs);
-        Assert.AreEqual("/sbin/zpool", binaries.Zpool);
-        Assert.AreEqual("/sbin/zdb", binaries.Zdb);
-        Assert.AreEqual("/bin/ls", binaries.Ls);
-        Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
-        Assert.AreEqual("/bin/awk", binaries.Awk);
-        Assert.AreEqual("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
-        Assert.AreEqual("/usr/sbin/virt-what", binaries.VirtWhat);
-        Assert.AreEqual("/usr/bin/hostnamectl", binaries.Hostnamectl);
-        Assert.AreEqual("/bin/cat", binaries.Cat);
+        Assert.Equal("/sbin/zfs", binaries.Zfs);
+        Assert.Equal("/sbin/zpool", binaries.Zpool);
+        Assert.Equal("/sbin/zdb", binaries.Zdb);
+        Assert.Equal("/bin/ls", binaries.Ls);
+        Assert.Equal("/bin/lsblk", binaries.Lsblk);
+        Assert.Equal("/bin/awk", binaries.Awk);
+        Assert.Equal("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
+        Assert.Equal("/usr/sbin/virt-what", binaries.VirtWhat);
+        Assert.Equal("/usr/bin/hostnamectl", binaries.Hostnamectl);
+        Assert.Equal("/bin/cat", binaries.Cat);
 
         // our fake cannot find smartctl, so assert that it does not get overridden
-        Assert.AreEqual("/sbin/smartctl", binaries.Smartctl);
+        Assert.Equal("/sbin/smartctl", binaries.Smartctl);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void InitializeShouldKeepDefaultsWhenWhichFails()
     {
         var binaries = new ZfsBinaries(_remoteProcessCall)
@@ -84,23 +86,24 @@ public class FakeZfsBinariesTest
 
         binaries.Initialize();
 
-        Assert.IsTrue(binaries.Initialized);
-        Assert.AreEqual("/custom/zfs", binaries.Zfs);
-        Assert.AreEqual("/sbin/zpool", binaries.Zpool);
-        Assert.AreEqual("/sbin/zdb", binaries.Zdb);
-        Assert.AreEqual("/bin/ls", binaries.Ls);
-        Assert.AreEqual("/bin/lsblk", binaries.Lsblk);
-        Assert.AreEqual("/bin/awk", binaries.Awk);
-        Assert.AreEqual("/bin/grep", binaries.Grep);
-        Assert.AreEqual("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
-        Assert.AreEqual("/usr/sbin/virt-what", binaries.VirtWhat);
-        Assert.AreEqual("/usr/bin/hostnamectl", binaries.Hostnamectl);
-        Assert.AreEqual("/bin/cat", binaries.Cat);
-        Assert.AreEqual("/custom/smartctl", binaries.Smartctl);
-        Assert.HasCount(12, _remoteProcessCall.GetCommandsInvoked());
+        Assert.True(binaries.Initialized);
+        Assert.Equal("/custom/zfs", binaries.Zfs);
+        Assert.Equal("/sbin/zpool", binaries.Zpool);
+        Assert.Equal("/sbin/zdb", binaries.Zdb);
+        Assert.Equal("/bin/ls", binaries.Ls);
+        Assert.Equal("/bin/lsblk", binaries.Lsblk);
+        Assert.Equal("/bin/awk", binaries.Awk);
+        Assert.Equal("/bin/grep", binaries.Grep);
+        Assert.Equal("/usr/bin/systemd-detect-virt", binaries.SystemdDetectVirt);
+        Assert.Equal("/usr/sbin/virt-what", binaries.VirtWhat);
+        Assert.Equal("/usr/bin/hostnamectl", binaries.Hostnamectl);
+        Assert.Equal("/bin/cat", binaries.Cat);
+        Assert.Equal("/custom/smartctl", binaries.Smartctl);
+        Assert.Equal(12, _remoteProcessCall.GetCommandsInvoked().Count());
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void InitializeShouldUseConfiguredWhichAndTrimItsOutput()
     {
         var binaries = new ZfsBinaries(_remoteProcessCall)
@@ -111,22 +114,22 @@ public class FakeZfsBinariesTest
 
         binaries.Initialize();
 
-        Assert.IsTrue(binaries.Initialized);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Zfs);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Zpool);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Zdb);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Ls);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Lsblk);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Awk);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Smartctl);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Grep);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.SystemdDetectVirt);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.VirtWhat);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Hostnamectl);
-        Assert.AreEqual("/opt/zfs/bin/zfs", binaries.Cat);
+        Assert.True(binaries.Initialized);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Zfs);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Zpool);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Zdb);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Ls);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Lsblk);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Awk);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Smartctl);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Grep);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.SystemdDetectVirt);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.VirtWhat);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Hostnamectl);
+        Assert.Equal("/opt/zfs/bin/zfs", binaries.Cat);
 
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
-        Assert.HasCount(12, commandsInvoked);
-        Assert.IsTrue(commandsInvoked.All(command => command.StartsWith("/usr/bin/which ", StringComparison.Ordinal)));
+        Assert.Equal(12, commandsInvoked.Count());
+        Assert.True(commandsInvoked.All(command => command.StartsWith("/usr/bin/which ", StringComparison.Ordinal)));
     }
 }

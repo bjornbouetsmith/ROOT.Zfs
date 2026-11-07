@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class SmartInfoParserTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public SmartInfoParserTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     #region Smart output
 
     private const string SmartInfo512WithoutSectorSize = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -521,7 +527,7 @@ Num   ErrCount  SQId   CmdId  Status  PELoc          LBA  NSID    VS
     #endregion
 
 
-    [TestMethod]
+    [Fact]
     public void ParseStatusCorrectly()
     {
         var txt = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -559,25 +565,25 @@ SMART Attributes Data Structure revision number: 16
 ";
         var info = SmartInfoParser.ParseStdOut("/dev/disk/by-id/ata-TOSHIBA_THNSN8960PCSE_26MS1049TB1V", txt);
 
-        Assert.AreEqual("PASSED", info.DataSection.Status);
-        Assert.AreEqual("/dev/disk/by-id/ata-TOSHIBA_THNSN8960PCSE_26MS1049TB1V", info.DeviceId);
-        Assert.AreEqual(txt, info.RawSmartInfo);
+        Assert.Equal("PASSED", info.DataSection.Status);
+        Assert.Equal("/dev/disk/by-id/ata-TOSHIBA_THNSN8960PCSE_26MS1049TB1V", info.DeviceId);
+        Assert.Equal(txt, info.RawSmartInfo);
 
     }
 
-    [TestMethod]
-    [DataRow("246 Total_LBAs_Written      0x0032   100   100   000    Old_age   Always       -       21640090130", 246, "Total_LBAs_Written", "21640090130")]
-    [DataRow("194 Temperature_Celsius     0x0022   071   041   000    Old_age   Always       -       29 (Min/Max 22/59)", 194, "Temperature_Celsius", "29 (Min/Max 22/59)")]
+    [Theory]
+    [InlineData("246 Total_LBAs_Written      0x0032   100   100   000    Old_age   Always       -       21640090130", 246, "Total_LBAs_Written", "21640090130")]
+    [InlineData("194 Temperature_Celsius     0x0022   071   041   000    Old_age   Always       -       29 (Min/Max 22/59)", 194, "Temperature_Celsius", "29 (Min/Max 22/59)")]
     public void ParseSingleAttribute(string rawLine, int expectedId, string expectedName, string expectedRawValue)
     {
         var attribute = SmartInfoParser.ParseAttributeLine(rawLine);
-        Console.WriteLine(attribute.Dump(new JsonFormatter()));
-        Assert.AreEqual(expectedId, attribute.Id);
-        Assert.AreEqual(expectedName, attribute.Name);
-        Assert.AreEqual(expectedRawValue, attribute.RawValue);
+        _output.WriteLine(attribute.Dump(new JsonFormatter()));
+        Assert.Equal(expectedId, attribute.Id);
+        Assert.Equal(expectedName, attribute.Name);
+        Assert.Equal(expectedRawValue, attribute.RawValue);
     }
 
-    [TestMethod]
+    [Fact]
     public void ParseSmartInfoSection()
     {
         const string stdOut= @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -608,51 +614,51 @@ General SMART Values:
 Offline data collection status:  (0x03) Offline data collection activity
                                         is in progress.";
         var section = SmartInfoParser.ParseSmartInfoSection(stdOut);
-        Console.WriteLine(section.Dump(new JsonFormatter()));
+        _output.WriteLine(section.Dump(new JsonFormatter()));
         var serial = section.Fields.FirstOrDefault(f => f.Name.Equals("Serial Number"));
-        Assert.IsNotNull(serial);
-        Assert.AreEqual("2020286AA686", serial.Value);
+        Assert.NotNull(serial);
+        Assert.Equal("2020286AA686", serial.Value);
     }
 
-    [TestMethod]
+    [Fact]
     public void BytesWrittenTest512ByteLogicalAndPhysical()
     {
         // LBA's writtn: 1262090
         var info = SmartInfoParser.ParseStdOut("/dev/sda",SmartInfo512);
-        Console.WriteLine(info.BytesWritten);
-        Assert.AreEqual(1262090 * 512UL, info.BytesWritten.Bytes);
-        Console.WriteLine(info.BytesRead);
-        Assert.AreEqual(1401957 * 512UL, info.BytesRead.Bytes);
+        _output.WriteLine(info.BytesWritten.ToString());
+        Assert.Equal(1262090 * 512UL, info.BytesWritten.Bytes);
+        _output.WriteLine(info.BytesRead.ToString());
+        Assert.Equal(1401957 * 512UL, info.BytesRead.Bytes);
 
     }
-    [TestMethod]
+    [Fact]
     public void BytesWrittenTest512ByteLogicalAnd4KPhysical()
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/sda", SmartInfo512_4096);
-        Console.WriteLine(info.BytesWritten);
-        Assert.AreEqual(21640090130*512UL, info.BytesWritten.Bytes);
+        _output.WriteLine(info.BytesWritten.ToString());
+        Assert.Equal(21640090130*512UL, info.BytesWritten.Bytes);
     }
 
-    [TestMethod]
+    [Fact]
     public void SamsungNVMEUsageTest()
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/nvme0", SamsungNVME);
-        Console.WriteLine(info.BytesWritten);
-        Assert.AreEqual(29908334UL * 512, info.BytesWritten.Bytes);
+        _output.WriteLine(info.BytesWritten.ToString());
+        Assert.Equal(29908334UL * 512, info.BytesWritten.Bytes);
     }
 
-    [TestMethod]
+    [Fact]
     public void GarbledOrNotSupportedOutShouldNotThrowExceptios()
     {
         var stdOut = @"Smart data not supported";
 
         var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-        Assert.IsTrue(info.ParsingFailed);
+        Assert.True(info.ParsingFailed);
     }
 
-    [TestMethod]
+    [Fact]
     public void PartialOutputShouldNotThrowExceptions()
     {
         const string stdOut = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -679,10 +685,10 @@ SMART support is: Enabled
 === START OF READ SMART DATA SECTION ===
 SMART Attributes Data Structure revision number: 17";
         var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-        Assert.IsTrue(info.ParsingFailed);
+        Assert.True(info.ParsingFailed);
     }
 
-    [TestMethod]
+    [Fact]
     public void PartialAndGarbledOutputShouldNotThrowExceptions()
     {
         const string stdOut = @"smartctl 7.2 2020-12-30 r5155 [x86_64-linux-5.15.35-1-pve] (local build)
@@ -709,23 +715,23 @@ SMART support is: Enabled
 === START OF READ SMART DATA SECTION ===SMART overall-health self-assessment test result:PASSEDSMART Attributes Data Structure revision number: 17
 ";
         var info = SmartInfoParser.ParseStdOut("/dev/sda", stdOut);
-        Assert.IsTrue(info.ParsingFailed);
+        Assert.True(info.ParsingFailed);
     }
 
-    [TestMethod]
+    [Fact]
     public void LbaSizeShouldNotFailIfFieldIsMissing()
     {
         var info = SmartInfoParser.ParseStdOut("/dev/sda", SmartInfo512WithoutSectorSize);
-        Assert.AreEqual(0UL, info.BytesWritten.Bytes); // without lba size, we cannot calculate bytes written properly
+        Assert.Equal(0UL, info.BytesWritten.Bytes); // without lba size, we cannot calculate bytes written properly
     }
 
 
-    [TestMethod]
+    [Fact]
     public void NVMEUsageWithoutUnitsFieldTest()
     {
         // LBA's writtn: 21640090130
         var info = SmartInfoParser.ParseStdOut("/dev/nvme0", NVMEWithoutDataUnits);
-        Console.WriteLine(info.BytesWritten);
-        Assert.AreEqual(0UL, info.BytesWritten.Bytes);
+        _output.WriteLine(info.BytesWritten.ToString());
+        Assert.Equal(0UL, info.BytesWritten.Bytes);
     }
 }

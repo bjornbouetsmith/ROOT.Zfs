@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Helpers;
+using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class UpgradeablePoolsParserTest
 {
-    [TestMethod]
+    [Fact]
     public void AllPoolsUpgradedAlready()
     {
         const string output = @"This system supports ZFS pool feature flags.
@@ -17,10 +17,10 @@ All pools are formatted using feature flags.
 Every feature flags pool has all supported and requested features enabled.
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.IsEmpty(pools);
+        Assert.Empty(pools);
     }
 
-    [TestMethod]
+    [Fact]
     public void SinglePoolUpgradeable()
     {
         const string output = @"This system supports ZFS pool feature flags.
@@ -42,17 +42,17 @@ backup
       draid
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.HasCount(1, pools);
+        Assert.Single(pools);
         var pool = pools[0];
-        Assert.AreEqual("backup", pool.PoolName);
+        Assert.Equal("backup", pool.PoolName);
 
-        Assert.HasCount(2, pool.MissingFeatures);
-        Assert.AreEqual("edonr", pool.MissingFeatures[0]);
-        Assert.AreEqual("draid", pool.MissingFeatures[1]);
+        Assert.Equal(2, pool.MissingFeatures.Count());
+        Assert.Equal("edonr", pool.MissingFeatures[0]);
+        Assert.Equal("draid", pool.MissingFeatures[1]);
 
     }
 
-    [TestMethod]
+    [Fact]
     public void MultiplePoolsUpgradeable()
     {
         const string output = @"This system supports ZFS pool feature flags.
@@ -78,25 +78,25 @@ tank3
       device_removal
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.HasCount(2, pools);
+        Assert.Equal(2, pools.Count());
         var pool = pools[0];
-        Assert.AreEqual("backup", pool.PoolName);
+        Assert.Equal("backup", pool.PoolName);
 
-        Assert.HasCount(2, pool.MissingFeatures);
-        Assert.AreEqual("edonr", pool.MissingFeatures[0]);
-        Assert.AreEqual("draid", pool.MissingFeatures[1]);
+        Assert.Equal(2, pool.MissingFeatures.Count());
+        Assert.Equal("edonr", pool.MissingFeatures[0]);
+        Assert.Equal("draid", pool.MissingFeatures[1]);
 
         pool = pools[1];
-        Assert.AreEqual("tank3", pool.PoolName);
+        Assert.Equal("tank3", pool.PoolName);
 
-        Assert.HasCount(3, pool.MissingFeatures);
-        Assert.AreEqual("encryption", pool.MissingFeatures[0]);
-        Assert.AreEqual("project_quota", pool.MissingFeatures[1]);
-        Assert.AreEqual("device_removal", pool.MissingFeatures[2]);
+        Assert.Equal(3, pool.MissingFeatures.Count());
+        Assert.Equal("encryption", pool.MissingFeatures[0]);
+        Assert.Equal("project_quota", pool.MissingFeatures[1]);
+        Assert.Equal("device_removal", pool.MissingFeatures[2]);
 
     }
 
-    [TestMethod]
+    [Fact]
     public void GarbledOutputShouldThrow()
     {
         const string output = @"This system supports ZFS pool feature flags.
@@ -116,6 +116,6 @@ POOL  FEATURE
       edonr
       draid
 ";
-        Assert.ThrowsExactly<FormatException>(() => UpgradeablePoolsParser.ParseStdOut(output));
+        Assert.Throws<FormatException>(() => UpgradeablePoolsParser.ParseStdOut(output));
     }
 }

@@ -1,18 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Pool;
 
-[TestClass]
 public class PoolListArgsTest
 {
-    [DataRow("tank","list -PHp tank")]
-    [TestMethod]
+    [InlineData("tank","list -PHp tank")]
+    [Theory]
     public void ToStringMethod(string name, string expected)
     {
         var args = new PoolListArgs { PoolName = name };
 
         var stringVer = args.ToString();
-        Assert.AreEqual(expected, stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

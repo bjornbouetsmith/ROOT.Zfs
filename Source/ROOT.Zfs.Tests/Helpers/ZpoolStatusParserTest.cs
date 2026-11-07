@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class ZpoolStatusParserTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZpoolStatusParserTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private const string OkPool = @"  pool: tank
  state: ONLINE
   scan: resilvered 126K in 00:00:00 with 0 errors on Tue Sep 27 17:57:17 2022
@@ -66,62 +72,62 @@ config:
 	spares
 	  /tmp/7750f053-1937-4d0a-a104-29ead1847366    AVAIL";
 
-    [TestMethod]
+    [Fact]
     public void ParseOKStatus()
     {
 
         var status = ZPoolStatusParser.Parse(OkPool);
-        Assert.IsNotNull(status);
-        Assert.AreEqual("tank", status.Pool.PoolName);
-        Assert.AreEqual(State.Online, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.NotNull(status);
+        Assert.Equal("tank", status.Pool.PoolName);
+        Assert.Equal(State.Online, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
 
     }
 
     // Code expect that first line of zpool status contains the name of the pool. 
     // This tests that we get the expected exception if thats not the case
-    [TestMethod]
+    [Fact]
     public void UnknownNewPrefix()
     {
         var stdOut = "New Data not expected" + Environment.NewLine + OkPool;
-        var ex = Assert.ThrowsExactly<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
-        Console.WriteLine(ex);
+        var ex = Assert.Throws<FormatException>(()=>ZPoolStatusParser.Parse(stdOut));
+        _output.WriteLine(ex.ToString());
     }
 
-    [TestMethod]
+    [Fact]
     public void PoolNotFoundShouldReturnInNull()
     {
         var status = ZPoolStatusParser.Parse("cannot open 'unbabunga': no such pool");
-        Assert.IsNull(status);
+        Assert.Null(status);
     }
 
-    [TestMethod]
+    [Fact]
     public void ParseTruncatedStatus()
     {
-        Assert.ThrowsExactly<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
+        Assert.Throws<FormatException>(() => ZPoolStatusParser.Parse(TruncatedResponse));
     }
 
-    [TestMethod]
+    [Fact]
     public void ParseBadStatus1Status()
     {
 
         var status = ZPoolStatusParser.Parse(BadPool1);
-        Assert.IsNotNull(status);
-        Assert.AreEqual("tank", status.Pool.PoolName);
-        Assert.AreEqual(State.Degraded, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.NotNull(status);
+        Assert.Equal("tank", status.Pool.PoolName);
+        Assert.Equal(State.Degraded, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
 
     }
 
-    [TestMethod]
+    [Fact]
     public void ParsePoolStatusWithSpares()
     {
         var status = ZPoolStatusParser.Parse(PoolWithSpare);
-        Assert.IsNotNull(status);
+        Assert.NotNull(status);
         var spares = status.Pool.VDevs.First(d => d.VDevName == "spares");
-        Assert.AreEqual(State.Available, spares.State);
+        Assert.Equal(State.Available, spares.State);
         var spare = spares.Devices.First();
-        Assert.AreEqual(State.Available, spare.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Available, spare.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 }

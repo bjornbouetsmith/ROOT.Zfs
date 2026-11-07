@@ -2,16 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Tests.Integration.Fake;
 
-[TestClass]
 public class SmartInfoTest
 {
-    public TestContext TestContext { get; set; }
     readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private Core.Zfs GetZfs()
@@ -19,55 +17,59 @@ public class SmartInfoTest
         return ZfsTestFactory.CreateZfs(_remoteProcessCall);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfosAsyncTest(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
-        var infos = await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
+        var infos = await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
-        Assert.IsNotNull(infos);
-        Assert.HasCount(2, infos);
+        Assert.NotNull(infos);
+        Assert.Equal(2, infos.Count());
         Assert.Contains("/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5", _remoteProcessCall.GetCommandsInvoked());
         Assert.Contains("/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", _remoteProcessCall.GetCommandsInvoked());
-        Assert.AreEqual(4, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+        Assert.Equal(4, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfosAsyncReturnsMaterializedList(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
 
-        var infos = await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
+        var infos = await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
         // All commands, including the smartctl calls, must have completed before the returned read-only list is returned.
-        Assert.HasCount(4, _remoteProcessCall.GetCommandsInvoked());
-        Assert.HasCount(2, infos);
-        Assert.HasCount(4, _remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(2, infos.Count());
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfosAsyncForwardsCancellationToken(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
 
-        await zfs.GetSmartInfosAsync(TestContext.CancellationToken);
+        await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
-        Assert.HasCount(4, _remoteProcessCall.AsyncCancellationTokens);
-        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
-        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
-        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[2]);
-        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[3]);
+        Assert.Equal(4, _remoteProcessCall.AsyncCancellationTokens.Count());
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[2]);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[3]);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfosAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
@@ -75,72 +77,76 @@ public class SmartInfoTest
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
 
-        await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => zfs.GetSmartInfosAsync(cancellationTokenSource.Token));
+        await Assert.ThrowsAsync<OperationCanceledException>(() => zfs.GetSmartInfosAsync(cancellationTokenSource.Token));
 
-        Assert.IsEmpty(_remoteProcessCall.GetCommandsInvoked());
-        Assert.AreEqual(0, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+        Assert.Empty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfosAsyncPropagatesCommandFailure(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         _remoteProcessCall.StdError = "command failed";
         var zfs = GetZfs();
 
-        await Assert.ThrowsExactlyAsync<ProcessCallException>(() => zfs.GetSmartInfosAsync(TestContext.CancellationToken));
+        await Assert.ThrowsAsync<ProcessCallException>(() => zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken));
 
-        Assert.AreEqual(1, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+        Assert.Equal(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfoAsyncTest(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
-        var disks = await zfs.ListDisksAsync(TestContext.CancellationToken);
+        var disks = await zfs.ListDisksAsync(TestContext.Current.CancellationToken);
 
         foreach (var disk in disks.Where(d => d.Type == DeviceType.Disk))
         {
-            var info = await zfs.GetSmartInfoAsync(disk.Id, TestContext.CancellationToken);
-            Assert.AreEqual(disk.Id, info.DeviceId);
+            var info = await zfs.GetSmartInfoAsync(disk.Id, TestContext.Current.CancellationToken);
+            Assert.Equal(disk.Id, info.DeviceId);
             Assert.Contains($"/sbin/smartctl -x {disk.Id}", _remoteProcessCall.GetCommandsInvoked());
             if (info.DeviceId.EndsWith('5'))
             {
                 // FAKE returns failed status
-                Assert.AreNotEqual("PASSED", info.DataSection.Status);
+                Assert.NotEqual("PASSED", info.DataSection.Status);
             }
             else
             {
-                Assert.AreEqual("PASSED", info.DataSection.Status);
+                Assert.Equal("PASSED", info.DataSection.Status);
             }
         }
 
         // Two calls for ListDisksAsync and one smartctl call per disk.
-        Assert.AreEqual(4, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+        Assert.Equal(4, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfoAsyncForwardsCancellationToken(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var zfs = GetZfs();
         const string deviceId = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6";
 
-        await zfs.GetSmartInfoAsync(deviceId, TestContext.CancellationToken);
+        await zfs.GetSmartInfoAsync(deviceId, TestContext.Current.CancellationToken);
 
-        Assert.HasCount(1, _remoteProcessCall.AsyncCancellationTokens);
-        Assert.AreEqual(TestContext.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
-    [DataRow(true), DataRow(false)]
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
     public async Task GetSmartInfoAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
     {
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
@@ -148,10 +154,10 @@ public class SmartInfoTest
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
 
-        await Assert.ThrowsExactlyAsync<OperationCanceledException>(() => zfs.GetSmartInfoAsync("/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", cancellationTokenSource.Token));
+        await Assert.ThrowsAsync<OperationCanceledException>(() => zfs.GetSmartInfoAsync("/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", cancellationTokenSource.Token));
 
-        Assert.IsEmpty(_remoteProcessCall.GetCommandsInvoked());
-        Assert.AreEqual(0, _remoteProcessCall.AsyncLoadResponseCalls);
-        Assert.AreEqual(0, _remoteProcessCall.SyncLoadResponseCalls);
+        Assert.Empty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 }

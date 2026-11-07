@@ -1,24 +1,30 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Properties;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Properties;
 
-[TestClass]
 public class GetPropertyArgsTest
 {
-    [DataRow(PropertyTarget.Pool, null, null, true)]
-    [DataRow(PropertyTarget.Pool, "ashift", null, true)]
-    [DataRow(PropertyTarget.Pool, "ashift", "tank", true)]
-    [DataRow(PropertyTarget.Pool, "ashift", "tank/myds", false)]
-    [DataRow(PropertyTarget.Pool, null, "tank", true)]
-    [DataRow(PropertyTarget.Dataset, null, null, true)]
-    [DataRow(PropertyTarget.Dataset, "atime", null, true)]
-    [DataRow(PropertyTarget.Dataset, "atime", "tank/myds", true)]
-    [DataRow(PropertyTarget.Dataset, null, "tank/myds", true)]
-    [DataRow(PropertyTarget.Dataset, null, "tank/myds && rm -rf /", false)]
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public GetPropertyArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData(PropertyTarget.Pool, null, null, true)]
+    [InlineData(PropertyTarget.Pool, "ashift", null, true)]
+    [InlineData(PropertyTarget.Pool, "ashift", "tank", true)]
+    [InlineData(PropertyTarget.Pool, "ashift", "tank/myds", false)]
+    [InlineData(PropertyTarget.Pool, null, "tank", true)]
+    [InlineData(PropertyTarget.Dataset, null, null, true)]
+    [InlineData(PropertyTarget.Dataset, "atime", null, true)]
+    [InlineData(PropertyTarget.Dataset, "atime", "tank/myds", true)]
+    [InlineData(PropertyTarget.Dataset, null, "tank/myds", true)]
+    [InlineData(PropertyTarget.Dataset, null, "tank/myds && rm -rf /", false)]
+    [Theory]
     public void ValidateTest(PropertyTarget propertyTarget, string property, string target, bool expectedValid)
     {
         var args = new GetPropertyArgs
@@ -29,20 +35,20 @@ public class GetPropertyArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
 
-        Assert.AreEqual(expectedValid, valid);
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow(PropertyTarget.Pool, null, null, "get -H")]
-    [DataRow(PropertyTarget.Pool, "ashift", null, "get ashift -H")]
-    [DataRow(PropertyTarget.Pool, "ashift", "tank", "get ashift tank -H")]
-    [DataRow(PropertyTarget.Pool, null, "tank", "get all tank -H")]
-    [DataRow(PropertyTarget.Dataset, null, null, "get -H")]
-    [DataRow(PropertyTarget.Dataset, "atime", null, "get atime -H")]
-    [DataRow(PropertyTarget.Dataset, "atime", "tank/myds", "get atime tank/myds -H")]
-    [DataRow(PropertyTarget.Dataset, null, "tank/myds", "get all tank/myds -H")]
-    [TestMethod]
+    [InlineData(PropertyTarget.Pool, null, null, "get -H")]
+    [InlineData(PropertyTarget.Pool, "ashift", null, "get ashift -H")]
+    [InlineData(PropertyTarget.Pool, "ashift", "tank", "get ashift tank -H")]
+    [InlineData(PropertyTarget.Pool, null, "tank", "get all tank -H")]
+    [InlineData(PropertyTarget.Dataset, null, null, "get -H")]
+    [InlineData(PropertyTarget.Dataset, "atime", null, "get atime -H")]
+    [InlineData(PropertyTarget.Dataset, "atime", "tank/myds", "get atime tank/myds -H")]
+    [InlineData(PropertyTarget.Dataset, null, "tank/myds", "get all tank/myds -H")]
+    [Theory]
     public void ToStringTest(PropertyTarget propertyTarget, string property, string target, string expected)
     {
         var args = new GetPropertyArgs
@@ -52,7 +58,7 @@ public class GetPropertyArgsTest
             Target = target,
         };
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
-        Assert.AreEqual(expected, stringVer);
+        _output.WriteLine(stringVer);
+        Assert.Equal(expected, stringVer);
     }
 }

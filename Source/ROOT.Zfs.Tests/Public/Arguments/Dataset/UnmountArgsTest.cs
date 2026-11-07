@@ -1,22 +1,27 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments.Dataset;
 
 namespace ROOT.Zfs.Tests.Public.Arguments.Dataset;
 
-[TestClass]
 public class UnmountArgsTest
 {
+    private readonly ITestOutputHelper _output;
 
-    [DataRow("tank/myds", true, false)]
-    [DataRow("tank/myds", false, true)]
-    [DataRow("", false, false)]
-    [DataRow("  ", false, false)]
-    [DataRow(null, false, false)]
-    [DataRow(null, true, true)]
-    [DataRow("", true, true)]
-    [DataRow("  ", true, true)]
-    [TestMethod]
+    public UnmountArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [InlineData("tank/myds", true, false)]
+    [InlineData("tank/myds", false, true)]
+    [InlineData("", false, false)]
+    [InlineData("  ", false, false)]
+    [InlineData(null, false, false)]
+    [InlineData(null, true, true)]
+    [InlineData("", true, true)]
+    [InlineData("  ", true, true)]
+    [Theory]
     public void ValidateTest(string mountpoint, bool all, bool expectedValid)
     {
         var args = new UnmountArgs
@@ -26,17 +31,17 @@ public class UnmountArgsTest
         };
 
         var valid = args.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>())); ;
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>())); ;
+        Assert.Equal(expectedValid, valid);
     }
 
-    [DataRow(true, true, "tank/myds", false, "unmount -f -u tank/myds")]
-    [DataRow(true, false, "tank/myds", false, "unmount -f tank/myds")]
-    [DataRow(false, false, "tank/myds", false, "unmount tank/myds")]
-    [DataRow(true, true, null, true, "unmount -f -u -a")]
-    [DataRow(true, false, null, true, "unmount -f -a")]
-    [DataRow(false, false, null, true, "unmount -a")]
-    [TestMethod]
+    [InlineData(true, true, "tank/myds", false, "unmount -f -u tank/myds")]
+    [InlineData(true, false, "tank/myds", false, "unmount -f tank/myds")]
+    [InlineData(false, false, "tank/myds", false, "unmount tank/myds")]
+    [InlineData(true, true, null, true, "unmount -f -u -a")]
+    [InlineData(true, false, null, true, "unmount -f -a")]
+    [InlineData(false, false, null, true, "unmount -a")]
+    [Theory]
     public void ToStringTest(bool force, bool unloadKeys, string mountpoint, bool all, string expectedString)
     {
         var args = new UnmountArgs
@@ -48,7 +53,7 @@ public class UnmountArgsTest
         };
 
         var stringVer = args.ToString();
-        Console.WriteLine(stringVer);
-        Assert.AreEqual(expectedString, stringVer);
+        _output.WriteLine(stringVer);
+        Assert.Equal(expectedString, stringVer);
     }
 }

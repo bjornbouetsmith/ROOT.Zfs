@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
@@ -12,6 +12,13 @@ namespace ROOT.Zfs.Tests.Integration.Fake.DataSet;
 
 public abstract class FakeDataSetTest
 {
+    private readonly ITestOutputHelper _output;
+
+    protected FakeDataSetTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     internal abstract FakeRemoteConnection CreateProcessCall();
 
     internal IDatasets GetDatasets(FakeRemoteConnection remoteConnection = null)
@@ -19,41 +26,45 @@ public abstract class FakeDataSetTest
         return ZfsTestFactory.CreateDatasets(remoteConnection ?? CreateProcessCall());
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void ListTest()
     {
         var ds = GetDatasets();
         var dataSets = ds.List(new DatasetListArgs());
-        Assert.IsNotNull(dataSets);
+        Assert.NotNull(dataSets);
         foreach (var set in dataSets)
         {
-            Console.WriteLine(set.Dump(new JsonFormatter()));
+            _output.WriteLine(set.Dump(new JsonFormatter()));
         }
     }
 
 
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void GetDataSetShouldReturnDataSet()
     {
         var ds = GetDatasets();
         var args = new DatasetListArgs { Root = "tank" };
         var root = ds.List(args).FirstOrDefault();
 
-        Assert.IsNotNull(root);
-        Assert.AreEqual("tank", root.DatasetName);
-        Assert.AreEqual(DatasetTypes.Filesystem, root.Type);
-        Console.WriteLine(root.Dump(new JsonFormatter()));
+        Assert.NotNull(root);
+        Assert.Equal("tank", root.DatasetName);
+        Assert.Equal(DatasetTypes.Filesystem, root.Type);
+        _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void GetNonExistingDataSetShouldThrowException()
     {
         var ds = GetDatasets();
-        Assert.ThrowsExactly<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
+        Assert.Throws<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void CreateDateSetTest()
     {
         var ds = GetDatasets();
@@ -65,10 +76,11 @@ public abstract class FakeDataSetTest
 
         };
         var dataset = ds.Create(args);
-        Assert.IsNotNull(dataset);
+        Assert.NotNull(dataset);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void CreateDateSetInvalidTest()
     {
         var ds = GetDatasets();
@@ -79,48 +91,52 @@ public abstract class FakeDataSetTest
             Properties = [new PropertyValue { Property = "atime", Value = "off" }]
 
         };
-        Assert.ThrowsExactly<ArgumentException>(() => ds.Create(args));
+        Assert.Throws<ArgumentException>(() => ds.Create(args));
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void DestroyDataSetTest()
     {
         var ds = GetDatasets();
         var destroyArgs = new DatasetDestroyArgs { Dataset = "tank/myds", DestroyFlags = DatasetDestroyFlags.Recursive };
         var response = ds.Destroy(destroyArgs);
-        Assert.AreEqual(DatasetDestroyFlags.Recursive, response.Flags);
+        Assert.Equal(DatasetDestroyFlags.Recursive, response.Flags);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void PromoteDatasetTest()
     {
         var processCall = CreateProcessCall();
         var ds = GetDatasets(processCall);
         ds.Promote(new PromoteArgs { Name = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.HasCount(1, commands);
-        Assert.AreEqual("/sbin/zfs promote tank/myds", commands[0]);
+        Assert.Single(commands);
+        Assert.Equal("/sbin/zfs promote tank/myds", commands[0]);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void MountDatasetTest()
     {
         var processCall = CreateProcessCall();
         var ds = GetDatasets(processCall);
         ds.Mount(new MountArgs { Filesystem = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.HasCount(1, commands);
-        Assert.AreEqual("/sbin/zfs mount tank/myds", commands[0]);
+        Assert.Single(commands);
+        Assert.Equal("/sbin/zfs mount tank/myds", commands[0]);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void UnmountDatasetTest()
     {
         var processCall = CreateProcessCall();
         var ds = GetDatasets(processCall);
         ds.Unmount(new UnmountArgs { Filesystem = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.HasCount(1, commands);
-        Assert.AreEqual("/sbin/zfs unmount tank/myds", commands[0]);
+        Assert.Single(commands);
+        Assert.Equal("/sbin/zfs unmount tank/myds", commands[0]);
     }
 }

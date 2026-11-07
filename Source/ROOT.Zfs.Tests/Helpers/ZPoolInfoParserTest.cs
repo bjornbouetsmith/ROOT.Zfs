@@ -1,30 +1,30 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Data.Pools;
+using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class ZPoolInfoParserTest
 {
-    [TestMethod]
+    [Fact]
     public void ParseLineTest()
     {
         var line = "tank\t3813930958848\t128800165888\t3685130792960\t-\t-\t9\t3\t1.00\tONLINE\t-";
         var info = ZPoolInfoParser.ParseLine(line);
 
-        Assert.AreEqual("tank", info.PoolName);
-        Assert.AreEqual("3.5T", info.Size.ToString());
-        Assert.AreEqual("120G", info.Allocated.ToString());
-        Assert.AreEqual("3.4T", info.Free.ToString());
-        Assert.AreEqual("9.00%", info.Fragmentation.ToString());
-        Assert.AreEqual("3.00%", info.CapacityUsed.ToString());
-        Assert.AreEqual("1.00x", info.DedupRatio.ToString());
-        Assert.AreEqual(State.Online, info.State);
-        Assert.AreEqual("-", info.AltRoot);
+        Assert.Equal("tank", info.PoolName);
+        Assert.Equal("3.5T", info.Size.ToString());
+        Assert.Equal("120G", info.Allocated.ToString());
+        Assert.Equal("3.4T", info.Free.ToString());
+        Assert.Equal("9.00%", info.Fragmentation.ToString());
+        Assert.Equal("3.00%", info.CapacityUsed.ToString());
+        Assert.Equal("1.00x", info.DedupRatio.ToString());
+        Assert.Equal(State.Online, info.State);
+        Assert.Equal("-", info.AltRoot);
     }
 
-    [TestMethod]
+    [Fact]
     public void ParseFromStdOutTest()
     {
         var stdOut = @"rpool   31138512896     3078807552      28059705344     -       -       10      9       1.00    ONLINE  -
@@ -32,8 +32,8 @@ tank    3813930958848   128800165888    3685130792960   -       -       9       
 
         var list = ZPoolInfoParser.ParseFromStdOut(stdOut);
 
-        Assert.HasCount(2, list);
-        Assert.AreEqual("rpool", list[0].PoolName);
-        Assert.AreEqual("tank", list[1].PoolName);
+        Assert.Equal(2, list.Count());
+        Assert.Equal("rpool", list[0].PoolName);
+        Assert.Equal("tank", list[1].PoolName);
     }
 }

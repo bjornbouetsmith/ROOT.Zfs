@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
@@ -12,9 +12,15 @@ using ROOT.Zfs.Public.Data.Pools;
 
 namespace ROOT.Zfs.Tests.Integration;
 
-[TestClass]
 public class ZpoolTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ZpoolTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly IProcessCall _remoteProcessCall = TestHelpers.RequiresRemoteConnection ? new SSHProcessCall("bbs", "zfsdev.root.dom", true) : null;
 
     private ZPool GetZpool()
@@ -24,10 +30,11 @@ public class ZpoolTest
         return zp;
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void HistoryTestWithSkip()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
@@ -39,28 +46,30 @@ public class ZpoolTest
         var lines = zp.History(args).ToList().Count;
         args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
         var history = zp.History(args).ToList();
-        Assert.IsNotNull(history);
-        Console.WriteLine(history.Dump(new JsonFormatter()));
-        Assert.HasCount(2, history);
+        Assert.NotNull(history);
+        _output.WriteLine(history.Dump(new JsonFormatter()));
+        Assert.Equal(2, history.Count());
     }
 
 
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void HistoryTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolHistoryArgs { PoolName = pool.Name };
         var history = zp.History(args);
-        Assert.IsNotNull(history);
-        Console.WriteLine(history.Dump(new JsonFormatter()));
+        Assert.NotNull(history);
+        _output.WriteLine(history.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void HistoryAfterDateTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
@@ -78,40 +87,43 @@ public class ZpoolTest
 
         if (last10AtMost.Count > 1)
         {
-            Assert.IsLessThan(last10AtMost.Count, afterDate.Count);
+            Assert.True(afterDate.Count < last10AtMost.Count);
         }
 
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void GetStatusTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.IsNotNull(status);
-        Assert.AreEqual(pool.Name, status.Pool.PoolName);
+        Assert.NotNull(status);
+        Assert.Equal(pool.Name, status.Pool.PoolName);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void NonExistingPoolStatus()
     {
         var zp = GetZpool();
-        var ex = Assert.ThrowsExactly<ProcessCallException>(() => zp.Status(new PoolStatusArgs { PoolName = "A" + Guid.NewGuid().ToString() }));
-        Console.WriteLine(ex.Message);
+        var ex = Assert.Throws<ProcessCallException>(() => zp.Status(new PoolStatusArgs { PoolName = "A" + Guid.NewGuid().ToString() }));
+        _output.WriteLine(ex.Message);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void ZpoolStatusTest()
     {
-        using var testPool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var testPool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = testPool.Name };
         var status = zp.Status(arg);
 
-        Assert.IsNotNull(status);
+        Assert.NotNull(status);
 
         if (status.State == State.Online)
         {
@@ -126,7 +138,7 @@ public class ZpoolTest
                 continue;
             }
 
-            Console.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
+            _output.WriteLine("vdev:{0}, State:{1}", vdev.VDevName, vdev.State);
             foreach (var device in vdev.Devices)
             {
                 if (device.State == State.Online)
@@ -134,24 +146,26 @@ public class ZpoolTest
                     continue;
                 }
 
-                Console.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
+                _output.WriteLine("Device:{0}, State:{1}", device.DeviceName, device.State);
             }
         }
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void DestroyPoolTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         zp.Destroy(new PoolDestroyArgs { PoolName = pool.Name });
     }
 
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void CreateMirrorPool()
     {
-        using var pool = new TestPool(_remoteProcessCall);
+        using var pool = new TestPool(_remoteProcessCall, _output);
         var disk1 = pool.AddDisk();
         var disk2 = pool.AddDisk();
 
@@ -172,17 +186,18 @@ public class ZpoolTest
         };
 
         var status = pool.CreatePool(args);
-        Assert.AreEqual(State.Online, status.State);
+        Assert.Equal(State.Online, status.State);
 
     }
 
-    [TestMethod, TestCategory("Integration")]
-    [DataRow(1)]
-    [DataRow(2)]
-    [DataRow(3)]
+    [Theory]
+    [Trait("Category", "Integration")]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
     public void CreateRaidZTest(int raidz)
     {
-        using var pool = new TestPool(_remoteProcessCall);
+        using var pool = new TestPool(_remoteProcessCall, _output);
 
         var raidDisks = new List<string>();
         var disk1 = pool.AddDisk();
@@ -220,17 +235,18 @@ public class ZpoolTest
         };
 
         var status = pool.CreatePool(args);
-        Assert.AreEqual(State.Online, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Online, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("Integration"), Ignore("Not supported on ubuntu 20")]
-    [DataRow(1)]
-    [DataRow(2)]
-    [DataRow(3)]
+    [Theory]
+    [Trait("Category", "Integration")]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
     public void CreateDRaidZTest(int draid)
     {
-        using var pool = new TestPool(_remoteProcessCall);
+        using var pool = new TestPool(_remoteProcessCall, _output);
 
         var raidDisks = new List<string>();
         var disk1 = pool.AddDisk();
@@ -268,113 +284,121 @@ public class ZpoolTest
         };
 
         var status = pool.CreatePool(args);
-        Assert.AreEqual(State.Online, status.State);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Online, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void ScrubTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolScrubArgs { PoolName = pool.Name };
         zp.Scrub(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.AreEqual(State.Online, status.State);
+        Assert.Equal(State.Online, status.State);
 
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void TrimPoolTestSimple()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var args = new PoolTrimArgs { PoolName = pool.Name };
         zp.Trim(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.AreEqual(State.Online, status.State);
+        Assert.Equal(State.Online, status.State);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void TrimDeviceTestSimple()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var firstDisk = pool.Disks[0];
         var args = new PoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
         zp.Trim(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.AreEqual(State.Online, status.State);
+        Assert.Equal(State.Online, status.State);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void GetPoolInfoTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var info = zp.List(new PoolListArgs { PoolName = pool.Name });
-        Console.WriteLine(info.Dump(new JsonFormatter()));
-        Assert.IsNotNull(info);
-        Assert.AreNotEqual(0, info.Version);
-        Assert.AreEqual(pool.Name, info.PoolName);
+        _output.WriteLine(info.Dump(new JsonFormatter()));
+        Assert.NotNull(info);
+        Assert.NotEqual(0, info.Version);
+        Assert.Equal(pool.Name, info.PoolName);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void DetachTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolDetachArgs { PoolName = pool.Name, Device = pool.Disks[1] };
         zp.Detach(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.IsNotNull(status);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.NotNull(status);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void IOStatTestSpecificDevice()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolIOStatsArgs { PoolName = pool.Name, Devices = [pool.Disks[0]] };
         var stats = zp.IOStats(args);
 
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
-        Assert.IsNotNull(stats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.NotNull(stats);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void IOStatTestEntirePool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolIOStatsArgs { PoolName = pool.Name };
         var stats = zp.IOStats(args);
 
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
-        Assert.IsNotNull(stats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.NotNull(stats);
         // pool
-        Assert.HasCount(1, stats.Stats);
+        Assert.Single(stats.Stats);
         var poolStat = stats.Stats[0];
         //vdev
-        Assert.HasCount(1, poolStat.ChildStats);
+        Assert.Single(poolStat.ChildStats);
         var vdev = poolStat.ChildStats[0];
         // actual devices
-        Assert.HasCount(2, vdev.ChildStats);
+        Assert.Equal(2, vdev.ChildStats.Count());
     }
 
     //Turn a two way mirror into a three way mirror
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void AttachNewDeviceToPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var oldDevice = pool.Disks.Last();
         var newDevice = pool.AddDisk();
@@ -390,15 +414,16 @@ public class ZpoolTest
         zp.Attach(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
 
-        Assert.HasCount(3, status.Pool.VDevs[0].Devices);
+        Assert.Equal(3, status.Pool.VDevs[0].Devices.Count());
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void ReplaceNewDeviceToPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var oldDevice = pool.Disks.Last();
         var newDevice = pool.AddDisk();
@@ -414,7 +439,7 @@ public class ZpoolTest
         zp.Replace(args);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
         var stopwatch = Stopwatch.StartNew();
         var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
         while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
@@ -425,18 +450,19 @@ public class ZpoolTest
 
         var newExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == newDevice));
 
-        Assert.IsFalse(oldExist);
-        Assert.IsTrue(newExist);
+        Assert.False(oldExist);
+        Assert.True(newExist);
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void AddExtraMirrorToMirrorPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
-        Assert.HasCount(1, status.Pool.VDevs);
+        Assert.Single(status.Pool.VDevs);
         var disk1 = pool.AddDisk();
         var disk2 = pool.AddDisk();
 
@@ -451,14 +477,15 @@ public class ZpoolTest
         zp.Add(args);
 
         status = zp.Status(arg);
-        Console.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.HasCount(2, status.Pool.VDevs);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(2, status.Pool.VDevs.Count());
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void RemoveExtraMirrorFromPool()
     {
-        using var pool = new TestPool(_remoteProcessCall);
+        using var pool = new TestPool(_remoteProcessCall, _output);
         var disk1 = pool.AddDisk("300M");
         var disk2 = pool.AddDisk("300M");
         var disk3 = pool.AddDisk("64M");
@@ -486,7 +513,7 @@ public class ZpoolTest
         };
 
         var status = pool.CreatePool(args);
-        Assert.AreEqual(State.Online, status.State);
+        Assert.Equal(State.Online, status.State);
 
         var removeArgs = new PoolRemoveArgs
         {
@@ -499,7 +526,7 @@ public class ZpoolTest
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         status = zp.Status(arg);
 
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
         var stopwatch = Stopwatch.StartNew();
         var oldExist = status.Pool.VDevs.Count == 2;
         while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
@@ -507,13 +534,14 @@ public class ZpoolTest
             status = zp.Status(arg);
             oldExist = status.Pool.VDevs.Count == 2;
         }
-        Console.WriteLine(status.Dump(new JsonFormatter()));
+        _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void OfflineTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var device = pool.Disks.Last();
@@ -522,15 +550,16 @@ public class ZpoolTest
 
         var status = zp.Status(arg);
 
-        Console.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.AreEqual(State.Degraded, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Degraded, status.State);
 
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void OnlineTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var device = pool.Disks.Last();
@@ -539,28 +568,29 @@ public class ZpoolTest
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var status = zp.Status(arg);
 
-        Console.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.AreEqual(State.Degraded, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Degraded, status.State);
 
         var onlineArgs = new PoolOnlineArgs { PoolName = pool.Name, Device = device };
         zp.Online(onlineArgs);
 
         status = zp.Status(arg);
 
-        Console.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.AreEqual(State.Online, status.State);
+        _output.WriteLine(status.Dump(new JsonFormatter()));
+        Assert.Equal(State.Online, status.State);
 
     }
 
-    [TestMethod, TestCategory("Integration")]
+    [Fact]
+    [Trait("Category", "Integration")]
     public void GetPoolInfosTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall);
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var infos = zp.List();
-        Console.WriteLine(infos.Dump(new JsonFormatter()));
-        Assert.IsNotEmpty(infos, "No pools found, this is a bug");
+        _output.WriteLine(infos.Dump(new JsonFormatter()));
+        Assert.NotEmpty(infos); // No pools found, this is a bug
 
     }
 }

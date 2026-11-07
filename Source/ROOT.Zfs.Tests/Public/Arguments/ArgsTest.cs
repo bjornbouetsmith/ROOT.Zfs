@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Public.Arguments;
 
 namespace ROOT.Zfs.Tests.Public.Arguments;
 
-[TestClass]
 public class ArgsTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public ArgsTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     public class TestArg : Args
     {
         public TestArg() : base(string.Empty)
@@ -49,33 +55,33 @@ public class ArgsTest
     }
 
 
-    [DataRow(null, false, false)]
-    [DataRow("", false, false)]
-    [DataRow(" ", false, false)]
-    [DataRow(null, true, true)]
-    [DataRow("", true, true)]
-    [DataRow(" ", true, true)]
-    [DataRow("tank;rm -rf /", false, false)]
-    [DataRow("tank && rm -rf /", false, false)]
-    [DataRow("tank", false, true)]
-    [DataRow("tank-0d702869-7f72-4bdd-bbe8-6007fc58ad51", false, true)]
-    [DataRow("tank%252fmyds", false, false)]
-    [DataRow("tank:myds", false, true)]
-    [DataRow("tank.myds", false, true)]
-    [DataRow("tank_myds", false, true)]
-    [TestMethod]
+    [InlineData(null, false, false)]
+    [InlineData("", false, false)]
+    [InlineData(" ", false, false)]
+    [InlineData(null, true, true)]
+    [InlineData("", true, true)]
+    [InlineData(" ", true, true)]
+    [InlineData("tank;rm -rf /", false, false)]
+    [InlineData("tank && rm -rf /", false, false)]
+    [InlineData("tank", false, true)]
+    [InlineData("tank-0d702869-7f72-4bdd-bbe8-6007fc58ad51", false, true)]
+    [InlineData("tank%252fmyds", false, false)]
+    [InlineData("tank:myds", false, true)]
+    [InlineData("tank.myds", false, true)]
+    [InlineData("tank_myds", false, true)]
+    [Theory]
     public void ValidateStringTest(string value, bool allowEmpty, bool expectedValid)
     {
         var arg = new TestArg { Value = value, AllowEmpty = allowEmpty };
         var valid = arg.Validate(out var errors);
-        Console.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
-        Assert.AreEqual(expectedValid, valid);
+        _output.WriteLine(string.Join(Environment.NewLine, errors ?? Array.Empty<string>()));
+        Assert.Equal(expectedValid, valid);
     }
 
-    [TestMethod]
+    [Fact]
     public void ArgsWillJustReturnCommand()
     {
         var arg = new TestArgWithoutValidation();
-        Assert.AreEqual("basic", arg.ToString());
+        Assert.Equal("basic", arg.ToString());
     }
 }

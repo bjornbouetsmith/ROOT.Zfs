@@ -1,55 +1,62 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
+using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class ZPoolIOStatParserTest
 {
-    [TestMethod]
+    private readonly ITestOutputHelper _output;
+
+    public ZPoolIOStatParserTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [Fact]
     public void SimpleIOStatsForDevicesOnly()
     {
         var stdOut = @"/dev/sde1       0       0       0       11      10660   164997
 /dev/sdc1       0       0       0       10      10678   164997";
 
         var stat = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
-        Console.WriteLine(stat.Dump(new JsonFormatter()));
-        Assert.HasCount(2, stat.Stats);
-        Assert.AreEqual("/dev/sde1", stat.Stats[0].Device);
-        Assert.AreEqual("/dev/sdc1", stat.Stats[1].Device);
+        _output.WriteLine(stat.Dump(new JsonFormatter()));
+        Assert.Equal(2, stat.Stats.Count());
+        Assert.Equal("/dev/sde1", stat.Stats[0].Device);
+        Assert.Equal("/dev/sdc1", stat.Stats[1].Device);
 
     }
 
-    [TestMethod]
+    [Fact]
     public void IOStatsWithLatencyForDevicesOnly()
     {
         var stdOut = @"/dev/sde1       0       0       0       11      10660   164997  592662  349240  183576  166498  8696    374208  15155   160523  434601  982802
 /dev/sdc1       0       0       0       10      10678   164997  21777768        461249  1371204 183562  20402   763893  15401   219947  27787895        1105290";
         var stat = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
-        Console.WriteLine(stat.Dump(new JsonFormatter()));
-        Assert.HasCount(2, stat.Stats);
-        Assert.AreEqual("/dev/sde1", stat.Stats[0].Device);
-        Assert.AreEqual("/dev/sdc1", stat.Stats[1].Device);
-        Assert.IsNotNull(stat.Stats[0].LatencyStats);
-        Assert.IsNotNull(stat.Stats[1].LatencyStats);
+        _output.WriteLine(stat.Dump(new JsonFormatter()));
+        Assert.Equal(2, stat.Stats.Count());
+        Assert.Equal("/dev/sde1", stat.Stats[0].Device);
+        Assert.Equal("/dev/sdc1", stat.Stats[1].Device);
+        Assert.NotNull(stat.Stats[0].LatencyStats);
+        Assert.NotNull(stat.Stats[1].LatencyStats);
     }
 
 
     // Pool, where VDEV line is missing
-    [TestMethod]
+    [Fact]
     public void UnsupportedOutputWithMissingVDEVLine()
     {
         var stdOut = @"rpool   3078639616      28059873280     0       30      3033    355200
 /dev/sdi3       0       0       0       15      1528    177600
 /dev/sdj3       0       0       0       14      1505    177600";
 
-        var ex = Assert.ThrowsExactly<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
-        Console.WriteLine(ex.Message);
+        var ex = Assert.Throws<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
+        _output.WriteLine(ex.Message);
     }
 
-    [TestMethod]
+    [Fact]
     public void NewUnsupportedFormatShouldthrow() // Added an extra field at the end
     {
 
@@ -58,12 +65,12 @@ mirror-0        3078639616      28059873280     0       30      3033    355200  
 /dev/sdi3       0       0       0       15      1528    177600   10
 /dev/sdj3       0       0       0       14      1505    177600   10";
 
-        var ex = Assert.ThrowsExactly<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
-        Console.WriteLine(ex.Message);
+        var ex = Assert.Throws<FormatException>(() => ZPoolIOStatParser.ParseStdOut("rpool", stdOut));
+        _output.WriteLine(ex.Message);
     }
 
 
-    [TestMethod]
+    [Fact]
     public void PoolWithSingleVDev()
     {
         var stdOut = @"rpool   3078639616      28059873280     0       30      3033    355200
@@ -72,18 +79,18 @@ mirror-0        3078639616      28059873280     0       30      3033    355200
 /dev/sdj3       0       0       0       14      1505    177600";
 
         var stats = ZPoolIOStatParser.ParseStdOut("rpool", stdOut);
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
-        Assert.AreEqual("rpool", stats.Pool);
-        Assert.HasCount(1, stats.Stats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.Equal("rpool", stats.Pool);
+        Assert.Single(stats.Stats);
         var pool = stats.Stats[0];
-        Assert.HasCount(1, pool.ChildStats);
-        Assert.AreEqual("rpool", pool.Device);
+        Assert.Single(pool.ChildStats);
+        Assert.Equal("rpool", pool.Device);
         var mirror = pool.ChildStats[0];
-        Assert.AreEqual("mirror-0", mirror.Device);
-        Assert.HasCount(2, mirror.ChildStats);
+        Assert.Equal("mirror-0", mirror.Device);
+        Assert.Equal(2, mirror.ChildStats.Count());
     }
 
-    [TestMethod]
+    [Fact]
     public void PoolWithMultipleVDevs()
     {
         var stdOut = @"tank    128797577216    3685133381632   2       81      97020   1224475
@@ -101,22 +108,22 @@ mirror-3        44244963328     909237776384    0       17      33476   261787
 /dev/sdh1       0       0       0       8       16738   130893";
 
         var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
-        Assert.AreEqual("tank", stats.Pool);
-        Assert.HasCount(4, stats.Stats[0].ChildStats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.Equal("tank", stats.Pool);
+        Assert.Equal(4, stats.Stats[0].ChildStats.Count());
         foreach (var child in stats.Stats[0].ChildStats)
         {
-            Assert.HasCount(2, child.ChildStats);
+            Assert.Equal(2, child.ChildStats.Count());
         }
 
         for (int x = 0; x < stats.Stats[0].ChildStats.Count; x++)
         {
             var stat = stats.Stats[0].ChildStats[x];
-            Assert.AreEqual("mirror-" + x, stat.Device);
+            Assert.Equal("mirror-" + x, stat.Device);
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void PoolWithMultipleVDevsWithLatencyStats()
     {
         var stdOut = @"tank    128788054016    3685142904832   2       81      97040   1224386 7284034 416219  658858  179770  20722   573582  16964   192950  8269291 991184
@@ -134,28 +141,28 @@ mirror-3        44236693504     909246046208    0       17      33483   261768  
 /dev/sdh1       0       0       0       8       16741   130884  10278453        385567  997181  178845  29650   378461  19452   179576  13977122        936920";
 
         var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
-        Assert.AreEqual("tank", stats.Pool);
-        Assert.HasCount(4, stats.Stats[0].ChildStats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.Equal("tank", stats.Pool);
+        Assert.Equal(4, stats.Stats[0].ChildStats.Count());
         for (int x = 0; x < stats.Stats[0].ChildStats.Count; x++)
         {
             var stat = stats.Stats[0].ChildStats[x];
-            Assert.AreEqual("mirror-" + x, stat.Device);
-            Assert.IsNotNull(stat.LatencyStats);
+            Assert.Equal("mirror-" + x, stat.Device);
+            Assert.NotNull(stat.LatencyStats);
             foreach (var dev in stat.ChildStats)
             {
-                Assert.IsNotNull(dev.LatencyStats);
+                Assert.NotNull(dev.LatencyStats);
             }
         }
     }
 
-    [TestMethod]
+    [Fact]
     public void IOStatTestSpecificDevice_Ubuntu_24_04_zfs2_2_2()
     {
         var stdOut = "TestP1974b8c5-c2a1-482f-8d02-6921465954ea\t156160\t83729920\t121\t3631\t997224\t70989942\t49152\t269924\t49152\t134000\t832\t547\t-\t189364\t-\t-\t-";
         var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
-        Assert.IsNotNull(stats);
-        Console.WriteLine(stats.Dump(new JsonFormatter()));
+        Assert.NotNull(stats);
+        _output.WriteLine(stats.Dump(new JsonFormatter()));
         
     }
 }

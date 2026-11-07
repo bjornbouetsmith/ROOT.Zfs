@@ -1,28 +1,27 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 using ROOT.Zfs.Public.Data.Statistics;
 
 namespace ROOT.Zfs.Tests.Public.Data;
 
-[TestClass]
 public class PartTest
 {
-    [TestMethod]
-    [DataRow("1.23",1.23d,"1.23%")]
-    [DataRow("1.1", 1.1d, "1.10%")]
-    [DataRow("0.123", 0.123d, "0.12%")]
-    [DataRow("0.126", 0.126d, "0.13%")]
+    [Theory]
+    [InlineData("1.23",1.23d,"1.23%")]
+    [InlineData("1.1", 1.1d, "1.10%")]
+    [InlineData("0.123", 0.123d, "0.12%")]
+    [InlineData("0.126", 0.126d, "0.13%")]
     public void ValidStringShouldBeParsedCorrectly(string value, double expectedValue, string expectedString)
     {
         var part = new Part(value);
-        Assert.AreEqual(expectedValue, part.Value);
-        Assert.AreEqual(expectedString, part.ToString());
+        Assert.Equal(expectedValue, part.Value);
+        Assert.Equal(expectedString, part.ToString());
     }
 
-    [TestMethod]
+    [Fact]
     public void BogusValueShouldResultInZero()
     {
         var part = new Part("seven.3");
-        Assert.AreEqual(0d, part.Value);
-        Assert.AreEqual("0.00%", part.ToString());
+        Assert.Equal(0d, part.Value);
+        Assert.Equal("0.00%", part.ToString());
     }
 }

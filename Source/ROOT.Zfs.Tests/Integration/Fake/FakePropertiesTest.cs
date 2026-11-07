@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments;
@@ -8,9 +8,15 @@ using ROOT.Zfs.Public.Arguments.Properties;
 
 namespace ROOT.Zfs.Tests.Integration.Fake;
 
-[TestClass]
 public class FakePropertiesTest
 {
+    private readonly ITestOutputHelper _output;
+
+    public FakePropertiesTest(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
     private readonly FakeRemoteConnection _remoteProcessCall = new("2.1.5-2");
 
     private Properties GetProperties()
@@ -18,20 +24,22 @@ public class FakePropertiesTest
         return ZfsTestFactory.CreateProperties(_remoteProcessCall);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void ListAllProperties()
     {
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds" };
         var props = pr.Get(args);
-        Assert.IsNotNull(props);
+        Assert.NotNull(props);
         foreach (var prop in props)
         {
-            Console.WriteLine(prop.Dump(new JsonFormatter()));
+            _output.WriteLine(prop.Dump(new JsonFormatter()));
         }
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void SetDataSetProperty()
     {
         var pr = GetProperties();
@@ -39,51 +47,55 @@ public class FakePropertiesTest
         pr.Set(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.HasCount(2, commands); // Set+Get
+        Assert.Equal(2, commands.Count()); // Set+Get
 
-        Assert.AreEqual("/sbin/zfs set atime=off tank/myds", commands[0]);
-        Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[1]);
+        Assert.Equal("/sbin/zfs set atime=off tank/myds", commands[0]);
+        Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[1]);
     }
 
     /// <summary>
     /// We cannot test that setting works with the current fake implementation.
     /// </summary>
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void GetDataSetProperty()
     {
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime"};
         var val = pr.Get(args).First();
             
-        Assert.AreEqual("off", val.Value);
+        Assert.Equal("off", val.Value);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.HasCount(1, commands); // Get
+        Assert.Single(commands); // Get
             
-        Assert.AreEqual("/sbin/zfs get atime tank/myds -H", commands[0]);
+        Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[0]);
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void GetAvailableDatasetProperties()
     {
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
-        Assert.IsNotEmpty(props);
-        Console.WriteLine(props.Dump(new JsonFormatter()));
+        Assert.NotEmpty(props);
+        _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void GetAvailablePoolProperties()
     {
         var pr = GetProperties();
         var props = pr.GetAvailable(PropertyTarget.Pool).ToList();
-        Assert.IsNotEmpty(props);
-        Console.WriteLine(props.Dump(new JsonFormatter()));
+        Assert.NotEmpty(props);
+        _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
     /// <summary>
     /// We cannot test that reset works with the current fake implementation.
     /// </summary>
-    [TestMethod, TestCategory("FakeIntegration")]
+    [Fact]
+    [Trait("Category", "FakeIntegration")]
     public void ResetPropertyTest()
     {
         var pr = GetProperties();
@@ -93,7 +105,7 @@ public class FakePropertiesTest
 
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
         var before = pr.Get(args).First();
-        Assert.AreEqual("off", before.Value);
+        Assert.Equal("off", before.Value);
         var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "on" };
         pr.Set(setArg);
         var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
@@ -101,9 +113,9 @@ public class FakePropertiesTest
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
 
-        Console.WriteLine(commands.Dump(new JsonFormatter()));
+        _output.WriteLine(commands.Dump(new JsonFormatter()));
         // Get, set & get, inherit
-        Assert.HasCount(4, commands);
+        Assert.Equal(4, commands.Count());
 
     }
 }

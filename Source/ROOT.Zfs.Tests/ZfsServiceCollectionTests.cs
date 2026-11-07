@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public;
 
 namespace ROOT.Zfs.Tests;
 
-[TestClass]
 public class ZfsServiceCollectionTests
 {
-    [TestMethod]
+    [Fact]
     public void ShouldBeAbleToResolveZfs()
     {
         var serviceCollection = new ServiceCollection();
@@ -19,6 +18,6 @@ public class ZfsServiceCollectionTests
 
         var zfs = provider.GetRequiredService<IZfs>();
 
-        Assert.IsNotNull(zfs);
+        Assert.NotNull(zfs);
     }
 }

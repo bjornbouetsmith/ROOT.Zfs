@@ -1,32 +1,32 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ROOT.Zfs.Core.Helpers;
+using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
-[TestClass]
 public class DataSetPropertiesTest
 {
-    [TestMethod]
+    [Fact]
     public void FromStdOutputTest()
     {
         var stdOut = "tank\taclmode\tdiscard\tdefault\ntank\taclinherit\tdiscard\tdefault";
         var props = DatasetProperties.FromStdOutput(stdOut);
 
-        Assert.HasCount(2, props);
+        Assert.Equal(2, props.Count());
             
-        Assert.AreEqual("aclmode", props[0].Property);
-        Assert.AreEqual("discard", props[0].Value);
-        Assert.AreEqual("default", props[0].Source);
+        Assert.Equal("aclmode", props[0].Property);
+        Assert.Equal("discard", props[0].Value);
+        Assert.Equal("default", props[0].Source);
                         
-        Assert.AreEqual("aclinherit", props[1].Property);
-        Assert.AreEqual("discard", props[1].Value);
-        Assert.AreEqual("default", props[1].Source);
+        Assert.Equal("aclinherit", props[1].Property);
+        Assert.Equal("discard", props[1].Value);
+        Assert.Equal("default", props[1].Source);
     }
 
-    [TestMethod]
+    [Fact]
     public void FromStdOutputEmptyTest()
     {
         var props = DatasetProperties.FromStdOutput(string.Empty);
-        Assert.IsEmpty(props);
+        Assert.Empty(props);
     }
 }
