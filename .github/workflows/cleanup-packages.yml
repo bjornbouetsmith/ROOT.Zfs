@@ -25,4 +25,5 @@ jobs:
         with: 
           package-name: ${{ matrix.package }}
           min-versions-to-keep: 10
+          package-type: nuget
           delete-only-pre-release-versions: "false"
