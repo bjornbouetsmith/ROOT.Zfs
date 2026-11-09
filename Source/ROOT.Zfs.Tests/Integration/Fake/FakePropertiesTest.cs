@@ -53,7 +53,7 @@ public class FakePropertiesTest
         pr.Set(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Equal(2, commands.Count()); // Set+Get
+        Assert.Equal(2, commands.Count); // Set+Get
 
         Assert.Equal("/sbin/zfs set atime=off tank/myds", commands[0]);
         Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[1]);
@@ -70,15 +70,15 @@ public class FakePropertiesTest
         _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime"};
-        var val = (await pr.GetAsync(args, TestContext.Current.CancellationToken)).First();
+        var val = (await pr.GetAsync(args, TestContext.Current.CancellationToken))[0];
             
         Assert.Equal("off", val.Value);
         Assert.Equal(1, _remoteProcessCall.AsyncLoadResponseCalls);
         Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands); // Get
+        var command = Assert.Single(commands); // Get
             
-        Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[0]);
+        Assert.Equal("/sbin/zfs get atime tank/myds -H", command);
     }
 
     [Theory]
@@ -92,8 +92,8 @@ public class FakePropertiesTest
 
         await pr.GetAsync(args, TestContext.Current.CancellationToken);
 
-        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
-        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        var token = Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
     }
 
     [Theory]
@@ -158,8 +158,8 @@ public class FakePropertiesTest
 
         await pr.GetAvailableAsync(PropertyTarget.Dataset, TestContext.Current.CancellationToken);
 
-        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
-        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        var token = Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
     }
 
     [Theory]
@@ -192,7 +192,7 @@ public class FakePropertiesTest
         var property = "atime";
 
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
-        var before = (await pr.GetAsync(args, TestContext.Current.CancellationToken)).First();
+        var before = (await pr.GetAsync(args, TestContext.Current.CancellationToken))[0];
         Assert.Equal("off", before.Value);
         var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "on" };
         pr.Set(setArg);
@@ -203,7 +203,7 @@ public class FakePropertiesTest
 
         _output.WriteLine(commands.Dump(new JsonFormatter()));
         // Get, set & get, inherit
-        Assert.Equal(4, commands.Count());
+        Assert.Equal(4, commands.Count);
 
     }
 }
