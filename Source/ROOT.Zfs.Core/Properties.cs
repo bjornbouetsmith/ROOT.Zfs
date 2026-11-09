@@ -42,7 +42,20 @@ internal sealed class Properties : ZfsBase, IProperties
     }
 
     /// <inheritdoc />
-    public IList<PropertyValue> Get(GetPropertyArgs args)
+    public async Task<IReadOnlyList<PropertyValue>> GetAsync(GetPropertyArgs args, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var pc = BuildCommand(_commands.Get(args));
+
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return DatasetProperties.FromStdOutput(response.StdOut);
+    }
+
+    /// <summary>
+    /// Synchronous get used by <see cref="Set"/> until it is converted to the async API.
+    /// </summary>
+    private IReadOnlyList<PropertyValue> Get(GetPropertyArgs args)
     {
         var pc = BuildCommand(_commands.Get(args));
 
