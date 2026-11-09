@@ -82,7 +82,7 @@ public class FakeSnapshotTest
 
         var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.SnapshotName.StartsWith($"{prefix}")).ToList();
 
-        Assert.Equal(3, snaps.Count());
+        Assert.Equal(3, snaps.Count);
         var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = prefix, IsExactName = false };
         sn.Destroy(args);
     }
@@ -94,8 +94,8 @@ public class FakeSnapshotTest
         var sn = GetSnapshots();
         sn.Hold(new SnapshotHoldArgs { Dataset = "tank/myds", Snapshot = "12345", Tag = "mytag" });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs hold mytag tank/myds@12345", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs hold mytag tank/myds@12345", command);
     }
 
     [Fact]
@@ -107,8 +107,8 @@ public class FakeSnapshotTest
         var holds = sn.Holds(args);
         Assert.Single(holds);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs holds -H tank/myds@12345", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs holds -H tank/myds@12345", command);
     }
 
     [Fact]
@@ -119,8 +119,8 @@ public class FakeSnapshotTest
         sn.Release(new SnapshotReleaseArgs{Dataset="tank/myds",Snapshot= "12345", Tag="mytag"});
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs release mytag tank/myds@12345", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs release mytag tank/myds@12345", command);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class FakeSnapshotTest
         args = new SnapshotCloneArgs { Dataset = "tank/myds", Snapshot = snapName, TargetDataset = "tank/myds/mysnap_clone2", Properties = [new PropertyValue { Property = "atime", Value = "off" }] };
         sn.Clone(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Equal(3, commands.Count());
+        Assert.Equal(3, commands.Count);
         Assert.Equal("/sbin/zfs snap tank/myds@12345", commands[0]);
         Assert.Equal("/sbin/zfs clone -p tank/myds@12345 tank/myds/mysnap_clone", commands[1]);
         Assert.Equal("/sbin/zfs clone -p -o atime=off tank/myds@12345 tank/myds/mysnap_clone2", commands[2]);

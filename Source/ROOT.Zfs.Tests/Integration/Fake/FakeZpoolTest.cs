@@ -36,7 +36,7 @@ public class FakeZpoolTest
         var history = zp.History(args).ToList();
         Assert.NotNull(history);
         _output.WriteLine(history.Dump(new JsonFormatter()));
-        Assert.Equal(2, history.Count());
+        Assert.Equal(2, history.Count);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class FakeZpoolTest
         var zp = GetZpool();
 
         var infos = zp.List();
-        Assert.Equal(2, infos.Count());
+        Assert.Equal(2, infos.Count);
 
     }
 
@@ -245,7 +245,7 @@ public class FakeZpoolTest
             ]
         });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Equal(2, commands.Count());
+        Assert.Equal(2, commands.Count);
         Assert.Equal("/sbin/zpool create mytest draid1:2d:4c:1s /dev/sda /dev/sdb /dev/sdc /dev/sdd", commands[0]);
         Assert.Equal("/sbin/zpool status -vP mytest", commands[1]);
 
@@ -259,8 +259,8 @@ public class FakeZpoolTest
         var args = new PoolScrubArgs { PoolName = "tank" };
         zp.Scrub(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool scrub tank", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool scrub tank", command);
     }
 
     [Fact]
@@ -270,8 +270,8 @@ public class FakeZpoolTest
         var zp = GetZpool();
         zp.Trim(new PoolTrimArgs { PoolName = "tank" });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool trim tank", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool trim tank", command);
     }
 
     [Fact]
@@ -281,8 +281,8 @@ public class FakeZpoolTest
         var zp = GetZpool();
         zp.Upgrade(new PoolUpgradeArgs { PoolName = "tank" });
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool upgrade tank", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool upgrade tank", command);
     }
 
     [Fact]
@@ -303,8 +303,8 @@ public class FakeZpoolTest
         zp.Detach(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool detach tank /dev/sdb", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool detach tank /dev/sdb", command);
     }
 
     [Fact]
@@ -322,8 +322,8 @@ public class FakeZpoolTest
 
         zp.Attach(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool attach tank /dev/sdb /dev/sdc", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool attach tank /dev/sdb /dev/sdc", command);
     }
 
     [Fact]
@@ -341,8 +341,8 @@ public class FakeZpoolTest
 
         zp.Replace(args);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool replace tank /dev/sdb /dev/sdc", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool replace tank /dev/sdb /dev/sdc", command);
     }
 
     [Fact]
@@ -362,8 +362,8 @@ public class FakeZpoolTest
         zp.Add(args);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool add -f tank mirror /dev/sda /dev/sdb", command);
     }
 
     [Fact]
@@ -379,7 +379,7 @@ public class FakeZpoolTest
 
         zp.Remove(removeArgs);
         var commands = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zpool remove tank mirror-1", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zpool remove tank mirror-1", command);
     }
 }

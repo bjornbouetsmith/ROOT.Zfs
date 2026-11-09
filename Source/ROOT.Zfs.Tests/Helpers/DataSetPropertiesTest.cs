@@ -1,6 +1,5 @@
 using Xunit;
 using ROOT.Zfs.Core.Helpers;
-using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
@@ -12,7 +11,7 @@ public class DataSetPropertiesTest
         var stdOut = "tank\taclmode\tdiscard\tdefault\ntank\taclinherit\tdiscard\tdefault";
         var props = DatasetProperties.FromStdOutput(stdOut);
 
-        Assert.Equal(2, props.Count());
+        Assert.Equal(2, props.Count);
             
         Assert.Equal("aclmode", props[0].Property);
         Assert.Equal("discard", props[0].Value);

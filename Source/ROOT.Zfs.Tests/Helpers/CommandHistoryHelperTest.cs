@@ -24,7 +24,7 @@ public class CommandHistoryHelperTest
     public void SkipCountTest(int skip)
     {
         var history = CommandHistoryHelper.FromStdOut(ZPoolHistory, skip).ToList();
-        Assert.Equal(5 - skip, history.Count());
+        Assert.Equal(5 - skip, history.Count);
         if (skip < 5)
         {
             var lastEntry = history[^1];
@@ -43,7 +43,7 @@ public class CommandHistoryHelperTest
     public void ParsingTest()
     {
         var history = CommandHistoryHelper.FromStdOut(ZPoolHistory).ToList();
-        Assert.Equal(5, history.Count());
+        Assert.Equal(5, history.Count);
         var expectedDate = new DateTime(2022, 09, 20, 21, 30, 14, DateTimeKind.Local);
         Assert.Equal("zpool create tank mirror /dev/disk/by-id/ata-QEMU_HARDDISK_QM00015 /dev/disk/by-id/ata-QEMU_HARDDISK_QM00017", history[0].Command);
         Assert.Equal("user 0 (root) on zfsdev.root.dom:linux", history[0].Caller);

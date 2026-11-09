@@ -112,8 +112,8 @@ public abstract class FakeDataSetTest
         var ds = GetDatasets(processCall);
         ds.Promote(new PromoteArgs { Name = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs promote tank/myds", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs promote tank/myds", command);
     }
 
     [Fact]
@@ -124,8 +124,8 @@ public abstract class FakeDataSetTest
         var ds = GetDatasets(processCall);
         ds.Mount(new MountArgs { Filesystem = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs mount tank/myds", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs mount tank/myds", command);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public abstract class FakeDataSetTest
         var ds = GetDatasets(processCall);
         ds.Unmount(new UnmountArgs { Filesystem = "tank/myds" });
         var commands = processCall.GetCommandsInvoked();
-        Assert.Single(commands);
-        Assert.Equal("/sbin/zfs unmount tank/myds", commands[0]);
+        var command = Assert.Single(commands);
+        Assert.Equal("/sbin/zfs unmount tank/myds", command);
     }
 }
