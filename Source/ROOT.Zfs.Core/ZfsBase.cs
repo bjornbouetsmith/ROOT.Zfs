@@ -43,7 +43,6 @@ public abstract class ZfsBase : IBasicZfs
 
         Trace.WriteLine($"Built command:{command.FullCommandLine}");
         command.Timeout = CommandTimeout;
-        //command.RequiresSudo = RequiresSudo;
         return command;
     }
 }
