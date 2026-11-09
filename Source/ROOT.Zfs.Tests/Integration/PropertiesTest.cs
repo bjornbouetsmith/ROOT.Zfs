@@ -47,12 +47,12 @@ public class PropertiesTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void SetDataSetProperty()
+    public async Task SetDataSetPropertyAsyncTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = "off" };
-        var newVal = pr.Set(args);
+        var newVal = await pr.SetAsync(args, TestContext.Current.CancellationToken);
             
         Assert.Equal("off", newVal.Value);
         _output.WriteLine(newVal.Dump(new JsonFormatter()));
@@ -69,7 +69,7 @@ public class PropertiesTest
         var newPropVal = val.Value == "off" ? "on" : "off";
 
         var setArgs = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = newPropVal };
-        var newVal = pr.Set(setArgs);
+        var newVal = await pr.SetAsync(setArgs, TestContext.Current.CancellationToken);
         Assert.Equal(newPropVal, newVal.Value);
 
         _output.WriteLine(newVal.Dump(new JsonFormatter()));
@@ -121,7 +121,7 @@ public class PropertiesTest
             var before = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
             Assert.Equal("on", before.Value);
             var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "off" };
-            var prop = pr.Set(setArg);
+            var prop = await pr.SetAsync(setArg, TestContext.Current.CancellationToken);
             Assert.Equal("off", prop.Value);
             var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
             pr.Reset(inheritArgs);

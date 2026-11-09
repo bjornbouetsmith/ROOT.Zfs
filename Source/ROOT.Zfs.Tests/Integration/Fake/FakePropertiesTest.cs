@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -44,19 +43,58 @@ public class FakePropertiesTest
         }
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void SetDataSetProperty()
+    [InlineData(true), InlineData(false)]
+    public async Task SetDataSetPropertyAsyncTest(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var pr = GetProperties();
         var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime", Value = "off" };
-        pr.Set(args);
+        var value = await pr.SetAsync(args, TestContext.Current.CancellationToken);
 
+        Assert.Equal("off", value.Value);
+        Assert.Equal(2, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
         var commands = _remoteProcessCall.GetCommandsInvoked();
         Assert.Equal(2, commands.Count); // Set+Get
 
         Assert.Equal("/sbin/zfs set atime=off tank/myds", commands[0]);
         Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[1]);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task SetAsyncForwardsCancellationToken(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime", Value = "off" };
+
+        await pr.SetAsync(args, TestContext.Current.CancellationToken);
+
+        Assert.Equal(2, _remoteProcessCall.AsyncCancellationTokens.Count);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task SetAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime", Value = "off" };
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => pr.SetAsync(args, cancellationTokenSource.Token));
+
+        Assert.Empty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
     /// <summary>
@@ -195,7 +233,7 @@ public class FakePropertiesTest
         var before = (await pr.GetAsync(args, TestContext.Current.CancellationToken))[0];
         Assert.Equal("off", before.Value);
         var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "on" };
-        pr.Set(setArg);
+        await pr.SetAsync(setArg, TestContext.Current.CancellationToken);
         var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
         pr.Reset(inheritArgs);
 

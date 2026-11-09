@@ -52,27 +52,19 @@ internal sealed class Properties : ZfsBase, IProperties
         return DatasetProperties.FromStdOutput(response.StdOut);
     }
 
-    /// <summary>
-    /// Synchronous get used by <see cref="Set"/> until it is converted to the async API.
-    /// </summary>
-    private IReadOnlyList<PropertyValue> Get(GetPropertyArgs args)
-    {
-        var pc = BuildCommand(_commands.Get(args));
-
-        var response = pc.LoadResponse(true);
-        return DatasetProperties.FromStdOutput(response.StdOut);
-    }
-
     /// <inheritdoc />
-    public PropertyValue Set(SetPropertyArgs args)
+    public async Task<PropertyValue> SetAsync(SetPropertyArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Set(args));
 
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         var getArgs = new GetPropertyArgs { PropertyTarget = args.PropertyTarget, Property = args.Property, Target = args.Target };
 
         // Should be safe - if not, then the set above would have failed - if we could not find a property to set
-        return Get(getArgs)[0];
+        var properties = await GetAsync(getArgs, cancellationToken).ConfigureAwait(false);
+        return properties[0];
     }
 
     /// <inheritdoc />

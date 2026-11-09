@@ -32,7 +32,10 @@ public interface IProperties : IBasicZfs
     /// <summary>
     /// Sets a property to the given value
     /// </summary>
-    PropertyValue Set(SetPropertyArgs args);
+    /// <param name="args">The arguments describing the property to set.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the updated property value.</returns>
+    Task<PropertyValue> SetAsync(SetPropertyArgs args, CancellationToken cancellationToken = default);
         
     /// <summary>
     /// Resets a dataset property to its inherited value.
