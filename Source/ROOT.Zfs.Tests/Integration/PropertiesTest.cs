@@ -32,12 +32,12 @@ public class PropertiesTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ListAllProperties()
+    public async Task ListAllPropertiesAsyncTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name };
-        var props = pr.Get(args);
+        var props = await pr.GetAsync(args, TestContext.Current.CancellationToken);
         Assert.NotNull(props);
         foreach (var prop in props)
         {
@@ -60,12 +60,12 @@ public class PropertiesTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetDataSetProperty()
+    public async Task GetDataSetPropertyAsyncTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
         var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime"};
-        var val = pr.Get(getArgs).First();
+        var val = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
         var newPropVal = val.Value == "off" ? "on" : "off";
 
         var setArgs = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = newPropVal };
@@ -97,7 +97,7 @@ public class PropertiesTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ResetPropertyTest()
+    public async Task ResetPropertyTestAsync()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var pr = GetProperties();
@@ -118,7 +118,7 @@ public class PropertiesTest
             var property = "atime";
 
             var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
-            var before = pr.Get(getArgs).First();
+            var before = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
             Assert.Equal("on", before.Value);
             var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "off" };
             var prop = pr.Set(setArg);
@@ -126,7 +126,7 @@ public class PropertiesTest
             var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
             pr.Reset(inheritArgs);
             getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
-            var reset = pr.Get(getArgs).First();
+            var reset = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
             Assert.Equal("on", reset.Value);
 
         }

@@ -24,7 +24,10 @@ public interface IProperties : IBasicZfs
     /// Gets property information
     /// Based on the values in the args instance, this can either be one property, many properties, all properties
     /// </summary>
-    IList<PropertyValue> Get(GetPropertyArgs args);
+    /// <param name="args">The arguments describing which properties to get.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of property values.</returns>
+    Task<IReadOnlyList<PropertyValue>> GetAsync(GetPropertyArgs args, CancellationToken cancellationToken = default);
         
     /// <summary>
     /// Sets a property to the given value
