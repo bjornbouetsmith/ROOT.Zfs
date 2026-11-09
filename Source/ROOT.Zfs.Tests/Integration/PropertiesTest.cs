@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -76,10 +77,20 @@ public class PropertiesTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetAvailableDatasetProperties()
+    public async Task GetAvailableDatasetPropertiesAsyncTest()
     {
         var pr = GetProperties();
-        var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
+        var props = await pr.GetAvailableAsync(PropertyTarget.Dataset, TestContext.Current.CancellationToken);
+        Assert.NotEmpty(props);
+        _output.WriteLine(props.Dump(new JsonFormatter()));
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task GetAvailablePoolPropertiesAsyncTest()
+    {
+        var pr = GetProperties();
+        var props = await pr.GetAvailableAsync(PropertyTarget.Pool, TestContext.Current.CancellationToken);
         Assert.NotEmpty(props);
         _output.WriteLine(props.Dump(new JsonFormatter()));
     }
