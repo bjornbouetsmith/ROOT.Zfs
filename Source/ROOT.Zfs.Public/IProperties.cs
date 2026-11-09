@@ -41,5 +41,8 @@ public interface IProperties : IBasicZfs
     /// Resets a dataset property to its inherited value.
     /// Does not work for a zpool, since a pool cannot have a parent
     /// </summary>
-    void Reset(InheritPropertyArgs args);
+    /// <param name="args">The arguments describing the property to reset.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that completes when the property has been reset.</returns>
+    Task ResetAsync(InheritPropertyArgs args, CancellationToken cancellationToken = default);
 }
