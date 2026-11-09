@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
@@ -71,24 +73,69 @@ public class FakePropertiesTest
         Assert.Equal("/sbin/zfs get atime tank/myds -H", commands[0]);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void GetAvailableDatasetProperties()
+    [InlineData(true), InlineData(false)]
+    public async Task GetAvailableDatasetPropertiesAsyncTest(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var pr = GetProperties();
-        var props = pr.GetAvailable(PropertyTarget.Dataset).ToList();
+
+        var props = await pr.GetAvailableAsync(PropertyTarget.Dataset, TestContext.Current.CancellationToken);
+
         Assert.NotEmpty(props);
+        Assert.Contains("/sbin/zfs get -H", _remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
         _output.WriteLine(props.Dump(new JsonFormatter()));
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void GetAvailablePoolProperties()
+    [InlineData(true), InlineData(false)]
+    public async Task GetAvailablePoolPropertiesAsyncTest(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var pr = GetProperties();
-        var props = pr.GetAvailable(PropertyTarget.Pool).ToList();
+
+        var props = await pr.GetAvailableAsync(PropertyTarget.Pool, TestContext.Current.CancellationToken);
+
         Assert.NotEmpty(props);
+        Assert.Contains("/sbin/zpool get -H", _remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
         _output.WriteLine(props.Dump(new JsonFormatter()));
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task GetAvailableAsyncForwardsCancellationToken(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+
+        await pr.GetAvailableAsync(PropertyTarget.Dataset, TestContext.Current.CancellationToken);
+
+        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task GetAvailableAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => pr.GetAvailableAsync(PropertyTarget.Dataset, cancellationTokenSource.Token));
+
+        Assert.Empty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 
     /// <summary>

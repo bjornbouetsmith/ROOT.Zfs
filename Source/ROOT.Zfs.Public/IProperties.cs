@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Zfs.Public.Arguments;
 using ROOT.Zfs.Public.Arguments.Properties;
 using ROOT.Zfs.Public.Data;
@@ -13,7 +15,10 @@ public interface IProperties : IBasicZfs
     /// <summary>
     /// Gets all available properties that can be set for the given type of root
     /// </summary>
-    IList<Property> GetAvailable(PropertyTarget targetType);
+    /// <param name="targetType">The type of root to get the available properties for.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of the properties that can be set.</returns>
+    Task<IReadOnlyList<Property>> GetAvailableAsync(PropertyTarget targetType, CancellationToken cancellationToken = default);
         
     /// <summary>
     /// Gets property information

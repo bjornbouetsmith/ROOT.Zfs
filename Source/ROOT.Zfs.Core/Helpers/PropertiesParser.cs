@@ -9,7 +9,7 @@ namespace ROOT.Zfs.Core.Helpers;
 
 internal static class PropertiesParser
 {
-    internal static IList<Property> FromStdOutput(string stdOutput, int expectedColumns)
+    internal static IReadOnlyList<Property> FromStdOutput(string stdOutput, int expectedColumns)
     {
         bool startParsing = false;
         var list = new List<Property>();

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -19,20 +21,22 @@ internal sealed class Properties : ZfsBase, IProperties
     }
 
     /// <inheritdoc />
-    public IList<Property> GetAvailable(PropertyTarget targetType)
+    public Task<IReadOnlyList<Property>> GetAvailableAsync(PropertyTarget targetType, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var args = new GetPropertyArgs { PropertyTarget = targetType };
-        return GetAvailable(args);
+        return GetAvailableAsync(args, cancellationToken);
     }
 
-    private IList<Property> GetAvailable(GetPropertyArgs args)
+    private async Task<IReadOnlyList<Property>> GetAvailableAsync(GetPropertyArgs args, CancellationToken cancellationToken)
     {
         // create new intance, just in case someone re-uses an existing GetPropertyArgs with extra values set that can cause us to call with wrong arguments
         var newArgs = new GetPropertyArgs { PropertyTarget = args.PropertyTarget };
 
         var cmd = BuildCommand(_commands.Get(newArgs));
         // get -H returns an error, so to get available we have to create bogus command, which will return on std error
-        var response = cmd.LoadResponse(false);
+        var response = await cmd.LoadResponseAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
         var expectedColumns = args.PropertyTarget == PropertyTarget.Pool ? 3 : 4;
         return PropertiesParser.FromStdOutput(response.StdError, expectedColumns);
     }
