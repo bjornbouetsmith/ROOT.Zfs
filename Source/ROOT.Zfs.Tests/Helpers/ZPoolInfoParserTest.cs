@@ -1,7 +1,6 @@
 using Xunit;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Data.Pools;
-using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
@@ -32,7 +31,7 @@ tank    3813930958848   128800165888    3685130792960   -       -       9       
 
         var list = ZPoolInfoParser.ParseFromStdOut(stdOut);
 
-        Assert.Equal(2, list.Count());
+        Assert.Equal(2, list.Count);
         Assert.Equal("rpool", list[0].PoolName);
         Assert.Equal("tank", list[1].PoolName);
     }

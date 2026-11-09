@@ -54,8 +54,8 @@ public class FakeZfsTest
 
         await zfs.GetVersionInfoAsync(TestContext.Current.CancellationToken);
 
-        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
-        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        var token = Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class FakeZfsTest
         var disks = (await zfs.ListDisksAsync(TestContext.Current.CancellationToken)).ToList();
 
         Assert.NotNull(disks);
-        Assert.Equal(6, disks.Count());
+        Assert.Equal(6, disks.Count);
         Assert.Equal(2, disks.Count(d => d.Type == DeviceType.Disk));
         Assert.Equal(4, disks.Count(d => d.Type == DeviceType.Partition));
         Assert.Contains("/bin/lsblk --include 8 --include 259 -p | /bin/grep disk", _remoteProcessCall.GetCommandsInvoked());
@@ -102,9 +102,9 @@ public class FakeZfsTest
         var disks = await zfs.ListDisksAsync(TestContext.Current.CancellationToken);
 
         // Both commands must have completed before the returned enumerable is enumerated.
-        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count());
-        Assert.Equal(6, disks.Count());
-        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count);
+        Assert.Equal(6, disks.Count);
+        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count);
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class FakeZfsTest
 
         await zfs.ListDisksAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(2, _remoteProcessCall.AsyncCancellationTokens.Count());
+        Assert.Equal(2, _remoteProcessCall.AsyncCancellationTokens.Count);
         Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
         Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
     }

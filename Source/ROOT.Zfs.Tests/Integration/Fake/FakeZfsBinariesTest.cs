@@ -43,7 +43,7 @@ public class FakeZfsBinariesTest
         Assert.True(binaries.Initialized);
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
 
-        Assert.Equal(12, commandsInvoked.Count());
+        Assert.Equal(12, commandsInvoked.Count);
         var asHashSet = commandsInvoked.ToHashSet();
         Assert.Contains("/bin/which zfs", asHashSet);
         Assert.Contains("/bin/which zpool", asHashSet);
@@ -99,7 +99,7 @@ public class FakeZfsBinariesTest
         Assert.Equal("/usr/bin/hostnamectl", binaries.Hostnamectl);
         Assert.Equal("/bin/cat", binaries.Cat);
         Assert.Equal("/custom/smartctl", binaries.Smartctl);
-        Assert.Equal(12, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(12, _remoteProcessCall.GetCommandsInvoked().Count);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class FakeZfsBinariesTest
         Assert.Equal("/opt/zfs/bin/zfs", binaries.Cat);
 
         var commandsInvoked = _remoteProcessCall.GetCommandsInvoked();
-        Assert.Equal(12, commandsInvoked.Count());
+        Assert.Equal(12, commandsInvoked.Count);
         Assert.True(commandsInvoked.All(command => command.StartsWith("/usr/bin/which ", StringComparison.Ordinal)));
     }
 }

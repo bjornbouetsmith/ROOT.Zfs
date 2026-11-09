@@ -48,7 +48,7 @@ public class ZpoolTest
         var history = zp.History(args).ToList();
         Assert.NotNull(history);
         _output.WriteLine(history.Dump(new JsonFormatter()));
-        Assert.Equal(2, history.Count());
+        Assert.Equal(2, history.Count);
     }
 
 
@@ -384,13 +384,11 @@ public class ZpoolTest
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.NotNull(stats);
         // pool
-        Assert.Single(stats.Stats);
-        var poolStat = stats.Stats[0];
+        var poolStat = Assert.Single(stats.Stats);
         //vdev
-        Assert.Single(poolStat.ChildStats);
-        var vdev = poolStat.ChildStats[0];
+        var vdev = Assert.Single(poolStat.ChildStats);
         // actual devices
-        Assert.Equal(2, vdev.ChildStats.Count());
+        Assert.Equal(2, vdev.ChildStats.Count);
     }
 
     //Turn a two way mirror into a three way mirror
@@ -416,7 +414,7 @@ public class ZpoolTest
         var status = zp.Status(arg);
         _output.WriteLine(status.Dump(new JsonFormatter()));
 
-        Assert.Equal(3, status.Pool.VDevs[0].Devices.Count());
+        Assert.Equal(3, status.Pool.VDevs[0].Devices.Count);
     }
 
     [Fact]
@@ -478,7 +476,7 @@ public class ZpoolTest
 
         status = zp.Status(arg);
         _output.WriteLine(status.Dump(new JsonFormatter()));
-        Assert.Equal(2, status.Pool.VDevs.Count());
+        Assert.Equal(2, status.Pool.VDevs.Count);
     }
 
     [Fact]

@@ -2,7 +2,6 @@
 using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
-using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
@@ -23,7 +22,7 @@ public class ZPoolIOStatParserTest
 
         var stat = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
         _output.WriteLine(stat.Dump(new JsonFormatter()));
-        Assert.Equal(2, stat.Stats.Count());
+        Assert.Equal(2, stat.Stats.Count);
         Assert.Equal("/dev/sde1", stat.Stats[0].Device);
         Assert.Equal("/dev/sdc1", stat.Stats[1].Device);
 
@@ -36,7 +35,7 @@ public class ZPoolIOStatParserTest
 /dev/sdc1       0       0       0       10      10678   164997  21777768        461249  1371204 183562  20402   763893  15401   219947  27787895        1105290";
         var stat = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
         _output.WriteLine(stat.Dump(new JsonFormatter()));
-        Assert.Equal(2, stat.Stats.Count());
+        Assert.Equal(2, stat.Stats.Count);
         Assert.Equal("/dev/sde1", stat.Stats[0].Device);
         Assert.Equal("/dev/sdc1", stat.Stats[1].Device);
         Assert.NotNull(stat.Stats[0].LatencyStats);
@@ -81,13 +80,11 @@ mirror-0        3078639616      28059873280     0       30      3033    355200
         var stats = ZPoolIOStatParser.ParseStdOut("rpool", stdOut);
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.Equal("rpool", stats.Pool);
-        Assert.Single(stats.Stats);
-        var pool = stats.Stats[0];
-        Assert.Single(pool.ChildStats);
+        var pool = Assert.Single(stats.Stats);
+        var mirror = Assert.Single(pool.ChildStats);
         Assert.Equal("rpool", pool.Device);
-        var mirror = pool.ChildStats[0];
         Assert.Equal("mirror-0", mirror.Device);
-        Assert.Equal(2, mirror.ChildStats.Count());
+        Assert.Equal(2, mirror.ChildStats.Count);
     }
 
     [Fact]
@@ -110,10 +107,10 @@ mirror-3        44244963328     909237776384    0       17      33476   261787
         var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.Equal("tank", stats.Pool);
-        Assert.Equal(4, stats.Stats[0].ChildStats.Count());
+        Assert.Equal(4, stats.Stats[0].ChildStats.Count);
         foreach (var child in stats.Stats[0].ChildStats)
         {
-            Assert.Equal(2, child.ChildStats.Count());
+            Assert.Equal(2, child.ChildStats.Count);
         }
 
         for (int x = 0; x < stats.Stats[0].ChildStats.Count; x++)
@@ -143,7 +140,7 @@ mirror-3        44236693504     909246046208    0       17      33483   261768  
         var stats = ZPoolIOStatParser.ParseStdOut("tank", stdOut);
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.Equal("tank", stats.Pool);
-        Assert.Equal(4, stats.Stats[0].ChildStats.Count());
+        Assert.Equal(4, stats.Stats[0].ChildStats.Count);
         for (int x = 0; x < stats.Stats[0].ChildStats.Count; x++)
         {
             var stat = stats.Stats[0].ChildStats[x];

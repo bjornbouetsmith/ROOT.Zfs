@@ -84,7 +84,7 @@ public class SnapshotTest
 
         var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
 
-        Assert.Equal(3, snaps.Count());
+        Assert.Equal(3, snaps.Count);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
         sn.Destroy(args);
 

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Xunit;
+﻿using Xunit;
 using ROOT.Zfs.Core.Helpers;
 
 namespace ROOT.Zfs.Tests.Helpers;
@@ -185,9 +184,9 @@ a user|group|project specifier of one of these forms:
         Assert.NotNull(properties);
         Assert.NotNull(properties);
         // We only list editable, those where EDITABLE=YES
-        Assert.Equal(53, properties.Count());
-        Assert.Equal("aclinherit", properties.First().PropertyName);
-        Assert.Equal("projectobjquota@...", properties.Last().PropertyName);
+        Assert.Equal(53, properties.Count);
+        Assert.Equal("aclinherit", properties[0].PropertyName);
+        Assert.Equal("projectobjquota@...", properties[^1].PropertyName);
     }
     [Fact]
     public void ParseZpoolTestShouldParseWithoutErrors()
@@ -195,9 +194,9 @@ a user|group|project specifier of one of these forms:
         var properties = PropertiesParser.FromStdOutput(zpoolResponse, 3);
         Assert.NotNull(properties);
         // We only list editable, those where EDITABLE=YES
-        Assert.Equal(16, properties.Count());
-        Assert.Equal("altroot", properties.First().PropertyName);
-        Assert.Equal("feature@...", properties.Last().PropertyName);
+        Assert.Equal(16, properties.Count);
+        Assert.Equal("altroot", properties[0].PropertyName);
+        Assert.Equal("feature@...", properties[^1].PropertyName);
     }
 
     [Fact]
@@ -205,7 +204,7 @@ a user|group|project specifier of one of these forms:
     {
         var properties = PropertiesParser.FromStdOutput(InvalidZPoolResponse, 3);
         Assert.NotNull(properties);
-        Assert.Single(properties);
-        Assert.Equal("ashift",properties.First().PropertyName);
+        var property = Assert.Single(properties);
+        Assert.Equal("ashift", property.PropertyName);
     }
 }

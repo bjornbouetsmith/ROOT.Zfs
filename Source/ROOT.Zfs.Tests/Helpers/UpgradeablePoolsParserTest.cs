@@ -1,7 +1,6 @@
 ﻿using System;
 using Xunit;
 using ROOT.Zfs.Core.Helpers;
-using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
@@ -42,11 +41,10 @@ backup
       draid
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.Single(pools);
-        var pool = pools[0];
+        var pool = Assert.Single(pools);
         Assert.Equal("backup", pool.PoolName);
 
-        Assert.Equal(2, pool.MissingFeatures.Count());
+        Assert.Equal(2, pool.MissingFeatures.Count);
         Assert.Equal("edonr", pool.MissingFeatures[0]);
         Assert.Equal("draid", pool.MissingFeatures[1]);
 
@@ -78,18 +76,18 @@ tank3
       device_removal
 ";
         var pools = UpgradeablePoolsParser.ParseStdOut(output);
-        Assert.Equal(2, pools.Count());
+        Assert.Equal(2, pools.Count);
         var pool = pools[0];
         Assert.Equal("backup", pool.PoolName);
 
-        Assert.Equal(2, pool.MissingFeatures.Count());
+        Assert.Equal(2, pool.MissingFeatures.Count);
         Assert.Equal("edonr", pool.MissingFeatures[0]);
         Assert.Equal("draid", pool.MissingFeatures[1]);
 
         pool = pools[1];
         Assert.Equal("tank3", pool.PoolName);
 
-        Assert.Equal(3, pool.MissingFeatures.Count());
+        Assert.Equal(3, pool.MissingFeatures.Count);
         Assert.Equal("encryption", pool.MissingFeatures[0]);
         Assert.Equal("project_quota", pool.MissingFeatures[1]);
         Assert.Equal("device_removal", pool.MissingFeatures[2]);

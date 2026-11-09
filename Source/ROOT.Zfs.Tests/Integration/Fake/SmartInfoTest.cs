@@ -27,7 +27,7 @@ public class SmartInfoTest
         var infos = await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
         Assert.NotNull(infos);
-        Assert.Equal(2, infos.Count());
+        Assert.Equal(2, infos.Count);
         Assert.Contains("/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5", _remoteProcessCall.GetCommandsInvoked());
         Assert.Contains("/sbin/smartctl -x /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6", _remoteProcessCall.GetCommandsInvoked());
         Assert.Equal(4, _remoteProcessCall.AsyncLoadResponseCalls);
@@ -45,9 +45,9 @@ public class SmartInfoTest
         var infos = await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
         // All commands, including the smartctl calls, must have completed before the returned read-only list is returned.
-        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
-        Assert.Equal(2, infos.Count());
-        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count);
+        Assert.Equal(2, infos.Count);
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count);
     }
 
     [Theory]
@@ -60,7 +60,7 @@ public class SmartInfoTest
 
         await zfs.GetSmartInfosAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(4, _remoteProcessCall.AsyncCancellationTokens.Count());
+        Assert.Equal(4, _remoteProcessCall.AsyncCancellationTokens.Count);
         Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
         Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[1]);
         Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[2]);
@@ -140,8 +140,8 @@ public class SmartInfoTest
 
         await zfs.GetSmartInfoAsync(deviceId, TestContext.Current.CancellationToken);
 
-        Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
-        Assert.Equal(TestContext.Current.CancellationToken, _remoteProcessCall.AsyncCancellationTokens[0]);
+        var token = Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
     }
 
     [Theory]

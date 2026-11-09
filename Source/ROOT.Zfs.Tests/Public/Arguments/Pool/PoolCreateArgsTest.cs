@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Xunit;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data.Pools;
@@ -23,7 +22,7 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.False(valid);
 
-        Assert.Equal(2, errors.Count());
+        Assert.Equal(2, errors.Count);
         Assert.Contains(errors, e => e.Contains("Name cannot be empty"));
         Assert.Contains(errors, e => e.Contains("Please provide vdevs"));
     }
@@ -35,14 +34,14 @@ public class PoolCreateArgsTest
 
         var valid = args.Validate(out var errors);
         Assert.False(valid);
-        Assert.Single(errors);
-        Assert.Contains("Please provide vdevs", errors[0]);
+        var error = Assert.Single(errors);
+        Assert.Contains("Please provide vdevs", error);
 
         args.VDevs = Array.Empty<VDevCreationArgs>();
         valid = args.Validate(out errors);
         Assert.False(valid);
-        Assert.Single(errors);
-        Assert.Contains("Please provide vdevs", errors[0]);
+        error = Assert.Single(errors);
+        Assert.Contains("Please provide vdevs", error);
     }
 
     [Fact]
@@ -62,8 +61,8 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.False(valid);
         _output.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.Single(errors);
-        Assert.Contains("Please provide the proper amount of minimum", errors[0]);
+        var error = Assert.Single(errors);
+        Assert.Contains("Please provide the proper amount of minimum", error);
     }
 
 
@@ -85,8 +84,8 @@ public class PoolCreateArgsTest
         var valid = args.Validate(out var errors);
         Assert.False(valid);
         _output.WriteLine(string.Join(Environment.NewLine, errors));
-        Assert.Single(errors);
-        Assert.Contains("Please provide at least two devices", errors[0]);
+        var error = Assert.Single(errors);
+        Assert.Contains("Please provide at least two devices", error);
 
     }
 }

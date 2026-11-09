@@ -2,7 +2,6 @@
 using Xunit;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core.Helpers;
-using System.Linq;
 
 namespace ROOT.Zfs.Tests.Helpers;
 
@@ -144,7 +143,7 @@ tank3:
     {
         var versions = ZdbHelper.ParsePoolVersions(OutputTwoPools);
         _output.WriteLine(versions.Dump(new JsonFormatter()));
-        Assert.Equal(2, versions.Count());
+        Assert.Equal(2, versions.Count);
         var info = versions[0];
         Assert.Equal("backup", info.PoolName);
         Assert.Equal(5000, info.Version);
@@ -167,8 +166,7 @@ tank3:
     version: v5000
     name: 'backup'");
 
-        Assert.Single(versions);
-        var info = versions[0];
+        var info = Assert.Single(versions);
         Assert.Equal("backup", info.PoolName);
         Assert.Equal(0, info.Version);
     }

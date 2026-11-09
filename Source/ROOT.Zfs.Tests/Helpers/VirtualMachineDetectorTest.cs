@@ -42,7 +42,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.True(isVirtualMachine);
-        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(2, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/usr/sbin/virt-what", _remoteProcessCall.GetCommandsInvoked());
     }
 
@@ -55,7 +55,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.True(isVirtualMachine);
-        Assert.Equal(3, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(3, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/usr/bin/hostnamectl status", _remoteProcessCall.GetCommandsInvoked());
     }
 
@@ -68,7 +68,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.True(isVirtualMachine);
-        Assert.Equal(5, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(5, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/bin/cat /proc/cpuinfo", _remoteProcessCall.GetCommandsInvoked());
     }
 
@@ -95,7 +95,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.True(isVirtualMachine);
-        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name", _remoteProcessCall.GetCommandsInvoked());
     }
 
@@ -111,7 +111,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.True(isVirtualMachine);
-        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(4, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/bin/cat /sys/class/dmi/id/sys_vendor /sys/class/dmi/id/product_name", _remoteProcessCall.GetCommandsInvoked());
         Assert.DoesNotContain("/bin/cat /proc/cpuinfo", _remoteProcessCall.GetCommandsInvoked());
         Assert.Equal(4, _remoteProcessCall.AsyncLoadResponseCalls);
@@ -127,7 +127,7 @@ public class VirtualMachineDetectorTest
         var isVirtualMachine = await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
         Assert.False(isVirtualMachine);
-        Assert.Equal(5, _remoteProcessCall.GetCommandsInvoked().Count());
+        Assert.Equal(5, _remoteProcessCall.GetCommandsInvoked().Count);
         Assert.Contains("/usr/bin/systemd-detect-virt --vm", _remoteProcessCall.GetCommandsInvoked());
         Assert.Contains("/usr/sbin/virt-what", _remoteProcessCall.GetCommandsInvoked());
         Assert.Contains("/usr/bin/hostnamectl status", _remoteProcessCall.GetCommandsInvoked());
@@ -143,7 +143,7 @@ public class VirtualMachineDetectorTest
 
         await detector.IsVirtualMachineAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(5, _remoteProcessCall.AsyncCancellationTokens.Count());
+        Assert.Equal(5, _remoteProcessCall.AsyncCancellationTokens.Count);
         Assert.True(_remoteProcessCall.AsyncCancellationTokens.All(token => token == TestContext.Current.CancellationToken));
     }
 
