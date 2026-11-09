@@ -220,10 +220,12 @@ public class FakePropertiesTest
     /// <summary>
     /// We cannot test that reset works with the current fake implementation.
     /// </summary>
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public async Task ResetPropertyTestAsync()
+    [InlineData(true), InlineData(false)]
+    public async Task ResetPropertyTestAsync(bool completeAsyncResponses)
     {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
         var pr = GetProperties();
 
         var target = "tank/myds";
@@ -235,13 +237,65 @@ public class FakePropertiesTest
         var setArg = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property, Value = "on" };
         await pr.SetAsync(setArg, TestContext.Current.CancellationToken);
         var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
-        pr.Reset(inheritArgs);
+        await pr.ResetAsync(inheritArgs, TestContext.Current.CancellationToken);
 
         var commands = _remoteProcessCall.GetCommandsInvoked();
 
         _output.WriteLine(commands.Dump(new JsonFormatter()));
         // Get, set & get, inherit
         Assert.Equal(4, commands.Count);
+        Assert.Equal("/sbin/zfs inherit -rS atime tank/myds", commands[3]);
+        Assert.Equal(4, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
+    }
 
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task ResetDataSetPropertyAsyncTest(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        var args = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime" };
+
+        await pr.ResetAsync(args, TestContext.Current.CancellationToken);
+
+        Assert.Equal(1, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
+        var command = Assert.Single(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal("/sbin/zfs inherit -rS atime tank/myds", command);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task ResetAsyncForwardsCancellationToken(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        var args = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime" };
+
+        await pr.ResetAsync(args, TestContext.Current.CancellationToken);
+
+        var token = Assert.Single(_remoteProcessCall.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task ResetAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
+    {
+        _remoteProcessCall.CompleteAsyncResponses = completeAsyncResponses;
+        var pr = GetProperties();
+        var args = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = "tank/myds", Property = "atime" };
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => pr.ResetAsync(args, cancellationTokenSource.Token));
+
+        Assert.Empty(_remoteProcessCall.GetCommandsInvoked());
+        Assert.Equal(0, _remoteProcessCall.AsyncLoadResponseCalls);
+        Assert.Equal(0, _remoteProcessCall.SyncLoadResponseCalls);
     }
 }

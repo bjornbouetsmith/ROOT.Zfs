@@ -68,10 +68,12 @@ internal sealed class Properties : ZfsBase, IProperties
     }
 
     /// <inheritdoc />
-    public void Reset(InheritPropertyArgs args)
+    public async Task ResetAsync(InheritPropertyArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Inherit(args));
 
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
@@ -124,7 +123,7 @@ public class PropertiesTest
             var prop = await pr.SetAsync(setArg, TestContext.Current.CancellationToken);
             Assert.Equal("off", prop.Value);
             var inheritArgs = new InheritPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
-            pr.Reset(inheritArgs);
+            await pr.ResetAsync(inheritArgs, TestContext.Current.CancellationToken);
             getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = target, Property = property };
             var reset = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
             Assert.Equal("on", reset.Value);
