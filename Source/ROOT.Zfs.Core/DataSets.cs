@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
@@ -42,7 +41,8 @@ internal sealed class Datasets : ZfsBase, IDatasets
         // Create remains synchronous until it is converted as part of its own async issue.
         var listCommand = BuildCommand(_commands.List(listArgs));
         var listResponse = listCommand.LoadResponse(true);
-        return DatasetHelper.ParseStdOut(listResponse.StdOut).FirstOrDefault();
+        var datasets = DatasetHelper.ParseStdOut(listResponse.StdOut);
+        return datasets.Count > 0 ? datasets[0] : null;
     }
 
     /// <inheritdoc />
