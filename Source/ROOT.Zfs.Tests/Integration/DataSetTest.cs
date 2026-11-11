@@ -77,15 +77,7 @@ public class DataSetTest
             };
 
             var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
-            Dataset parent = null;
-            foreach (var dataSetItem in dataSets)
-            {
-                if (dataSetItem.DatasetName == pool.Name)
-                {
-                    parent = dataSetItem;
-                    break;
-                }
-            }
+            Dataset parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
 
             Assert.NotNull(parent);
             _output.WriteLine(parent.Dump(new JsonFormatter()));

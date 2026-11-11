@@ -108,15 +108,7 @@ public class SnapshotTest
 
         var getds = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
         var datasets = await ds.ListAsync(getds, TestContext.Current.CancellationToken);
-        Dataset myClone = null;
-        foreach (var dataset in datasets)
-        {
-            if (dataset.DatasetName == $"{pool.Name}/mysnap_clone")
-            {
-                myClone = dataset;
-                break;
-            }
-        }
+        var myClone = datasets.FirstOrDefault(d => d.DatasetName == $"{pool.Name}/mysnap_clone");
 
         Assert.NotNull(myClone);
         Assert.True(myClone.IsClone);
