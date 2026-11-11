@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -17,7 +18,7 @@ public class PoolDetachArgs : PoolNameWithDeviceArgs
     {
         var args = new StringBuilder();
         args.Append(command);
-        args.Append($" {Decode(PoolName)} {Decode(Device)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)} {Decode(Device)}");
 
         return args.ToString();
     }

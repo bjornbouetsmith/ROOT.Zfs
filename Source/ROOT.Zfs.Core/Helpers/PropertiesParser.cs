@@ -22,7 +22,7 @@ internal static class PropertiesParser
             }
 
             // IF we are at "PROPERTY" - signal that lines should be parsed
-            if (line.Trim().StartsWith("PROPERTY"))
+            if (line.Trim().StartsWith("PROPERTY", StringComparison.Ordinal))
             {
                 startParsing = true;
                 continue;
@@ -35,7 +35,7 @@ internal static class PropertiesParser
             }
 
             // This line is after last
-            if (line.Trim().StartsWith("The feature@ properties"))
+            if (line.Trim().StartsWith("The feature@ properties", StringComparison.OrdinalIgnoreCase))
             {
                 //no more data
                 break;
@@ -53,7 +53,7 @@ internal static class PropertiesParser
             var property = parts[0];
             var editable = parts[1];
 
-            if (!editable.Equals("YES", StringComparison.OrdinalIgnoreCase))
+            if (!editable.Equals("YES", StringComparison.Ordinal))
             {
                 continue;
             }

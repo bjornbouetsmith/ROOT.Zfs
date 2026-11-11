@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
@@ -39,14 +40,14 @@ public class PoolIOStatsArgs : PoolNameArgs
         var args = new StringBuilder();
         args.Append(command);
         args.Append(" -LlpPvH");
-        args.Append($" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
         if (Devices != null && Devices.Count > 0)
         {
             foreach (var device in Devices)
             {
                 if (!string.IsNullOrWhiteSpace(device))
                 {
-                    args.Append($" {Decode(device)}");
+                    args.Append(CultureInfo.InvariantCulture, $" {Decode(device)}");
                 }
             }
         }

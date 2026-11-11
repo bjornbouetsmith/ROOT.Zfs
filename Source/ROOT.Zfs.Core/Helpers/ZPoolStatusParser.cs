@@ -38,7 +38,7 @@ internal static class ZPoolStatusParser
     {
         // Handle not found
         // cannot open 'tank2': no such pool, comes on std error, so will probably never happen
-        if (input.StartsWith("cannot open") && input.Contains("no such pool"))
+        if (input.StartsWith("cannot open", StringComparison.OrdinalIgnoreCase) && input.Contains("no such pool", StringComparison.OrdinalIgnoreCase))
         {
             return null;
         }
@@ -80,29 +80,29 @@ internal static class ZPoolStatusParser
         {
             trimStart = line.TrimStart();
             // parse stuff
-            if (trimStart.StartsWith("state:"))
+            if (trimStart.StartsWith("state:", StringComparison.OrdinalIgnoreCase))
             {
                 status.State = ParseState(line);
             }
-            else if (trimStart.StartsWith("scan:"))
+            else if (trimStart.StartsWith("scan:", StringComparison.OrdinalIgnoreCase))
             {
                 ParseScanText(status, line);
             }
-            else if (trimStart.StartsWith("status:"))
+            else if (trimStart.StartsWith("status:", StringComparison.OrdinalIgnoreCase))
             {
                 sb = new StringBuilder();
                 sb.AppendLine(line);
                 inStatusText = true;
                 // Include all up until config:
             }
-            else if (inStatusText && !trimStart.StartsWith("config:"))
+            else if (inStatusText && !trimStart.StartsWith("config:", StringComparison.OrdinalIgnoreCase))
             {
                 sb.AppendLine(line);
             }
 
             line = lines[currentIndex++];
 
-        } while (!trimStart.StartsWith("config:"));
+        } while (!trimStart.StartsWith("config:", StringComparison.OrdinalIgnoreCase));
 
         if (sb != null)
         {
@@ -122,7 +122,7 @@ internal static class ZPoolStatusParser
         VDev vdev;
         do
         {
-            if (lines[currentIndex].Trim().StartsWith("errors:"))
+            if (lines[currentIndex].Trim().StartsWith("errors:", StringComparison.OrdinalIgnoreCase))
             {
                 // No more vdevs
                 break;

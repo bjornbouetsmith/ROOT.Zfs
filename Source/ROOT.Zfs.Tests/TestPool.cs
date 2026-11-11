@@ -46,7 +46,7 @@ internal class TestPool : IDisposable
         {
             size = "100M";
         }
-            
+
         CreateTestDisk(name, size);
         return name;
     }
@@ -111,11 +111,12 @@ internal class TestPool : IDisposable
                 _output.WriteLine("Failed to delete disk 1 :{0} - manual cleanup required", disk);
             }
         }
+        _output.WriteLine("Removed TestPool {0} and disks {1}", _args.PoolName, string.Join(',', Disks));
     }
     /// <summary>
     /// Creates a simple mirror pool for any testing where size/type does not really matter
     /// </summary>
-    public static TestPool CreateSimplePool(IProcessCall remoteProcessCall, ITestOutputHelper output = null)
+    public static TestPool CreateSimplePool(IProcessCall remoteProcessCall, ITestOutputHelper output)
     {
         var pool = new TestPool(remoteProcessCall, output);
         try
@@ -141,11 +142,12 @@ internal class TestPool : IDisposable
 
             var status = pool.CreatePool(args);
             Assert.Equal(State.Online, status.State);
+            output.WriteLine("Created pool {0} for testing", name);
             return pool;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Trace.TraceError(ex.ToString());
+            output.WriteLine(ex.ToString());
             pool.Dispose();
             throw;
         }

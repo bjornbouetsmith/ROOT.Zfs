@@ -154,7 +154,7 @@ internal class FakeRemoteConnection : IProcessCall
     public string Arguments => "FAKE";
     public string FullCommandLine { get; set; }
     public string Shell { get; set; } = "/bin/false";
-    public bool UseShell { get; set; } = false;
+    public bool UseShell { get; set; }
     public TimeSpan Timeout { get; set; } = TimeSpan.MaxValue;
     public bool Started => false;
     public bool RequiresSudo { get; set; }

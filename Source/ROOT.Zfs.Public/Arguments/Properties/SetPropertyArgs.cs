@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Properties;
@@ -30,7 +31,7 @@ public class SetPropertyArgs : PropertyArgs
     {
         var args = new StringBuilder();
         args.Append(command);
-        args.Append($" {Decode(Property)}={Decode(Value)} {Decode(Target)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Property)}={Decode(Value)} {Decode(Target)}");
         return args.ToString();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -17,11 +18,11 @@ public class PoolClearArgs : PoolNameWithDeviceArgs
     {
         var args = new StringBuilder();
         args.Append(command);
-        args.Append($" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
         var device = Decode(Device);
         if (!string.IsNullOrWhiteSpace(device))
         {
-            args.Append($" {device}");
+            args.Append(CultureInfo.InvariantCulture, $" {device}");
         }
 
         return args.ToString();

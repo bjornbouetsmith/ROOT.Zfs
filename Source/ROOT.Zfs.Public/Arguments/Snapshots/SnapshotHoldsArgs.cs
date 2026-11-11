@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots;
 
@@ -30,7 +31,7 @@ public class SnapshotHoldsArgs : SnapshotArgs
         }
 
         var rawSnapshot = GetRawSnapshotName();
-        args.Append($" -H {Decode(Dataset)}@{rawSnapshot}");
+        args.Append(CultureInfo.InvariantCulture, $" -H {Decode(Dataset)}@{rawSnapshot}");
 
         return args.ToString();
     }

@@ -9,6 +9,7 @@ using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
+using System.Globalization;
 
 namespace ROOT.Zfs.Tests.Integration;
 
@@ -131,7 +132,7 @@ public class DataSetTest
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var dsHelper = GetDataSets();
-        var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+        var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
         var root = $"{pool.Name}/myds/{rootId}";
         var child1 = $"{pool.Name}/myds/{rootId}/child1";
         var child2 = $"{pool.Name}/myds/{rootId}/child2";

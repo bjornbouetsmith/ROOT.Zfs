@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Smart;
@@ -113,11 +114,11 @@ internal static class SmartInfoParser
         var indexOfSpace = lbaField.Value.IndexOf(' ', StringComparison.InvariantCulture);
         if (indexOfSpace == -1)
         {
-            return ulong.Parse(lbaField.Value);
+            return ulong.Parse(lbaField.Value, CultureInfo.InvariantCulture);
         }
 
         var lba = lbaField.Value[..indexOfSpace].Trim();
-        return ulong.Parse(lba);
+        return ulong.Parse(lba, CultureInfo.InvariantCulture);
 
     }
 
@@ -129,7 +130,7 @@ internal static class SmartInfoParser
             return 0;
         }
 
-        return ulong.Parse(attribute.RawValue);
+        return ulong.Parse(attribute.RawValue, CultureInfo.InvariantCulture);
     }
 
     private static ulong GetLbasRead(IList<SmartInfoAttribute> attributes)
@@ -140,7 +141,7 @@ internal static class SmartInfoParser
             return 0;
         }
 
-        return ulong.Parse(attribute.RawValue);
+        return ulong.Parse(attribute.RawValue, CultureInfo.InvariantCulture);
     }
 
     private static ulong GetNvmeUnits(bool read, string stdOut)
@@ -164,7 +165,7 @@ internal static class SmartInfoParser
         var value = stdOut[indexOfField..eofIndex].Trim();
         var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var units = parts[0].Replace(",", "");
-        return ulong.Parse(units);
+        return ulong.Parse(units, CultureInfo.InvariantCulture);
 
     }
 
@@ -222,7 +223,7 @@ internal static class SmartInfoParser
     {
         var attribute = new SmartInfoAttribute();
         var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        attribute.Id = int.Parse(parts[0].Trim());
+        attribute.Id = int.Parse(parts[0].Trim(), CultureInfo.InvariantCulture);
         attribute.Name = parts[1];
         attribute.RawValue = string.Join(" ", parts.Skip(9));
         attribute.RawLine = line;

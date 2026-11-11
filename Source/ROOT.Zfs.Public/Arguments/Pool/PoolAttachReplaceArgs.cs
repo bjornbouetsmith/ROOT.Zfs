@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using ROOT.Zfs.Public.Data;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -92,16 +93,16 @@ public class PoolAttachReplaceArgs : Args
 
         if (ashift != null)
         {
-            args.Append($" -o ashift={ashift.Value}");
+            args.Append(CultureInfo.InvariantCulture, $" -o ashift={ashift.Value}");
         }
 
-        args.Append($" {Decode(PoolName)}");
-        args.Append($" {Decode(OldDevice)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(OldDevice)}");
 
         var newDev = Decode(NewDevice);
         if (!string.IsNullOrWhiteSpace(newDev))
         {
-            args.Append($" {newDev}");
+            args.Append(CultureInfo.InvariantCulture, $" {newDev}");
         }
 
         return args.ToString();

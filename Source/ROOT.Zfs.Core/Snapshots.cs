@@ -69,7 +69,7 @@ internal sealed class Snapshots : ZfsBase, ISnapshots
         if (decodedSnapshot.Contains('@'))
         {
             realName = decodedSnapshot[(decodedSnapshot.IndexOf('@') + 1)..];
-            if (!decodedSnapshot.StartsWith(datasetOrVolume))
+            if (!decodedSnapshot.StartsWith(datasetOrVolume, StringComparison.OrdinalIgnoreCase))
             {
                 // Wrong dataset
                 return false;

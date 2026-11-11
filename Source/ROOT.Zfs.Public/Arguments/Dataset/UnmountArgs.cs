@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Dataset;
@@ -78,7 +79,7 @@ public class UnmountArgs : Args
 
         if (!UnmountAllFileSystems)
         {
-            args.Append($" {Filesystem}");
+            args.Append(CultureInfo.InvariantCulture, $" {Filesystem}");
         }
         else
         {

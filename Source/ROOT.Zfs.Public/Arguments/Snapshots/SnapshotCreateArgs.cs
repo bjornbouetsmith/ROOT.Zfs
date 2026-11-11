@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots;
@@ -41,12 +42,14 @@ public class SnapshotCreateArgs : SnapshotArgs
             snapName = CreateSnapshotName(DateTime.UtcNow.ToLocalTime());
         }
 
-        args.Append($" {Decode(Dataset)}@{snapName}");
+        var decodedDataset = Decode(Dataset);
+
+        args.Append(CultureInfo.InvariantCulture, $" {decodedDataset}@{snapName}");
         return args.ToString();
     }
 
     /// <summary>
     /// Creates a standard snapshot name based on the time passed into the method
     /// </summary>
-    internal static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
+    internal static string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 }

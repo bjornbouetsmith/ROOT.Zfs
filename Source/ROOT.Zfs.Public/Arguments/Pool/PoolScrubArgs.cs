@@ -1,5 +1,6 @@
 ﻿using ROOT.Zfs.Public.Data.Pools;
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
@@ -38,7 +39,7 @@ public class PoolScrubArgs : PoolNameArgs
                 break;
         }
 
-        args.Append($" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
         return args.ToString();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Properties;
@@ -36,7 +37,7 @@ public class InheritPropertyArgs : PropertyArgs
     {
         var args = new StringBuilder();
         args.Append(command);
-        args.Append($" -rS {Property} {Target}");
+        args.Append(CultureInfo.InvariantCulture, $" -rS {Property} {Target}");
 
         return args.ToString();
     }

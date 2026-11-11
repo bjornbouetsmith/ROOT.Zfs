@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots;
@@ -27,7 +28,7 @@ public class SnapshotDestroyArgs : SnapshotArgs
         var dataset = Decode(Dataset);
         var rawSnapName = GetRawSnapshotName();
 
-        args.Append($" {dataset}@{rawSnapName}");
+        args.Append(CultureInfo.InvariantCulture, $" {dataset}@{rawSnapName}");
 
         return args.ToString();
     }

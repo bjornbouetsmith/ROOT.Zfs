@@ -41,7 +41,7 @@ internal static class ZdbHelper
         {
             if (line.StartsWith(' '))
             {
-                if (line.Trim().StartsWith("version:"))
+                if (line.Trim().StartsWith("version:", StringComparison.OrdinalIgnoreCase))
                 {
                     if (info == null)
                     {

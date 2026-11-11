@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots;
@@ -48,9 +49,9 @@ public class SnapshotHoldReleaseArgs : SnapshotArgs
             args.Append(" -r");
         }
 
-        args.Append($" {Decode(Tag)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Tag)}");
         var rawSnap = GetRawSnapshotName();
-        args.Append($" {Decode(Dataset)}@{rawSnap}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Dataset)}@{rawSnap}");
 
         return args.ToString();
     }

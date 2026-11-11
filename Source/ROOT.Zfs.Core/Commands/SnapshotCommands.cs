@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 
@@ -19,7 +20,7 @@ internal sealed class SnapshotCommands : CommandBuilderBase, ISnapshotCommands
     /// <summary>
     /// Creates a standard snapshot name based on the time passed into the method
     /// </summary>
-    public string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss");
+    public string CreateSnapshotName(DateTime dateTime) => dateTime.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Returns a command to list snapshots in the given dataset or volume

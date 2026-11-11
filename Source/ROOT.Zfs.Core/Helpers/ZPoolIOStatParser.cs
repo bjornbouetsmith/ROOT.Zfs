@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Statistics;
@@ -117,7 +118,7 @@ internal static class ZPoolIOStatParser
             return TimeSpan.Zero;
         }
 
-        var nano = long.Parse(nanos);
+        var nano = long.Parse(nanos, CultureInfo.InvariantCulture);
             
         return new TimeSpan(nano / 100);
     }
@@ -128,13 +129,13 @@ internal static class ZPoolIOStatParser
         stat.Capacity = new Capacity { Allocated = new Size(parts[1]), Free = new Size(parts[2]) };
         stat.Operations = new Operations
         {
-            Read = int.Parse(parts[3]),
-            Write = int.Parse(parts[4])
+            Read = int.Parse(parts[3], CultureInfo.InvariantCulture),
+            Write = int.Parse(parts[4], CultureInfo.InvariantCulture)
         };
 
 
-        ulong bwReads = ulong.Parse(parts[5]);
-        ulong bwWrites = ulong.Parse(parts[6]);
+        ulong bwReads = ulong.Parse(parts[5], CultureInfo.InvariantCulture);
+        ulong bwWrites = ulong.Parse(parts[6], CultureInfo.InvariantCulture);
             
         stat.Bandwidth = new Bandwidth { Read = bwReads, Write = bwWrites };
     }

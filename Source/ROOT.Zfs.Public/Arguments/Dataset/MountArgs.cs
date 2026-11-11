@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using ROOT.Zfs.Public.Data;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments.Dataset;
 
@@ -116,7 +117,7 @@ public class MountArgs : Args
 
         if (!MountAllFileSystems)
         {
-            args.Append($" {Filesystem}");
+            args.Append(CultureInfo.InvariantCulture, $" {Filesystem}");
         }
         else
         {
