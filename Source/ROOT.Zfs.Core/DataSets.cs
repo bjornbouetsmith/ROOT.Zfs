@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -19,10 +20,13 @@ internal sealed class Datasets : ZfsBase, IDatasets
         _commands = commands;
     }
 
-    public IList<Dataset> List(DatasetListArgs args)
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Dataset>> ListAsync(DatasetListArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.List(args));
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         return DatasetHelper.ParseStdOut(response.StdOut);
     }
 
@@ -33,7 +37,12 @@ internal sealed class Datasets : ZfsBase, IDatasets
 
         pc.LoadResponse(true);
         var listArgs = new DatasetListArgs { Root = arguments.DatasetName, IncludeChildren = false, DatasetTypes = arguments.Type };
-        return List(listArgs).FirstOrDefault();
+
+        // Create remains synchronous until it is converted as part of its own async issue.
+        var listCommand = BuildCommand(_commands.List(listArgs));
+        var listResponse = listCommand.LoadResponse(true);
+        var datasets = DatasetHelper.ParseStdOut(listResponse.StdOut);
+        return datasets.Count > 0 ? datasets[0] : null;
     }
 
     /// <inheritdoc />

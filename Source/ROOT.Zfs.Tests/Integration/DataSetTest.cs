@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -7,6 +8,7 @@ using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests.Integration;
 
@@ -30,12 +32,12 @@ public class DataSetTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetDataSetList()
+    public async Task GetDataSetList()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
 
         var ds = GetDataSets();
-        var dataSets = ds.List(new DatasetListArgs());
+        var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
         Assert.NotNull(dataSets);
         foreach (var set in dataSets)
         {
@@ -45,13 +47,14 @@ public class DataSetTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ListDataSetTest()
+    public async Task ListDataSetTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
-        var dataset = ds.List(args).FirstOrDefault();
-        Assert.NotNull(dataset);
+        var dataSets = await ds.ListAsync(args, TestContext.Current.CancellationToken);
+        Assert.NotEmpty(dataSets);
+        var dataset = dataSets[0];
         Assert.Equal(pool.Name, dataset.DatasetName);
     }
 
@@ -59,7 +62,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     [InlineData(true)]
     [InlineData(false)]
-    public void CreateDataSetTest(bool addProperties)
+    public async Task CreateDataSetTest(bool addProperties)
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
@@ -73,8 +76,9 @@ public class DataSetTest
                 new PropertyValue { Property = "compression", Value = "gzip" }
             };
 
-            var dataSets = ds.List(new DatasetListArgs()).ToList();
-            var parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
+            var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
+            Dataset parent = dataSets.FirstOrDefault(d => d.DatasetName == pool.Name);
+
             Assert.NotNull(parent);
             _output.WriteLine(parent.Dump(new JsonFormatter()));
             fullName = DatasetHelper.CreateDatasetName(parent.DatasetName, dataSetName);
@@ -101,23 +105,24 @@ public class DataSetTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ListDataSetShouldReturnDataSet()
+    public async Task ListDataSetShouldReturnDataSet()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
-        var root = ds.List(args).FirstOrDefault();
+        var dataSets = await ds.ListAsync(args, TestContext.Current.CancellationToken);
+        Assert.NotEmpty(dataSets);
+        var root = dataSets[0];
 
-        Assert.NotNull(root);
         _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetNonExistingDataSetShouldThrowException()
+    public async Task GetNonExistingDataSetShouldThrowException()
     {
         var ds = GetDataSets();
-        Assert.Throws<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
+        await Assert.ThrowsAsync<ProcessCallException>(() => ds.ListAsync(new DatasetListArgs { Root = "ungabunga" }, TestContext.Current.CancellationToken));
     }
 
     [Fact]
