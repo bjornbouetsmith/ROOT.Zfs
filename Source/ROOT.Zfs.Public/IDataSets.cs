@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Data.Datasets;
 
@@ -15,7 +17,10 @@ public interface IDatasets : IBasicZfs
     /// List datasets with the given root, possibly also returning child datasets
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-list.8.html
     /// </summary>
-    IList<Dataset> List(DatasetListArgs args);
+    /// <param name="args">The arguments that describe which datasets to list.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of the datasets that match the arguments.</returns>
+    Task<IReadOnlyList<Dataset>> ListAsync(DatasetListArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Creates a dataset based on the input arguments.

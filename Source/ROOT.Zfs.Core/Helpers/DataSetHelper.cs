@@ -25,7 +25,7 @@ internal static class DatasetHelper
         return $"{parent}/{dataSet}";
     }
 
-    public static IList<Dataset> ParseStdOut(string stdOut)
+    public static IReadOnlyList<Dataset> ParseStdOut(string stdOut)
     {
         var list = new List<Dataset>();
         foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))

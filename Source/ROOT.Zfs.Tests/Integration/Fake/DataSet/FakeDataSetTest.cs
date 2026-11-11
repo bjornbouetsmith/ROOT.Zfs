@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -26,41 +27,110 @@ public abstract class FakeDataSetTest
         return ZfsTestFactory.CreateDatasets(remoteConnection ?? CreateProcessCall());
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void ListTest()
+    [InlineData(true), InlineData(false)]
+    public async Task ListAsyncTest(bool completeAsyncResponses)
     {
-        var ds = GetDatasets();
-        var dataSets = ds.List(new DatasetListArgs());
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+
+        var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
+
         Assert.NotNull(dataSets);
+        Assert.NotEmpty(dataSets);
         foreach (var set in dataSets)
         {
             _output.WriteLine(set.Dump(new JsonFormatter()));
         }
+
+        var command = Assert.Single(remoteConnection.GetCommandsInvoked());
+        Assert.Equal("/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem,volume", command);
+        Assert.Equal(1, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
-
-
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void GetDataSetShouldReturnDataSet()
+    [InlineData(true), InlineData(false)]
+    public async Task GetDataSetShouldReturnDataSetAsync(bool completeAsyncResponses)
     {
-        var ds = GetDatasets();
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
         var args = new DatasetListArgs { Root = "tank" };
-        var root = ds.List(args).FirstOrDefault();
 
-        Assert.NotNull(root);
+        var dataSets = await ds.ListAsync(args, TestContext.Current.CancellationToken);
+
+        Assert.NotEmpty(dataSets);
+        var root = dataSets[0];
         Assert.Equal("tank", root.DatasetName);
         Assert.Equal(DatasetTypes.Filesystem, root.Type);
         _output.WriteLine(root.Dump(new JsonFormatter()));
     }
 
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task GetNonExistingDataSetShouldThrowExceptionAsync(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+
+        await Assert.ThrowsAsync<ProcessCallException>(() => ds.ListAsync(new DatasetListArgs { Root = "ungabunga" }, TestContext.Current.CancellationToken));
+
+        Assert.Equal(1, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+    }
+
     [Fact]
     [Trait("Category", "FakeIntegration")]
-    public void GetNonExistingDataSetShouldThrowException()
+    public async Task ListAsyncReturnsMaterializedList()
     {
-        var ds = GetDatasets();
-        Assert.Throws<ProcessCallException>(() => ds.List(new DatasetListArgs { Root = "ungabunga" }).FirstOrDefault());
+        var remoteConnection = CreateProcessCall();
+        var ds = GetDatasets(remoteConnection);
+
+        var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
+
+        // The command must have completed before the returned list is used.
+        Assert.Single(remoteConnection.GetCommandsInvoked());
+        Assert.NotEmpty(dataSets);
+        Assert.Single(remoteConnection.GetCommandsInvoked());
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task ListAsyncForwardsCancellationToken(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+
+        await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
+
+        var token = Assert.Single(remoteConnection.AsyncCancellationTokens);
+        Assert.Equal(TestContext.Current.CancellationToken, token);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task ListAsyncWithCancelledTokenDoesNotRunCommand(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => ds.ListAsync(new DatasetListArgs(), cancellationTokenSource.Token));
+
+        Assert.Empty(remoteConnection.GetCommandsInvoked());
+        Assert.Equal(0, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
     [Fact]

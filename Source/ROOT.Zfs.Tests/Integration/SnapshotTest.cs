@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Arguments.Snapshots;
+using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests.Integration;
 
@@ -94,7 +96,7 @@ public class SnapshotTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void CloneSnapshotTest()
+    public async Task CloneSnapshotTest()
     {
         var sn = GetSnapshots();
         var ds = GetDatasets();
@@ -105,8 +107,17 @@ public class SnapshotTest
         sn.Clone(args);
 
         var getds = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
-        var datasets = ds.List(getds);
-        var myClone = datasets.FirstOrDefault(d => d.DatasetName == $"{pool.Name}/mysnap_clone");
+        var datasets = await ds.ListAsync(getds, TestContext.Current.CancellationToken);
+        Dataset myClone = null;
+        foreach (var dataset in datasets)
+        {
+            if (dataset.DatasetName == $"{pool.Name}/mysnap_clone")
+            {
+                myClone = dataset;
+                break;
+            }
+        }
+
         Assert.NotNull(myClone);
         Assert.True(myClone.IsClone);
     }
