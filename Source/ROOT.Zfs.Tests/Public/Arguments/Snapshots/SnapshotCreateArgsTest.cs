@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Xunit;
 using ROOT.Zfs.Public.Arguments.Snapshots;
 
@@ -50,7 +51,7 @@ public class SnapshotCreateArgsTest
         }
         else
         {
-            var suffix = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHH");
+            var suffix = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHH", CultureInfo.InvariantCulture);
             Assert.StartsWith(expected + suffix, stringVer);
         }
 

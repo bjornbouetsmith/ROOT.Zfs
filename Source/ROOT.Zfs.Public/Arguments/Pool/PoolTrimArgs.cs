@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using ROOT.Zfs.Public.Data;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -70,7 +71,7 @@ public class PoolTrimArgs : Args
 
         if (TrimRate.Bytes > 0)
         {
-            args.Append($" -r {TrimRate}");
+            args.Append(CultureInfo.InvariantCulture, $" -r {TrimRate}");
         }
 
         if (Action != TrimAction.None)
@@ -78,11 +79,11 @@ public class PoolTrimArgs : Args
             args.Append(Action == TrimAction.Cancel ? " -c" : " -s");
         }
 
-        args.Append($" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
         var device = Decode(DeviceName);
         if (!string.IsNullOrWhiteSpace(device))
         {
-            args.Append($" {device}");
+            args.Append(CultureInfo.InvariantCulture, $" {device}");
         }
 
         return args.ToString();

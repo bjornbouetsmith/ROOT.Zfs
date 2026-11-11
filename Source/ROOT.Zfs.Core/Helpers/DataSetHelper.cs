@@ -46,7 +46,7 @@ internal static class DatasetHelper
     /// <exception cref="ArgumentException">If the line is not in the correct format</exception>
     public static Dataset ParseLine(string line)
     {
-        var parts = line.Split( Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
+        var parts = line.Split(Constants.WhitespaceCharacters, StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length != 8)
         {
@@ -66,7 +66,7 @@ internal static class DatasetHelper
             Available = new Size(parts[4]),
             Refer = new Size(parts[5]),
             Mountpoint = parts[6],
-            IsClone = !parts[7].Equals("-", StringComparison.InvariantCultureIgnoreCase),
+            IsClone = parts[7][0] != '-',
         };
 
         return dataset;

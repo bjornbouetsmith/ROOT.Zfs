@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using ROOT.Zfs.Public.Data;
@@ -100,7 +101,7 @@ public class DatasetCreationArgs : Args
 
         if (Type == DatasetTypes.Volume)
         {
-            args.Append($" -b {VolumeArguments.BlockSize} -V {VolumeArguments.VolumeSize}");
+            args.Append(CultureInfo.InvariantCulture, $" -b {VolumeArguments.BlockSize} -V {VolumeArguments.VolumeSize}");
             if (VolumeArguments.Sparse)
             {
                 args.Append(" -s");
@@ -120,10 +121,10 @@ public class DatasetCreationArgs : Args
         var propCommand = Properties != null ? string.Join(' ', Properties.Select(p => $"-o {Decode(p.Property)}={Decode(p.Value)}")) : string.Empty;
         if (propCommand != string.Empty)
         {
-            args.Append($" {propCommand}");
+            args.Append(CultureInfo.InvariantCulture, $" {propCommand}");
         }
 
-        args.Append($" {Decode(DatasetName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(DatasetName)}");
 
         return args.ToString();
     }

@@ -23,7 +23,7 @@ public abstract class ZfsBase : IBasicZfs
     public TimeSpan CommandTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <inheritdoc />
-    public bool RequiresSudo { get; set; } = false;
+    public bool RequiresSudo { get; set; }
 
     /// <summary>
     /// Builds a command so any settings are applied correctly

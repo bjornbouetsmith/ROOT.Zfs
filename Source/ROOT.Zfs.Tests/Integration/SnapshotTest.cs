@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -7,7 +8,6 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Public.Arguments.Dataset;
 using ROOT.Zfs.Public.Arguments.Snapshots;
-using ROOT.Zfs.Public.Data.Datasets;
 
 namespace ROOT.Zfs.Tests.Integration;
 
@@ -57,7 +57,7 @@ public class SnapshotTest
     [Trait("Category", "Integration")]
     public void RemoteCreateAndDestroySnapshot()
     {
-        var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss");
+        var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss", CultureInfo.InvariantCulture);
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var sn = GetSnapshots();
 
@@ -65,7 +65,7 @@ public class SnapshotTest
 
         var snaps = sn.List(new SnapshotListArgs { Root = pool.Name });
 
-        var wasCreated = snaps.FirstOrDefault(snap => snap.SnapshotName.EndsWith(snapName));
+        var wasCreated = snaps.FirstOrDefault(snap => snap.SnapshotName.EndsWith(snapName, StringComparison.Ordinal));
 
         Assert.NotNull(wasCreated);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = snapName, IsExactName = true };
@@ -79,18 +79,18 @@ public class SnapshotTest
     {
         var sn = GetSnapshots();
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
-        var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
+        var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" });
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
         sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" });
 
-        var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix)).ToList();
+        var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal)).ToList();
 
         Assert.Equal(3, snaps.Count);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
         sn.Destroy(args);
 
-        snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix))];
+        snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal))];
         Assert.Empty(snaps);
     }
 

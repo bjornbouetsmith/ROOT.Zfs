@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using ROOT.Zfs.Public.Data;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments.Dataset;
 
@@ -57,12 +58,12 @@ public class DatasetListArgs : Args
             args.Append(" -d 99");
         }
             
-        args.Append($" -t {DatasetTypes.AsString()}");
+        args.Append(CultureInfo.InvariantCulture, $" -t {DatasetTypes.AsString()}");
 
         var root = Decode(Root);
         if (!string.IsNullOrWhiteSpace(root))
         {
-            args.Append($" {root}");
+            args.Append(CultureInfo.InvariantCulture, $" {root}");
         }
 
         return args.ToString();

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -39,8 +40,8 @@ public class PoolOfflineArgs : PoolNameWithDeviceArgs
             args.Append(" -t");
         }
 
-        args.Append($" {Decode(PoolName)}");
-        args.Append($" {Decode(Device)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Device)}");
 
         return args.ToString();
     }

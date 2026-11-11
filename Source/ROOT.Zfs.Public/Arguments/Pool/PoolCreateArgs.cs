@@ -1,5 +1,6 @@
-﻿using System.Text;
-using ROOT.Zfs.Public.Data;
+﻿using ROOT.Zfs.Public.Data;
+using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -36,18 +37,18 @@ public class PoolCreateArgs : PoolAddCreateArgs
         var args = new StringBuilder();
 
         args.Append(command);
-        args.Append($" {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
 
         if (!string.IsNullOrWhiteSpace(MountPoint))
         {
-            args.Append($" -m {MountPoint}");
+            args.Append(CultureInfo.InvariantCulture, $" -m {MountPoint}");
         }
 
         if (PoolProperties != null && PoolProperties.Length > 0)
         {
             foreach (var property in PoolProperties)
             {
-                args.Append($" -o {property.Property}={property.Value}");
+                args.Append(CultureInfo.InvariantCulture, $" -o {property.Property}={property.Value}");
             }
         }
 
@@ -55,7 +56,7 @@ public class PoolCreateArgs : PoolAddCreateArgs
         {
             foreach (var property in FileSystemProperties)
             {
-                args.Append($" -O {property.Property}={property.Value}");
+                args.Append(CultureInfo.InvariantCulture, $" -O {property.Property}={property.Value}");
             }
         }
 

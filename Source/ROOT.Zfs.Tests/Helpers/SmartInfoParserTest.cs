@@ -615,7 +615,7 @@ Offline data collection status:  (0x03) Offline data collection activity
                                         is in progress.";
         var section = SmartInfoParser.ParseSmartInfoSection(stdOut);
         _output.WriteLine(section.Dump(new JsonFormatter()));
-        var serial = section.Fields.FirstOrDefault(f => f.Name.Equals("Serial Number"));
+        var serial = section.Fields.FirstOrDefault(f => f.Name.Equals("Serial Number", StringComparison.OrdinalIgnoreCase));
         Assert.NotNull(serial);
         Assert.Equal("2020286AA686", serial.Value);
     }

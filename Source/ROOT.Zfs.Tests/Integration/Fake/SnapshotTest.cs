@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Xunit;
 using ROOT.Shared.Utils.Serialization;
@@ -45,7 +46,7 @@ public class FakeSnapshotTest
     [Trait("Category", "FakeIntegration")]
     public void RemoteCreateAndDestroySnapshot()
     {
-        var snapName = "RemoteCreateSnapshot" + new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddhhmmss");
+        var snapName = "RemoteCreateSnapshot" + new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddhhmmss", CultureInfo.InvariantCulture);
 
         var sn = GetSnapshots();
 
@@ -75,12 +76,12 @@ public class FakeSnapshotTest
     public void CreateAndDeleteByPatternTest()
     {
         var sn = GetSnapshots();
-        var prefix = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddHHmmssfff");
+        var prefix = new DateTime(2022, 09, 22, 21, 13, 47, DateTimeKind.Local).ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
         sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-1" });
         sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-2" });
         sn.Create(new SnapshotCreateArgs { Dataset = "tank/myds", Snapshot = $"{prefix}-3" });
 
-        var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.SnapshotName.StartsWith($"{prefix}")).ToList();
+        var snaps = sn.List(new SnapshotListArgs { Root = "tank/myds" }).Where(snap => snap.SnapshotName.StartsWith($"{prefix}", StringComparison.OrdinalIgnoreCase)).ToList();
 
         Assert.Equal(3, snaps.Count);
         var args = new SnapshotDestroyArgs { Dataset = "tank/myds", Snapshot = prefix, IsExactName = false };

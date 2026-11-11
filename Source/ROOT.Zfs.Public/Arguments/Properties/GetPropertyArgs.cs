@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Properties;
@@ -63,12 +64,12 @@ public class GetPropertyArgs : PropertyArgs
         }
         else
         {
-            args.Append($" {Property}");
+            args.Append(CultureInfo.InvariantCulture, $" {Property}");
         }
 
         if (!string.IsNullOrWhiteSpace(Target))
         {
-            args.Append($" {Target}");
+            args.Append(CultureInfo.InvariantCulture, $" {Target}");
         }
 
         args.Append(" -H");

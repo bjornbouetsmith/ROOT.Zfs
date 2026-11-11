@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -18,7 +19,7 @@ public class PoolListArgs : PoolNameArgs
         var args = new StringBuilder();
 
         args.Append(command);
-        args.Append($" -PHp {Decode(PoolName)}");
+        args.Append(CultureInfo.InvariantCulture, $" -PHp {Decode(PoolName)}");
             
         return args.ToString();
     }

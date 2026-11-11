@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ROOT.Zfs.Public.Data;
+using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using ROOT.Zfs.Public.Data;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
 
@@ -41,13 +42,13 @@ public class PoolAddArgs : PoolAddCreateArgs
             args.Append(" -f");
         }
 
-        args.Append($" {PoolName}");
+        args.Append(CultureInfo.InvariantCulture, $" {PoolName}");
 
         var ashift = PropertyValues?.FirstOrDefault(p => p.Property.Equals("ashift", StringComparison.OrdinalIgnoreCase));
 
         if (ashift != null)
         {
-            args.Append($" -o ashift={ashift.Value}");
+            args.Append(CultureInfo.InvariantCulture, $" -o ashift={ashift.Value}");
         }
 
         foreach (var vdevArg in VDevs ?? throw new ArgumentException("Missing Vdevs"))

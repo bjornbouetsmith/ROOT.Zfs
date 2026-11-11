@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Pool;
@@ -56,12 +57,12 @@ public class PoolRemoveArgs : Args
 
         if (Cancel)
         {
-            args.Append($" -s {Decode(PoolName)}");
+            args.Append(CultureInfo.InvariantCulture, $" -s {Decode(PoolName)}");
         }
         else
         {
-            args.Append($" {Decode(PoolName)}");
-            args.Append($" {Decode(VDev)}");
+            args.Append(CultureInfo.InvariantCulture, $" {Decode(PoolName)}");
+            args.Append(CultureInfo.InvariantCulture, $" {Decode(VDev)}");
         }
 
         return args.ToString();

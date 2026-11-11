@@ -1,4 +1,5 @@
 ﻿
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Dataset;
@@ -18,7 +19,7 @@ public class PromoteArgs : DatasetNameArgs
     {
         var args = new StringBuilder();
         args.Append(command);
-        args.Append($" {Decode(Name)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Name)}");
 
         return args.ToString();
     }

@@ -17,8 +17,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <WarningsNotAsErrors>CS1591;NU1803;NU1507</WarningsNotAsErrors>
-    <NoWarn>1701;1702;NU1803;NU1507</NoWarn>
+    <NoWarn>CA0055;CA0055;CA1716;CA1711;CA1707</NoWarn>
+    <AnalysisLevel>6.0-recommended</AnalysisLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Dataset;
@@ -56,7 +57,7 @@ public class DatasetDestroyArgs : Args
             args.Append(" -nvp");
         }
 
-        args.Append($" {Decode(Dataset)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Dataset)}");
 
         return args.ToString();
     }

@@ -1,5 +1,6 @@
 ﻿using ROOT.Zfs.Public.Data;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace ROOT.Zfs.Public.Arguments.Snapshots;
@@ -54,13 +55,13 @@ public class SnapshotCloneArgs : SnapshotArgs
         {
             foreach (var prop in Properties)
             {
-                args.Append($" -o {Decode(prop.Property)}={Decode(prop.Value)}");
+                args.Append(CultureInfo.InvariantCulture, $" -o {Decode(prop.Property)}={Decode(prop.Value)}");
             }
         }
 
         var rawSnapName = GetRawSnapshotName();
-        args.Append($" {Decode(Dataset)}@{rawSnapName}");
-        args.Append($" {Decode(TargetDataset)}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(Dataset)}@{rawSnapName}");
+        args.Append(CultureInfo.InvariantCulture, $" {Decode(TargetDataset)}");
 
         return args.ToString();
     }
