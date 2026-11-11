@@ -233,14 +233,72 @@ public abstract class FakeDataSetTest
         Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void DestroyDataSetTest()
+    [InlineData(true), InlineData(false)]
+    public async Task DestroyDataSetTest(bool completeAsyncResponses)
     {
-        var ds = GetDatasets();
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        var cancellationToken = TestContext.Current.CancellationToken;
         var destroyArgs = new DatasetDestroyArgs { Dataset = "tank/myds", DestroyFlags = DatasetDestroyFlags.Recursive };
-        var response = ds.Destroy(destroyArgs);
+
+        var response = await ds.DestroyAsync(destroyArgs, cancellationToken);
+
         Assert.Equal(DatasetDestroyFlags.Recursive, response.Flags);
+        Assert.Null(response.DryRun);
+        var command = Assert.Single(remoteConnection.GetCommandsInvoked());
+        Assert.Equal("/sbin/zfs destroy -r tank/myds", command);
+        Assert.Equal(1, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+        var token = Assert.Single(remoteConnection.AsyncCancellationTokens);
+        Assert.Equal(cancellationToken, token);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task DestroyDataSetDryRunTest(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        const string dryRunOutput = "would destroy tank/myds/child1";
+        remoteConnection.CommandResponses["/sbin/zfs destroy -r -nvp tank/myds"] = (dryRunOutput, null);
+        var ds = GetDatasets(remoteConnection);
+        var cancellationToken = TestContext.Current.CancellationToken;
+        var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
+        var destroyArgs = new DatasetDestroyArgs { Dataset = "tank/myds", DestroyFlags = flags };
+
+        var response = await ds.DestroyAsync(destroyArgs, cancellationToken);
+
+        Assert.Equal(flags, response.Flags);
+        Assert.Equal(dryRunOutput, response.DryRun);
+        var command = Assert.Single(remoteConnection.GetCommandsInvoked());
+        Assert.Equal("/sbin/zfs destroy -r -nvp tank/myds", command);
+        Assert.Equal(1, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+        var token = Assert.Single(remoteConnection.AsyncCancellationTokens);
+        Assert.Equal(cancellationToken, token);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task DestroyDataSetWithCancelledTokenDoesNotRunCommandTest(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        var destroyArgs = new DatasetDestroyArgs { Dataset = "tank/myds", DestroyFlags = DatasetDestroyFlags.Recursive };
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => ds.DestroyAsync(destroyArgs, cancellationTokenSource.Token));
+
+        Assert.Empty(remoteConnection.GetCommandsInvoked());
+        Assert.Equal(0, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
     [Fact]

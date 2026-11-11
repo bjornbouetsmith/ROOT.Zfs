@@ -44,11 +44,12 @@ internal sealed class Datasets : ZfsBase, IDatasets
     }
 
     /// <inheritdoc />
-    public DatasetDestroyResponse Destroy(DatasetDestroyArgs args)
+    public async Task<DatasetDestroyResponse> DestroyAsync(DatasetDestroyArgs args, CancellationToken cancellationToken = default)
     {
-        var pc = BuildCommand(_commands.Destroy(args));
+        cancellationToken.ThrowIfCancellationRequested();
 
-        var response = pc.LoadResponse(true);
+        var pc = BuildCommand(_commands.Destroy(args));
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         if (!args.DestroyFlags.HasFlag(DatasetDestroyFlags.DryRun))
         {
