@@ -109,7 +109,7 @@ public class PropertiesTest
             DatasetName = dataset,
             Type = DatasetTypes.Filesystem
         };
-        dsHelper.Create(args);
+        await dsHelper.CreateAsync(args, TestContext.Current.CancellationToken);
         try
         {
 

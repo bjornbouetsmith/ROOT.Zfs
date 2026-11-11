@@ -26,9 +26,10 @@ public interface IDatasets : IBasicZfs
     /// Creates a dataset based on the input arguments.
     /// </summary>
     /// <param name="arguments">The arguments to use for creating the dataset</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <exception cref="ArgumentException">If any of the passed values in the arguments are not valid</exception>
-    /// <returns>The dataset just created</returns>
-    Dataset Create(DatasetCreationArgs arguments);
+    /// <returns>A task whose result contains the dataset just created, or <c>null</c> if it could not be listed after creation.</returns>
+    Task<Dataset> CreateAsync(DatasetCreationArgs arguments, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Destroys the given dataset.

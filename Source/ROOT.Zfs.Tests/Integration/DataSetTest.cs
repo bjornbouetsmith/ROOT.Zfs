@@ -89,7 +89,7 @@ public class DataSetTest
                 Type = DatasetTypes.Filesystem,
                 Properties = addProperties ? props : null
             };
-            var dataSet = ds.Create(args);
+            var dataSet = await ds.CreateAsync(args, TestContext.Current.CancellationToken);
             Assert.NotNull(dataSet);
             _output.WriteLine(dataSet.Dump(new JsonFormatter()));
         }
@@ -128,7 +128,7 @@ public class DataSetTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void DestroyRecursiveDryRunTest()
+    public async Task DestroyRecursiveDryRunTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var dsHelper = GetDataSets();
@@ -151,7 +151,7 @@ public class DataSetTest
                     CreateParents = true,
 
                 };
-                dsHelper.Create(args);
+                await dsHelper.CreateAsync(args, TestContext.Current.CancellationToken);
             }
 
             var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;

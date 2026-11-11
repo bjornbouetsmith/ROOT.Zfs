@@ -31,17 +31,15 @@ internal sealed class Datasets : ZfsBase, IDatasets
     }
 
     /// <inheritdoc />
-    public Dataset Create(DatasetCreationArgs arguments)
+    public async Task<Dataset> CreateAsync(DatasetCreationArgs arguments, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Create(arguments));
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        pc.LoadResponse(true);
         var listArgs = new DatasetListArgs { Root = arguments.DatasetName, IncludeChildren = false, DatasetTypes = arguments.Type };
-
-        // Create remains synchronous until it is converted as part of its own async issue.
-        var listCommand = BuildCommand(_commands.List(listArgs));
-        var listResponse = listCommand.LoadResponse(true);
-        var datasets = DatasetHelper.ParseStdOut(listResponse.StdOut);
+        var datasets = await ListAsync(listArgs, cancellationToken).ConfigureAwait(false);
         return datasets.Count > 0 ? datasets[0] : null;
     }
 

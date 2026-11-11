@@ -132,11 +132,15 @@ public abstract class FakeDataSetTest
         Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void CreateDateSetTest()
+    [InlineData(true), InlineData(false)]
+    public async Task CreateDataSetTest(bool completeAsyncResponses)
     {
-        var ds = GetDatasets();
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        var cancellationToken = TestContext.Current.CancellationToken;
         var args = new DatasetCreationArgs
         {
             DatasetName = "tank/myds",
@@ -144,15 +148,29 @@ public abstract class FakeDataSetTest
             Properties = [new PropertyValue { Property = "atime", Value = "off" }]
 
         };
-        var dataset = ds.Create(args);
+
+        var dataset = await ds.CreateAsync(args, cancellationToken);
+
         Assert.NotNull(dataset);
+        Assert.Equal("tank/myds", dataset.DatasetName);
+        Assert.Equal(2, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+        Assert.Equal(2, remoteConnection.AsyncCancellationTokens.Count);
+        Assert.All(remoteConnection.AsyncCancellationTokens, token => Assert.Equal(cancellationToken, token));
+        var commands = remoteConnection.GetCommandsInvoked();
+        Assert.Equal(2, commands.Count);
+        Assert.Equal("/sbin/zfs create -o atime=off tank/myds", commands[0]);
+        Assert.Equal("/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds", commands[1]);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void CreateDateSetInvalidTest()
+    [InlineData(true), InlineData(false)]
+    public async Task CreateDataSetInvalidTest(bool completeAsyncResponses)
     {
-        var ds = GetDatasets();
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
         var args = new DatasetCreationArgs
         {
             DatasetName = "tank/myds",
@@ -160,7 +178,59 @@ public abstract class FakeDataSetTest
             Properties = [new PropertyValue { Property = "atime", Value = "off" }]
 
         };
-        Assert.Throws<ArgumentException>(() => ds.Create(args));
+
+        await Assert.ThrowsAsync<ArgumentException>(() => ds.CreateAsync(args, TestContext.Current.CancellationToken));
+
+        Assert.Empty(remoteConnection.GetCommandsInvoked());
+        Assert.Equal(0, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task CreateDataSetReturnsNullWhenItCannotBeListedTest(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        remoteConnection.CommandResponses["/sbin/zfs list -Hp -o type,creation,name,used,refer,avail,mountpoint,origin -t filesystem tank/myds"] = (string.Empty, null);
+        var ds = GetDatasets(remoteConnection);
+        var args = new DatasetCreationArgs
+        {
+            DatasetName = "tank/myds",
+            Type = DatasetTypes.Filesystem,
+            Properties = [new PropertyValue { Property = "atime", Value = "off" }]
+
+        };
+
+        var dataset = await ds.CreateAsync(args, TestContext.Current.CancellationToken);
+
+        Assert.Null(dataset);
+        Assert.Equal(2, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task CreateDataSetWithCancelledTokenDoesNotRunCommandTest(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        var args = new DatasetCreationArgs
+        {
+            DatasetName = "tank/myds",
+            Type = DatasetTypes.Filesystem
+        };
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => ds.CreateAsync(args, cancellationTokenSource.Token));
+
+        Assert.Empty(remoteConnection.GetCommandsInvoked());
+        Assert.Equal(0, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
     [Fact]
