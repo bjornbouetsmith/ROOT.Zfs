@@ -7,6 +7,7 @@ using ROOT.Shared.Utils.Serialization;
 using ROOT.Zfs.Core;
 using ROOT.Zfs.Core.Helpers;
 using ROOT.Zfs.Public.Arguments.Dataset;
+using ROOT.Zfs.Public.Arguments.Snapshots;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Datasets;
 using System.Globalization;
@@ -180,5 +181,27 @@ public class DataSetTest
             }
         }
 
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task PromoteDataSetTest()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        var ds = GetDataSets();
+        var sn = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
+        sn.RequiresSudo = TestHelpers.RequiresSudo;
+
+        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
+        var clone = $"{pool.Name}/mysnap_clone";
+        sn.Clone(new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = clone });
+
+        await ds.PromoteAsync(new PromoteArgs { Name = clone }, TestContext.Current.CancellationToken);
+
+        var listArgs = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
+        var datasets = await ds.ListAsync(listArgs, TestContext.Current.CancellationToken);
+        var promoted = datasets.FirstOrDefault(d => d.DatasetName == clone);
+        Assert.NotNull(promoted);
+        Assert.False(promoted.IsClone);
     }
 }
