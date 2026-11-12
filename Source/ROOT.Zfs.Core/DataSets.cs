@@ -69,10 +69,12 @@ internal sealed class Datasets : ZfsBase, IDatasets
     }
 
     /// <inheritdoc />
-    public void Mount(MountArgs mountArgs)
+    public async Task MountAsync(MountArgs mountArgs, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Mount(mountArgs));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

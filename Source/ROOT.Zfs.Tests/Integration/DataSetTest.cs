@@ -204,4 +204,50 @@ public class DataSetTest
         Assert.NotNull(promoted);
         Assert.False(promoted.IsClone);
     }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task MountDataSetTest()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        var ds = GetDataSets();
+        var dataset = $"{pool.Name}/{Guid.NewGuid()}";
+        var mountPoint = $"/tmp/zfs-mount/{Guid.NewGuid()}";
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        var mkdir = _remoteProcessCall | new ProcessCall("/usr/bin/mkdir", $"-p {mountPoint}");
+        mkdir.RequiresSudo = TestHelpers.RequiresSudo;
+        mkdir.LoadResponse(true);
+
+        var createArgs = new DatasetCreationArgs
+        {
+            DatasetName = dataset,
+            Type = DatasetTypes.Filesystem,
+            DoNotMount = true,
+            Properties = [new PropertyValue { Property = "mountpoint", Value = mountPoint }]
+        };
+        await ds.CreateAsync(createArgs, cancellationToken);
+
+        try
+        {
+            await ds.MountAsync(new MountArgs { Filesystem = dataset }, cancellationToken);
+
+            var mountPointCheck = _remoteProcessCall | new ProcessCall("/usr/bin/mountpoint", $"-q {mountPoint}");
+            mountPointCheck.RequiresSudo = TestHelpers.RequiresSudo;
+            Assert.True(mountPointCheck.LoadResponse(false).Success);
+        }
+        finally
+        {
+            try
+            {
+                ds.Unmount(new UnmountArgs { Filesystem = dataset });
+            }
+            catch
+            {
+                // We don't care if the unmount fails during cleanup
+            }
+
+            await ds.DestroyAsync(new DatasetDestroyArgs { Dataset = dataset }, cancellationToken);
+        }
+    }
 }
