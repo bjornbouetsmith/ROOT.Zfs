@@ -132,7 +132,7 @@ public class PropertiesTest
         finally
         {
             var destroyArgs = new DatasetDestroyArgs { Dataset = dataset };
-            dsHelper.Destroy(destroyArgs);
+            await dsHelper.DestroyAsync(destroyArgs, TestContext.Current.CancellationToken);
         }
     }
 }

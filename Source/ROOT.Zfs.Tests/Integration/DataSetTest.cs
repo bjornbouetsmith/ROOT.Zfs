@@ -99,7 +99,7 @@ public class DataSetTest
             if (fullName != null)
             {
                 var args = new DatasetDestroyArgs { Dataset = fullName };
-                ds.Destroy(args);
+                await ds.DestroyAsync(args, TestContext.Current.CancellationToken);
             }
         }
     }
@@ -156,7 +156,7 @@ public class DataSetTest
 
             var flags = DatasetDestroyFlags.Recursive | DatasetDestroyFlags.DryRun;
             var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = flags };
-            var response = dsHelper.Destroy(destroyArgs);
+            var response = await dsHelper.DestroyAsync(destroyArgs, TestContext.Current.CancellationToken);
             Assert.Equal(flags, response.Flags);
             var lines = response.DryRun.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries).Select(l => l.Replace("\t", " ")).ToList();
             Assert.Equal(4, lines.Count);
@@ -172,7 +172,7 @@ public class DataSetTest
             try
             {
                 var destroyArgs = new DatasetDestroyArgs { Dataset = root, DestroyFlags = DatasetDestroyFlags.Recursive };
-                dsHelper.Destroy(destroyArgs);
+                await dsHelper.DestroyAsync(destroyArgs, TestContext.Current.CancellationToken);
             }
             catch
             {

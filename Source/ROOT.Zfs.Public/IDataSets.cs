@@ -35,8 +35,11 @@ public interface IDatasets : IBasicZfs
     /// Destroys the given dataset.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-destroy.8.html
     /// </summary>
-    DatasetDestroyResponse Destroy(DatasetDestroyArgs args);
-        
+    /// <param name="args">The arguments that describe which dataset to destroy and how.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the destroy response, including the dry-run output when requested.</returns>
+    Task<DatasetDestroyResponse> DestroyAsync(DatasetDestroyArgs args, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Promotes the dataset or volume from a clone to a real dataset or volume.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
