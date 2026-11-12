@@ -339,16 +339,42 @@ public abstract class FakeDataSetTest
         Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
-    [Fact]
+    [Theory]
     [Trait("Category", "FakeIntegration")]
-    public void MountDatasetTest()
+    [InlineData(true), InlineData(false)]
+    public async Task MountDatasetTest(bool completeAsyncResponses)
     {
-        var processCall = CreateProcessCall();
-        var ds = GetDatasets(processCall);
-        ds.Mount(new MountArgs { Filesystem = "tank/myds" });
-        var commands = processCall.GetCommandsInvoked();
-        var command = Assert.Single(commands);
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        await ds.MountAsync(new MountArgs { Filesystem = "tank/myds" }, cancellationToken);
+
+        var command = Assert.Single(remoteConnection.GetCommandsInvoked());
         Assert.Equal("/sbin/zfs mount tank/myds", command);
+        Assert.Equal(1, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
+        var token = Assert.Single(remoteConnection.AsyncCancellationTokens);
+        Assert.Equal(cancellationToken, token);
+    }
+
+    [Theory]
+    [Trait("Category", "FakeIntegration")]
+    [InlineData(true), InlineData(false)]
+    public async Task MountDatasetWithCancelledTokenDoesNotRunCommandTest(bool completeAsyncResponses)
+    {
+        var remoteConnection = CreateProcessCall();
+        remoteConnection.CompleteAsyncResponses = completeAsyncResponses;
+        var ds = GetDatasets(remoteConnection);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => ds.MountAsync(new MountArgs { Filesystem = "tank/myds" }, cancellationTokenSource.Token));
+
+        Assert.Empty(remoteConnection.GetCommandsInvoked());
+        Assert.Equal(0, remoteConnection.AsyncLoadResponseCalls);
+        Assert.Equal(0, remoteConnection.SyncLoadResponseCalls);
     }
 
     [Fact]

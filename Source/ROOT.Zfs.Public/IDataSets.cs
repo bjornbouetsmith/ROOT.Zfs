@@ -55,7 +55,9 @@ public interface IDatasets : IBasicZfs
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-mount.8.html
     /// </summary>
     /// <param name="mountArgs">The arguments to control what and how to mount</param>
-    void Mount(MountArgs mountArgs);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous mount operation.</returns>
+    Task MountAsync(MountArgs mountArgs, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Unmounts currently mounted ZFS file systems.
