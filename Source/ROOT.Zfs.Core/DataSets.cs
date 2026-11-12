@@ -78,9 +78,11 @@ internal sealed class Datasets : ZfsBase, IDatasets
     }
 
     /// <inheritdoc />
-    public void Unmount(UnmountArgs unmountArgs)
+    public async Task UnmountAsync(UnmountArgs unmountArgs, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Unmount(unmountArgs));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

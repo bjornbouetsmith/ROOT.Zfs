@@ -64,5 +64,7 @@ public interface IDatasets : IBasicZfs
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-unmount.8.html
     /// </summary>
     /// <param name="unmountArgs">The arguments to control what and how to unmount</param>
-    void Unmount(UnmountArgs unmountArgs);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous unmount operation.</returns>
+    Task UnmountAsync(UnmountArgs unmountArgs, CancellationToken cancellationToken = default);
 }
