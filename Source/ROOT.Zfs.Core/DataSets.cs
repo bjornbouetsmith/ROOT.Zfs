@@ -60,10 +60,12 @@ internal sealed class Datasets : ZfsBase, IDatasets
     }
 
     /// <inheritdoc />
-    public void Promote(PromoteArgs args)
+    public async Task PromoteAsync(PromoteArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_commands.Promote(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

@@ -44,7 +44,10 @@ public interface IDatasets : IBasicZfs
     /// Promotes the dataset or volume from a clone to a real dataset or volume.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zfs-promote.8.html
     /// </summary>
-    void Promote(PromoteArgs args);
+    /// <param name="args">The arguments that describe which dataset or volume to promote.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous promote operation.</returns>
+    Task PromoteAsync(PromoteArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Mount ZFS filesystem on a path described by its mountpoint property, if the path exists and is empty.
