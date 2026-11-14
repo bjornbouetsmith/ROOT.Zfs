@@ -38,12 +38,13 @@ public class SnapshotTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void RemoteSnapshotTest()
+    public async Task RemoteSnapshotTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var sn = GetSnapshots();
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name });
-        var snapshots = sn.List(new SnapshotListArgs { Root = pool.Name });
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
+        var snapshots = await sn.ListAsync(new SnapshotListArgs { Root = pool.Name }, cancellationToken);
         Assert.NotNull(snapshots);
         foreach (var snap in snapshots)
         {
@@ -55,43 +56,68 @@ public class SnapshotTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void RemoteCreateAndDestroySnapshot()
+    public async Task RemoteCreateAndDestroySnapshot()
     {
         var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss", CultureInfo.InvariantCulture);
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var sn = GetSnapshots();
+        var cancellationToken = TestContext.Current.CancellationToken;
 
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = snapName });
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = snapName }, cancellationToken);
 
-        var snaps = sn.List(new SnapshotListArgs { Root = pool.Name });
+        var snaps = await sn.ListAsync(new SnapshotListArgs { Root = pool.Name }, cancellationToken);
 
         var wasCreated = snaps.FirstOrDefault(snap => snap.SnapshotName.EndsWith(snapName, StringComparison.Ordinal));
 
         Assert.NotNull(wasCreated);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = snapName, IsExactName = true };
-        sn.Destroy(args);
-
+        await sn.DestroyAsync(args, cancellationToken);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void CreateAndDeleteByPatternTest()
+    public async Task CreateAndDeleteByPatternTest()
     {
         var sn = GetSnapshots();
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        var cancellationToken = TestContext.Current.CancellationToken;
         var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" });
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" });
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" });
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" }, cancellationToken);
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-2" }, cancellationToken);
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-3" }, cancellationToken);
 
-        var snaps = sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal)).ToList();
+        var snaps = (await sn.ListAsync(new SnapshotListArgs { Root = pool.Name }, cancellationToken)).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal)).ToList();
 
         Assert.Equal(3, snaps.Count);
         var args = new SnapshotDestroyArgs { Dataset = pool.Name, Snapshot = prefix, IsExactName = false };
-        sn.Destroy(args);
+        await sn.DestroyAsync(args, cancellationToken);
 
-        snaps = [.. sn.List(new SnapshotListArgs { Root = pool.Name }).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal))];
+        snaps = [.. (await sn.ListAsync(new SnapshotListArgs { Root = pool.Name }, cancellationToken)).Where(snap => snap.SnapshotName.StartsWith(prefix, StringComparison.Ordinal))];
         Assert.Empty(snaps);
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task HoldAndReleaseSnapshotTest()
+    {
+        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        var sn = GetSnapshots();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        const string snapName = "holdtest";
+        const string tag = "mytag";
+
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = snapName }, cancellationToken);
+        await sn.HoldAsync(new SnapshotHoldArgs { Dataset = pool.Name, Snapshot = snapName, Tag = tag }, cancellationToken);
+
+        var holds = await sn.HoldsAsync(new SnapshotHoldsArgs { Dataset = pool.Name, Snapshot = snapName }, cancellationToken);
+        var hold = Assert.Single(holds);
+        Assert.Equal(tag, hold.Tag);
+        Assert.EndsWith($"{pool.Name}@{snapName}", hold.Snapshot, StringComparison.Ordinal);
+
+        await sn.ReleaseAsync(new SnapshotReleaseArgs { Dataset = pool.Name, Snapshot = snapName, Tag = tag }, cancellationToken);
+
+        holds = await sn.HoldsAsync(new SnapshotHoldsArgs { Dataset = pool.Name, Snapshot = snapName }, cancellationToken);
+        Assert.Empty(holds);
     }
 
     [Fact]
@@ -101,13 +127,14 @@ public class SnapshotTest
         var sn = GetSnapshots();
         var ds = GetDatasets();
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" }, cancellationToken);
 
         var args = new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = $"{pool.Name}/mysnap_clone" };
-        sn.Clone(args);
+        await sn.CloneAsync(args, cancellationToken);
 
         var getds = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
-        var datasets = await ds.ListAsync(getds, TestContext.Current.CancellationToken);
+        var datasets = await ds.ListAsync(getds, cancellationToken);
         var myClone = datasets.FirstOrDefault(d => d.DatasetName == $"{pool.Name}/mysnap_clone");
 
         Assert.NotNull(myClone);

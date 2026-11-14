@@ -14,7 +14,7 @@ namespace ROOT.Zfs.Core.Helpers;
 internal static class SnapshotHoldParser
 {
 
-    internal static IList<SnapshotHold> ParseStdOut(string stdOut)
+    internal static IReadOnlyList<SnapshotHold> ParseStdOut(string stdOut)
     {
         var list = new List<SnapshotHold>();
         foreach (var line in stdOut.Split(Constants.LinebreakCharacters, StringSplitOptions.RemoveEmptyEntries))
