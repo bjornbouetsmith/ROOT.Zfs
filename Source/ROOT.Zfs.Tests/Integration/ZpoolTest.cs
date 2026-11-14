@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Shared.Utils.Serialization;
@@ -32,16 +33,17 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void HistoryTestWithSkip()
+    public async Task HistoryTestWithSkip()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name });
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
         var args = new PoolHistoryArgs { PoolName = pool.Name };
         var lines = zp.History(args).ToList().Count;
         args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
@@ -67,16 +69,17 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void HistoryAfterDateTest()
+    public async Task HistoryAfterDateTest()
     {
         using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" });
-        snap.Create(new SnapshotCreateArgs { Dataset = pool.Name });
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test1" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test2" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" }, cancellationToken);
+        await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
         var args = new PoolHistoryArgs { PoolName = pool.Name };
         var last10AtMost = zp.History(args).TakeLast(10).ToList();
 

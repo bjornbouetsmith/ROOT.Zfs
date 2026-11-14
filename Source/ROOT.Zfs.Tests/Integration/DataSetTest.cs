@@ -191,12 +191,13 @@ public class DataSetTest
         var ds = GetDataSets();
         var sn = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         sn.RequiresSudo = TestHelpers.RequiresSudo;
+        var cancellationToken = TestContext.Current.CancellationToken;
 
-        sn.Create(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" });
+        await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" }, cancellationToken);
         var clone = $"{pool.Name}/mysnap_clone";
-        sn.Clone(new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = clone });
+        await sn.CloneAsync(new SnapshotCloneArgs { Dataset = pool.Name, Snapshot = "mysnap", TargetDataset = clone }, cancellationToken);
 
-        await ds.PromoteAsync(new PromoteArgs { Name = clone }, TestContext.Current.CancellationToken);
+        await ds.PromoteAsync(new PromoteArgs { Name = clone }, cancellationToken);
 
         var listArgs = new DatasetListArgs { Root = pool.Name, IncludeChildren = true };
         var datasets = await ds.ListAsync(listArgs, TestContext.Current.CancellationToken);
