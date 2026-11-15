@@ -54,7 +54,7 @@ binaries.Initialize();
 var zfs = provider.GetRequiredService<IZfs>();
 
 // Get status of the pool tank
-var status = zfs.Pool.Status(new PoolStatusArgs { PoolName = "tank" });
+var status = await zfs.Pool.StatusAsync(new PoolStatusArgs { PoolName = "tank" });
 
 if (status.State == State.Online)
 {

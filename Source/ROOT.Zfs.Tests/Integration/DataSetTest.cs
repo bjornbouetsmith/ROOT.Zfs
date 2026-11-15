@@ -36,7 +36,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task GetDataSetList()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
 
         var ds = GetDataSets();
         var dataSets = await ds.ListAsync(new DatasetListArgs(), TestContext.Current.CancellationToken);
@@ -51,7 +51,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task ListDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var dataSets = await ds.ListAsync(args, TestContext.Current.CancellationToken);
@@ -66,7 +66,7 @@ public class DataSetTest
     [InlineData(false)]
     public async Task CreateDataSetTest(bool addProperties)
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var dataSetName = Guid.NewGuid().ToString();
         string fullName = null;
@@ -109,7 +109,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task ListDataSetShouldReturnDataSet()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var args = new DatasetListArgs { Root = pool.Name };
         var dataSets = await ds.ListAsync(args, TestContext.Current.CancellationToken);
@@ -131,7 +131,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task DestroyRecursiveDryRunTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var dsHelper = GetDataSets();
         var rootId = DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
         var root = $"{pool.Name}/myds/{rootId}";
@@ -187,7 +187,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task PromoteDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var sn = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         sn.RequiresSudo = TestHelpers.RequiresSudo;
@@ -210,7 +210,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task MountDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var dataset = $"{pool.Name}/{Guid.NewGuid()}";
         var mountPoint = $"/tmp/zfs-mount/{Guid.NewGuid()}";
@@ -256,7 +256,7 @@ public class DataSetTest
     [Trait("Category", "Integration")]
     public async Task UnmountDataSetTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var ds = GetDataSets();
         var dataset = $"{pool.Name}/{Guid.NewGuid()}";
         var mountPoint = $"/tmp/zfs-mount/{Guid.NewGuid()}";

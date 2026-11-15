@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core.Commands;
 using ROOT.Zfs.Core.Helpers;
@@ -24,33 +26,40 @@ internal sealed class ZPool : ZfsBase, IZPool
         _zdbCommands = zdbCommands;
     }
 
-    public IEnumerable<CommandHistory> History(PoolHistoryArgs args)
+    /// <inheritdoc />
+    public async Task<IEnumerable<CommandHistory>> HistoryAsync(PoolHistoryArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.History(args));
 
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return CommandHistoryHelper.FromStdOut(response.StdOut, args.SkipLines, args.AfterDate);
     }
 
     /// <inheritdoc />
-    public PoolStatus Status(PoolStatusArgs args)
+    public async Task<PoolStatus> StatusAsync(PoolStatusArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.GetStatus(args));
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return ZPoolStatusParser.Parse(response.StdOut);
     }
 
     /// <inheritdoc />
-    public IList<PoolInfo> List()
+    public async Task<IReadOnlyList<PoolInfo>> ListAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.GetAllPoolInfos());
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var list = ZPoolInfoParser.ParseFromStdOut(response.StdOut);
         var versionCommand = BuildCommand(_zdbCommands.GetRawZdbOutput());
-        response = versionCommand.LoadResponse(true);
+        response = await versionCommand.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
 
         foreach (var info in list)
@@ -60,139 +69,176 @@ internal sealed class ZPool : ZfsBase, IZPool
             info.Version = versionInfo.Version;
         }
 
-        return list;
+        return list.ToList();
     }
 
     /// <inheritdoc />
-    public PoolInfo List(PoolListArgs args)
+    public async Task<PoolInfo> ListAsync(PoolListArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.GetPoolInfo(args));
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var info = ZPoolInfoParser.ParseLine(response.StdOut);
 
         var versionCommand = BuildCommand(_zdbCommands.GetRawZdbOutput());
-        response = versionCommand.LoadResponse(true);
+        response = await versionCommand.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         var versions = ZdbHelper.ParsePoolVersions(response.StdOut);
         // Should be safe to do a .First, since zfs should contain data about the pool if the pool exist
-        var versionInfo = versions.First(v=>v.PoolName.Equals(args.PoolName, StringComparison.OrdinalIgnoreCase));
+        var versionInfo = versions.First(v => v.PoolName.Equals(args.PoolName, StringComparison.OrdinalIgnoreCase));
         info.Version = versionInfo.Version;
 
         return info;
     }
 
     /// <inheritdoc />
-    public PoolStatus Create(PoolCreateArgs args)
+    public async Task<PoolStatus> CreateAsync(PoolCreateArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Create(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         var statusArg = new PoolStatusArgs { PoolName = args.PoolName };
 
-        return Status(statusArg);
+        return await StatusAsync(statusArg, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Destroy(PoolDestroyArgs args)
+    public async Task DestroyAsync(PoolDestroyArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Destroy(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Offline(PoolOfflineArgs args)
+    public async Task OfflineAsync(PoolOfflineArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Offline(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Online(PoolOnlineArgs args)
+    public async Task OnlineAsync(PoolOnlineArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Online(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Clear(PoolClearArgs args)
+    public async Task ClearAsync(PoolClearArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Clear(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public IOStats IOStats(PoolIOStatsArgs args)
+    public async Task<IOStats> IOStatsAsync(PoolIOStatsArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.IoStats(args));
-        var response = pc.LoadResponse(true);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
         return ZPoolIOStatParser.ParseStdOut(args.PoolName, response.StdOut);
     }
 
     /// <inheritdoc />
-    public void Resilver(PoolResilverArgs args)
+    public async Task ResilverAsync(PoolResilverArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Resilver(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Scrub(PoolScrubArgs args)
+    public async Task ScrubAsync(PoolScrubArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Scrub(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Trim(PoolTrimArgs args)
+    public async Task TrimAsync(PoolTrimArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Trim(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public IList<UpgradeablePool> GetUpgradeablePools()
+    public async Task<IReadOnlyList<UpgradeablePool>> GetUpgradeablePoolsAsync(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.GetUpgradeablePools());
-        var response = pc.LoadResponse(true);
-        return UpgradeablePoolsParser.ParseStdOut(response.StdOut);
+        var response = await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return UpgradeablePoolsParser.ParseStdOut(response.StdOut).ToList();
     }
 
     /// <inheritdoc />
-    public void Upgrade(PoolUpgradeArgs args)
+    public async Task UpgradeAsync(PoolUpgradeArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Upgrade(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public void Detach(PoolDetachArgs args)
+    /// <inheritdoc />
+    public async Task DetachAsync(PoolDetachArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Detach(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Attach(PoolAttachArgs args)
+    public async Task AttachAsync(PoolAttachArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Attach(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public void Replace(PoolReplaceArgs args)
+    public async Task ReplaceAsync(PoolReplaceArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Replace(args));
-        pc.LoadResponse(true);
-    }
-    /// <inheritdoc />
-    public void Add(PoolAddArgs args)
-    {
-        var pc = BuildCommand(_zpoolCommands.Add(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public void Remove(PoolRemoveArgs args)
+    /// <inheritdoc />
+    public async Task AddAsync(PoolAddArgs args, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var pc = BuildCommand(_zpoolCommands.Add(args));
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task RemoveAsync(PoolRemoveArgs args, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var pc = BuildCommand(_zpoolCommands.Remove(args));
-        pc.LoadResponse(true);
+        await pc.LoadResponseAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }

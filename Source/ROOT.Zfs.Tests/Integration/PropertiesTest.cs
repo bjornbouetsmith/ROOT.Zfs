@@ -33,7 +33,7 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public async Task ListAllPropertiesAsyncTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name };
         var props = await pr.GetAsync(args, TestContext.Current.CancellationToken);
@@ -48,7 +48,7 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public async Task SetDataSetPropertyAsyncTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var pr = GetProperties();
         var args = new SetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime", Value = "off" };
         var newVal = await pr.SetAsync(args, TestContext.Current.CancellationToken);
@@ -61,7 +61,7 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public async Task GetDataSetPropertyAsyncTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var pr = GetProperties();
         var getArgs = new GetPropertyArgs { PropertyTarget = PropertyTarget.Dataset, Target = pool.Name, Property = "atime"};
         var val = (await pr.GetAsync(getArgs, TestContext.Current.CancellationToken))[0];
@@ -98,7 +98,7 @@ public class PropertiesTest
     [Trait("Category", "Integration")]
     public async Task ResetPropertyTestAsync()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var pr = GetProperties();
         var dsHelper = ZfsTestFactory.CreateDatasets(_remoteProcessCall);
         dsHelper.RequiresSudo = pr.RequiresSudo;
