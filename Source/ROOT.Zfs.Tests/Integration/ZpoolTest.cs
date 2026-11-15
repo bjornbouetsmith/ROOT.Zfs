@@ -35,7 +35,7 @@ public class ZpoolTest
     [Trait("Category", "Integration")]
     public async Task HistoryTestWithSkip()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
@@ -45,9 +45,9 @@ public class ZpoolTest
         await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" }, cancellationToken);
         await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
         var args = new PoolHistoryArgs { PoolName = pool.Name };
-        var lines = zp.History(args).ToList().Count;
+        var lines = (await zp.HistoryAsync(args, cancellationToken)).ToList().Count;
         args = new PoolHistoryArgs { PoolName = pool.Name, SkipLines = lines - 2 };
-        var history = zp.History(args).ToList();
+        var history = (await zp.HistoryAsync(args, cancellationToken)).ToList();
         Assert.NotNull(history);
         _output.WriteLine(history.Dump(new JsonFormatter()));
         Assert.Equal(2, history.Count);
@@ -57,12 +57,12 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void HistoryTest()
+    public async Task HistoryTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolHistoryArgs { PoolName = pool.Name };
-        var history = zp.History(args);
+        var history = await zp.HistoryAsync(args, TestContext.Current.CancellationToken);
         Assert.NotNull(history);
         _output.WriteLine(history.Dump(new JsonFormatter()));
     }
@@ -71,7 +71,7 @@ public class ZpoolTest
     [Trait("Category", "Integration")]
     public async Task HistoryAfterDateTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var snap = ZfsTestFactory.CreateSnapshots(_remoteProcessCall);
         snap.RequiresSudo = TestHelpers.RequiresSudo;
@@ -81,12 +81,12 @@ public class ZpoolTest
         await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "test3" }, cancellationToken);
         await snap.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
         var args = new PoolHistoryArgs { PoolName = pool.Name };
-        var last10AtMost = zp.History(args).TakeLast(10).ToList();
+        var last10AtMost = (await zp.HistoryAsync(args, cancellationToken)).TakeLast(10).ToList();
 
         // This is safe, since zfs always have at last pool creation as a history event
         var history = last10AtMost.First();
         args = new PoolHistoryArgs { PoolName = pool.Name, AfterDate = history.Time };
-        var afterDate = zp.History(args).ToList();
+        var afterDate = (await zp.HistoryAsync(args, cancellationToken)).ToList();
 
         if (last10AtMost.Count > 1)
         {
@@ -97,34 +97,34 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetStatusTest()
+    public async Task GetStatusTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.NotNull(status);
         Assert.Equal(pool.Name, status.Pool.PoolName);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void NonExistingPoolStatus()
+    public async Task NonExistingPoolStatus()
     {
         var zp = GetZpool();
-        var ex = Assert.Throws<ProcessCallException>(() => zp.Status(new PoolStatusArgs { PoolName = "A" + Guid.NewGuid().ToString() }));
+        var ex = await Assert.ThrowsAsync<ProcessCallException>(() => zp.StatusAsync(new PoolStatusArgs { PoolName = "A" + Guid.NewGuid().ToString() }, TestContext.Current.CancellationToken));
         _output.WriteLine(ex.Message);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ZpoolStatusTest()
+    public async Task ZpoolStatusTest()
     {
-        using var testPool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var testPool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
 
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = testPool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
 
         Assert.NotNull(status);
 
@@ -156,17 +156,17 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void DestroyPoolTest()
+    public async Task DestroyPoolTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
-        zp.Destroy(new PoolDestroyArgs { PoolName = pool.Name });
+        await zp.DestroyAsync(new PoolDestroyArgs { PoolName = pool.Name }, TestContext.Current.CancellationToken);
     }
 
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void CreateMirrorPool()
+    public async Task CreateMirrorPool()
     {
         using var pool = new TestPool(_remoteProcessCall, _output);
         var disk1 = pool.AddDisk();
@@ -188,7 +188,7 @@ public class ZpoolTest
             ]
         };
 
-        var status = pool.CreatePool(args);
+        var status = await pool.CreatePoolAsync(args);
         Assert.Equal(State.Online, status.State);
 
     }
@@ -198,7 +198,7 @@ public class ZpoolTest
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void CreateRaidZTest(int raidz)
+    public async Task CreateRaidZTest(int raidz)
     {
         using var pool = new TestPool(_remoteProcessCall, _output);
 
@@ -237,7 +237,7 @@ public class ZpoolTest
             ]
         };
 
-        var status = pool.CreatePool(args);
+        var status = await pool.CreatePoolAsync(args);
         Assert.Equal(State.Online, status.State);
         _output.WriteLine(status.Dump(new JsonFormatter()));
     }
@@ -247,7 +247,7 @@ public class ZpoolTest
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void CreateDRaidZTest(int draid)
+    public async Task CreateDRaidZTest(int draid)
     {
         using var pool = new TestPool(_remoteProcessCall, _output);
 
@@ -286,61 +286,61 @@ public class ZpoolTest
             ]
         };
 
-        var status = pool.CreatePool(args);
+        var status = await pool.CreatePoolAsync(args);
         Assert.Equal(State.Online, status.State);
         _output.WriteLine(status.Dump(new JsonFormatter()));
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ScrubTest()
+    public async Task ScrubTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolScrubArgs { PoolName = pool.Name };
-        zp.Scrub(args);
+        await zp.ScrubAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.Equal(State.Online, status.State);
 
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void TrimPoolTestSimple()
+    public async Task TrimPoolTestSimple()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var args = new PoolTrimArgs { PoolName = pool.Name };
-        zp.Trim(args);
+        await zp.TrimAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.Equal(State.Online, status.State);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void TrimDeviceTestSimple()
+    public async Task TrimDeviceTestSimple()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var firstDisk = pool.Disks[0];
         var args = new PoolTrimArgs { PoolName = pool.Name, DeviceName = firstDisk };
-        zp.Trim(args);
+        await zp.TrimAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.Equal(State.Online, status.State);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetPoolInfoTest()
+    public async Task GetPoolInfoTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
 
-        var info = zp.List(new PoolListArgs { PoolName = pool.Name });
+        var info = await zp.ListAsync(new PoolListArgs { PoolName = pool.Name }, TestContext.Current.CancellationToken);
         _output.WriteLine(info.Dump(new JsonFormatter()));
         Assert.NotNull(info);
         Assert.NotEqual(0, info.Version);
@@ -349,14 +349,14 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void DetachTest()
+    public async Task DetachTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolDetachArgs { PoolName = pool.Name, Device = pool.Disks[1] };
-        zp.Detach(args);
+        await zp.DetachAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.NotNull(status);
         _output.WriteLine(status.Dump(new JsonFormatter()));
     }
@@ -364,12 +364,12 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void IOStatTestSpecificDevice()
+    public async Task IOStatTestSpecificDevice()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolIOStatsArgs { PoolName = pool.Name, Devices = [pool.Disks[0]] };
-        var stats = zp.IOStats(args);
+        var stats = await zp.IOStatsAsync(args, TestContext.Current.CancellationToken);
 
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.NotNull(stats);
@@ -377,12 +377,12 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void IOStatTestEntirePool()
+    public async Task IOStatTestEntirePool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var args = new PoolIOStatsArgs { PoolName = pool.Name };
-        var stats = zp.IOStats(args);
+        var stats = await zp.IOStatsAsync(args, TestContext.Current.CancellationToken);
 
         _output.WriteLine(stats.Dump(new JsonFormatter()));
         Assert.NotNull(stats);
@@ -397,9 +397,9 @@ public class ZpoolTest
     //Turn a two way mirror into a three way mirror
     [Fact]
     [Trait("Category", "Integration")]
-    public void AttachNewDeviceToPool()
+    public async Task AttachNewDeviceToPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
 
         var oldDevice = pool.Disks.Last();
         var newDevice = pool.AddDisk();
@@ -412,9 +412,9 @@ public class ZpoolTest
             NewDevice = newDevice
         };
 
-        zp.Attach(args);
+        await zp.AttachAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         _output.WriteLine(status.Dump(new JsonFormatter()));
 
         Assert.Equal(3, status.Pool.VDevs[0].Devices.Count);
@@ -422,9 +422,9 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void ReplaceNewDeviceToPool()
+    public async Task ReplaceNewDeviceToPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
 
         var oldDevice = pool.Disks.Last();
         var newDevice = pool.AddDisk();
@@ -437,15 +437,15 @@ public class ZpoolTest
             NewDevice = newDevice
         };
 
-        zp.Replace(args);
+        await zp.ReplaceAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         _output.WriteLine(status.Dump(new JsonFormatter()));
         var stopwatch = Stopwatch.StartNew();
         var oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
         while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
         {
-            status = zp.Status(arg);
+            status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
             oldExist = status.Pool.VDevs.Any(v => v.Devices.Any(d => d.DeviceName == oldDevice));
         }
 
@@ -457,12 +457,12 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void AddExtraMirrorToMirrorPool()
+    public async Task AddExtraMirrorToMirrorPool()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         Assert.Single(status.Pool.VDevs);
         var disk1 = pool.AddDisk();
         var disk2 = pool.AddDisk();
@@ -475,16 +475,16 @@ public class ZpoolTest
         };
 
 
-        zp.Add(args);
+        await zp.AddAsync(args, TestContext.Current.CancellationToken);
 
-        status = zp.Status(arg);
+        status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
         _output.WriteLine(status.Dump(new JsonFormatter()));
         Assert.Equal(2, status.Pool.VDevs.Count);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void RemoveExtraMirrorFromPool()
+    public async Task RemoveExtraMirrorFromPool()
     {
         using var pool = new TestPool(_remoteProcessCall, _output);
         var disk1 = pool.AddDisk("300M");
@@ -513,7 +513,7 @@ public class ZpoolTest
             ]
         };
 
-        var status = pool.CreatePool(args);
+        var status = await pool.CreatePoolAsync(args);
         Assert.Equal(State.Online, status.State);
 
         var removeArgs = new PoolRemoveArgs
@@ -523,16 +523,16 @@ public class ZpoolTest
         };
 
         var zp = GetZpool();
-        zp.Remove(removeArgs);
+        await zp.RemoveAsync(removeArgs, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        status = zp.Status(arg);
+        status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
 
         _output.WriteLine(status.Dump(new JsonFormatter()));
         var stopwatch = Stopwatch.StartNew();
         var oldExist = status.Pool.VDevs.Count == 2;
         while (oldExist && stopwatch.Elapsed < TimeSpan.FromSeconds(5))
         {
-            status = zp.Status(arg);
+            status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
             oldExist = status.Pool.VDevs.Count == 2;
         }
         _output.WriteLine(status.Dump(new JsonFormatter()));
@@ -540,16 +540,16 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void OfflineTest()
+    public async Task OfflineTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
         var arg = new PoolStatusArgs { PoolName = pool.Name };
         var device = pool.Disks.Last();
         var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
-        zp.Offline(args);
+        await zp.OfflineAsync(args, TestContext.Current.CancellationToken);
 
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
 
         _output.WriteLine(status.Dump(new JsonFormatter()));
         Assert.Equal(State.Degraded, status.State);
@@ -558,24 +558,24 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void OnlineTest()
+    public async Task OnlineTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
 
         var device = pool.Disks.Last();
         var args = new PoolOfflineArgs { PoolName = pool.Name, Device = device };
-        zp.Offline(args);
+        await zp.OfflineAsync(args, TestContext.Current.CancellationToken);
         var arg = new PoolStatusArgs { PoolName = pool.Name };
-        var status = zp.Status(arg);
+        var status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
 
         _output.WriteLine(status.Dump(new JsonFormatter()));
         Assert.Equal(State.Degraded, status.State);
 
         var onlineArgs = new PoolOnlineArgs { PoolName = pool.Name, Device = device };
-        zp.Online(onlineArgs);
+        await zp.OnlineAsync(onlineArgs, TestContext.Current.CancellationToken);
 
-        status = zp.Status(arg);
+        status = await zp.StatusAsync(arg, TestContext.Current.CancellationToken);
 
         _output.WriteLine(status.Dump(new JsonFormatter()));
         Assert.Equal(State.Online, status.State);
@@ -584,12 +584,12 @@ public class ZpoolTest
 
     [Fact]
     [Trait("Category", "Integration")]
-    public void GetPoolInfosTest()
+    public async Task GetPoolInfosTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var zp = GetZpool();
 
-        var infos = zp.List();
+        var infos = await zp.ListAsync(TestContext.Current.CancellationToken);
         _output.WriteLine(infos.Dump(new JsonFormatter()));
         Assert.NotEmpty(infos); // No pools found, this is a bug
 

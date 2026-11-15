@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using ROOT.Zfs.Public.Arguments.Pool;
 using ROOT.Zfs.Public.Data;
 using ROOT.Zfs.Public.Data.Pools;
@@ -16,42 +18,56 @@ public interface IZPool : IBasicZfs
     /// Gets command history for the pool
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-history.8.html
     /// </summary>
-    IEnumerable<CommandHistory> History(PoolHistoryArgs args);
+    /// <param name="args">The arguments describing which pool to get history for and how to filter it.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the command history entries for the pool.</returns>
+    Task<IEnumerable<CommandHistory>> HistoryAsync(PoolHistoryArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the pool status for the given pool
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-status.8.html
     /// </summary>
-    PoolStatus Status(PoolStatusArgs args);
+    /// <param name="args">The arguments describing which pool to get status for.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the parsed status of the pool.</returns>
+    Task<PoolStatus> StatusAsync(PoolStatusArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets information about pools, returns data from the command: zpool list -v -P
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
     /// </summary>
-    IList<PoolInfo> List();
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of the pools on the system.</returns>
+    Task<IReadOnlyList<PoolInfo>> ListAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets information about a single pool zpool list -v -P {pool}
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-list.8.html
     /// </summary>
     /// <param name="args">The pool to get info for</param>
-    PoolInfo List(PoolListArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the information for the requested pool.</returns>
+    Task<PoolInfo> ListAsync(PoolListArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Creates a new zpool using the provided args
     ///<see cref="PoolCreateArgs"/> for details
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-create.8.html
     /// </summary>
-    /// <returns>The pool status for the newly created pool</returns>
-    PoolStatus Create(PoolCreateArgs args);
+    /// <param name="args">The arguments describing the pool to create.</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the pool status for the newly created pool.</returns>
+    Task<PoolStatus> CreateAsync(PoolCreateArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Destroys the given pool
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-destroy.8.html
     /// </summary>
     /// <param name="args">The name of the pool to destroy</param>
-    void Destroy(PoolDestroyArgs args);
-        
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous destroy operation.</returns>
+    Task DestroyAsync(PoolDestroyArgs args, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Takes the specified physical device offline.
     /// While the device is offline, no attempt is made to read or write to the device.
@@ -59,7 +75,9 @@ public interface IZPool : IBasicZfs
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-offline.8.html
     /// </summary>
     /// <param name="args">The arguments to the offline command</param>
-    void Offline(PoolOfflineArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous offline operation.</returns>
+    Task OfflineAsync(PoolOfflineArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Brings the specified physical device online.
@@ -67,7 +85,9 @@ public interface IZPool : IBasicZfs
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-online.8.html
     /// </summary>
     /// <param name="args">The arguments to the online command</param>
-    void Online(PoolOnlineArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous online operation.</returns>
+    Task OnlineAsync(PoolOnlineArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// clear device errors in ZFS storage pool.
@@ -80,14 +100,18 @@ public interface IZPool : IBasicZfs
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-clear.8.html
     /// </summary>
     /// <param name="args">The arguments for the clear command</param>
-    void Clear(PoolClearArgs args);
-        
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous clear operation.</returns>
+    Task ClearAsync(PoolClearArgs args, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Returns basic iostats for the given pool and optionally specific devices
     /// https://openzfs.github.io/openzfs-docs/man/8/zpool-iostat.8.html
     /// </summary>
     /// <param name="args">The arguments for zpool iostat</param>
-    IOStats IOStats(PoolIOStatsArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains the parsed IO statistics.</returns>
+    Task<IOStats> IOStatsAsync(PoolIOStatsArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Starts a resilver of the specified pools.
@@ -97,14 +121,18 @@ public interface IZPool : IBasicZfs
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-resilver.8.html
     /// </summary>
     /// <param name="args">Arguments for the resilver command</param>
-    void Resilver(PoolResilverArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous resilver operation.</returns>
+    Task ResilverAsync(PoolResilverArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Begin, resume, pause or stop scrub of ZFS storage pools
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-scrub.8.html
     /// </summary>
     /// <param name="args">The arguments for the scrub command</param>
-    void Scrub(PoolScrubArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous scrub operation.</returns>
+    Task ScrubAsync(PoolScrubArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Initiates an immediate on-demand TRIM operation for all of the free space in a pool.
@@ -113,29 +141,37 @@ public interface IZPool : IBasicZfs
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-trim.8.html
     /// </summary>
     /// <param name="args">The arguments to the trim command</param>
-    void Trim(PoolTrimArgs args);
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous trim operation.</returns>
+    Task TrimAsync(PoolTrimArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Displays pools which do not have all supported features enabled and pools formatted using a legacy ZFS version number.
     /// These pools can continue to be used, but some features may not be available.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-upgrade.8.html
     /// </summary>
-    /// <returns>List of upgradeable pools and their missing features</returns>
-    IList<UpgradeablePool> GetUpgradeablePools();
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task whose result contains a read-only list of upgradeable pools and their missing features.</returns>
+    Task<IReadOnlyList<UpgradeablePool>> GetUpgradeablePoolsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Enable all features on the given pool or all pools
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-upgrade.8.html
     /// </summary>
     /// <param name="args">Args to control whether to upgrade a single pool or all pools</param>
-    void Upgrade(PoolUpgradeArgs args);
-        
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous upgrade operation.</returns>
+    Task UpgradeAsync(PoolUpgradeArgs args, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Detaches device from a mirror. The operation is refused if there are no other valid replicas of the data.
     /// If device may be re-added to the pool later on then consider the zpool offline command instead.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-detach.8.html
     /// </summary>
-    void Detach(PoolDetachArgs args);
+    /// <param name="args">The arguments to the detach command</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous detach operation.</returns>
+    Task DetachAsync(PoolDetachArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Attaches new_device to the existing mirrored or nonmirrored device.
@@ -145,7 +181,10 @@ public interface IZPool : IBasicZfs
     /// In either case, new_device begins to resilver immediately and any running scrub is cancelled.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-attach.8.html
     /// </summary>
-    void Attach(PoolAttachArgs args);
+    /// <param name="args">The arguments to the attach command</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous attach operation.</returns>
+    Task AttachAsync(PoolAttachArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Replaces device with new-device.
@@ -157,7 +196,10 @@ public interface IZPool : IBasicZfs
     /// This form of replacement is useful after an existing disk has failed and has been physically replaced.
     /// In this case, the new disk may have the same /dev path as the old device, even though it is actually a different disk.ZFS recognizes this.
     /// </summary>
-    void Replace(PoolReplaceArgs args);
+    /// <param name="args">The arguments to the replace command</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous replace operation.</returns>
+    Task ReplaceAsync(PoolReplaceArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Adds the specified virtual devices to the given pool.
@@ -165,7 +207,10 @@ public interface IZPool : IBasicZfs
     /// The behavior of the -f option, and the device checks performed are described in the zpool create subcommand.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-add.8.html
     /// </summary>
-    void Add(PoolAddArgs args);
+    /// <param name="args">The arguments to the add command</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous add operation.</returns>
+    Task AddAsync(PoolAddArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes the specified device from the pool. This command supports removing hot spare, cache, log, and both mirrored and non-redundant primary top-level vdevs, including dedup and special vdevs.
@@ -174,5 +219,8 @@ public interface IZPool : IBasicZfs
     /// A mirrored top-level device(log or data) can be removed by specifying the top-level mirror for the same.Non-log devices or data devices that are part of a mirrored configuration can be removed using the zpool detach command.
     /// see https://openzfs.github.io/openzfs-docs/man/8/zpool-remove.8.html
     /// </summary>
-    void Remove(PoolRemoveArgs args);
+    /// <param name="args">The arguments to the remove command</param>
+    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous remove operation.</returns>
+    Task RemoveAsync(PoolRemoveArgs args, CancellationToken cancellationToken = default);
 }

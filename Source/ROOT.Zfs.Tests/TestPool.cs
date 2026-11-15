@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Xunit;
 using ROOT.Shared.Utils.OS;
 using ROOT.Zfs.Core;
@@ -30,12 +31,12 @@ internal class TestPool : IDisposable
 
     public List<string> Disks { get; } = [];
 
-    public PoolStatus CreatePool(PoolCreateArgs args)
+    public async Task<PoolStatus> CreatePoolAsync(PoolCreateArgs args)
     {
         _args = _args == null ? args : throw new InvalidOperationException("Cannot reuse TestPool for more than one creation");
         var zp = ZfsTestFactory.CreateZpool(_remoteProcessCall);
         zp.RequiresSudo = Environment.MachineName != "BBS-DESKTOP";
-        return zp.Create(args);
+        return await zp.CreateAsync(args, TestContext.Current.CancellationToken);
     }
 
     public string AddDisk(Size size = default)
@@ -116,7 +117,7 @@ internal class TestPool : IDisposable
     /// <summary>
     /// Creates a simple mirror pool for any testing where size/type does not really matter
     /// </summary>
-    public static TestPool CreateSimplePool(IProcessCall remoteProcessCall, ITestOutputHelper output)
+    public static async Task<TestPool> CreateSimplePoolAsync(IProcessCall remoteProcessCall, ITestOutputHelper output)
     {
         var pool = new TestPool(remoteProcessCall, output);
         try
@@ -140,7 +141,7 @@ internal class TestPool : IDisposable
                 ]
             };
 
-            var status = pool.CreatePool(args);
+            var status = await pool.CreatePoolAsync(args);
             Assert.Equal(State.Online, status.State);
             output.WriteLine("Created pool {0} for testing", name);
             return pool;

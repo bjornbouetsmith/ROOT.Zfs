@@ -40,7 +40,7 @@ public class SnapshotTest
     [Trait("Category", "Integration")]
     public async Task RemoteSnapshotTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var sn = GetSnapshots();
         var cancellationToken = TestContext.Current.CancellationToken;
         await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name }, cancellationToken);
@@ -59,7 +59,7 @@ public class SnapshotTest
     public async Task RemoteCreateAndDestroySnapshot()
     {
         var snapName = "RemoteCreateSnapshot" + DateTime.UtcNow.ToString("yyyyMMddhhmmss", CultureInfo.InvariantCulture);
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var sn = GetSnapshots();
         var cancellationToken = TestContext.Current.CancellationToken;
 
@@ -79,7 +79,7 @@ public class SnapshotTest
     public async Task CreateAndDeleteByPatternTest()
     {
         var sn = GetSnapshots();
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var cancellationToken = TestContext.Current.CancellationToken;
         var prefix = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
         await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = $"{prefix}-1" }, cancellationToken);
@@ -100,7 +100,7 @@ public class SnapshotTest
     [Trait("Category", "Integration")]
     public async Task HoldAndReleaseSnapshotTest()
     {
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var sn = GetSnapshots();
         var cancellationToken = TestContext.Current.CancellationToken;
         const string snapName = "holdtest";
@@ -126,7 +126,7 @@ public class SnapshotTest
     {
         var sn = GetSnapshots();
         var ds = GetDatasets();
-        using var pool = TestPool.CreateSimplePool(_remoteProcessCall, _output);
+        using var pool = await TestPool.CreateSimplePoolAsync(_remoteProcessCall, _output);
         var cancellationToken = TestContext.Current.CancellationToken;
         await sn.CreateAsync(new SnapshotCreateArgs { Dataset = pool.Name, Snapshot = "mysnap" }, cancellationToken);
 
