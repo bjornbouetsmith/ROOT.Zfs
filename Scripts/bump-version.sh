@@ -3,7 +3,10 @@
 # Increments the semantic version in Source/Directory.Build.props.
 #
 # Usage:
-#   bash Scripts/bump-version.sh [--dry-run] <major|minor|patch> [props-file]
+#   bash Scripts/bump-version.sh [--dry-run] [major|minor|patch] [props-file]
+#
+# If the version part is omitted or is not one of major, minor or patch,
+# patch is used.
 #
 # The new version is written to stdout. With --dry-run the file is left
 # untouched and only the version that would be used is printed.
@@ -21,14 +24,6 @@ props_file="${2:-Source/Directory.Build.props}"
 
 # Accept Patch, PATCH, patch, etc.
 part="${part,,}"
-
-case "$part" in
-  major|minor|patch) ;;
-  *)
-    echo "error: version part must be one of major, minor or patch (got '$part')" >&2
-    exit 2
-    ;;
-esac
 
 if [[ ! -f "$props_file" ]]; then
   echo "error: file not found: $props_file" >&2
@@ -60,6 +55,10 @@ case "$part" in
     patch=0
     ;;
   patch)
+    patch=$((patch + 1))
+    ;;
+  *)
+    echo "warning: version part must be one of major, minor or patch (got '$part'); using patch" >&2
     patch=$((patch + 1))
     ;;
 esac
